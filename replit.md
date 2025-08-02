@@ -2,7 +2,32 @@
 
 ## Overview
 
-MediFly is a Flask-based web application that simulates a hospital interface for booking air medical transport services. The system provides a streamlined workflow for hospital staff to coordinate critical patient transports, from initial intake through flight tracking and completion. The application features a multi-step guided form, provider comparison, booking confirmation, real-time flight tracking simulation, and administrative oversight capabilities.
+MediFly is a Flask-based web application that simulates a hospital interface for booking air medical transport services. The system provides a streamlined workflow for hospital staff to coordinate critical patient transports, from initial intake through flight tracking and completion. The application features a multi-step guided form, enhanced provider comparison with visual capability badges, booking confirmation, real-time flight tracking simulation with improved animations, intelligent chatbot assistance with severity-based recommendations, and administrative oversight capabilities with HIPAA-compliant data masking.
+
+## Recent Enhancements (August 2025)
+
+### Visual and UX Improvements
+- Enhanced provider comparison page with larger pricing displays and capability badges
+- Improved hover animations and transitions throughout the interface
+- Enhanced progress bar styling with smooth transitions for flight tracking
+- Responsive design improvements for better mobile compatibility
+
+### Chatbot Intelligence
+- Severity-based equipment recommendations that auto-populate based on patient condition
+- Enhanced chatbot responses with detailed provider comparisons and pricing information
+- Real-time chatbot suggestions when users select different severity levels
+- Improved welcome messaging and conversation flow
+
+### Security and Compliance
+- HIPAA-compliant data masking in admin panel for sensitive patient information
+- Enhanced session data protection with automatic masking of medical/patient fields
+- Improved admin interface with refresh functionality and better table styling
+
+### Technical Enhancements
+- Bootstrap tooltip integration throughout the application
+- Smooth scrolling navigation and improved accessibility
+- Enhanced JavaScript validation and real-time form interactions
+- Improved CSS animations and visual feedback systems
 
 ## User Preferences
 
