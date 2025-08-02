@@ -567,7 +567,7 @@ body {
     }
 }
 
-/* Enhanced Aircraft Animation for Consumer */
+/* Professional Aircraft Animation for Consumer */
 .aircraft-animation {
     position: fixed;
     top: 0;
@@ -577,87 +577,149 @@ body {
     z-index: 1000;
     pointer-events: none;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--pastel-blue) 0%, var(--pastel-pink) 50%, var(--pastel-blue) 100%);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, var(--pastel-blue) 0%, rgba(255, 255, 255, 0.9) 50%, var(--pastel-pink) 100%);
+    border-bottom: 1px solid rgba(230, 243, 255, 0.8);
 }
 
+/* Stage 1: Helicopter flies across screen */
 .helicopter-stage {
     position: absolute;
-    width: 60px;
-    height: 40px;
-    animation: helicopterFly 5s linear forwards;
+    top: 15px;
+    animation: helicopterMove 4s ease-in-out forwards;
 }
 
 .helicopter {
     font-size: 2.5rem;
     color: #FF9999;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 3px 6px rgba(255, 153, 153, 0.4));
 }
 
-.plane-stage {
+/* Stage 2: Medical jet appears and moves */
+.medical-jet-stage {
     position: absolute;
-    width: 50px;
-    height: 30px;
+    top: 20px;
     opacity: 0;
-    animation: planeCircle 10s infinite linear 5s, planeFadeIn 1s ease-in 5s forwards;
+    animation: medicalJetMove 3s ease-in-out 4.5s forwards;
 }
 
-.plane {
+.medical-jet {
     font-size: 2rem;
     color: #99D6EA;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 3px 6px rgba(153, 214, 234, 0.4));
 }
 
-.world-stage {
+/* Stage 3: Large aircraft appears and moves */
+.large-aircraft-stage {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
+    top: 25px;
     opacity: 0;
-    animation: worldFadeIn 1s ease-in 5s forwards;
+    animation: largeAircraftMove 4s ease-in-out 8s forwards;
 }
 
-.world {
+.large-aircraft {
     font-size: 3rem;
     color: #A8E6CF;
-    animation: worldSpin 10s infinite linear 5s;
+    filter: drop-shadow(0 4px 8px rgba(168, 230, 207, 0.4));
 }
 
-@keyframes helicopterFly {
+/* Helicopter Movement */
+@keyframes helicopterMove {
     0% {
-        left: -80px;
-        top: 20px;
+        left: calc(100% - 80px);
         opacity: 1;
+        transform: translateY(0);
+    }
+    25% {
+        left: 75%;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    50% {
+        left: 50%;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    75% {
+        left: 25%;
+        opacity: 1;
+        transform: translateY(5px);
+    }
+    90% {
+        left: 10%;
+        opacity: 0.7;
+        transform: translateY(15px);
+    }
+    100% {
+        left: -80px;
+        opacity: 0;
+        transform: translateY(25px);
+    }
+}
+
+/* Medical Jet Movement */
+@keyframes medicalJetMove {
+    0% {
+        left: calc(100% - 60px);
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    20% {
+        left: 80%;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    40% {
+        left: 60%;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    60% {
+        left: 40%;
+        opacity: 1;
+        transform: translateY(0);
     }
     80% {
-        left: calc(100% - 60px);
-        top: 20px;
-        opacity: 1;
+        left: 20%;
+        opacity: 0.8;
+        transform: translateY(8px);
     }
     100% {
-        left: calc(100% + 20px);
-        top: 20px;
+        left: -60px;
         opacity: 0;
+        transform: translateY(20px);
     }
 }
 
-@keyframes planeCircle {
+/* Large Aircraft Movement */
+@keyframes largeAircraftMove {
     0% {
-        transform: rotate(0deg) translateX(120px) rotate(0deg);
+        left: calc(100% - 80px);
+        opacity: 0;
+        transform: translateY(-15px) scale(0.8);
+    }
+    25% {
+        left: 75%;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        left: 50%;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    75% {
+        left: 25%;
+        opacity: 0.9;
+        transform: translateY(10px) scale(1.1);
+    }
+    90% {
+        left: 10%;
+        opacity: 0.6;
+        transform: translateY(20px) scale(1.2);
     }
     100% {
-        transform: rotate(360deg) translateX(120px) rotate(-360deg);
+        left: -100px;
+        opacity: 0;
+        transform: translateY(35px) scale(1.3);
     }
-}
-
-@keyframes worldFadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes worldSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }

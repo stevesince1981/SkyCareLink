@@ -15,21 +15,21 @@
     <link rel="stylesheet" href="https://unpkg.com/botui/build/botui.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='consumer_static/consumer_css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('consumer_static', filename='consumer_css/style.css') }}">
     
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Enhanced Aircraft Animation -->
+    <!-- Professional Aircraft Animation -->
     <div class="aircraft-animation">
         <div class="helicopter-stage">
-            <div class="helicopter">🚁</div>
+            <div class="helicopter"><i class="fas fa-helicopter"></i></div>
         </div>
-        <div class="plane-stage">
-            <div class="plane">✈️</div>
+        <div class="medical-jet-stage">
+            <div class="medical-jet"><i class="fas fa-plane"></i></div>
         </div>
-        <div class="world-stage">
-            <div class="world">🌍</div>
+        <div class="large-aircraft-stage">
+            <div class="large-aircraft"><i class="fas fa-plane-departure"></i></div>
         </div>
     </div>
 
