@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Transport Options - MediFly{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="text-center mb-4">Available Transport Providers</h2>
+        
+        <div class="alert alert-success" role="alert">
+            <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+            Found 3 qualified providers for your transport needs. All providers are HIPAA-compliant and certified.
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for provider_id, provider in providers.items() %}
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm provider-card" 
+             role="article" 
+             aria-label="Transport provider option: {{ provider.name }}">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-helicopter me-2 text-primary" aria-hidden="true"></i>
+                    {{ provider.name }}
+                </h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="provider-details mb-3">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>Cost:</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <span class="h5 text-success">${{ "{:,}".format(provider.price) }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <strong>ETA:</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <span class="badge bg-info">{{ provider.eta }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>Specialization:</strong>
+                            <span class="text-muted">{{ provider.description }}</span>
+                        </div>
+                    </div>
+                    <div class="provider-details-full">
+                        <p class="card-text">{{ provider.details }}</p>
+                    </div>
+                </div>
+                
+                <!-- Provider Features -->
+                <div class="provider-features mb-3">
+                    {% if provider_id == 'provider_1' %}
+                        <div class="feature-badge">
+                            <i class="fas fa-user-md text-success" aria-hidden="true"></i>
+                            <small>ICU Certified Team</small>
+                        </div>
+                        <div class="feature-badge">
+                            <i class="fas fa-heartbeat text-danger" aria-hidden="true"></i>
+                            <small>Advanced Life Support</small>
+                        </div>
+                    {% elif provider_id == 'provider_2' %}
+                        <div class="feature-badge">
+                            <i class="fas fa-stethoscope text-primary" aria-hidden="true"></i>
+                            <small>Doctor On Board</small>
+                        </div>
+                        <div class="feature-badge">
+                            <i class="fas fa-ambulance text-warning" aria-hidden="true"></i>
+                            <small>Critical Care</small>
+                        </div>
+                    {% else %}
+                        <div class="feature-badge">
+                            <i class="fas fa-shield-alt text-info" aria-hidden="true"></i>
+                            <small>Basic Life Support</small>
+                        </div>
+                        <div class="feature-badge">
+                            <i class="fas fa-dollar-sign text-success" aria-hidden="true"></i>
+                            <small>Cost Effective</small>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-auto">
+                    <a href="{{ url_for('confirm', provider_id=provider_id) }}" 
+                       class="btn btn-primary w-100"
+                       aria-label="Select {{ provider.name }} as your transport provider">
+                        <i class="fas fa-check me-2" aria-hidden="true"></i>
+                        Select This Provider
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('intake') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>
+            Modify Search Criteria
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize chatbot for results page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChatbot([
+        {
+            trigger: 'provider_help',
+            message: 'Need help choosing a provider?',
+            type: 'text'
+        },
+        {
+            trigger: 'provider_recommendation',
+            message: 'For critical patients (Severity 4-5), I recommend AirMed Response with ICU certification. For stable patients, MercyWings offers good value.',
+            type: 'text'
+        },
+        {
+            trigger: 'cost_help',
+            message: 'Why are there price differences?',
+            type: 'text'
+        },
+        {
+            trigger: 'cost_explanation',
+            message: 'Prices vary based on medical team certification, equipment available, and response time. Higher-certified teams cost more but provide advanced care.',
+            type: 'text'
+        }
+    ]);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Intake - MediFly{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h2 class="text-center mb-4">Critical Medical Transport Intake</h2>
+        
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
+            Inputs used only for provider matching. Not stored permanently.
+        </div>
+
+        <form id="intake-form" method="POST" novalidate>
+            <!-- Step 1: Current Location -->
+            <div class="card mb-4 form-step" id="step-1">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
+                        Step 1: Current Location
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="current_location" class="form-label">Where is the patient currently located?</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="current_location" 
+                               name="current_location" 
+                               required
+                               aria-label="Enter patient's current location"
+                               placeholder="e.g., Orlando Regional Medical Center, FL">
+                        <div class="invalid-feedback">
+                            Please enter the patient's current location.
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary next-step" data-next="2">
+                        Next <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Destination -->
+            <div class="card mb-4 form-step d-none" id="step-2">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plane-arrival me-2" aria-hidden="true"></i>
+                        Step 2: Destination
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="destination" class="form-label">Where are they being transported to?</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="destination" 
+                               name="destination" 
+                               required
+                               aria-label="Enter destination hospital or medical facility"
+                               placeholder="e.g., UCLA Medical Center, Los Angeles, CA">
+                        <div class="invalid-feedback">
+                            Please enter the destination location.
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary prev-step me-2" data-prev="1">
+                        <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary next-step" data-next="3">
+                        Next <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Severity -->
+            <div class="card mb-4 form-step d-none" id="step-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                        Step 3: Condition Severity
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="severity" class="form-label">Select severity (1-5):</label>
+                        <select class="form-select" 
+                                id="severity" 
+                                name="severity" 
+                                required
+                                aria-label="Select condition severity level">
+                            <option value="">Choose severity level...</option>
+                            <option value="1" title="Minor conditions like broken bones">1 - Minor (e.g., broken leg)</option>
+                            <option value="2" title="Moderate conditions requiring monitoring">2 - Moderate (stable but needs monitoring)</option>
+                            <option value="3" title="Serious conditions requiring medical attention">3 - Serious (needs immediate medical care)</option>
+                            <option value="4" title="Critical conditions requiring ICU care">4 - Critical (ICU level care needed)</option>
+                            <option value="5" title="Life-threatening conditions with ventilator support">5 - Critical (ventilator/life support)</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a severity level.
+                        </div>
+                        <div class="form-text">
+                            Hover over options for detailed descriptions of each severity level.
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary prev-step me-2" data-prev="2">
+                        <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary next-step" data-next="4">
+                        Next <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Equipment -->
+            <div class="card mb-4 form-step d-none" id="step-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-stethoscope me-2" aria-hidden="true"></i>
+                        Step 4: Medical Equipment
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">What medical equipment is needed?</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="ventilator" name="equipment" value="Ventilator" aria-label="Ventilator support">
+                                    <label class="form-check-label" for="ventilator">Ventilator</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="ecmo" name="equipment" value="ECMO" aria-label="ECMO machine">
+                                    <label class="form-check-label" for="ecmo">ECMO</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="incubator" name="equipment" value="Incubator" aria-label="Incubator for neonatal care">
+                                    <label class="form-check-label" for="incubator">Incubator</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="escort" name="equipment" value="Escort only" aria-label="Medical escort only">
+                                    <label class="form-check-label" for="escort">Escort only</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="oxygen" name="equipment" value="Oxygen" aria-label="Oxygen support">
+                                    <label class="form-check-label" for="oxygen">Oxygen</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="other" name="equipment" value="Other" aria-label="Other medical equipment">
+                                    <label class="form-check-label" for="other">Other</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary prev-step me-2" data-prev="3">
+                        <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary next-step" data-next="5">
+                        Next <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 5: Departure Date -->
+            <div class="card mb-4 form-step d-none" id="step-5">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2" aria-hidden="true"></i>
+                        Step 5: Departure Schedule
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="departure_date" class="form-label">When is the patient ready to depart?</label>
+                        <input type="datetime-local" 
+                               class="form-control" 
+                               id="departure_date" 
+                               name="departure_date" 
+                               required
+                               aria-label="Select departure date and time">
+                        <div class="invalid-feedback">
+                            Please select a valid future date and time.
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary prev-step me-2" data-prev="4">
+                        <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Previous
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-search me-2" aria-hidden="true"></i> Find Transport Options
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize chatbot for intake page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeIntakeForm();
+    
+    initializeChatbot([
+        {
+            trigger: 'equipment_help',
+            message: 'Need help selecting equipment?',
+            type: 'text'
+        },
+        {
+            trigger: 'equipment_suggestions',
+            message: 'For Severity 5 patients, I recommend selecting Ventilator and Oxygen support. For Severity 1-2, Escort only may be sufficient.',
+            type: 'text'
+        },
+        {
+            trigger: 'severity_help',
+            message: 'What do the severity levels mean?',
+            type: 'text'
+        },
+        {
+            trigger: 'severity_explanation',
+            message: 'Severity 1: Minor injuries like fractures. Severity 3: Serious conditions needing medical attention. Severity 5: Critical patients on life support.',
+            type: 'text'
+        }
+    ]);
+});
+</script>
+{% endblock %}

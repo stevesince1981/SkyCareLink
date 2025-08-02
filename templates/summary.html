@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Complete - MediFly{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Success Message -->
+        <div class="text-center mb-4">
+            <div class="success-icon mb-3">
+                <i class="fas fa-check-circle fa-5x text-success" aria-hidden="true"></i>
+            </div>
+            <h2 class="text-success">Flight Booked Successfully!</h2>
+            <p class="lead">Your critical medical transport has been arranged and coordinated.</p>
+        </div>
+
+        <!-- Booking Summary -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-clipboard-list me-2" aria-hidden="true"></i>
+                    Booking Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Transport Provider</h6>
+                        <p class="mb-3">{{ provider.name }}<br>
+                        <small class="text-muted">{{ provider.details }}</small></p>
+                        
+                        <h6>Route</h6>
+                        <p class="mb-3">
+                            <strong>From:</strong> {{ patient_data.current_location }}<br>
+                            <strong>To:</strong> {{ patient_data.destination }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Patient Details</h6>
+                        <p class="mb-3">
+                            <strong>Severity Level:</strong> {{ patient_data.severity }}<br>
+                            <strong>Departure:</strong> {{ patient_data.departure_date }}<br>
+                            <strong>ETA:</strong> {{ provider.eta }}
+                        </p>
+                        
+                        {% if patient_data.equipment %}
+                        <h6>Equipment Required</h6>
+                        <div class="mb-3">
+                            {% for equipment in patient_data.equipment %}
+                                <span class="badge bg-secondary me-1">{{ equipment }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-dollar-sign me-2" aria-hidden="true"></i>
+                    Cost Breakdown
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-8">Base Transport Cost:</div>
+                    <div class="col-4 text-end">${{ "{:,}".format(provider.price) }}</div>
+                </div>
+                {% if add_ons.family_seat %}
+                <div class="row">
+                    <div class="col-8">Family Seat:</div>
+                    <div class="col-4 text-end">$5,000</div>
+                </div>
+                {% endif %}
+                {% if add_ons.vip_cabin %}
+                <div class="row">
+                    <div class="col-8">VIP Cabin Upgrade:</div>
+                    <div class="col-4 text-end">$10,000</div>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="row">
+                    <div class="col-8"><strong>Total Cost:</strong></div>
+                    <div class="col-4 text-end"><strong>${{ "{:,}".format(total_cost) }}</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-list-ol me-2" aria-hidden="true"></i>
+                    Next Steps
+                </h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li>You will receive a confirmation email within 15 minutes</li>
+                    <li>Our flight coordinator will contact you 2 hours before departure</li>
+                    <li>Medical team will arrive 30 minutes before scheduled departure</li>
+                    <li>Patient preparation and pre-flight safety checks will be conducted</li>
+                    <li>Family members (if Family Seat purchased) should arrive 45 minutes early</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Download and Feedback Section -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-download fa-3x text-primary mb-3" aria-hidden="true"></i>
+                        <h5 class="card-title">Download Receipt</h5>
+                        <p class="card-text">Get a PDF copy of your booking confirmation</p>
+                        <button class="btn btn-primary" onclick="downloadPDF()" aria-label="Download PDF receipt">
+                            <i class="fas fa-file-pdf me-2" aria-hidden="true"></i>
+                            Download PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">
+                            <i class="fas fa-comments me-2" aria-hidden="true"></i>
+                            Feedback
+                        </h5>
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="feedback" class="form-label">How was your booking experience?</label>
+                                <textarea class="form-control" 
+                                         id="feedback" 
+                                         name="feedback" 
+                                         rows="3" 
+                                         placeholder="Your feedback helps us improve our service..."
+                                         aria-label="Provide feedback about your booking experience"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-paper-plane me-2" aria-hidden="true"></i>
+                                Submit Feedback
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="alert alert-info" role="alert">
+            <h6 class="alert-heading">
+                <i class="fas fa-phone me-2" aria-hidden="true"></i>
+                24/7 Support Available
+            </h6>
+            <p class="mb-0">
+                For any questions or changes to your booking, contact our support team at 
+                <a href="tel:+1-800-MEDIFLY" class="text-decoration-none">1-800-MEDIFLY</a> or 
+                email us at <a href="mailto:support@medifly.com" class="text-decoration-none">support@medifly.com</a>
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center">
+            <a href="{{ url_for('index') }}" class="btn btn-primary me-3">
+                <i class="fas fa-home me-2" aria-hidden="true"></i>
+                Book Another Flight
+            </a>
+            <a href="{{ url_for('clear_session') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-sign-out-alt me-2" aria-hidden="true"></i>
+                End Session
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize chatbot for summary page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChatbot([
+        {
+            trigger: 'experience_help',
+            message: 'How was your booking experience?',
+            type: 'text'
+        },
+        {
+            trigger: 'experience_prompt',
+            message: 'We\'d love to hear about your experience! Please consider leaving feedback to help us improve our service for other hospital staff.',
+            type: 'text'
+        },
+        {
+            trigger: 'next_steps',
+            message: 'What happens next?',
+            type: 'text'
+        },
+        {
+            trigger: 'next_steps_info',
+            message: 'You\'ll receive email confirmation soon, and our coordinator will call 2 hours before departure. The medical team arrives 30 minutes early for patient prep.',
+            type: 'text'
+        }
+    ]);
+});
+
+function downloadPDF() {
+    // Mock PDF download functionality
+    const link = document.createElement('a');
+    link.href = 'data:application/pdf;base64,JVBERi0xLjQKJcfsj6IKNSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUGFnZXMgNCAwIFIKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL1R5cGUgL1BhZ2VzCi9LaWRzIFsgNiAwIFIgXQovQ291bnQgMQo+PgplbmRvYmoKNiAwIG9iago8PAovVHlwZSAvUGFnZQovUGFyZW50IDQgMCBSCi9NZWRpYUJveCBbIDAgMCA2MTIgNzkyIF0KL1Jlc291cmNlcyA8PAovRm9udCA4IDAgUgo+PgovQ29udGVudHMgNyAwIFIKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0xlbmd0aCA0NAo+PgpzdHJlYW0KQlQKL0YxIDEyIFRmCjEwMCA3MDAgVGQKKE1lZGlGbHkgQm9va2luZyBDb25maXJtYXRpb24pIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKOCAwIG9iago8PAovRjEgPDwKL1R5cGUgL0ZvbnQKL1N1YnR5cGUgL1R5cGUxCi9CYXNlRm9udCAvSGVsdmV0aWNhCj4+Cj4+CmVuZG9iagp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDA2NiAwMDAwMCBuIAowMDAwMDAwMTI1IDAwMDAwIG4gCjAwMDAwMDAxNzQgMDAwMDAgbiAKMDAwMDAwMDIzMSAwMDAwMCBuIAowMDAwMDAwMzQ1IDAwMDAwIG4gCjAwMDAwMDA0NTMgMDAwMDAgbiAKMDAwMDAwMDU0NSAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDkKL1Jvb3QgNSAwIFIKPj4Kc3RhcnR4cmVmCjY0NQolJUVPRg==';
+    link.download = 'medifly-booking-confirmation.pdf';
+    link.click();
+    
+    // Show success message
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check me-2"></i>Downloaded!';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }, 2000);
+}
+</script>
+{% endblock %}

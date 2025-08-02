@@ -1,0 +1,375 @@
+/* MediFly Hospital MVP Custom Styles */
+
+:root {
+    --primary-blue: #007bff;
+    --light-blue: #e6f3ff;
+    --success-green: #28a745;
+    --warning-yellow: #ffc107;
+    --danger-red: #dc3545;
+    --light-gray: #f8f9fa;
+    --dark-gray: #6c757d;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    line-height: 1.6;
+}
+
+/* Navigation Enhancements */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 3rem 0;
+}
+
+.display-4 {
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+/* Form Enhancements */
+.form-step {
+    transition: all 0.3s ease-in-out;
+}
+
+.form-step.d-none {
+    display: none !important;
+}
+
+.next-step, .prev-step {
+    min-width: 120px;
+}
+
+/* Card Enhancements */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.provider-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.provider-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Provider Features */
+.feature-badge {
+    display: inline-block;
+    margin: 0.25rem 0.5rem 0.25rem 0;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--light-gray);
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* Progress Tracking */
+.stage-indicator {
+    margin-bottom: 1rem;
+}
+
+.stage-name {
+    font-size: 0.875rem;
+}
+
+.progress {
+    background-color: #e9ecef;
+}
+
+.progress-bar-animated {
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+/* Success Animations */
+.success-icon {
+    animation: bounceIn 1s ease-out;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Chatbot Widget Styles */
+.chatbot-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    max-width: 90vw;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    font-family: inherit;
+}
+
+.chatbot-header {
+    background: var(--light-blue);
+    color: var(--primary-blue);
+    padding: 12px 16px;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.chatbot-header:hover {
+    background: #d1ecf1;
+}
+
+.chatbot-toggle {
+    transition: transform 0.3s ease;
+}
+
+.chatbot-toggle.rotated {
+    transform: rotate(180deg);
+}
+
+.chatbot-body {
+    max-height: 400px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 0 0 10px 10px;
+    display: none;
+}
+
+.chatbot-body.show {
+    display: block;
+}
+
+/* BotUI Customizations */
+#botui-app {
+    font-family: inherit;
+}
+
+.botui-messages-container {
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.botui-message {
+    margin-bottom: 10px;
+}
+
+.botui-message-content {
+    padding: 8px 12px;
+    border-radius: 18px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.botui-message-content.human {
+    background: var(--primary-blue);
+    color: white;
+    margin-left: 20%;
+}
+
+.botui-message-content.bot {
+    background: var(--light-blue);
+    color: var(--primary-blue);
+    margin-right: 20%;
+}
+
+/* Accessibility Enhancements */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Skip to content link for screen readers */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary-blue);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1001;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .card {
+        border: 2px solid #000;
+    }
+    
+    .btn {
+        border: 2px solid;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .chatbot-widget,
+    .btn,
+    footer {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .chatbot-widget {
+        width: 90vw;
+        right: 5vw;
+    }
+    
+    .provider-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Form Validation Enhancements */
+.is-invalid {
+    border-color: var(--danger-red);
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--danger-red);
+}
+
+/* Success States */
+.is-valid {
+    border-color: var(--success-green);
+}
+
+.valid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--success-green);
+}
+
+/* Admin Dashboard Specific Styles */
+.log-entry {
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.log-entry:last-child {
+    margin-bottom: 0;
+}
+
+/* Tooltip Enhancements */
+.tooltip {
+    font-size: 0.875rem;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+}
+
+/* Alert Enhancements */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+/* Table Enhancements */
+.table-responsive {
+    border-radius: 0.5rem;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    background-color: var(--light-gray);
+}
+
+/* Code Styling */
+code {
+    color: var(--primary-blue);
+    background-color: var(--light-blue);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+
+pre {
+    background-color: var(--light-gray);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+}

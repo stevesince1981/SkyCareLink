@@ -1,0 +1,30 @@
+[tool.replit]
+language = "python"
+replit = "3.2"
+
+[tool.replit.dependencies]
+flask = "latest"
+python-dotenv = "latest"
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "medifly-hospital-mvp"
+version = "1.0.0"
+description = "MediFly Hospital MVP - Critical Medical Transport Booking System"
+authors = [
+    {name = "MediFly Development Team"}
+]
+dependencies = [
+    "flask>=2.3.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0"
+]

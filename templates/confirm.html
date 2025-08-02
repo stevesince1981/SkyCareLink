@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Booking - MediFly{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h2 class="text-center mb-4">Confirm Your Medical Transport</h2>
+        
+        <!-- Selected Provider Summary -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-helicopter me-2" aria-hidden="true"></i>
+                    Selected Provider: {{ provider.name }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Transport Details</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Cost:</strong> ${{ "{:,}".format(provider.price) }}</li>
+                            <li><strong>ETA:</strong> {{ provider.eta }}</li>
+                            <li><strong>Service Level:</strong> {{ provider.description }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Patient Information</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>From:</strong> {{ patient_data.current_location }}</li>
+                            <li><strong>To:</strong> {{ patient_data.destination }}</li>
+                            <li><strong>Severity:</strong> Level {{ patient_data.severity }}</li>
+                            <li><strong>Departure:</strong> {{ patient_data.departure_date }}</li>
+                        </ul>
+                    </div>
+                </div>
+                {% if patient_data.equipment %}
+                <div class="mt-3">
+                    <h6>Required Equipment</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for equipment in patient_data.equipment %}
+                            <span class="badge bg-secondary">{{ equipment }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Add-ons and Final Booking Form -->
+        <form method="POST" action="{{ url_for('finalize') }}" id="confirm-form">
+            <!-- Add-ons Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2" aria-hidden="true"></i>
+                        Optional Add-ons
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="family_seat" 
+                                       name="family_seat" 
+                                       value="1"
+                                       aria-label="Add family seat for $5,000">
+                                <label class="form-check-label" for="family_seat">
+                                    <strong>Family Seat</strong> - $5,000
+                                    <br><small class="text-muted">Allow one family member to accompany the patient</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="vip_cabin" 
+                                       name="vip_cabin" 
+                                       value="1"
+                                       aria-label="Upgrade to VIP cabin for $10,000">
+                                <label class="form-check-label" for="vip_cabin">
+                                    <strong>VIP Cabin</strong> - $10,000
+                                    <br><small class="text-muted">Enhanced comfort and privacy during transport</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Summary -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-8">
+                            <h6>Base Transport Cost:</h6>
+                        </div>
+                        <div class="col-4 text-end">
+                            <span id="base-cost">${{ "{:,}".format(provider.price) }}</span>
+                        </div>
+                    </div>
+                    <div class="row d-none" id="family-seat-cost">
+                        <div class="col-8">
+                            <h6>Family Seat:</h6>
+                        </div>
+                        <div class="col-4 text-end">
+                            <span>$5,000</span>
+                        </div>
+                    </div>
+                    <div class="row d-none" id="vip-cabin-cost">
+                        <div class="col-8">
+                            <h6>VIP Cabin:</h6>
+                        </div>
+                        <div class="col-4 text-end">
+                            <span>$10,000</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-8">
+                            <h5><strong>Total Cost:</strong></h5>
+                        </div>
+                        <div class="col-4 text-end">
+                            <h5><strong id="total-cost">${{ "{:,}".format(provider.price) }}</strong></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consent Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                        Required Consent
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               id="consent" 
+                               name="consent" 
+                               required
+                               aria-label="Required consent for medical information sharing">
+                        <label class="form-check-label" for="consent">
+                            <strong>I authorize secure sharing of non-identifiable medical information</strong>
+                            <br><small class="text-muted">
+                                This consent allows our transport providers to receive necessary medical information 
+                                to ensure safe patient transport. All information is handled in accordance with HIPAA regulations.
+                            </small>
+                        </label>
+                        <div class="invalid-feedback">
+                            You must provide consent to proceed with the booking.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <a href="{{ url_for('results') }}" class="btn btn-outline-secondary me-3">
+                    <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>
+                    Change Provider
+                </a>
+                <button type="submit" class="btn btn-success btn-lg px-5">
+                    <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+                    Finalize Booking
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize chatbot for confirm page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeConfirmForm();
+    
+    initializeChatbot([
+        {
+            trigger: 'addon_help',
+            message: 'Should I add a family seat?',
+            type: 'text'
+        },
+        {
+            trigger: 'addon_recommendation',
+            message: 'Family seats are recommended for critical patients or long flights to provide emotional support. VIP cabins offer enhanced comfort for extended transports.',
+            type: 'text'
+        },
+        {
+            trigger: 'consent_help',
+            message: 'What does the consent cover?',
+            type: 'text'
+        },
+        {
+            trigger: 'consent_explanation',
+            message: 'Consent allows sharing only essential medical information needed for safe transport. No personal identifiers are shared, maintaining HIPAA compliance.',
+            type: 'text'
+        }
+    ]);
+});
+</script>
+{% endblock %}

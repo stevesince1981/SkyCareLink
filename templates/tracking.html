@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Flight Tracking - MediFly{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h2 class="text-center mb-4">Flight Status Tracking</h2>
+        
+        <!-- Provider Information -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ provider.name }}</h5>
+                <p class="card-text">Your medical transport is being coordinated by our certified team</p>
+            </div>
+        </div>
+
+        <!-- Progress Tracking -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-plane me-2" aria-hidden="true"></i>
+                    Transport Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Progress Bar -->
+                <div class="progress mb-4" style="height: 25px;" role="progressbar" aria-label="Transport progress">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                         id="progress-bar"
+                         style="width: {{ progress_percentage }}%"
+                         aria-valuenow="{{ progress_percentage }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ progress_percentage|round|int }}%
+                    </div>
+                </div>
+
+                <!-- Status Stages -->
+                <div class="row text-center">
+                    {% for i in range(stages|length) %}
+                    <div class="col-3">
+                        <div class="stage-indicator {% if i <= current_stage %}completed{% elif i == current_stage + 1 %}active{% else %}pending{% endif %}">
+                            {% if i <= current_stage %}
+                                <i class="fas fa-check-circle fa-2x text-success" aria-hidden="true"></i>
+                            {% elif i == current_stage + 1 %}
+                                <i class="fas fa-clock fa-2x text-warning" aria-hidden="true"></i>
+                            {% else %}
+                                <i class="far fa-circle fa-2x text-muted" aria-hidden="true"></i>
+                            {% endif %}
+                            <div class="stage-name mt-2">
+                                <small class="{% if i <= current_stage %}text-success fw-bold{% elif i == current_stage + 1 %}text-warning fw-bold{% else %}text-muted{% endif %}">
+                                    {{ stages[i] }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Current Status Message -->
+                <div class="alert alert-info mt-4 text-center" role="alert" id="status-message">
+                    <strong>Current Status:</strong> 
+                    <span id="current-status">{{ stages[current_stage] }}</span>
+                    {% if current_stage < stages|length - 1 %}
+                        - Updates automatically every 10 seconds
+                    {% endif %}
+                </div>
+
+                <!-- Estimated Time -->
+                {% if current_stage < stages|length - 1 %}
+                <div class="text-center">
+                    <p class="text-muted">
+                        <i class="fas fa-clock me-2" aria-hidden="true"></i>
+                        Estimated time to arrival: {{ provider.eta }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-phone me-2" aria-hidden="true"></i>
+                    Emergency Contact
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>24/7 Support:</strong><br>
+                        <a href="tel:+1-800-MEDIFLY" class="text-decoration-none">1-800-MEDIFLY</a></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Flight Coordinator:</strong><br>
+                        Available for updates and questions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center">
+            {% if current_stage >= stages|length - 1 %}
+                <a href="{{ url_for('summary') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-clipboard-check me-2" aria-hidden="true"></i>
+                    View Summary
+                </a>
+            {% else %}
+                <button type="button" class="btn btn-primary me-3" id="refresh-status">
+                    <i class="fas fa-sync-alt me-2" aria-hidden="true"></i>
+                    Refresh Status
+                </button>
+                <a href="{{ url_for('complete_flight') }}" class="btn btn-outline-success">
+                    <i class="fas fa-flag-checkered me-2" aria-hidden="true"></i>
+                    Mark Complete (Demo)
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh tracking status
+let trackingInterval;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTracking();
+    
+    initializeChatbot([
+        {
+            trigger: 'status_help',
+            message: 'What\'s the current flight status?',
+            type: 'text'
+        },
+        {
+            trigger: 'status_update',
+            message: 'Your transport is currently in "{{ stages[current_stage] }}" stage. The system updates automatically every 10 seconds during active flights.',
+            type: 'text'
+        },
+        {
+            trigger: 'delay_help',
+            message: 'What if there are delays?',
+            type: 'text'
+        },
+        {
+            trigger: 'delay_response',
+            message: 'Our team monitors all flights in real-time. Any delays due to weather or medical needs will be communicated immediately via phone and this tracking system.',
+            type: 'text'
+        }
+    ]);
+    
+    // Auto-refresh every 10 seconds if not complete
+    {% if current_stage < stages|length - 1 %}
+    trackingInterval = setInterval(refreshTrackingStatus, 10000);
+    {% endif %}
+});
+
+function refreshTrackingStatus() {
+    fetch('{{ url_for("tracking_status") }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.stage !== undefined) {
+                updateTrackingDisplay(data);
+            }
+        })
+        .catch(error => {
+            console.log('Status update failed:', error);
+        });
+}
+
+function updateTrackingDisplay(data) {
+    // Update progress bar
+    const progressBar = document.getElementById('progress-bar');
+    progressBar.style.width = data.progress + '%';
+    progressBar.setAttribute('aria-valuenow', data.progress);
+    progressBar.textContent = Math.round(data.progress) + '%';
+    
+    // Update current status
+    document.getElementById('current-status').textContent = data.stage_name;
+    
+    // If complete, redirect to summary
+    if (data.stage >= {{ stages|length - 1 }}) {
+        clearInterval(trackingInterval);
+        setTimeout(() => {
+            window.location.href = '{{ url_for("summary") }}';
+        }, 2000);
+    }
+}
+
+// Manual refresh button
+document.getElementById('refresh-status')?.addEventListener('click', function() {
+    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+    refreshTrackingStatus();
+    setTimeout(() => {
+        this.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Refresh Status';
+    }, 1000);
+});
+</script>
+{% endblock %}

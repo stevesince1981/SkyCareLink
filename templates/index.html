@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}MediFly - Critical Transport Solutions{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 text-center">
+        <!-- Hero Section -->
+        <div class="hero-section mb-5">
+            <h1 class="display-4 fw-bold text-primary mb-4">
+                MediFly for Hospitals: Critical Transport Solutions
+            </h1>
+            <p class="lead mb-4">
+                Professional air medical transport coordination for hospital staff. 
+                Fast, secure, and compliant with healthcare standards.
+            </p>
+            <a href="{{ url_for('intake') }}" 
+               class="btn btn-primary btn-lg px-5 py-3"
+               aria-label="Start booking a critical medical flight">
+                <i class="fas fa-plane-departure me-2" aria-hidden="true"></i>
+                Book a Critical Medical Flight
+            </a>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shield-alt fa-3x text-primary mb-3" aria-hidden="true"></i>
+                        <h5 class="card-title">HIPAA Compliant</h5>
+                        <p class="card-text">Fully compliant with healthcare privacy regulations</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clock fa-3x text-primary mb-3" aria-hidden="true"></i>
+                        <h5 class="card-title">24/7 Availability</h5>
+                        <p class="card-text">Critical transport coordination available around the clock</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-md fa-3x text-primary mb-3" aria-hidden="true"></i>
+                        <h5 class="card-title">Medical Expertise</h5>
+                        <p class="card-text">Certified medical teams for all severity levels</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize chatbot for landing page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChatbot([
+        {
+            trigger: 'welcome',
+            message: 'Welcome to MediFly! I can help you understand our services.',
+            type: 'text'
+        },
+        {
+            trigger: 'equipment',
+            message: 'What medical equipment is available?',
+            type: 'text'
+        },
+        {
+            trigger: 'equipment_response',
+            message: 'We provide Ventilators, ECMO machines, Incubators, Oxygen support, and medical escorts. Each provider has different equipment capabilities.',
+            type: 'text'
+        },
+        {
+            trigger: 'severity',
+            message: 'Can you explain severity levels?',
+            type: 'text'
+        },
+        {
+            trigger: 'severity_response',
+            message: 'Severity 1: Minor conditions like fractures. Severity 2-3: Moderate conditions. Severity 4: Serious conditions requiring ICU. Severity 5: Critical conditions with life support needs.',
+            type: 'text'
+        }
+    ]);
+});
+</script>
+{% endblock %}
