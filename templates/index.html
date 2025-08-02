@@ -92,37 +92,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainCTA = document.getElementById('main-cta');
     const toggleDescription = document.getElementById('toggle-description');
     
-    // Family toggle handler - redirect to consumer app
+    // Family toggle handler - transform interface
     familyRadio.addEventListener('change', function() {
         if (this.checked) {
             // Update description and CTA
             toggleDescription.textContent = 'Personal medical transport for your loved one';
-            mainCTA.innerHTML = '<i class="fas fa-heart me-2"></i>Access Family Portal';
+            mainCTA.innerHTML = '<i class="fas fa-heart me-2"></i>Family Portal Coming Soon';
+            mainCTA.className = 'btn btn-outline-primary btn-lg px-5 py-3';
+            mainCTA.style.cursor = 'not-allowed';
             
-            // Show transition message
+            // Update page styling for family mode
+            document.querySelector('.hero-section h1').innerHTML = 'MediFly for Families: Caring Transport Solutions';
+            document.querySelector('.hero-section p').innerHTML = 'Compassionate air medical transport for your loved ones. We understand this is a difficult time and we\'re here to help bring them home safely.';
+            
+            // Show family mode message
             const transitionDiv = document.createElement('div');
             transitionDiv.className = 'alert alert-info mt-3';
-            transitionDiv.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Redirecting to Family/Individual portal...';
+            transitionDiv.innerHTML = '<i class="fas fa-heart me-2"></i>Family portal interface activated. Full consumer app deployment available separately.';
             toggleDescription.parentNode.appendChild(transitionDiv);
-            
-            // Redirect to consumer version after brief delay
-            setTimeout(() => {
-                window.location.href = 'http://localhost:5001/'; // Consumer app URL
-            }, 1500);
         }
     });
     
-    // Hospital toggle handler
+    // Hospital toggle handler - restore hospital mode
     hospitalRadio.addEventListener('change', function() {
         if (this.checked) {
             toggleDescription.textContent = 'Professional medical transport coordination';
             mainCTA.href = '{{ url_for("intake") }}';
             mainCTA.innerHTML = '<i class="fas fa-plane-departure me-2"></i>Book a Critical Medical Flight';
+            mainCTA.className = 'btn btn-primary btn-lg px-5 py-3';
+            mainCTA.style.cursor = 'pointer';
+            
+            // Restore hospital styling
+            document.querySelector('.hero-section h1').innerHTML = 'MediFly for Hospitals: Critical Transport Solutions';
+            document.querySelector('.hero-section p').innerHTML = 'Professional air medical transport coordination for hospital staff. Fast, secure, and compliant with healthcare standards.';
             
             // Remove any transition messages
             const existingAlerts = document.querySelectorAll('.alert');
             existingAlerts.forEach(alert => {
-                if (alert.textContent.includes('Redirecting')) {
+                if (alert.textContent.includes('Family portal') || alert.textContent.includes('Redirecting')) {
                     alert.remove();
                 }
             });

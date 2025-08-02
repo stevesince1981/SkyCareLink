@@ -168,37 +168,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainCTA = document.getElementById('main-cta');
     const toggleDescription = document.getElementById('toggle-description');
     
-    // Hospital toggle handler
+    // Hospital toggle handler - transform interface
     hospitalRadio.addEventListener('change', function() {
         if (this.checked) {
             // Update description and CTA
             toggleDescription.textContent = 'Professional medical transport coordination';
-            mainCTA.innerHTML = '<i class="fas fa-building me-2"></i>Access Hospital Portal';
+            mainCTA.innerHTML = '<i class="fas fa-building me-2"></i>Hospital Portal Available';
+            mainCTA.className = 'btn btn-outline-primary btn-lg px-5 py-3';
+            mainCTA.style.cursor = 'not-allowed';
             
-            // Show transition message
+            // Transform to hospital styling
+            document.querySelector('.hero-title').innerHTML = '<i class="fas fa-hospital me-3"></i>MediFly for Hospitals: Critical Transport Solutions';
+            document.querySelector('.hero-subtitle').innerHTML = 'Professional air medical transport coordination for hospital staff. Fast, secure, and compliant with healthcare standards.';
+            
+            // Show hospital mode message
             const transitionDiv = document.createElement('div');
             transitionDiv.className = 'alert alert-info mt-3';
-            transitionDiv.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Redirecting to Hospital/Provider portal...';
+            transitionDiv.innerHTML = '<i class="fas fa-hospital me-2"></i>Hospital portal interface activated. Full hospital app available at main deployment.';
             toggleDescription.parentNode.appendChild(transitionDiv);
-            
-            // Redirect to hospital version after brief delay
-            setTimeout(() => {
-                window.location.href = 'http://localhost:5000/'; // Hospital app URL
-            }, 1500);
         }
     });
     
-    // Family toggle handler
+    // Family toggle handler - restore family mode
     familyRadio.addEventListener('change', function() {
         if (this.checked) {
             toggleDescription.textContent = 'Personal medical transport for your loved one';
             mainCTA.href = '{{ url_for("intake") }}';
             mainCTA.innerHTML = '<i class="fas fa-plane-departure me-2"></i>Find a Medical Flight';
+            mainCTA.className = 'cta-button';
+            mainCTA.style.cursor = 'pointer';
+            
+            // Restore family styling
+            document.querySelector('.hero-title').innerHTML = '<i class="fas fa-heart text-primary me-3"></i>MediFly: Get Your Loved One Home Safely';
+            document.querySelector('.hero-subtitle').innerHTML = 'Compassionate medical transport services when your family needs it most. We\'re here to bring them home with care and dignity.';
             
             // Remove any transition messages
             const existingAlerts = document.querySelectorAll('.alert');
             existingAlerts.forEach(alert => {
-                if (alert.textContent.includes('Redirecting')) {
+                if (alert.textContent.includes('Hospital portal') || alert.textContent.includes('Redirecting')) {
                     alert.remove();
                 }
             });
