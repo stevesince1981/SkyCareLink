@@ -15,24 +15,26 @@
     <link rel="stylesheet" href="https://unpkg.com/botui/build/botui.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='consumer_css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='consumer_static/consumer_css/style.css') }}">
     
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Animated Header -->
-    <div class="animated-header">
-        <div class="helicopter-animation">
-            <i class="fas fa-helicopter helicopter-icon"></i>
+    <!-- Enhanced Aircraft Animation -->
+    <div class="aircraft-animation">
+        <div class="helicopter-stage">
+            <div class="helicopter">🚁</div>
         </div>
-        <div class="plane-animation">
-            <i class="fas fa-plane plane-icon"></i>
-            <i class="fas fa-globe globe-icon"></i>
+        <div class="plane-stage">
+            <div class="plane">✈️</div>
+        </div>
+        <div class="world-stage">
+            <div class="world">🌍</div>
         </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light" style="margin-top: 80px;">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('landing') }}">
                 <i class="fas fa-heart-pulse me-2"></i>

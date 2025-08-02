@@ -17,7 +17,7 @@
                     We're here to bring them home with care and dignity.
                 </p>
                 
-                <!-- Toggle Switch -->
+                <!-- Enhanced Toggle Switch -->
                 <div class="user-type-toggle mb-5">
                     <div class="toggle-container">
                         <span class="toggle-label">I am a:</span>
@@ -31,8 +31,13 @@
                             <input type="radio" id="hospital" name="userType" value="hospital">
                             <label for="hospital" class="toggle-option hospital-option">
                                 <i class="fas fa-hospital me-2"></i>
-                                Hospital/Insurance
+                                Hospital/Provider
                             </label>
+                        </div>
+                        <div class="toggle-description mt-2">
+                            <small class="text-muted" id="toggle-description">
+                                Personal medical transport for your loved one
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -156,25 +161,53 @@
 
 {% block scripts %}
 <script>
-// Handle toggle switch functionality
+// Handle enhanced toggle switch functionality
 document.addEventListener('DOMContentLoaded', function() {
     const hospitalRadio = document.getElementById('hospital');
     const familyRadio = document.getElementById('family');
     const mainCTA = document.getElementById('main-cta');
+    const toggleDescription = document.getElementById('toggle-description');
     
+    // Hospital toggle handler
     hospitalRadio.addEventListener('change', function() {
         if (this.checked) {
-            // Redirect to hospital version
-            window.location.href = '{{ url_for("hospital_redirect") }}';
+            // Update description and CTA
+            toggleDescription.textContent = 'Professional medical transport coordination';
+            mainCTA.innerHTML = '<i class="fas fa-building me-2"></i>Access Hospital Portal';
+            
+            // Show transition message
+            const transitionDiv = document.createElement('div');
+            transitionDiv.className = 'alert alert-info mt-3';
+            transitionDiv.innerHTML = '<i class="fas fa-arrow-right me-2"></i>Redirecting to Hospital/Provider portal...';
+            toggleDescription.parentNode.appendChild(transitionDiv);
+            
+            // Redirect to hospital version after brief delay
+            setTimeout(() => {
+                window.location.href = 'http://localhost:5000/'; // Hospital app URL
+            }, 1500);
         }
     });
     
+    // Family toggle handler
     familyRadio.addEventListener('change', function() {
         if (this.checked) {
+            toggleDescription.textContent = 'Personal medical transport for your loved one';
             mainCTA.href = '{{ url_for("intake") }}';
             mainCTA.innerHTML = '<i class="fas fa-plane-departure me-2"></i>Find a Medical Flight';
+            
+            // Remove any transition messages
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => {
+                if (alert.textContent.includes('Redirecting')) {
+                    alert.remove();
+                }
+            });
         }
     });
+    
+    // Initialize with family mode
+    familyRadio.checked = true;
+    toggleDescription.textContent = 'Personal medical transport for your loved one';
 });
 </script>
 {% endblock %}
