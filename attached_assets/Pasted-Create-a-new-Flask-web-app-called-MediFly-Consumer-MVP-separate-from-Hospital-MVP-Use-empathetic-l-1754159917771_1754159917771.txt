@@ -1,0 +1,275 @@
+Create a new Flask web app called MediFly Consumer MVP, separate from Hospital MVP. Use empathetic language, friendly interface, pastel styling. Mirror Hospital functionality but tailored to families. Add toggle on landing for "Family/Individual" (default) vs "Hospital/Insurance" (redirect to Hospital URL if separate, or route switch). Add top animation: CSS keyframes helicopter flying left-to-right, transitioning to plane/jet circling globe icon. Use Bootstrap 5, HIPAA demo (no stored data).
+
+File Structure:
+
+
+
+
+
+app.py: Main Flask app with route logic, toggle handling.
+
+
+
+templates/: index.html (with toggle), intake.html, results.html, confirm.html, tracking.html, summary.html, base.html.
+
+
+
+static/css/style.css: Pastel theme, animation keyframes.
+
+
+
+static/js/main.js: Chatbot, form steps, tracking, toggle logic.
+
+
+
+static/js/botui.min.js: BotUI CDN (https://unpkg.com/botui/build/botui.min.js).
+
+
+
+static/img/helicopter.svg, plane.svg, globe.svg: Placeholder icons for animation.
+
+
+
+pyproject.toml: flask, python-dotenv, replit = "3.2".
+
+Views and Routes:
+
+
+
+
+
+/ – Landing Page
+
+
+
+
+
+Hero: “MediFly: Get Your Loved One Home Safely”.
+
+
+
+Toggle: Switch "Family/Individual" (pastel style) vs "Hospital/Insurance" (redirect to medtransportlink-prototype.replit.app or /hospital).
+
+
+
+Button: “Find a Medical Flight” → /intake (family mode).
+
+
+
+Navbar: Soft blue (#e6f3ff), MediFly logo.
+
+
+
+Footer: “We prioritize your family’s peace of mind.”
+
+
+
+Animation: Top header - Helicopter (@keyframes fly-left-right 5s), fade to plane/jet circling globe (loop 10s).
+
+
+
+Chatbot: Bottom-right, “Need help with medical options for your loved one?”.
+
+
+
+/intake – Guided Form
+
+
+
+
+
+Questions (gentle):
+
+
+
+
+
+“Where is your family member now?” (text, required).
+
+
+
+“Where do they need to go?” (text, required).
+
+
+
+“How serious is their condition?” (dropdown 1=sprain to 5=ventilator, tooltips, ARIA).
+
+
+
+“What medical support do they need?” (checkboxes: Ventilator, Oxygen, Escort only, etc., ARIA).
+
+
+
+“When are they ready to travel?” (date, validate future).
+
+
+
+JS validation: Required fields, alerts.
+
+
+
+Submit → /results.
+
+
+
+Alert: “Info used only for matching. No storage.”.
+
+
+
+/results – Provider Options
+
+
+
+
+
+3 mock cards: AirMed $128,500 ETA 3h ICU, REVA $112,000 ETA 5h Doctor, MercyWings $102,000 ETA 6h Basic.
+
+
+
+Friendly: “Ready to help your family”.
+
+
+
+Responsive grid, icons.
+
+
+
+Button → /confirm?provider_id=X.
+
+
+
+/confirm – Confirmation
+
+
+
+
+
+Provider info + inputs summary.
+
+
+
+Add-ons: Family Seat ($5k), VIP Cabin ($10k) checkboxes.
+
+
+
+Consent: “I agree to securely send basic info.” (required).
+
+
+
+Button → /tracking.
+
+
+
+/tracking – Tracker
+
+
+
+
+
+3-step animated progress bar (Dispatched → En Route → Arrived), JS timer 10s auto-advance.
+
+
+
+Message: “We’re with you every step.”.
+
+
+
+Button → /summary.
+
+
+
+/summary – Completion
+
+
+
+
+
+“Your loved one’s flight is set!” (reference summary page layout: green check, booking summary table, cost breakdown).
+
+
+
+Feedback textarea.
+
+
+
+Mock “Download PDF Receipt” button.
+
+
+
+/admin – Debug (password: admin:demo123)
+
+
+
+
+
+Session table, masked sensitive.
+
+Styling:
+
+
+
+
+
+Pastel #e6f3ff blue, #ffe6f3 pink for backgrounds/cards.
+
+
+
+Rounded buttons (8px), shadows, 'Segoe UI' font.
+
+
+
+Animation: @keyframes fly {0% left:0 helicopter; 50% left:100% fade to plane; 100% circle globe}.
+
+
+
+Navbar: Soft blue, white text.
+
+
+
+Chatbot: Rounded, warm replies.
+
+Chatbot (BotUI):
+
+
+
+
+
+All pages.
+
+
+
+Greeting: “Need help with options for your loved one?”.
+
+
+
+Suggest add-ons, explain severity, FAQs; read session for context (e.g., “Severity 1? Oxygen may suffice.”).
+
+Security & Deployment:
+
+
+
+
+
+Flask session only, clear at /summary.
+
+
+
+HTTPS note: “Secure transient data handling.”.
+
+
+
+Deploy: medtransportlink-consumer.replit.app.
+
+Testing:
+
+
+
+
+
+Brandon (11), Severity 4, Ventilator, Orlando → LA.
+
+
+
+VIP NYC → Turkey, Severity 1, Oxygen + VIP Cabin. Verify: Toggle switch, animation smooth, responsiveness, session clearing, ARIA/accessibility.
+
+Deliver: Full code, deployed URL, test summary.

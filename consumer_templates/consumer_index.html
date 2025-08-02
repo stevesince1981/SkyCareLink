@@ -1,0 +1,180 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}MediFly Consumer - Get Your Loved One Home Safely{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="hero-section text-center py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="hero-title mb-4">
+                    <i class="fas fa-heart text-primary me-3"></i>
+                    MediFly: Get Your Loved One Home Safely
+                </h1>
+                <p class="hero-subtitle mb-4">
+                    Compassionate medical transport services when your family needs it most. 
+                    We're here to bring them home with care and dignity.
+                </p>
+                
+                <!-- Toggle Switch -->
+                <div class="user-type-toggle mb-5">
+                    <div class="toggle-container">
+                        <span class="toggle-label">I am a:</span>
+                        <div class="toggle-switch">
+                            <input type="radio" id="family" name="userType" value="family" checked>
+                            <label for="family" class="toggle-option family-option">
+                                <i class="fas fa-users me-2"></i>
+                                Family/Individual
+                            </label>
+                            
+                            <input type="radio" id="hospital" name="userType" value="hospital">
+                            <label for="hospital" class="toggle-option hospital-option">
+                                <i class="fas fa-hospital me-2"></i>
+                                Hospital/Insurance
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main CTA Button -->
+                <div class="cta-section">
+                    <a href="{{ url_for('intake') }}" class="btn btn-primary btn-lg cta-button" id="main-cta">
+                        <i class="fas fa-plane-departure me-2"></i>
+                        Find a Medical Flight
+                    </a>
+                    <p class="cta-subtitle mt-3 text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Secure • Private • No data stored permanently
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section py-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h5 class="feature-title">Medical Expertise</h5>
+                    <p class="feature-description">
+                        Certified medical teams with ICU experience accompany every flight
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h5 class="feature-title">24/7 Availability</h5>
+                    <p class="feature-description">
+                        Emergency medical transport available around the clock when needed
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h5 class="feature-title">Family Support</h5>
+                    <p class="feature-description">
+                        Compassionate care with family seating options and regular updates
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="how-it-works py-5">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Simple steps to get your loved one the care they need</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h6 class="step-title">Tell Us About Your Situation</h6>
+                    <p class="step-description">Share where your loved one is and their medical needs</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h6 class="step-title">Compare Options</h6>
+                    <p class="step-description">See medical transport providers suited to your needs</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h6 class="step-title">Book Your Flight</h6>
+                    <p class="step-description">Confirm details and any family accommodations</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h6 class="step-title">Track Progress</h6>
+                    <p class="step-description">Follow your loved one's journey in real-time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonial Section -->
+    <div class="testimonial-section py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left testimonial-quote"></i>
+                        <p class="testimonial-text">
+                            "When my father needed emergency transport from Florida to New York, MediFly made 
+                            the impossible possible. The medical team was incredible, and I could fly with him. 
+                            It gave our whole family peace of mind during such a difficult time."
+                        </p>
+                        <div class="testimonial-author">
+                            <strong>- Sarah M., Daughter</strong>
+                            <span class="text-muted">Critical Care Transport</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Handle toggle switch functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const hospitalRadio = document.getElementById('hospital');
+    const familyRadio = document.getElementById('family');
+    const mainCTA = document.getElementById('main-cta');
+    
+    hospitalRadio.addEventListener('change', function() {
+        if (this.checked) {
+            // Redirect to hospital version
+            window.location.href = '{{ url_for("hospital_redirect") }}';
+        }
+    });
+    
+    familyRadio.addEventListener('change', function() {
+        if (this.checked) {
+            mainCTA.href = '{{ url_for("intake") }}';
+            mainCTA.innerHTML = '<i class="fas fa-plane-departure me-2"></i>Find a Medical Flight';
+        }
+    });
+});
+</script>
+{% endblock %}

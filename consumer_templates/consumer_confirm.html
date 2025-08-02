@@ -1,0 +1,343 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Confirm Your Booking - MediFly Consumer{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <div class="text-center mb-4">
+                    <h2 class="form-title">
+                        <i class="fas fa-hand-holding-heart text-primary me-2"></i>
+                        Confirm Your Loved One's Transport
+                    </h2>
+                    <p class="form-subtitle text-muted">
+                        Please review the details and add any family accommodations needed for this journey.
+                    </p>
+                </div>
+
+                <!-- Selected Provider Summary -->
+                <div class="selected-provider-summary mb-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                Selected Provider: {{ provider.name }}
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <strong>Base Cost:</strong> 
+                                        <span class="h5 text-success">${{ "{:,}".format(provider.price) }}</span>
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Estimated Time:</strong> 
+                                        <span class="badge bg-info">{{ provider.eta }}</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <strong>Specialization:</strong> {{ provider.description }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Details:</strong> {{ provider.details }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip Details Summary -->
+                <div class="trip-summary mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-route text-primary me-2"></i>
+                        Trip Details
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>From:</strong> {{ session.pickup_location }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>To:</strong> {{ session.destination }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Travel Date:</strong> {{ session.travel_date }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <strong>Condition Level:</strong> Severity {{ session.severity }}
+                            </div>
+                        </div>
+                        {% if session.equipment %}
+                        <div class="col-12">
+                            <div class="detail-item">
+                                <strong>Medical Equipment:</strong> 
+                                {% for equipment in session.equipment %}
+                                    <span class="badge bg-secondary me-1">{{ equipment.title() }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Family Add-ons Form -->
+                <form method="POST" action="{{ url_for('tracking') }}" id="confirm-form" novalidate>
+                    <h5 class="mb-3">
+                        <i class="fas fa-users text-primary me-2"></i>
+                        Family Accommodations
+                    </h5>
+                    
+                    <div class="addons-section mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="addon-card">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               value="family_seat" 
+                                               id="family_seat" 
+                                               name="family_seat">
+                                        <label class="form-check-label" for="family_seat">
+                                            <div class="addon-details">
+                                                <h6 class="addon-title">
+                                                    <i class="fas fa-user-friends me-2"></i>
+                                                    Family Seat
+                                                </h6>
+                                                <p class="addon-description">
+                                                    Allow one family member to accompany your loved one during transport
+                                                </p>
+                                                <div class="addon-price">+ $5,000</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="addon-card">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               value="vip_cabin" 
+                                               id="vip_cabin" 
+                                               name="vip_cabin">
+                                        <label class="form-check-label" for="vip_cabin">
+                                            <div class="addon-details">
+                                                <h6 class="addon-title">
+                                                    <i class="fas fa-crown me-2"></i>
+                                                    VIP Cabin
+                                                </h6>
+                                                <p class="addon-description">
+                                                    Enhanced comfort and privacy with premium amenities
+                                                </p>
+                                                <div class="addon-price">+ $10,000</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost Calculator -->
+                    <div class="cost-calculator mb-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-calculator text-primary me-2"></i>
+                                    Total Cost Breakdown
+                                </h5>
+                                <div class="cost-breakdown">
+                                    <div class="cost-item d-flex justify-content-between">
+                                        <span>Base Transport Cost:</span>
+                                        <span class="base-cost">${{ "{:,}".format(provider.price) }}</span>
+                                    </div>
+                                    <div class="cost-item d-flex justify-content-between family-seat-cost" style="display: none !important;">
+                                        <span>Family Seat:</span>
+                                        <span>+ $5,000</span>
+                                    </div>
+                                    <div class="cost-item d-flex justify-content-between vip-cabin-cost" style="display: none !important;">
+                                        <span>VIP Cabin:</span>
+                                        <span>+ $10,000</span>
+                                    </div>
+                                    <hr>
+                                    <div class="cost-item d-flex justify-content-between total-cost">
+                                        <strong>Total Cost:</strong>
+                                        <strong class="h5 text-success total-amount">${{ "{:,}".format(provider.price) }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consent Section -->
+                    <div class="consent-section mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="consent" 
+                                   name="consent" 
+                                   required>
+                            <label class="form-check-label" for="consent">
+                                <strong>I agree to securely send basic information</strong> to the selected medical transport provider 
+                                for the purpose of arranging transport for my loved one. I understand this information will be 
+                                handled according to HIPAA guidelines and used only for transport coordination.
+                            </label>
+                            <div class="invalid-feedback">
+                                Please agree to the consent terms to proceed with booking.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions text-center">
+                        <button type="submit" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-heart me-2"></i>
+                            Confirm Booking
+                        </button>
+                        <a href="{{ url_for('results') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Choose Different Provider
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('confirm-form');
+    const familySeatCheckbox = document.getElementById('family_seat');
+    const vipCabinCheckbox = document.getElementById('vip_cabin');
+    const basePrice = {{ provider.price }};
+    
+    // Cost calculator functionality
+    function updateTotalCost() {
+        let total = basePrice;
+        
+        // Show/hide family seat cost
+        const familySeatCost = document.querySelector('.family-seat-cost');
+        if (familySeatCheckbox.checked) {
+            total += 5000;
+            familySeatCost.style.display = 'flex';
+        } else {
+            familySeatCost.style.display = 'none';
+        }
+        
+        // Show/hide VIP cabin cost
+        const vipCabinCost = document.querySelector('.vip-cabin-cost');
+        if (vipCabinCheckbox.checked) {
+            total += 10000;
+            vipCabinCost.style.display = 'flex';
+        } else {
+            vipCabinCost.style.display = 'none';
+        }
+        
+        // Update total
+        document.querySelector('.total-amount').textContent = '$' + total.toLocaleString();
+    }
+    
+    // Add event listeners
+    familySeatCheckbox.addEventListener('change', updateTotalCost);
+    vipCabinCheckbox.addEventListener('change', updateTotalCost);
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+    
+    // Enhanced addon card interactions
+    const addonCards = document.querySelectorAll('.addon-card');
+    addonCards.forEach(card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        
+        card.addEventListener('click', function(e) {
+            if (e.target.type !== 'checkbox') {
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+        
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.addon-card {
+    border: 2px solid #e9ecef;
+    border-radius: var(--card-border-radius);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--warm-white);
+    height: 100%;
+}
+
+.addon-card:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 15px rgba(135,206,235,0.2);
+}
+
+.addon-card.selected {
+    border-color: var(--primary-blue);
+    background: linear-gradient(135deg, var(--pastel-blue), #f0f8ff);
+    box-shadow: 0 4px 15px rgba(135,206,235,0.3);
+}
+
+.addon-title {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.addon-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.addon-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-blue-hover);
+}
+
+.detail-item {
+    padding: 0.5rem;
+    background: var(--soft-gray);
+    border-radius: var(--border-radius);
+    margin-bottom: 0.5rem;
+}
+
+.cost-item {
+    padding: 0.25rem 0;
+}
+
+.cost-breakdown hr {
+    margin: 0.5rem 0;
+    border-color: var(--primary-blue);
+}
+</style>
+{% endblock %}

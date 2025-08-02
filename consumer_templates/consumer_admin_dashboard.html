@@ -1,0 +1,259 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Admin Dashboard - MediFly Consumer{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="admin-header mb-4">
+                <div class="card border-warning">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h3 class="mb-1">
+                                    <i class="fas fa-cogs text-warning me-2"></i>
+                                    Consumer Admin Dashboard
+                                </h3>
+                                <p class="text-muted mb-0">
+                                    Debug panel for MediFly Consumer MVP - Session data monitoring
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                                    <i class="fas fa-user-shield me-1"></i>
+                                    Admin Access
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-database text-primary me-2"></i>
+                        Current Session Data
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if session_data %}
+                    <div class="table-responsive">
+                        <table class="table admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Session Key</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in session_data.items() %}
+                                <tr>
+                                    <td><code>{{ key }}</code></td>
+                                    <td>
+                                        {% if 'medical' in key.lower() or 'patient' in key.lower() or 'pickup' in key.lower() %}
+                                            <span class="masked-data">****** (Sensitive data masked for HIPAA compliance)</span>
+                                        {% elif value is mapping %}
+                                            <pre class="mb-0">{{ value|tojson(indent=2) }}</pre>
+                                        {% elif value is iterable and value is not string %}
+                                            <ul class="mb-0">
+                                            {% for item in value %}
+                                                <li>{{ item }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            {{ value }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Refresh Button -->
+                    <div class="text-center mt-3">
+                        <button class="btn btn-primary" onclick="location.reload()" aria-label="Refresh session data">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            Refresh Data
+                        </button>
+                        <a href="{{ url_for('landing') }}" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-home me-2"></i>
+                            Back to App
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <h5>No Session Data</h5>
+                        <p>No active session data found. Start a booking to see session information here.</p>
+                        <a href="{{ url_for('landing') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            Start New Booking
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Statistics -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h6>Active Sessions</h6>
+                    <div class="stat-number">{{ 1 if session_data else 0 }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h6>Privacy Mode</h6>
+                    <div class="stat-status">HIPAA Compliant</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h6>Data Storage</h6>
+                    <div class="stat-status">Session Only</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Notice -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h6 class="alert-heading">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Privacy & Security Notice
+                </h6>
+                <p class="mb-0">
+                    This admin panel shows session-based data only. All sensitive information is masked according to HIPAA guidelines. 
+                    No data is permanently stored - all information is cleared when the session ends or the user completes their booking.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh every 30 seconds if session data exists
+    {% if session_data %}
+    setInterval(function() {
+        location.reload();
+    }, 30000);
+    {% endif %}
+    
+    // Add some interactivity to the table
+    const tableRows = document.querySelectorAll('.admin-table tbody tr');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(0, 123, 255, 0.05)';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+</script>
+
+<style>
+.admin-table {
+    background: white;
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table thead {
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
+    color: white;
+}
+
+.admin-table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.masked-data {
+    font-style: italic;
+    color: #6c757d;
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.stat-card {
+    background: var(--warm-white);
+    border-radius: var(--card-border-radius);
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--pastel-blue), var(--primary-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-content h6 {
+    margin-bottom: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-status {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-blue-hover);
+}
+</style>
+{% endblock %}

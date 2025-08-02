@@ -29,6 +29,38 @@ MediFly is a Flask-based web application that simulates a hospital interface for
 - Enhanced JavaScript validation and real-time form interactions
 - Improved CSS animations and visual feedback systems
 
+## MediFly Consumer MVP (August 2025)
+
+### Overview
+Created a separate Flask web application called "MediFly Consumer MVP" tailored specifically for families and individuals seeking medical transport for their loved ones. This family-focused version uses empathetic language, pastel styling, and provides a more personal, compassionate interface compared to the clinical Hospital MVP.
+
+### Key Features
+- **Family-Focused Design**: Empathetic language throughout ("Get Your Loved One Home Safely", "We're With You Every Step")
+- **Toggle Interface**: Landing page toggle between "Family/Individual" (default) vs "Hospital/Insurance" modes
+- **Animated Header**: CSS keyframes helicopter flying left-to-right, transitioning to plane circling globe animation
+- **Pastel Theme**: Soft blues (#e6f3ff), pinks (#ffe6f3), and warm whites with rounded corners and gentle shadows
+- **Enhanced UX**: Larger touch targets, family-friendly messaging, and simplified navigation flow
+
+### Consumer App Architecture
+- **File Structure**: Separate templates (consumer_templates/), static files (consumer_static/), and consumer_app.py
+- **Pastel Styling**: Custom CSS with variables for consistent pastel color scheme and smooth animations
+- **Family Chatbot**: Context-aware chatbot providing family-specific guidance and support
+- **HIPAA Compliance**: Session-based data handling with automatic masking of sensitive information
+- **Accessibility**: ARIA labels, semantic HTML, and screen reader compatibility throughout
+
+### Consumer-Specific Features
+- **Family Accommodations**: Family Seat option (+$5,000) and VIP Cabin upgrade (+$10,000)
+- **Compassionate Messaging**: "Ready to help your family", "We prioritize your family's peace of mind"
+- **Enhanced Tracking**: Family update timeline with regular communication during transport
+- **Support Integration**: 24/7 family support line with dedicated reference numbers
+- **Privacy Assurance**: Clear messaging about temporary data use and automatic session clearing
+
+### Deployment Configuration
+- **Separate App**: consumer_app.py runs independently from hospital app
+- **Port Configuration**: Consumer app runs on port 5001, Hospital app remains on port 5000
+- **Environment Toggling**: Can be deployed separately or with toggle functionality
+- **URL Structure**: Designed for medtransportlink-consumer.replit.app deployment
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

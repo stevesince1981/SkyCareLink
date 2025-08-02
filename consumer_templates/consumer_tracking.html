@@ -1,0 +1,371 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Tracking Your Loved One's Journey - MediFly Consumer{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="tracking-container">
+                <div class="text-center mb-5">
+                    <h2 class="tracking-title">
+                        <i class="fas fa-heart-pulse text-primary me-2"></i>
+                        We're With You Every Step
+                    </h2>
+                    <p class="tracking-subtitle">
+                        Your loved one's medical transport is in progress. We'll keep you updated throughout their journey.
+                    </p>
+                </div>
+
+                <!-- Provider Info -->
+                <div class="provider-info-card mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="mb-1">
+                                        <i class="fas fa-plane text-primary me-2"></i>
+                                        {{ provider.name }}
+                                    </h5>
+                                    <p class="text-muted mb-0">{{ provider.description }} • ETA: {{ provider.eta }}</p>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <span class="badge bg-success fs-6 px-3 py-2">In Progress</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section mb-5">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-route text-primary me-2"></i>
+                                Transport Progress
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Enhanced Progress Bar -->
+                            <div class="progress mb-4" style="height: 30px;" role="progressbar" aria-label="Transport progress">
+                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                                     id="progress-bar"
+                                     style="width: {{ progress_percentage }}%; transition: width 0.8s ease;"
+                                     aria-valuenow="{{ progress_percentage }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    <strong>{{ progress_percentage|round|int }}%</strong>
+                                </div>
+                            </div>
+
+                            <!-- Progress Steps -->
+                            <div class="progress-steps">
+                                <div class="row text-center">
+                                    {% for i, stage in enumerate(stages) %}
+                                    <div class="col-3">
+                                        <div class="step-indicator {% if i <= current_stage %}completed{% endif %} {% if i == current_stage %}active{% endif %}">
+                                            <div class="step-number">
+                                                {% if i < current_stage %}
+                                                    <i class="fas fa-check"></i>
+                                                {% elif i == current_stage %}
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                {% else %}
+                                                    {{ i + 1 }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="step-label">{{ stage }}</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Enhanced Status Message -->
+                            <div class="alert alert-info mt-4 text-center" role="alert" id="status-message">
+                                <div class="tracking-status-text">
+                                    <strong>Current Status:</strong> 
+                                    <span id="current-status">{{ stages[current_stage] }}</span>
+                                </div>
+                                {% if current_stage < stages|length - 1 %}
+                                    <div class="eta-remaining mt-2">
+                                        Updates automatically every 10 seconds
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Enhanced Estimated Time -->
+                            {% if current_stage < stages|length - 1 %}
+                            <div class="text-center">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <strong>ETA: {{ provider.eta }} remaining</strong>
+                                    {% if current_stage == 0 %}
+                                        <br><small>Medical team is being dispatched to your loved one</small>
+                                    {% elif current_stage == 1 %}
+                                        <br><small>Transport team is traveling to pickup location</small>
+                                    {% elif current_stage == 2 %}
+                                        <br><small>Medical team has arrived and is preparing your loved one for transport</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Family Updates Section -->
+                <div class="family-updates mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-comments text-primary me-2"></i>
+                                Family Updates
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="update-timeline" id="update-timeline">
+                                <div class="update-item">
+                                    <div class="update-time">Just now</div>
+                                    <div class="update-message">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Transport booking confirmed. Medical team has been notified.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact Info -->
+                <div class="emergency-contact mb-4">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-phone-alt text-warning me-2"></i>
+                                Need to Reach Us?
+                            </h6>
+                            <p class="card-text mb-2">
+                                Our family support team is available 24/7 during your loved one's transport.
+                            </p>
+                            <div class="contact-info">
+                                <strong>Emergency Line:</strong> 1-800-MEDIFLY<br>
+                                <strong>Reference Number:</strong> <code>MF-{{ session.booking_time[-6:] if session.booking_time else '000001' }}</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="text-center">
+                    {% if current_stage >= stages|length - 1 %}
+                        <a href="{{ url_for('summary') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-clipboard-check me-2"></i>
+                            View Summary
+                        </a>
+                    {% else %}
+                        <button class="btn btn-outline-secondary" onclick="location.reload()">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            Refresh Status
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStage = {{ current_stage }};
+    const maxStages = {{ stages|length }};
+    const stages = {{ stages|tojson }};
+    
+    // Auto-update tracking every 10 seconds
+    function updateTracking() {
+        if (currentStage < maxStages - 1) {
+            fetch('/tracking_update')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.current_stage > currentStage) {
+                        currentStage = data.current_stage;
+                        updateUI(data);
+                        addFamilyUpdate(data.status);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating tracking:', error);
+                });
+        }
+    }
+    
+    function updateUI(data) {
+        // Update progress bar
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.style.width = data.progress_percentage + '%';
+        progressBar.setAttribute('aria-valuenow', data.progress_percentage);
+        progressBar.innerHTML = '<strong>' + Math.round(data.progress_percentage) + '%</strong>';
+        
+        // Update current status
+        document.getElementById('current-status').textContent = data.status;
+        
+        // Update step indicators
+        updateStepIndicators(data.current_stage);
+        
+        // If complete, show summary button
+        if (data.current_stage >= maxStages - 1) {
+            setTimeout(() => {
+                window.location.href = '{{ url_for("summary") }}';
+            }, 3000);
+        }
+    }
+    
+    function updateStepIndicators(currentStep) {
+        const stepIndicators = document.querySelectorAll('.step-indicator');
+        stepIndicators.forEach((indicator, index) => {
+            const stepNumber = indicator.querySelector('.step-number');
+            
+            indicator.classList.remove('active', 'completed');
+            
+            if (index < currentStep) {
+                indicator.classList.add('completed');
+                stepNumber.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (index === currentStep) {
+                indicator.classList.add('active');
+                stepNumber.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            } else {
+                stepNumber.textContent = index + 1;
+            }
+        });
+    }
+    
+    function addFamilyUpdate(status) {
+        const timeline = document.getElementById('update-timeline');
+        const updateItem = document.createElement('div');
+        updateItem.className = 'update-item';
+        
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        updateItem.innerHTML = `
+            <div class="update-time">${timeString}</div>
+            <div class="update-message">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                ${status}
+            </div>
+        `;
+        
+        timeline.insertBefore(updateItem, timeline.firstChild);
+    }
+    
+    // Start auto-update
+    if (currentStage < maxStages - 1) {
+        setInterval(updateTracking, 10000); // 10 seconds
+    }
+});
+</script>
+
+<style>
+.progress-steps {
+    margin-top: 2rem;
+}
+
+.step-indicator {
+    position: relative;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    background: #e9ecef;
+    color: #6c757d;
+    font-weight: 600;
+    border: 3px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.step-indicator.completed .step-number {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.step-indicator.active .step-number {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+    animation: pulse 2s infinite;
+}
+
+.step-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.step-indicator.active .step-label {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.update-timeline {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.update-item {
+    border-left: 3px solid var(--primary-blue);
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.update-item:before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--primary-blue);
+}
+
+.update-time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.update-message {
+    margin-top: 0.25rem;
+    color: var(--text-primary);
+}
+
+.contact-info {
+    background: var(--pastel-yellow);
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(135,206,235, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(135,206,235, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(135,206,235, 0);
+    }
+}
+</style>
+{% endblock %}

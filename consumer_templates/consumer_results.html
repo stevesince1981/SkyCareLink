@@ -1,0 +1,188 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Transport Options for Your Loved One - MediFly Consumer{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h2 class="section-title">
+                    <i class="fas fa-heart text-primary me-2"></i>
+                    Ready to Help Your Family
+                </h2>
+                <p class="section-subtitle">
+                    We've found medical transport options that match your loved one's needs. 
+                    Each provider is ready to provide compassionate care during this important journey.
+                </p>
+            </div>
+
+            <!-- Provider Options -->
+            <div class="row g-4 mb-5">
+                {% for provider_id, provider in providers.items() %}
+                <div class="col-lg-4">
+                    <div class="provider-card text-center h-100">
+                        <!-- Provider Header -->
+                        <div class="provider-header mb-3">
+                            <div class="provider-rating mb-2">
+                                {% for i in range(5) %}
+                                    <i class="fas fa-star"></i>
+                                {% endfor %}
+                            </div>
+                            <h5 class="provider-name">{{ provider.name }}</h5>
+                            <p class="provider-tagline text-muted">{{ provider.description }}</p>
+                        </div>
+
+                        <!-- Large Price Display -->
+                        <div class="provider-price mb-3">
+                            ${{ "{:,}".format(provider.price) }}
+                        </div>
+                        
+                        <!-- ETA Display -->
+                        <div class="provider-eta mb-3">
+                            ETA: {{ provider.eta }}
+                        </div>
+                        
+                        <!-- Provider Capabilities -->
+                        <div class="provider-capabilities mb-4">
+                            {% for capability in provider.capabilities %}
+                                <span class="badge me-1 mb-1">{{ capability }}</span>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="provider-details mb-4">
+                            <p class="card-text">{{ provider.details }}</p>
+                        </div>
+                        
+                        <!-- Family-Focused Features -->
+                        <div class="family-features mb-4">
+                            {% if provider_id == 'airmed' %}
+                                <div class="feature-item">
+                                    <i class="fas fa-user-md text-primary me-2"></i>
+                                    <span>ICU-certified medical team</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-phone text-primary me-2"></i>
+                                    <span>Family updates every 30 minutes</span>
+                                </div>
+                            {% elif provider_id == 'reva' %}
+                                <div class="feature-item">
+                                    <i class="fas fa-stethoscope text-primary me-2"></i>
+                                    <span>Licensed physician onboard</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-clock text-primary me-2"></i>
+                                    <span>Rapid response team</span>
+                                </div>
+                            {% else %}
+                                <div class="feature-item">
+                                    <i class="fas fa-heart text-primary me-2"></i>
+                                    <span>Family-friendly approach</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-dollar-sign text-primary me-2"></i>
+                                    <span>Most affordable option</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Select Provider Button -->
+                        <div class="mt-auto">
+                            <a href="{{ url_for('confirm', provider_id=provider_id) }}" 
+                               class="btn btn-primary w-100 py-3"
+                               aria-label="Choose {{ provider.name }} for your loved one's transport">
+                                <i class="fas fa-hand-holding-heart me-2"></i>
+                                Choose This Provider
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- What's Included Section -->
+            <div class="whats-included-section">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-4">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            What's Included in Every Flight
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="included-item">
+                                    <i class="fas fa-user-nurse text-primary me-2"></i>
+                                    <span>Certified medical team</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="included-item">
+                                    <i class="fas fa-heartbeat text-primary me-2"></i>
+                                    <span>Continuous monitoring</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="included-item">
+                                    <i class="fas fa-phone-alt text-primary me-2"></i>
+                                    <span>Family communication</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="included-item">
+                                    <i class="fas fa-clipboard-list text-primary me-2"></i>
+                                    <span>Medical records transfer</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="included-item">
+                                    <i class="fas fa-ambulance text-primary me-2"></i>
+                                    <span>Ground transport coordination</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="included-item">
+                                    <i class="fas fa-shield-alt text-primary me-2"></i>
+                                    <span>Full insurance coverage</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mt-4">
+                <a href="{{ url_for('intake') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Change Requirements
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover animations to provider cards
+    const providerCards = document.querySelectorAll('.provider-card');
+    providerCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Initialize tooltips for any that might be present
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

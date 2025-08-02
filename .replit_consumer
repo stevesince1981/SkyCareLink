@@ -1,0 +1,5 @@
+[run]
+run = "gunicorn --bind 0.0.0.0:5001 --reuse-port --reload consumer_main:app"
+
+[deployment]
+run = ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --reuse-port consumer_main:app"]

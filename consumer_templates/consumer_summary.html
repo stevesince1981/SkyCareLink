@@ -1,0 +1,386 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Transport Complete - MediFly Consumer{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="summary-container">
+                <!-- Success Header -->
+                <div class="text-center mb-5">
+                    <div class="success-icon mb-3">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h1 class="success-title">Your Loved One's Flight is Set!</h1>
+                    <p class="success-subtitle">
+                        We've successfully arranged medical transport for your family member. 
+                        They're in excellent hands with our professional medical team.
+                    </p>
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="booking-summary mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clipboard-list text-primary me-2"></i>
+                                Booking Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <strong>Provider:</strong>
+                                        <div class="summary-value">{{ summary.provider.name }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <strong>Service Type:</strong>
+                                        <div class="summary-value">{{ summary.provider.description }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <strong>From:</strong>
+                                        <div class="summary-value">{{ summary.pickup_location }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <strong>To:</strong>
+                                        <div class="summary-value">{{ summary.destination }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <strong>Travel Date:</strong>
+                                        <div class="summary-value">{{ summary.travel_date }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="summary-item">
+                                        <strong>Booking Time:</strong>
+                                        <div class="summary-value">
+                                            {% if summary.booking_time %}
+                                                {{ summary.booking_time[:19].replace('T', ' at ') }}
+                                            {% else %}
+                                                Just completed
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cost Breakdown -->
+                <div class="cost-breakdown mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-dollar-sign text-primary me-2"></i>
+                                Cost Breakdown
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="cost-table">
+                                <div class="cost-row d-flex justify-content-between">
+                                    <span>Base Transport Cost:</span>
+                                    <span>${{ "{:,}".format(summary.provider.price) }}</span>
+                                </div>
+                                {% if summary.family_seat %}
+                                <div class="cost-row d-flex justify-content-between">
+                                    <span>Family Seat:</span>
+                                    <span>+ $5,000</span>
+                                </div>
+                                {% endif %}
+                                {% if summary.vip_cabin %}
+                                <div class="cost-row d-flex justify-content-between">
+                                    <span>VIP Cabin:</span>
+                                    <span>+ $10,000</span>
+                                </div>
+                                {% endif %}
+                                <hr class="my-3">
+                                <div class="cost-row total-row d-flex justify-content-between">
+                                    <strong>Total Cost:</strong>
+                                    <strong class="h4 text-success">${{ "{:,}".format(summary.total_cost) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="next-steps mb-4">
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list-check me-2"></i>
+                                What Happens Next
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="next-step-item">
+                                <div class="step-icon">
+                                    <i class="fas fa-phone text-primary"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h6>Confirmation Call</h6>
+                                    <p>Our team will contact you within 2 hours to confirm details and answer any questions.</p>
+                                </div>
+                            </div>
+                            <div class="next-step-item">
+                                <div class="step-icon">
+                                    <i class="fas fa-clipboard-check text-primary"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h6>Medical Records</h6>
+                                    <p>We'll coordinate with the current facility to secure all necessary medical documentation.</p>
+                                </div>
+                            </div>
+                            <div class="next-step-item">
+                                <div class="step-icon">
+                                    <i class="fas fa-plane-departure text-primary"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h6>Transport Day</h6>
+                                    <p>Our medical team will arrive at the scheduled time to safely transport your loved one.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reference Information -->
+                <div class="reference-info mb-4">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">
+                                <i class="fas fa-id-card text-primary me-2"></i>
+                                Your Reference Number
+                            </h6>
+                            <div class="reference-number">
+                                MF-{{ summary.booking_time[-6:] if summary.booking_time else '000001' }}
+                            </div>
+                            <p class="text-muted small mb-0 mt-2">
+                                Save this number for future reference and customer support
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Section -->
+                <div class="feedback-section mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-comment-dots text-primary me-2"></i>
+                                Help Us Improve
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('summary_complete') }}" id="feedback-form">
+                                <div class="mb-3">
+                                    <label for="feedback" class="form-label">
+                                        How was your experience with MediFly? (Optional)
+                                    </label>
+                                    <textarea class="form-control" 
+                                              id="feedback" 
+                                              name="feedback" 
+                                              rows="3" 
+                                              placeholder="Tell us about your experience or suggest improvements..."></textarea>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>
+                                        Submit Feedback & Complete
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="summary-actions text-center">
+                    <button class="btn btn-success btn-lg me-3" onclick="downloadPDF()">
+                        <i class="fas fa-download me-2"></i>
+                        Download PDF Receipt
+                    </button>
+                    <a href="{{ url_for('landing') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>
+                        Return to Home
+                    </a>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="support-info mt-4">
+                    <div class="text-center">
+                        <p class="text-muted">
+                            <i class="fas fa-headset me-2"></i>
+                            Need assistance? Call our family support line: 
+                            <strong>1-800-MEDIFLY</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function downloadPDF() {
+    // Mock PDF download functionality
+    const link = document.createElement('a');
+    link.href = 'data:text/plain;charset=utf-8,MediFly Transport Receipt%0A%0AReference: MF-{{ summary.booking_time[-6:] if summary.booking_time else "000001" }}%0AProvider: {{ summary.provider.name }}%0AFrom: {{ summary.pickup_location }}%0ATo: {{ summary.destination }}%0ATotal Cost: ${{ "{:,}".format(summary.total_cost) }}%0A%0AThank you for choosing MediFly!';
+    link.download = 'medifly-receipt-{{ summary.booking_time[-6:] if summary.booking_time else "000001" }}.txt';
+    link.click();
+    
+    // Show confirmation
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check me-2"></i>Downloaded!';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add some celebration animations
+    const successIcon = document.querySelector('.success-icon i');
+    if (successIcon) {
+        successIcon.style.animation = 'bounce 2s infinite';
+    }
+    
+    // Form submission handling
+    const form = document.getElementById('feedback-form');
+    form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Completing...';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+
+<style>
+.success-icon i {
+    font-size: 4rem;
+    color: #28a745;
+}
+
+.success-title {
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.success-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.summary-item {
+    padding: 0.75rem;
+    background: var(--soft-gray);
+    border-radius: var(--border-radius);
+    margin-bottom: 0.5rem;
+}
+
+.summary-value {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.cost-table {
+    background: var(--warm-white);
+}
+
+.cost-row {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.cost-row:last-child {
+    border-bottom: none;
+}
+
+.total-row {
+    background: linear-gradient(135deg, var(--pastel-green), #e6ffe6);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 0.5rem;
+}
+
+.next-step-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.next-step-item:last-child {
+    margin-bottom: 0;
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--pastel-blue), #e3f2fd);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.step-content h6 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.step-content p {
+    margin-bottom: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.reference-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue-hover);
+    font-family: 'Courier New', monospace;
+    background: var(--pastel-blue);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    display: inline-block;
+    margin: 0.5rem 0;
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translate3d(0,0,0);
+    }
+    40%, 43% {
+        transform: translate3d(0,-30px,0);
+    }
+    70% {
+        transform: translate3d(0,-15px,0);
+    }
+    90% {
+        transform: translate3d(0,-4px,0);
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,307 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Tell Us About Your Situation - MediFly Consumer{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <div class="text-center mb-4">
+                    <h2 class="form-title">
+                        <i class="fas fa-heart text-primary me-2"></i>
+                        Tell Us About Your Loved One
+                    </h2>
+                    <p class="form-subtitle text-muted">
+                        We'll help you find the best medical transport option for your family member.
+                        All information is used only for matching services and is not stored permanently.
+                    </p>
+                </div>
+
+                <!-- Privacy Notice -->
+                <div class="alert alert-info mb-4" role="alert">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Privacy Notice:</strong> Information used only for matching. No storage. Session-based only.
+                </div>
+
+                <form method="POST" action="{{ url_for('results') }}" id="intake-form" novalidate>
+                    <!-- Current Location -->
+                    <div class="mb-4">
+                        <label for="pickup_location" class="form-label required">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                            Where is your family member now?
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="pickup_location" 
+                               name="pickup_location" 
+                               placeholder="e.g., Orlando, FL or Miami General Hospital"
+                               required
+                               aria-describedby="pickup-help">
+                        <div id="pickup-help" class="form-text">
+                            Please include the city and state, or hospital name if known
+                        </div>
+                        <div class="invalid-feedback">
+                            Please tell us where your loved one is currently located.
+                        </div>
+                    </div>
+
+                    <!-- Destination -->
+                    <div class="mb-4">
+                        <label for="destination" class="form-label required">
+                            <i class="fas fa-plane-arrival me-2 text-primary"></i>
+                            Where do they need to go?
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="destination" 
+                               name="destination" 
+                               placeholder="e.g., New York, NY or home in Los Angeles"
+                               required
+                               aria-describedby="destination-help">
+                        <div id="destination-help" class="form-text">
+                            This could be a hospital, home, or city where they need care
+                        </div>
+                        <div class="invalid-feedback">
+                            Please tell us where your loved one needs to go.
+                        </div>
+                    </div>
+
+                    <!-- Medical Condition Severity -->
+                    <div class="mb-4">
+                        <label for="severity" class="form-label required">
+                            <i class="fas fa-heartbeat me-2 text-primary"></i>
+                            How serious is their condition?
+                        </label>
+                        <select class="form-select" 
+                                id="severity" 
+                                name="severity" 
+                                required
+                                aria-describedby="severity-help">
+                            <option value="">Please select the condition level...</option>
+                            <option value="1" data-bs-toggle="tooltip" title="Stable condition with minor injuries">
+                                Level 1 - Minor (stable, like a sprain or broken bone)
+                            </option>
+                            <option value="2" data-bs-toggle="tooltip" title="Stable but needs medical monitoring">
+                                Level 2 - Stable but needs monitoring
+                            </option>
+                            <option value="3" data-bs-toggle="tooltip" title="Serious condition requiring medical attention">
+                                Level 3 - Serious (needs immediate medical attention)
+                            </option>
+                            <option value="4" data-bs-toggle="tooltip" title="Critical condition requiring ICU-level care">
+                                Level 4 - Critical (needs ICU-level care)
+                            </option>
+                            <option value="5" data-bs-toggle="tooltip" title="Life-threatening, on ventilator or life support">
+                                Level 5 - Life-threatening (on ventilator/life support)
+                            </option>
+                        </select>
+                        <div id="severity-help" class="form-text">
+                            This helps us recommend the right medical team and equipment
+                        </div>
+                        <div class="invalid-feedback">
+                            Please select the severity level to help us find appropriate care.
+                        </div>
+                    </div>
+
+                    <!-- Medical Equipment Needs -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-stethoscope me-2 text-primary"></i>
+                            What medical support do they need during transport?
+                        </label>
+                        <div class="equipment-options mt-3" aria-describedby="equipment-help">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       value="ventilator" 
+                                       id="ventilator" 
+                                       name="equipment"
+                                       aria-describedby="ventilator-desc">
+                                <label class="form-check-label" for="ventilator">
+                                    <strong>Ventilator</strong>
+                                    <span class="text-muted d-block">For breathing support</span>
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       value="oxygen" 
+                                       id="oxygen" 
+                                       name="equipment"
+                                       aria-describedby="oxygen-desc">
+                                <label class="form-check-label" for="oxygen">
+                                    <strong>Oxygen Support</strong>
+                                    <span class="text-muted d-block">Basic breathing assistance</span>
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       value="ecmo" 
+                                       id="ecmo" 
+                                       name="equipment"
+                                       aria-describedby="ecmo-desc">
+                                <label class="form-check-label" for="ecmo">
+                                    <strong>ECMO Machine</strong>
+                                    <span class="text-muted d-block">Heart and lung support</span>
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       value="incubator" 
+                                       id="incubator" 
+                                       name="equipment"
+                                       aria-describedby="incubator-desc">
+                                <label class="form-check-label" for="incubator">
+                                    <strong>Incubator</strong>
+                                    <span class="text-muted d-block">For newborn/infant care</span>
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       value="escort" 
+                                       id="escort" 
+                                       name="equipment"
+                                       aria-describedby="escort-desc">
+                                <label class="form-check-label" for="escort">
+                                    <strong>Medical Escort Only</strong>
+                                    <span class="text-muted d-block">Professional supervision for stable patients</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="equipment-help" class="form-text">
+                            Select all that apply. Our chatbot can help with recommendations based on severity level.
+                        </div>
+                    </div>
+
+                    <!-- Travel Date -->
+                    <div class="mb-4">
+                        <label for="travel_date" class="form-label required">
+                            <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                            When are they ready to travel?
+                        </label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="travel_date" 
+                               name="travel_date" 
+                               required
+                               aria-describedby="travel-help">
+                        <div id="travel-help" class="form-text">
+                            Please select a future date when transport can be arranged
+                        </div>
+                        <div class="invalid-feedback">
+                            Please select a valid future date for travel.
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions text-center mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-search me-2"></i>
+                            Find Transport Options
+                        </button>
+                        <a href="{{ url_for('landing') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Back to Home
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('intake-form');
+    const severitySelect = document.getElementById('severity');
+    const travelDateInput = document.getElementById('travel_date');
+    
+    // Set minimum date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    travelDateInput.min = tomorrow.toISOString().split('T')[0];
+    
+    // Severity-based equipment recommendations
+    severitySelect.addEventListener('change', function() {
+        const severity = parseInt(this.value);
+        const equipmentCheckboxes = document.querySelectorAll('input[name="equipment"]');
+        
+        // Clear previous selections
+        equipmentCheckboxes.forEach(cb => cb.checked = false);
+        
+        // Make recommendations based on severity
+        switch(severity) {
+            case 5:
+                document.getElementById('ventilator').checked = true;
+                document.getElementById('oxygen').checked = true;
+                showRecommendationAlert('For life-threatening conditions, Ventilator and Oxygen support are strongly recommended.', 'warning');
+                break;
+            case 4:
+                document.getElementById('oxygen').checked = true;
+                showRecommendationAlert('For critical conditions, Oxygen support is recommended. Consider Ventilator if needed.', 'info');
+                break;
+            case 3:
+                document.getElementById('oxygen').checked = true;
+                showRecommendationAlert('For serious conditions, Oxygen support is recommended.', 'info');
+                break;
+            case 2:
+                document.getElementById('escort').checked = true;
+                showRecommendationAlert('For stable conditions requiring monitoring, Medical escort is usually sufficient.', 'success');
+                break;
+            case 1:
+                document.getElementById('escort').checked = true;
+                showRecommendationAlert('For minor conditions, Medical escort only is typically sufficient.', 'success');
+                break;
+        }
+    });
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            // Check if travel date is in the future
+            const selectedDate = new Date(travelDateInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate <= today) {
+                e.preventDefault();
+                showRecommendationAlert('Please select a future date for travel.', 'danger');
+                travelDateInput.focus();
+                return;
+            }
+        }
+        
+        form.classList.add('was-validated');
+    });
+    
+    function showRecommendationAlert(message, type) {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.recommendation-alert');
+        existingAlerts.forEach(alert => alert.remove());
+        
+        // Create new alert
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} recommendation-alert mt-2`;
+        alert.innerHTML = `<i class="fas fa-lightbulb me-2"></i>${message}`;
+        
+        // Insert after severity select
+        severitySelect.parentNode.appendChild(alert);
+        
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 10000);
+    }
+});
+</script>
+{% endblock %}
