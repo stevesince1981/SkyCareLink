@@ -1,0 +1,548 @@
+Part 1: Finalize MediFly Hospital MVP
+
+Refine the Flask web app called MediFly Hospital MVP (medtransportlink-prototype.replit.app), simulating a hospital interface for booking air medical transport. Incorporate five improvements and add a chatbot widget. Deploy on Replit, ensuring HIPAA-compliant design (transient data, no persistent storage). Use Bootstrap 5.
+
+File Structure:
+
+
+
+
+
+app.py: Main Flask app with routes, provider IDs, console logging (print(f"Notification sent to admin@medifly.com") at /intake, /confirm, /summary).
+
+
+
+templates/: HTML files (index.html, intake.html, results.html, confirm.html, tracking.html, summary.html, base.html for shared navbar).
+
+
+
+static/css/style.css: Custom styles (minimal, Bootstrap-heavy).
+
+
+
+static/js/botui.min.js: BotUI library for chatbot (CDN: https://unpkg.com/botui/build/botui.min.js).
+
+
+
+static/js/main.js: Form navigation, validation, chatbot logic, tracking timer.
+
+
+
+pyproject.toml: Include replit = "3.2", dependencies: flask, python-dotenv.
+
+Routes and Views:
+
+
+
+
+
+/ (Landing Page):
+
+
+
+
+
+Hero: “MediFly for Hospitals: Critical Transport Solutions”
+
+
+
+Button: “Book a Critical Medical Flight” → /intake
+
+
+
+Navbar: <h1 class="navbar-brand">MediFly</h1> (blue: #007bff).
+
+
+
+Footer: “HIPAA-compliant demo. No PHI stored.”
+
+
+
+Chatbot: Bottom-right widget (BotUI), answers: “What equipment is available?” or “Explain severity levels.”
+
+
+
+/intake (Guided Form):
+
+
+
+
+
+Multi-step form (Bootstrap cards, JS in main.js for hide/show steps on “Next” click).
+
+
+
+Questions:
+
+
+
+
+
+"Patient’s current location?" (text, required)
+
+
+
+"Destination?" (text, required)
+
+
+
+"Severity (1-5)?" (dropdown, ARIA-label: “Select condition severity”, tooltips: 1=Minor, e.g., broken leg; 5=Critical, e.g., ventilator/coma)
+
+
+
+"Medical equipment needed?" (checkboxes: Ventilator, ECMO, Incubator, Escort only, Oxygen, Other; ARIA-labels)
+
+
+
+"Ready to depart?" (date input, validate future date)
+
+
+
+Validation: JS checks for empty fields, invalid dates; show alerts (e.g., “Please enter a location”).
+
+
+
+Submit → /results, log: print("Notification: Quote requested to admin@medifly.com")
+
+
+
+Use Flask session (clear post-submission).
+
+
+
+Alert: “Inputs used only for matching. Not stored.”
+
+
+
+Chatbot: Suggests equipment based on severity (e.g., “Selected Severity 5? Ventilator recommended.”).
+
+
+
+/results (Quote Options):
+
+
+
+
+
+3 mock provider cards with IDs:
+
+
+
+
+
+provider_1: AirMed, $128,500, ETA: 3h, ICU Certified
+
+
+
+provider_2: REVA, $112,000, ETA: 5h, Doctor onboard
+
+
+
+provider_3: MercyWings, $102,000, ETA: 6h, Basic evac
+
+
+
+“Select” button → /confirm?provider_id=X
+
+
+
+Bootstrap grid for alignment, ARIA-labels for cards.
+
+
+
+/confirm (Confirmation):
+
+
+
+
+
+Show provider details (via provider_id) + patient summary.
+
+
+
+Add-ons: Family Seat ($5k), VIP Cabin ($10k) checkboxes (ARIA-labels).
+
+
+
+Consent: “I authorize secure sharing of non-identifiable info” (checkbox, required).
+
+
+
+Button: “Finalize” → /tracking, log: print("Notification: Booking confirmed to admin@medifly.com")
+
+
+
+Chatbot: Suggests add-ons (e.g., “Add a family seat to stay together?”).
+
+
+
+/tracking (Mock Tracker):
+
+
+
+
+
+Progress bar (Dispatched, En Route, Arrived) via session state.
+
+
+
+JS timer (main.js) auto-updates every 10s (e.g., advance from Dispatched to En Route).
+
+
+
+Button: “Complete Flight” → /summary
+
+
+
+Chatbot: Answers “What’s the flight status?”
+
+
+
+/summary:
+
+
+
+
+
+Thank-you: “Flight booked successfully!”
+
+
+
+Button: “Download PDF Receipt” (mock link).
+
+
+
+Feedback textarea (ARIA-label) + Submit, log: print("Notification: Feedback received to admin@medifly.com")
+
+
+
+Chatbot: Prompts feedback (e.g., “How was your experience?”).
+
+
+
+/admin (Debugging):
+
+
+
+
+
+Password-protected (hardcode: admin:demo123).
+
+
+
+Show session logs and console notifications.
+
+
+
+Accessible only to us for testing.
+
+Improvements:
+
+
+
+
+
+Dynamic Form: Add JS in main.js for multi-step progression (hide/show cards on “Next”).
+
+
+
+Validation: JS checks for required fields, future dates in /intake; show Bootstrap alerts.
+
+
+
+Real-Time Tracking: JS timer in main.js for auto-updating /tracking progress every 10s.
+
+
+
+Admin Route: Add /admin for session logs, password-protected.
+
+
+
+Accessibility: ARIA-labels on dropdowns, checkboxes, cards; alt text for logo.
+
+Chatbot Widget:
+
+
+
+
+
+Embed BotUI on all pages (bottom-right).
+
+
+
+Answers FAQs (e.g., “What’s Severity 5?”, “Add family seat?”).
+
+
+
+Uses session data (transient) for context, no PHI storage.
+
+
+
+Example: botui.message.add("Need help? Ask about equipment or add-ons!")
+
+Styling:
+
+
+
+
+
+Bootstrap 5 CDN.
+
+
+
+Navbar: #007bff background, white text.
+
+
+
+Cards: Clean grids, padding.
+
+
+
+Chatbot: Small, rounded widget (pastel blue: #e6f3ff).
+
+Security:
+
+
+
+
+
+Flask session only, no database/file writes.
+
+
+
+HTTPS note: “All demo data secure, not stored permanently.”
+
+
+
+Clear session post-/summary.
+
+Deployment:
+
+
+
+
+
+Deploy on Replit at medtransportlink-prototype.replit.app.
+
+
+
+pyproject.toml:
+
+[tool.replit]
+language = "python"
+replit = "3.2"
+[tool.replit.dependencies]
+flask = "latest"
+python-dotenv = "latest"
+
+Testing:
+
+
+
+
+
+Simulate 2 scenarios:
+
+
+
+
+
+Orlando-to-LA: Coma patient (Severity 5, Ventilator), 1 family seat.
+
+
+
+NY-to-Turkey: VIP hair transplant (Severity 1, Oxygen, VIP Cabin).
+
+
+
+Verify: Tooltips, validation, provider IDs, session clearing, console logs, accessibility, chatbot responses.
+
+Deliverables:
+
+
+
+
+
+Full source code (app.py, templates, static/).
+
+
+
+Deployed URL.
+
+
+
+Text wireframes (e.g., “Landing: Navbar with MediFly logo, hero text, centered button, chatbot widget”).
+
+
+
+Testing results summary.
+
+Part 2: Create MediFly Family/Consumer MVP
+
+Create a second Flask app called MediFly Consumer MVP (medtransportlink-consumer.replit.app) with the same flow but friendlier UX.
+
+File Structure:
+
+
+
+
+
+Same as Hospital MVP (app.py, templates, static/css/style.css, static/js/, pyproject.toml).
+
+Routes and Views (Modified):
+
+
+
+
+
+/ (Landing Page):
+
+
+
+
+
+Hero: “MediFly: Get Your Loved One Home Safely”
+
+
+
+Button: “Find a Medical Flight” → /intake
+
+
+
+Navbar: <h1 class="navbar-brand">MediFly</h1>
+
+
+
+Footer: “We prioritize your family’s peace of mind.”
+
+
+
+Chatbot: Suggests “Ask how we can help your family!”
+
+
+
+/intake:
+
+
+
+
+
+Same questions, empathetic language:
+
+
+
+
+
+“Where is your family member now?” (text, required, ARIA-label)
+
+
+
+“Where do they need to go?” (text, required, ARIA-label)
+
+
+
+“How serious is their condition? (1=Minor, like a sprain; 5=Critical, like on a ventilator)” (dropdown, help text, ARIA-label)
+
+
+
+“What medical support do they need?” (checkboxes, ARIA-labels)
+
+
+
+“When are they ready to travel?” (date, validate future)
+
+
+
+Validation: JS alerts for errors.
+
+
+
+Submit → /results, log: print("Notification: Quote requested to admin@medifly.com")
+
+
+
+Alert: “We use this only to find the best flight. No info saved.”
+
+
+
+Chatbot: Suggests “Need help picking equipment?”
+
+
+
+/results: Same providers, softer wording (e.g., “AirMed: Ready to help with ICU care”).
+
+
+
+/confirm: Friendly tone: “Let’s get your loved one home.” Add-ons and consent same.
+
+
+
+/tracking: Add note: “We’re with you every step.”
+
+
+
+/summary: Thank-you: “Your loved one’s flight is set!” + feedback/PDF.
+
+
+
+/admin: Same debugging route.
+
+Styling:
+
+
+
+
+
+Pastel colors (#e6f3ff blue, #ffe6f3 pink).
+
+
+
+Rounded buttons, welcoming fonts.
+
+
+
+Chatbot: Friendly tone, pastel styling.
+
+Security/Deployment/Testing:
+
+
+
+
+
+Same as Hospital MVP (transient data, Replit hosting, same scenarios).
+
+Deliverables:
+
+
+
+
+
+Full source code.
+
+
+
+Deployed URL (medtransportlink-consumer.replit.app).
+
+
+
+Text wireframes.
+
+
+
+Testing results.
+
+Final Output:
+
+
+
+
+
+Deploy both apps.
+
+
+
+Provide URLs, code, wireframes, test summaries.
+
+
+
+Next steps: “Test both apps, then add provider dashboard.”

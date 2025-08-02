@@ -1,0 +1,53 @@
+Create a Flask web app called MediFly Hospital MVP. The app should simulate a hospital interface for booking air medical transport with the following routes and views:
+
+1. `/` (Landing Page)
+- Hero text: “MediFly for Hospitals”
+- Button: “Book a Critical Medical Flight” → links to `/intake`
+- Footer disclaimer: “HIPAA-compliant demo. No PHI is stored.”
+
+2. `/intake` (Guided Form AI-style)
+- Create a multi-step guided form (in chatbot style) using Bootstrap cards.
+- Questions in sequence:
+  a) "Where is the patient currently located?"
+  b) "Where are they being transported to?"
+  c) "Select severity (1-5):" dropdown with tooltips for each severity level
+  d) "What medical equipment is needed?" Checkboxes: Ventilator, ECMO, Incubator, Escort only, Oxygen, Other
+  e) "When is the patient ready to depart?" Date input
+- Submit button routes to `/results`
+- Transient session: store input in `session` or temporary in-memory dict (no persistent database)
+- Add a small alert: “Inputs used only for provider matching. Not stored.”
+
+3. `/results` (Quote Options)
+- Display 3 quote cards from mocked providers:
+  - AirMed Response: $128,500, ETA: 3h, ICU Certified
+  - REVA CriticalCare Jet: $112,000, ETA: 5h, Doctor onboard
+  - MercyWings Global: $102,000, ETA: 6h, Basic evac
+- Each card has “Select This Provider” → links to `/confirm` with provider ID
+
+4. `/confirm` (Confirmation Page)
+- Show selected provider details + patient info summary
+- Add-ons section: Family Seat, VIP Cabin (checkboxes)
+- Consent checkbox: “I authorize secure sharing of non-identifiable medical info”
+- Button: “Finalize Booking” → route to `/tracking`
+
+5. `/tracking` (Mock Flight Tracker)
+- Show a progress bar (or stages: Dispatched, En Route, Arrived)
+- Simulate timeline updates using session state (e.g., updates every refresh)
+- Button: “Complete Flight” → goes to `/summary`
+
+6. `/summary`
+- Thank-you message
+- Downloadable PDF stub link (just a button)
+- Feedback input box: “How was the experience?” + Submit
+
+Styling:
+- Use Bootstrap 5
+- Header with MediFly logo (text placeholder)
+- Clean, professional layout suitable for hospital staff
+
+Security:
+- Use Flask `session` or temporary dicts
+- Do not write any files or use a database
+- Add HTTPS note: “All demo data is secure and not stored permanently”
+
+Deploy using Replit hosting. Add `replit = "3.2"` to `pyproject.toml` if needed.
