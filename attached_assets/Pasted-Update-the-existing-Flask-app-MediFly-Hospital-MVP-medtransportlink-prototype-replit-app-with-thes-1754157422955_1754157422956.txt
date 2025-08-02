@@ -1,0 +1,167 @@
+Update the existing Flask app MediFly Hospital MVP (medtransportlink-prototype.replit.app) with these enhancements. Maintain HIPAA compliance (transient data only). Use Bootstrap 5, BotUI for chatbot.
+
+UI Layout and Spacing:
+
+
+
+
+
+Add consistent padding/margins: 16px min to inputs, cards, buttons.
+
+
+
+Vertical spacing: Even 16px between elements.
+
+
+
+Responsive: Cards stack on small screens; no chatbot overlap.
+
+Visual Styling:
+
+
+
+
+
+Blue theme: #0056b3 for navbar, button hovers.
+
+
+
+Buttons: .btn-primary, border-radius: 8px.
+
+
+
+Cards: .shadow-sm, border-radius: 10px, background: #f8f9fa.
+
+Form Alignment:
+
+
+
+
+
+Uniform width: .w-75 .mx-auto for text inputs.
+
+
+
+Tooltips: Bootstrap component on severity dropdown, styled visible.
+
+
+
+Severity card: Centered, labels: 1=minor (broken leg), 5=critical (coma).
+
+/results Provider Cards:
+
+
+
+
+
+Add placeholders:
+
+
+
+ for each.
+
+
+
+Grid: .row-cols-1 .row-cols-md-3.
+
+
+
+Style: h5 name, large price, ETA, badges for capabilities (e.g., .badge-success "ICU Certified").
+
+
+
+“Select Provider” button at bottom.
+
+Real-Time Tracking:
+
+
+
+
+
+Animate progress: .progress-bar-striped .progress-bar-animated.
+
+
+
+Status text: Below steps, e.g., "ETA: 2h remaining".
+
+/admin Session Viewer:
+
+
+
+
+
+Table: for key-value pairs.
+
+
+
+Mask sensitive: Replace with asterisks if key contains "medical".
+
+
+
+Refresh button: Reloads page.
+
+
+
+Chatbot Improvements:
+
+
+
+
+
+Read severity: Recommend equipment (e.g., "Severity 5: Suggest ventilator?").
+
+
+
+Greeting: botui.message.add({ content: "Welcome to MediFly. Need help with equipment or severity?" }).
+
+Accessibility:
+
+
+
+
+
+aria-label: All fields/buttons (e.g., aria-label="Select severity level").
+
+
+
+alt text: On provider images.
+
+Implementation:
+
+
+
+
+
+Update app.py, templates, static/css/style.css, static/js/main.js.
+
+
+
+Add JS for animations, tooltips, chatbot logic.
+
+Deployment and Testing:
+
+
+
+
+
+Re-deploy to same Replit project.
+
+
+
+Test flows:
+
+
+
+
+
+Orlando-to-LA: Severity 5, Ventilator, family seat.
+
+
+
+NY-to-Turkey: Severity 1, Oxygen, VIP Cabin.
+
+
+
+Verify: Responsiveness, animations, accessibility, no PHI storage.
+
+Deliver: Updated code, deployed URL, test results summary.

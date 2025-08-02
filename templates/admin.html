@@ -62,10 +62,10 @@
             <div class="card-body">
                 {% if session_data %}
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table admin-table">
                         <thead>
                             <tr>
-                                <th>Key</th>
+                                <th>Session Key</th>
                                 <th>Value</th>
                             </tr>
                         </thead>
@@ -74,7 +74,9 @@
                             <tr>
                                 <td><code>{{ key }}</code></td>
                                 <td>
-                                    {% if value is mapping %}
+                                    {% if 'medical' in key.lower() or 'patient' in key.lower() %}
+                                        <span class="masked-data">****** (Sensitive data masked for HIPAA compliance)</span>
+                                    {% elif value is mapping %}
                                         <pre class="mb-0">{{ value|tojson(indent=2) }}</pre>
                                     {% elif value is iterable and value is not string %}
                                         <ul class="mb-0">
@@ -90,6 +92,14 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Refresh Button -->
+                <div class="text-center mt-3">
+                    <button class="btn btn-primary" onclick="location.reload()" aria-label="Refresh session data">
+                        <i class="fas fa-sync-alt me-2" aria-hidden="true"></i>
+                        Refresh Data
+                    </button>
                 </div>
                 {% else %}
                 <p class="text-muted">No session data available</p>

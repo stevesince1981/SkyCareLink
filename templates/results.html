@@ -14,82 +14,69 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row row-cols-1 row-cols-md-3 g-4">
     {% for provider_id, provider in providers.items() %}
-    <div class="col-lg-4 mb-4">
-        <div class="card h-100 shadow-sm provider-card" 
+    <div class="col">
+        <div class="card h-100 provider-card" 
              role="article" 
              aria-label="Transport provider option: {{ provider.name }}">
-            <div class="card-header bg-light">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-helicopter me-2 text-primary" aria-hidden="true"></i>
-                    {{ provider.name }}
-                </h5>
-            </div>
-            <div class="card-body d-flex flex-column">
-                <div class="provider-details mb-3">
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>Cost:</strong>
-                        </div>
-                        <div class="col-6 text-end">
-                            <span class="h5 text-success">${{ "{:,}".format(provider.price) }}</span>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-6">
-                            <strong>ETA:</strong>
-                        </div>
-                        <div class="col-6 text-end">
-                            <span class="badge bg-info">{{ provider.eta }}</span>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <strong>Specialization:</strong>
-                            <span class="text-muted">{{ provider.description }}</span>
-                        </div>
-                    </div>
-                    <div class="provider-details-full">
-                        <p class="card-text">{{ provider.details }}</p>
-                    </div>
-                </div>
-                
-                <!-- Provider Features -->
-                <div class="provider-features mb-3">
+            <div class="card-header text-center" style="background: linear-gradient(135deg, {{ '#e8f4fd' if provider_id == 'provider_1' else '#f0f8ff' if provider_id == 'provider_2' else '#f8f9fa' }}, white);">
+                <!-- Provider Logo Placeholder -->
+                <div class="provider-logo mb-3">
                     {% if provider_id == 'provider_1' %}
-                        <div class="feature-badge">
-                            <i class="fas fa-user-md text-success" aria-hidden="true"></i>
-                            <small>ICU Certified Team</small>
-                        </div>
-                        <div class="feature-badge">
-                            <i class="fas fa-heartbeat text-danger" aria-hidden="true"></i>
-                            <small>Advanced Life Support</small>
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-helicopter fa-2x" aria-hidden="true"></i>
                         </div>
                     {% elif provider_id == 'provider_2' %}
-                        <div class="feature-badge">
-                            <i class="fas fa-stethoscope text-primary" aria-hidden="true"></i>
-                            <small>Doctor On Board</small>
-                        </div>
-                        <div class="feature-badge">
-                            <i class="fas fa-ambulance text-warning" aria-hidden="true"></i>
-                            <small>Critical Care</small>
+                        <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-plane-departure fa-2x" aria-hidden="true"></i>
                         </div>
                     {% else %}
-                        <div class="feature-badge">
-                            <i class="fas fa-shield-alt text-info" aria-hidden="true"></i>
-                            <small>Basic Life Support</small>
-                        </div>
-                        <div class="feature-badge">
-                            <i class="fas fa-dollar-sign text-success" aria-hidden="true"></i>
-                            <small>Cost Effective</small>
+                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-aircraft fa-2x" aria-hidden="true"></i>
                         </div>
                     {% endif %}
                 </div>
+                <h5 class="card-title mb-0">{{ provider.name }}</h5>
+            </div>
+            <div class="card-body d-flex flex-column text-center">
+                <!-- Large Price Display -->
+                <div class="provider-price mb-3">
+                    ${{ "{:,}".format(provider.price) }}
+                </div>
                 
+                <!-- ETA Display -->
+                <div class="provider-eta mb-3">
+                    ETA: {{ provider.eta }}
+                </div>
+                
+                <!-- Provider Capabilities with Badges -->
+                <div class="provider-capabilities mb-3">
+                    {% if provider_id == 'provider_1' %}
+                        <span class="badge bg-success me-1">ICU Certified</span>
+                        <span class="badge bg-primary me-1">Advanced Life Support</span>
+                        <span class="badge bg-info">24/7 Available</span>
+                    {% elif provider_id == 'provider_2' %}
+                        <span class="badge bg-warning text-dark me-1">Doctor Onboard</span>
+                        <span class="badge bg-primary me-1">Critical Care</span>
+                        <span class="badge bg-info">Rapid Response</span>
+                    {% else %}
+                        <span class="badge bg-success me-1">Cost Effective</span>
+                        <span class="badge bg-secondary me-1">Basic Life Support</span>
+                        <span class="badge bg-info">Reliable Service</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Description -->
+                <div class="provider-details mb-3">
+                    <h6 class="text-muted">{{ provider.description }}</h6>
+                    <p class="card-text small">{{ provider.details }}</p>
+                </div>
+                
+                <!-- Select Provider Button -->
                 <div class="mt-auto">
                     <a href="{{ url_for('confirm', provider_id=provider_id) }}" 
-                       class="btn btn-primary w-100"
+                       class="btn btn-primary w-100 py-3"
                        aria-label="Select {{ provider.name }} as your transport provider">
                         <i class="fas fa-check me-2" aria-hidden="true"></i>
                         Select This Provider

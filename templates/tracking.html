@@ -24,15 +24,15 @@
                 </h5>
             </div>
             <div class="card-body">
-                <!-- Progress Bar -->
-                <div class="progress mb-4" style="height: 25px;" role="progressbar" aria-label="Transport progress">
+                <!-- Enhanced Progress Bar -->
+                <div class="progress mb-4" style="height: 30px;" role="progressbar" aria-label="Transport progress">
                     <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
                          id="progress-bar"
-                         style="width: {{ progress_percentage }}%"
+                         style="width: {{ progress_percentage }}%; transition: width 0.8s ease;"
                          aria-valuenow="{{ progress_percentage }}" 
                          aria-valuemin="0" 
                          aria-valuemax="100">
-                        {{ progress_percentage|round|int }}%
+                        <strong>{{ progress_percentage|round|int }}%</strong>
                     </div>
                 </div>
 
@@ -58,22 +58,33 @@
                     {% endfor %}
                 </div>
 
-                <!-- Current Status Message -->
+                <!-- Enhanced Status Message -->
                 <div class="alert alert-info mt-4 text-center" role="alert" id="status-message">
-                    <strong>Current Status:</strong> 
-                    <span id="current-status">{{ stages[current_stage] }}</span>
+                    <div class="tracking-status-text">
+                        <strong>Current Status:</strong> 
+                        <span id="current-status">{{ stages[current_stage] }}</span>
+                    </div>
                     {% if current_stage < stages|length - 1 %}
-                        - Updates automatically every 10 seconds
+                        <div class="eta-remaining mt-2">
+                            Updates automatically every 10 seconds
+                        </div>
                     {% endif %}
                 </div>
 
-                <!-- Estimated Time -->
+                <!-- Enhanced Estimated Time -->
                 {% if current_stage < stages|length - 1 %}
                 <div class="text-center">
-                    <p class="text-muted">
+                    <div class="alert alert-warning">
                         <i class="fas fa-clock me-2" aria-hidden="true"></i>
-                        Estimated time to arrival: {{ provider.eta }}
-                    </p>
+                        <strong>ETA: {{ provider.eta }} remaining</strong>
+                        {% if current_stage == 0 %}
+                            <br><small>Dispatch team being notified</small>
+                        {% elif current_stage == 1 %}
+                            <br><small>Transport team en route to pickup location</small>
+                        {% elif current_stage == 2 %}
+                            <br><small>Medical team has arrived and is preparing patient</small>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
             </div>

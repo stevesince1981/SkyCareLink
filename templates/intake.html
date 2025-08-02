@@ -25,7 +25,7 @@
                     <div class="mb-3">
                         <label for="current_location" class="form-label">Where is the patient currently located?</label>
                         <input type="text" 
-                               class="form-control" 
+                               class="form-control w-75-custom" 
                                id="current_location" 
                                name="current_location" 
                                required
@@ -53,7 +53,7 @@
                     <div class="mb-3">
                         <label for="destination" class="form-label">Where are they being transported to?</label>
                         <input type="text" 
-                               class="form-control" 
+                               class="form-control w-75-custom" 
                                id="destination" 
                                name="destination" 
                                required
@@ -81,25 +81,42 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label for="severity" class="form-label">Select severity (1-5):</label>
-                        <select class="form-select" 
-                                id="severity" 
-                                name="severity" 
-                                required
-                                aria-label="Select condition severity level">
-                            <option value="">Choose severity level...</option>
-                            <option value="1" title="Minor conditions like broken bones">1 - Minor (e.g., broken leg)</option>
-                            <option value="2" title="Moderate conditions requiring monitoring">2 - Moderate (stable but needs monitoring)</option>
-                            <option value="3" title="Serious conditions requiring medical attention">3 - Serious (needs immediate medical care)</option>
-                            <option value="4" title="Critical conditions requiring ICU care">4 - Critical (ICU level care needed)</option>
-                            <option value="5" title="Life-threatening conditions with ventilator support">5 - Critical (ventilator/life support)</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a severity level.
+                    <div class="severity-card">
+                        <div class="mb-3">
+                            <label for="severity" class="form-label">Select severity (1-5):</label>
+                            <select class="form-select w-75-custom" 
+                                    id="severity" 
+                                    name="severity" 
+                                    required
+                                    aria-label="Select condition severity level"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="Select the patient's condition severity to help match appropriate medical transport services">
+                                <option value="">Choose severity level...</option>
+                                <option value="1" title="Minor conditions like broken bones" data-bs-toggle="tooltip" data-bs-placement="right">1 - Minor (e.g., broken leg)</option>
+                                <option value="2" title="Moderate conditions requiring monitoring" data-bs-toggle="tooltip" data-bs-placement="right">2 - Moderate (stable but needs monitoring)</option>
+                                <option value="3" title="Serious conditions requiring medical attention" data-bs-toggle="tooltip" data-bs-placement="right">3 - Serious (needs immediate medical care)</option>
+                                <option value="4" title="Critical conditions requiring ICU care" data-bs-toggle="tooltip" data-bs-placement="right">4 - Critical (ICU level care needed)</option>
+                                <option value="5" title="Life-threatening conditions with ventilator support" data-bs-toggle="tooltip" data-bs-placement="right">5 - Critical (ventilator/life support)</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a severity level.
+                            </div>
                         </div>
-                        <div class="form-text">
-                            Hover over options for detailed descriptions of each severity level.
+                        
+                        <div class="severity-labels">
+                            <div class="severity-label">
+                                <strong>1 - Minor:</strong><br>
+                                Broken leg, stable injuries
+                            </div>
+                            <div class="severity-label">
+                                <strong>2-3 - Moderate:</strong><br>
+                                Monitoring required
+                            </div>
+                            <div class="severity-label">
+                                <strong>4-5 - Critical:</strong><br>
+                                ICU care, life support
+                            </div>
                         </div>
                     </div>
                     <button type="button" class="btn btn-secondary prev-step me-2" data-prev="2">

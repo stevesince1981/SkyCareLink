@@ -1,13 +1,17 @@
 /* MediFly Hospital MVP Custom Styles */
 
 :root {
-    --primary-blue: #007bff;
+    --primary-blue: #0056b3;
+    --primary-blue-hover: #004085;
     --light-blue: #e6f3ff;
     --success-green: #28a745;
     --warning-yellow: #ffc107;
     --danger-red: #dc3545;
     --light-gray: #f8f9fa;
     --dark-gray: #6c757d;
+    --border-radius: 8px;
+    --card-border-radius: 10px;
+    --spacing: 16px;
 }
 
 /* Global Styles */
@@ -18,9 +22,15 @@ body {
 }
 
 /* Navigation Enhancements */
+.navbar {
+    background-color: var(--primary-blue) !important;
+    padding: var(--spacing);
+}
+
 .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
+    color: white !important;
 }
 
 /* Hero Section */
@@ -46,15 +56,47 @@ body {
     min-width: 120px;
 }
 
+/* Enhanced Spacing */
+.form-control, .form-select, .btn {
+    padding: var(--spacing);
+    margin-bottom: var(--spacing);
+}
+
+.card, .alert {
+    margin-bottom: var(--spacing);
+}
+
+/* Enhanced Button Styling */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-hover);
+    border-color: var(--primary-blue-hover);
+    transform: translateY(-2px);
+}
+
 /* Card Enhancements */
 .card {
     border: none;
+    border-radius: var(--card-border-radius);
+    background-color: var(--light-gray);
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    transition: box-shadow 0.15s ease-in-out;
+    transition: all 0.3s ease;
+    padding: var(--spacing);
 }
 
 .card:hover {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
 .provider-card {
@@ -65,31 +107,171 @@ body {
     transform: translateY(-2px);
 }
 
+/* Form Input Styling */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25);
+}
+
+.w-75-custom {
+    width: 75% !important;
+    margin: 0 auto;
+}
+
+/* Provider Card Enhancements */
+.provider-card {
+    transition: all 0.3s ease;
+    border-radius: var(--card-border-radius);
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.provider-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.provider-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--success-green);
+    text-shadow: 0 2px 4px rgba(40,167,69,0.2);
+}
+
+.provider-eta {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    padding: 8px 16px;
+    background: linear-gradient(45deg, #e3f2fd, #f0f8ff);
+    border-radius: 25px;
+    display: inline-block;
+}
+
+.provider-capabilities {
+    margin: var(--spacing) 0;
+}
+
+/* Enhanced Badge Styling */
+.provider-capabilities .badge {
+    font-size: 0.9rem;
+    padding: 8px 14px;
+    margin: 3px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.provider-capabilities .badge:hover {
+    transform: scale(1.05);
+}
+
+/* Admin Table Styling */
+.admin-table {
+    background: white;
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table thead {
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-hover));
+    color: white;
+}
+
+.admin-table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.masked-data {
+    font-style: italic;
+    color: #6c757d;
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Enhanced Tracking Styles */
+.tracking-status-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.eta-remaining {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.provider-capabilities .badge {
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
 /* Provider Features */
 .feature-badge {
     display: inline-block;
     margin: 0.25rem 0.5rem 0.25rem 0;
-    padding: 0.25rem 0.5rem;
-    background-color: var(--light-gray);
-    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--light-blue);
+    color: var(--primary-blue);
+    border-radius: var(--border-radius);
     font-size: 0.875rem;
+    font-weight: 600;
+    border: 2px solid var(--primary-blue);
 }
 
-/* Progress Tracking */
+/* Enhanced Progress Tracking */
 .stage-indicator {
     margin-bottom: 1rem;
+    transition: all 0.3s ease;
 }
 
 .stage-name {
     font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .progress {
     background-color: #e9ecef;
+    height: 25px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.8s ease;
+}
+
+.progress-bar-striped {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 1rem 1rem;
 }
 
 .progress-bar-animated {
     animation: progress-bar-stripes 1s linear infinite;
+}
+
+.tracking-status-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-top: var(--spacing);
+}
+
+.eta-remaining {
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+    font-style: italic;
 }
 
 /* Success Animations */
@@ -260,7 +442,7 @@ body {
     }
 }
 
-/* Mobile Responsiveness */
+/* Enhanced Mobile Responsiveness */
 @media (max-width: 768px) {
     .hero-section {
         padding: 2rem 0;
@@ -273,11 +455,78 @@ body {
     .chatbot-widget {
         width: 90vw;
         right: 5vw;
+        bottom: 10px;
     }
     
     .provider-card {
-        margin-bottom: 1rem;
+        margin-bottom: var(--spacing);
     }
+    
+    .w-75-custom {
+        width: 95% !important;
+    }
+    
+    .form-control, .form-select, .btn {
+        padding: 12px;
+        font-size: 1rem;
+    }
+    
+    .card {
+        padding: 12px;
+    }
+    
+    .provider-price {
+        font-size: 1.5rem;
+    }
+    
+    .navbar {
+        padding: 12px;
+    }
+}
+
+/* Tooltip Enhancements */
+.tooltip {
+    font-size: 0.875rem;
+    z-index: 1070;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    background-color: var(--primary-blue);
+    border-radius: var(--border-radius);
+}
+
+.tooltip .tooltip-arrow {
+    width: 0;
+    height: 0;
+}
+
+/* Severity Level Styling */
+.severity-card {
+    background: white;
+    border: 2px solid var(--primary-blue);
+    border-radius: var(--card-border-radius);
+    padding: var(--spacing);
+    margin: var(--spacing) auto;
+    max-width: 600px;
+}
+
+.severity-labels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing);
+    margin-top: var(--spacing);
+}
+
+.severity-label {
+    padding: 8px 12px;
+    background-color: var(--light-blue);
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+    border: 1px solid var(--primary-blue);
 }
 
 /* Loading States */
@@ -325,6 +574,40 @@ body {
 
 .log-entry:last-child {
     margin-bottom: 0;
+}
+
+.admin-table {
+    background: white;
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table th {
+    background-color: var(--primary-blue);
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: var(--spacing);
+}
+
+.admin-table td {
+    padding: var(--spacing);
+    border-color: #e9ecef;
+    vertical-align: top;
+}
+
+.admin-table code {
+    background-color: var(--light-blue);
+    color: var(--primary-blue);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.masked-data {
+    color: var(--dark-gray);
+    font-style: italic;
 }
 
 /* Tooltip Enhancements */
