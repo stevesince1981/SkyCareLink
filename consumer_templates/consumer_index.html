@@ -262,6 +262,20 @@
         bottom: 15px;
         right: 15px;
     }
+    
+    .login-access-section .btn {
+        min-width: 200px;
+        font-weight: 600;
+    }
+    
+    .feature-highlights .badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .quick-access-pills .btn {
+        margin-bottom: 0.5rem;
+    }
 }
 </style>
 {% endblock %}
@@ -274,20 +288,28 @@
 </div>
 
 <div class="container">
-    <!-- Login Access Bar -->
-    <div class="login-access-bar" style="background: #007bff; color: white; padding: 1rem 0; margin-bottom: 0;">
+    <!-- Prominent Login Section -->
+    <div class="login-access-section" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 2rem 0; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,123,255,0.3);">
         <div class="row align-items-center">
-            <div class="col-md-8">
-                <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Quick Access Dashboard</h5>
-                <small>Login with "demo123" for any role • Revenue: $847,500 • 7 Bookings Complete</small>
+            <div class="col-md-6">
+                <h3 class="mb-2"><i class="fas fa-tachometer-alt me-2"></i>Access Dashboard & Features</h3>
+                <p class="mb-3">Login to access admin panel, revenue storyboard, and role-based dashboards</p>
+                <div class="feature-highlights">
+                    <span class="badge bg-light text-primary me-2">Revenue: $847,500</span>
+                    <span class="badge bg-light text-primary me-2">7 Bookings Complete</span>
+                    <span class="badge bg-light text-primary">Goal: 25 Bookings</span>
+                </div>
             </div>
-            <div class="col-md-4 text-end">
-                <a href="{{ url_for('login') }}" class="btn btn-light btn-lg me-2">
-                    <i class="fas fa-sign-in-alt me-2"></i>Login
-                </a>
-                <a href="{{ url_for('admin_storyboard') }}" class="btn btn-outline-light">
-                    <i class="fas fa-chart-line me-2"></i>Revenue Storyboard
-                </a>
+            <div class="col-md-6 text-center">
+                <div class="login-buttons">
+                    <a href="{{ url_for('login') }}" class="btn btn-light btn-lg mb-2 d-block">
+                        <i class="fas fa-sign-in-alt me-2"></i>LOGIN TO DASHBOARD
+                    </a>
+                    <a href="{{ url_for('admin_storyboard') }}" class="btn btn-outline-light btn-lg d-block">
+                        <i class="fas fa-chart-line me-2"></i>VIEW REVENUE STORYBOARD
+                    </a>
+                    <small class="text-white-50 mt-2 d-block">Use password "demo123" for any role</small>
+                </div>
             </div>
         </div>
     </div>
@@ -344,6 +366,19 @@
                         <i class="fas fa-shield-alt me-1"></i>
                         Secure • Private • AI-powered estimates
                     </p>
+                </div>
+                
+                <!-- Quick Access Pills -->
+                <div class="quick-access-pills mt-4">
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-user me-1"></i>Staff Login
+                    </a>
+                    <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-chart-bar me-1"></i>Admin Panel
+                    </a>
+                    <a href="{{ url_for('admin_storyboard') }}" class="btn btn-outline-info">
+                        <i class="fas fa-presentation me-1"></i>Business Demo
+                    </a>
                 </div>
 
                 <!-- Crisis Guide Link -->
@@ -747,14 +782,61 @@
     </div>
 </div>
 
+<!-- Direct Login Form Section -->
+<section class="direct-login-section" style="background: linear-gradient(135deg, #6f42c1, #563d7c); padding: 3rem 0; margin-top: 3rem;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3><i class="fas fa-sign-in-alt me-2"></i>Direct Login Access</h3>
+                        <p class="mb-0">Quick login for staff, admin, and role-based access</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="{{ url_for('authenticate') }}" method="post" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Username/Role</label>
+                                <select class="form-select" name="username" id="username" required>
+                                    <option value="">Select your role...</option>
+                                    <option value="family_user">Family User</option>
+                                    <option value="hospital_staff">Hospital Staff</option>
+                                    <option value="provider">Provider</option>
+                                    <option value="mvp_user">MVP User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password" id="password" 
+                                       placeholder="demo123" required>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard
+                                </button>
+                            </div>
+                            <div class="col-12 text-center">
+                                <small class="text-muted">
+                                    Demo password: "demo123" works for all roles | 
+                                    <a href="{{ url_for('admin_storyboard') }}" class="text-primary">View Revenue Demo</a>
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Comprehensive Admin Access Section -->
 <section class="admin-access" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 3rem 0; margin-top: 4rem;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h3><i class="fas fa-cogs me-2"></i>Comprehensive Admin Features</h3>
+                    <div class="card-header bg-secondary text-white text-center">
+                        <h3><i class="fas fa-cogs me-2"></i>Admin Features Overview</h3>
                         <p class="mb-0">Full administrative access to all MediFly systems</p>
                     </div>
                     <div class="card-body">
