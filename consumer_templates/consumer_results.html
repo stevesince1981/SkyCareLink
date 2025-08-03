@@ -254,6 +254,15 @@
     text-align: center;
 }
 
+.vendor-masked {
+    color: #6c757d;
+    font-style: italic;
+    border: 1px dashed #dee2e6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f8f9fa;
+}
+
 @media (max-width: 768px) {
     .price-main {
         font-size: 2rem;
@@ -347,7 +356,18 @@
              data-green-score="{{ provider.green_score }}">
             
             <div class="provider-header">
-                <div class="provider-name">{{ provider.name }}</div>
+                <div class="provider-name">
+                    {% set provider_names = {
+                        'airmed': 'Premium Provider A',
+                        'reva': 'Certified Provider B', 
+                        'mercywings': 'Family Provider C',
+                        'ruralreach': 'Rural Specialist D',
+                        'skycare_drone': 'Tech Provider E',
+                        'hybrid_med': 'Eco Provider F'
+                    } %}
+                    {{ provider_names.get(provider_id, 'Provider ' + loop.index|string) }}
+                    <small class="text-muted d-block">(Full credentials revealed after payment)</small>
+                </div>
                 <span class="provider-type {{ provider.type }}">{{ provider.type|title }}</span>
                 <p class="text-muted mb-0">{{ provider.description }}</p>
             </div>
@@ -441,7 +461,7 @@
                 <a href="{{ url_for('confirm', provider_id=provider_id) }}" 
                    class="btn btn-primary select-provider-btn">
                     <i class="fas fa-heart me-2"></i>
-                    Choose {{ provider.name }} for Your Family
+                    Choose This Provider for Your Family
                 </a>
             </div>
         </div>

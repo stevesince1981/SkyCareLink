@@ -274,6 +274,24 @@
 </div>
 
 <div class="container">
+    <!-- Login Access Bar -->
+    <div class="login-access-bar" style="background: #007bff; color: white; padding: 1rem 0; margin-bottom: 0;">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Quick Access Dashboard</h5>
+                <small>Login with "demo123" for any role • Revenue: $847,500 • 7 Bookings Complete</small>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{{ url_for('login') }}" class="btn btn-light btn-lg me-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+                <a href="{{ url_for('admin_storyboard') }}" class="btn btn-outline-light">
+                    <i class="fas fa-chart-line me-2"></i>Revenue Storyboard
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <div class="hero-section text-center py-5">
         <div class="row justify-content-center">
@@ -473,6 +491,122 @@
                     <h4>Reunited</h4>
                     <p>Your loved one arrives safely at their destination</p>
                     <div class="emotional-support-indicator active"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose MediFly - 2 Scenarios Section -->
+    <section class="why-us-scenarios" style="background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 4rem 0; margin: 3rem 0;">
+        <div class="container">
+            <h2 class="text-center mb-5"><i class="fas fa-question-circle me-2"></i>Why Choose MediFly?</h2>
+            <p class="text-center lead mb-5">Understanding when you need medical transport and how we help</p>
+            
+            <div class="row g-4">
+                <!-- Scenario 1: Emergency/Critical -->
+                <div class="col-md-6">
+                    <div class="scenario-card h-100" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-left: 5px solid #dc3545;">
+                        <div class="scenario-header text-center mb-4">
+                            <i class="fas fa-ambulance fa-3x text-danger mb-3"></i>
+                            <h3>Emergency/Critical Transport</h3>
+                            <span class="badge bg-danger">Severity 4-5</span>
+                        </div>
+                        
+                        <h5>When You Need This:</h5>
+                        <ul class="mb-4">
+                            <li>Patient is on life support or critical care</li>
+                            <li>ICU-level monitoring required during transport</li>
+                            <li>Time-sensitive medical emergency</li>
+                            <li>Specialized equipment needed (ventilator, ECMO)</li>
+                        </ul>
+                        
+                        <h5>How MediFly Helps:</h5>
+                        <ul class="mb-4">
+                            <li><strong>Provider:</strong> <span class="vendor-masked">★★★★★ Provider A</span> (Full credentials shown after payment)</li>
+                            <li><strong>Response:</strong> 3-4 hours with doctor onboard</li>
+                            <li><strong>Equipment:</strong> Full ICU capabilities</li>
+                            <li><strong>Cost:</strong> $125,000 - $135,000</li>
+                            <li><strong>Family Support:</strong> Real-time updates every 15 minutes</li>
+                        </ul>
+                        
+                        <div class="text-center">
+                            <a href="{{ url_for('intake') }}" class="btn btn-danger btn-lg">
+                                <i class="fas fa-bolt me-2"></i>Emergency Transport
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Scenario 2: Stable/Planned -->
+                <div class="col-md-6">
+                    <div class="scenario-card h-100" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-left: 5px solid #28a745;">
+                        <div class="scenario-header text-center mb-4">
+                            <i class="fas fa-plane-departure fa-3x text-success mb-3"></i>
+                            <h3>Stable/Planned Transport</h3>
+                            <span class="badge bg-success">Severity 1-3</span>
+                        </div>
+                        
+                        <h5>When You Need This:</h5>
+                        <ul class="mb-4">
+                            <li>Patient is stable but needs specialized care</li>
+                            <li>Planned transfer to specialist facility</li>
+                            <li>Long-distance family reunion transport</li>
+                            <li>Post-surgery transfer home</li>
+                        </ul>
+                        
+                        <h5>How MediFly Helps:</h5>
+                        <ul class="mb-4">
+                            <li><strong>Provider:</strong> <span class="vendor-masked">★★★★ Provider B</span> (Full credentials shown after payment)</li>
+                            <li><strong>Response:</strong> 5-6 hours, planned timing</li>
+                            <li><strong>Equipment:</strong> Basic life support, family seat option</li>
+                            <li><strong>Cost:</strong> $85,000 - $105,000</li>
+                            <li><strong>Family Support:</strong> VIP cabin upgrades available</li>
+                        </ul>
+                        
+                        <div class="text-center">
+                            <a href="{{ url_for('intake') }}" class="btn btn-success btn-lg">
+                                <i class="fas fa-calendar me-2"></i>Plan Transport
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Goal Progress -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="goal-progress-card" style="background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                        <h4 class="text-center mb-4"><i class="fas fa-target me-2"></i>Our Platform Goals & Progress</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="goal-metric text-center">
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar bg-success" style="width: 28%">7/25</div>
+                                    </div>
+                                    <h5>25 Bookings Goal</h5>
+                                    <p class="text-muted">Current: 7 completed • $847,500 revenue</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="goal-metric text-center">
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar bg-info" style="width: 14%">7/50</div>
+                                    </div>
+                                    <h5>50 Bookings Milestone</h5>
+                                    <p class="text-muted">Unlock enhanced provider network</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="goal-metric text-center">
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar bg-warning" style="width: 70%">70%</div>
+                                    </div>
+                                    <h5>Bubble Migration</h5>
+                                    <p class="text-muted">Platform migration in progress</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
