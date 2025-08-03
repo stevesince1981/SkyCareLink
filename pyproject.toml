@@ -5,6 +5,10 @@ replit = "3.2"
 [tool.replit.dependencies]
 flask = "latest"
 python-dotenv = "latest"
+flask-login = "latest"
+pyjwt = "latest"
+bcrypt = "latest"
+flask-limiter = "latest"
 
 [build-system]
 requires = ["setuptools>=45", "wheel"]
@@ -19,7 +23,11 @@ authors = [
 ]
 dependencies = [
     "flask>=2.3.0",
-    "python-dotenv>=1.0.0"
+    "python-dotenv>=1.0.0",
+    "flask-login>=0.6.0",
+    "pyjwt>=2.4.0",
+    "bcrypt>=3.2.0",
+    "flask-limiter>=2.1.0"
 ]
 
 [project.optional-dependencies]

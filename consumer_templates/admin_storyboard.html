@@ -1,0 +1,405 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Admin Storyboard - MediFly Feature Demonstrations{% endblock %}
+
+{% block head %}
+<style>
+.storyboard-container {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.storyboard-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid #007bff;
+}
+
+.storyboard-card.success {
+    border-left-color: #28a745;
+}
+
+.storyboard-card.warning {
+    border-left-color: #ffc107;
+}
+
+.storyboard-card.info {
+    border-left-color: #17a2b8;
+}
+
+.feature-demo {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border: 1px solid #dee2e6;
+}
+
+.demo-steps {
+    list-style: none;
+    padding: 0;
+}
+
+.demo-steps li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+    position: relative;
+    padding-left: 2rem;
+}
+
+.demo-steps li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.metric-highlight {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.interactive-demo {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.demo-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    margin: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.demo-button:hover {
+    background: white;
+    color: #28a745;
+}
+
+.storyboard-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.storyboard-timeline:before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #007bff;
+}
+
+.timeline-item {
+    position: relative;
+    margin: 2rem 0;
+    padding-left: 2rem;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    top: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    background: #007bff;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 3px #007bff;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="storyboard-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center mb-5">
+                    <h1><i class="fas fa-presentation me-3"></i>MediFly Admin Feature Storyboard</h1>
+                    <p class="lead">Comprehensive demonstration of administrative capabilities and business analytics</p>
+                    <p class="text-muted">Live demonstration of real-time data, security features, and business intelligence</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Overview -->
+        <div class="row">
+            <div class="col-12">
+                <div class="storyboard-card success">
+                    <h3><i class="fas fa-chart-line me-2"></i>Business Performance Highlights</h3>
+                    <div class="metric-grid">
+                        <div class="metric-highlight">
+                            <h4>${{ "${:,}".format(847500) }}</h4>
+                            <p>Total Revenue Generated</p>
+                            <small>7 completed bookings</small>
+                        </div>
+                        <div class="metric-highlight" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                            <h4>94%</h4>
+                            <p>HIPAA Compliance Score</p>
+                            <small>Security & privacy excellence</small>
+                        </div>
+                        <div class="metric-highlight" style="background: linear-gradient(135deg, #ffc107, #e0a800);">
+                            <h4>70%</h4>
+                            <p>Migration Progress</p>
+                            <small>7/10 bookings to Bubble threshold</small>
+                        </div>
+                        <div class="metric-highlight" style="background: linear-gradient(135deg, #e91e63, #c2185b);">
+                            <h4>$50K</h4>
+                            <p>Provider Rewards Distributed</p>
+                            <small>3-tier incentive system</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Demonstrations -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="storyboard-card">
+                    <h4><i class="fas fa-search me-2"></i>Provider Search & HIPAA Compliance</h4>
+                    <div class="feature-demo">
+                        <h6>Data Protection Features:</h6>
+                        <ul class="demo-steps">
+                            <li>Patient names automatically masked (M******* J*****)</li>
+                            <li>Family contacts protected (S**** (Daughter))</li>
+                            <li>Real-time filtering by provider, status, date range</li>
+                            <li>Booking details with severity level tracking</li>
+                            <li>Satisfaction scores and provider ratings</li>
+                        </ul>
+                        <a href="{{ url_for('provider_search') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>View Live Demo
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="storyboard-card warning">
+                    <h4><i class="fas fa-shield-alt me-2"></i>OWASP Security Scanning</h4>
+                    <div class="feature-demo">
+                        <h6>Security Monitoring:</h6>
+                        <ul class="demo-steps">
+                            <li>Real-time vulnerability detection (7 identified)</li>
+                            <li>HIPAA compliance monitoring (94% score)</li>
+                            <li>Automated security recommendations</li>
+                            <li>Risk level categorization (Low/Medium/High)</li>
+                            <li>Continuous improvement tracking</li>
+                        </ul>
+                        <a href="{{ url_for('security_scan') }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-bug me-1"></i>View Security Status
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Intelligence Demo -->
+        <div class="row">
+            <div class="col-12">
+                <div class="storyboard-card info">
+                    <h4><i class="fas fa-rocket me-2"></i>Bubble Migration & Business Growth</h4>
+                    <div class="storyboard-timeline">
+                        <div class="timeline-item">
+                            <h6>Current Status: 7/10 Bookings Complete</h6>
+                            <p>We're 70% of the way to our 10-booking threshold for Bubble migration. Each booking demonstrates platform stability and market validation.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Revenue Milestone: $847,500 Generated</h6>
+                            <p>Strong revenue generation across diverse provider types: Traditional (57%), Rural (29%), Drone/Hybrid (14%)</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Provider Ecosystem: 3-Tier Reward System</h6>
+                            <p>Successfully distributed $50,000 in provider rewards, creating sustainable partnerships and quality incentives.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Next Phase: Scalable Platform Migration</h6>
+                            <p>Upon reaching 10 bookings, full migration to Bubble with enhanced features, real-time processing, and expanded provider network.</p>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('migration_status') }}" class="btn btn-info">
+                        <i class="fas fa-chart-line me-1"></i>View Migration Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Feature Demonstrations -->
+        <div class="row">
+            <div class="col-12">
+                <div class="interactive-demo">
+                    <h4><i class="fas fa-play-circle me-2"></i>Interactive Feature Exploration</h4>
+                    <p>Experience all administrative features with live data and real-time updates</p>
+                    <div class="mt-3">
+                        <button class="demo-button" onclick="location.href='{{ url_for('admin_panel') }}'">
+                            <i class="fas fa-cog me-1"></i>Business Dashboard
+                        </button>
+                        <button class="demo-button" onclick="location.href='{{ url_for('provider_rewards') }}'">
+                            <i class="fas fa-trophy me-1"></i>Reward System
+                        </button>
+                        <button class="demo-button" onclick="location.href='{{ url_for('dashboard') }}'">
+                            <i class="fas fa-chart-bar me-1"></i>Analytics
+                        </button>
+                        <button class="demo-button" onclick="showStoryboardFeatures()">
+                            <i class="fas fa-magic me-1"></i>Auto-Demo Mode
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Implementation Details -->
+        <div class="row">
+            <div class="col-12">
+                <div class="storyboard-card">
+                    <h4><i class="fas fa-code me-2"></i>Technical Implementation Highlights</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-demo">
+                                <h6>Authentication & Security</h6>
+                                <ul class="demo-steps">
+                                    <li>Flask-Login with role-based access</li>
+                                    <li>JWT token management</li>
+                                    <li>bcrypt password hashing</li>
+                                    <li>Rate limiting (Flask-Limiter)</li>
+                                    <li>Session-based data protection</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-demo">
+                                <h6>Data Management</h6>
+                                <ul class="demo-steps">
+                                    <li>HIPAA-compliant data masking</li>
+                                    <li>In-memory session storage</li>
+                                    <li>Automated data cleanup</li>
+                                    <li>Real-time analytics</li>
+                                    <li>Comprehensive audit logging</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-demo">
+                                <h6>Business Intelligence</h6>
+                                <ul class="demo-steps">
+                                    <li>Real-time revenue tracking</li>
+                                    <li>Provider performance metrics</li>
+                                    <li>Migration progress monitoring</li>
+                                    <li>Security compliance scoring</li>
+                                    <li>Growth trajectory analysis</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Back to Admin -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="mt-4">
+                    <a href="{{ url_for('admin_panel') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Admin Panel
+                    </a>
+                    <a href="{{ url_for('landing') }}" class="btn btn-outline-secondary btn-lg ms-3">
+                        <i class="fas fa-home me-2"></i>Return to Main Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showStoryboardFeatures() {
+    const features = [
+        { name: 'Provider Search', url: '{{ url_for("provider_search") }}', delay: 2000 },
+        { name: 'Security Scan', url: '{{ url_for("security_scan") }}', delay: 4000 },
+        { name: 'Migration Status', url: '{{ url_for("migration_status") }}', delay: 6000 },
+        { name: 'Provider Rewards', url: '{{ url_for("provider_rewards") }}', delay: 8000 }
+    ];
+    
+    let currentFeature = 0;
+    
+    function demonstrateFeature() {
+        if (currentFeature < features.length) {
+            const feature = features[currentFeature];
+            
+            // Show notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-info alert-dismissible fade show position-fixed';
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-play me-2"></i>
+                <strong>Auto-Demo:</strong> Loading ${feature.name}...
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            // Navigate after delay
+            setTimeout(() => {
+                window.open(feature.url, '_blank');
+                notification.remove();
+                currentFeature++;
+                if (currentFeature < features.length) {
+                    setTimeout(demonstrateFeature, 3000);
+                }
+            }, 2000);
+        }
+    }
+    
+    alert('Auto-Demo Mode: Will open each admin feature in sequence. Close this dialog to start.');
+    demonstrateFeature();
+}
+
+// Smooth scroll for timeline
+document.addEventListener('DOMContentLoaded', function() {
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    });
+    
+    timelineItems.forEach(item => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        item.style.transition = 'all 0.6s ease';
+        observer.observe(item);
+    });
+});
+</script>
+{% endblock %}

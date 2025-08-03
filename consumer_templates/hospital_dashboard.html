@@ -1,0 +1,261 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Hospital Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.hospital-dashboard {
+    background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.hospital-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #007bff;
+}
+
+.clinical-metric {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    margin: 0.5rem;
+}
+
+.bulk-request {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+}
+
+.compliance-indicator {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.compliance-high { background: #d4edda; color: #155724; }
+.compliance-medium { background: #fff3cd; color: #856404; }
+.compliance-low { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hospital-dashboard">
+    <div class="container">
+        <!-- Header -->
+        <div class="hospital-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-hospital me-3"></i>Hospital Dashboard</h1>
+                    <p class="lead">Welcome, {{ user.name }}</p>
+                    <p class="text-muted">Clinical transport coordination and compliance management</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="clinical-metric">
+                        <i class="fas fa-heartbeat fs-3"></i>
+                        <div>{{ compliance_score }}%</div>
+                        <small>HIPAA Compliance</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Metrics -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="clinical-metric">
+                    <i class="fas fa-ambulance fs-4"></i>
+                    <h3>{{ monthly_volume }}</h3>
+                    <small>Monthly Transports</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="clinical-metric" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                    <i class="fas fa-clock fs-4"></i>
+                    <h3>{{ average_response_time }}</h3>
+                    <small>Avg Response Time</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="clinical-metric" style="background: linear-gradient(135deg, #ffc107, #e0a800);">
+                    <i class="fas fa-user-md fs-4"></i>
+                    <h3>{{ bulk_requests|length }}</h3>
+                    <small>Active Requests</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="clinical-metric" style="background: linear-gradient(135deg, #e91e63, #c2185b);">
+                    <i class="fas fa-shield-alt fs-4"></i>
+                    <h3>94%</h3>
+                    <small>Security Score</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Bulk Requests -->
+            <div class="col-md-8">
+                <div class="hospital-card">
+                    <h4><i class="fas fa-list me-2"></i>Bulk Transport Requests</h4>
+                    {% for request in bulk_requests[:5] %}
+                    <div class="bulk-request">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <strong>{{ request.id }}</strong>
+                                <br><small class="text-muted">{{ request.origin }} → {{ request.destination }}</small>
+                                <br><span class="compliance-indicator compliance-{{ 'high' if request.severity <= 2 else 'medium' if request.severity <= 4 else 'low' }}">
+                                    Severity {{ request.severity }}
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>{{ request.provider }}</strong>
+                                <br><small class="text-muted">${{ "{:,}".format(request.cost) }}</small>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <span class="badge bg-success">{{ request.status }}</span>
+                                <br><small class="text-muted">{{ request.date }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('provider_search') }}" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Search All Requests
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinical Tools -->
+            <div class="col-md-4">
+                <div class="hospital-card">
+                    <h5><i class="fas fa-tools me-2"></i>Clinical Tools</h5>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="showPatientLookup()">
+                            <i class="fas fa-user-injured me-2"></i>Patient Lookup
+                        </button>
+                        <button class="btn btn-outline-success" onclick="showEmergencyProtocol()">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Emergency Protocol
+                        </button>
+                        <button class="btn btn-outline-info" onclick="showComplianceAudit()">
+                            <i class="fas fa-clipboard-check me-2"></i>Compliance Audit
+                        </button>
+                        <a href="{{ url_for('security_scan') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-shield-alt me-2"></i>Security Scan
+                        </a>
+                    </div>
+                </div>
+
+                <!-- HIPAA Compliance -->
+                <div class="hospital-card">
+                    <h5><i class="fas fa-shield-alt me-2"></i>HIPAA Compliance</h5>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ compliance_score }}%">{{ compliance_score }}%</div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <small class="text-muted">Data Masking</small>
+                            <br><span class="badge bg-success">Active</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Audit Logging</small>
+                            <br><span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="hospital-card">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Department Stats</h5>
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <div class="clinical-metric">
+                                <div>{{ storyboard_data.revenue_milestone.split()[0] }}</div>
+                                <small>Revenue</small>
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <div class="clinical-metric">
+                                <div>{{ storyboard_data.migration_progress.split('%')[0] }}%</div>
+                                <small>Migration</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Administrative Access -->
+        <div class="row">
+            <div class="col-12">
+                <div class="hospital-card">
+                    <h5><i class="fas fa-cogs me-2"></i>Administrative Access</h5>
+                    <p class="text-muted">Access comprehensive admin features and business analytics</p>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin_panel') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-cog me-2"></i>Admin Panel
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin_storyboard') }}" class="btn btn-info w-100">
+                                <i class="fas fa-presentation me-2"></i>Admin Storyboard
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('provider_rewards') }}" class="btn btn-success w-100">
+                                <i class="fas fa-trophy me-2"></i>Provider Rewards
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('migration_status') }}" class="btn btn-warning w-100">
+                                <i class="fas fa-rocket me-2"></i>Migration Status
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="mt-4">
+                    <a href="{{ url_for('secure_logout') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-out-alt me-2"></i>Secure Logout
+                    </a>
+                    <a href="{{ url_for('landing') }}" class="btn btn-outline-primary ms-3">
+                        <i class="fas fa-home me-2"></i>Back to Main Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showPatientLookup() {
+    alert('Patient Lookup System:\n\n• HIPAA-compliant patient search\n• Masked identification for privacy\n• Real-time transport status\n• Medical history integration\n• Emergency contact access\n\nFeature available in full admin panel.');
+}
+
+function showEmergencyProtocol() {
+    alert('Emergency Protocol:\n\n• Rapid response activation\n• Provider auto-notification\n• Priority dispatch system\n• Real-time coordination\n• Medical team preparation\n\nAverage response time: 4.2 minutes');
+}
+
+function showComplianceAudit() {
+    alert('HIPAA Compliance Audit:\n\n• Current compliance: 94%\n• Data masking: Active\n• Audit logging: Complete\n• Security scanning: Regular\n• Staff training: Up to date\n\nFull audit available in security section.');
+}
+</script>
+{% endblock %}

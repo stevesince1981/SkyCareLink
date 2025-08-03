@@ -2,11 +2,17 @@ import os
 import logging
 import json
 import math
+import jwt
+import bcrypt
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
-# import sympy as sp  # Will be enabled after package installation
+# import sympy as sp  # Will be enabled after package installation  
 # import stripe  # Will be enabled after package installation
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from functools import wraps
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -14,6 +20,109 @@ logging.basicConfig(level=logging.DEBUG)
 # Create Flask app
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(consumer_app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'info'
+
+# Initialize Flask-Limiter for rate limiting
+limiter = Limiter(
+    app=consumer_app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
+# JWT Configuration
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "jwt-demo-key-change-in-production")
+JWT_ALGORITHM = "HS256"
+JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
+
+# User class for Flask-Login
+class User(UserMixin):
+    def __init__(self, email, role, name=None):
+        self.id = email
+        self.email = email
+        self.role = role
+        self.name = name or email.split('@')[0].title()
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
+
+    def get_id(self):
+        return self.email
+
+# Demo user accounts (in production, these would be in a database)
+DEMO_USERS = {
+    'family@mediflytest.com': {
+        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+        'role': 'family',
+        'name': 'Sarah Johnson'
+    },
+    'hospital@mediflytest.com': {
+        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+        'role': 'hospital', 
+        'name': 'Dr. Michael Chen'
+    },
+    'provider@mediflytest.com': {
+        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+        'role': 'provider',
+        'name': 'Captain Lisa Martinez'
+    },
+    'mvp@mediflytest.com': {
+        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+        'role': 'mvp',
+        'name': 'Alex Thompson'
+    },
+    'admin@mediflytest.com': {
+        'password_hash': bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt()),
+        'role': 'admin',
+        'name': 'Admin User'
+    }
+}
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id in DEMO_USERS:
+        user_data = DEMO_USERS[user_id]
+        return User(user_id, user_data['role'], user_data['name'])
+    return None
+
+# Role-based access decorator
+def role_required(*roles):
+    def decorator(f):
+        @wraps(f)
+        @login_required
+        def decorated_function(*args, **kwargs):
+            if current_user.role not in roles:
+                flash('You do not have permission to access this page.', 'error')
+                return redirect(url_for('dashboard'))
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+# JWT token functions
+def generate_jwt_token(user):
+    payload = {
+        'email': user.email,
+        'role': user.role,
+        'name': user.name,
+        'exp': datetime.utcnow() + JWT_ACCESS_TOKEN_EXPIRES,
+        'iat': datetime.utcnow()
+    }
+    return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+def verify_jwt_token(token):
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
 
 # Add Jinja2 filters
 @consumer_app.template_filter('number_format')
@@ -377,6 +486,127 @@ def send_notification(message, notification_type='email'):
     # - Zapier for email automation
     # - Slack webhooks for admin alerts
     return True
+
+# Authentication Routes
+@consumer_app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")
+def login():
+    """Role-based login with security features"""
+    if request.method == 'POST':
+        email = request.form.get('email', '').lower().strip()
+        password = request.form.get('password', '')
+        role = request.form.get('role', '')
+        
+        # Validate input
+        if not email or not password or not role:
+            flash('Please fill in all required fields.', 'error')
+            return render_template('login.html')
+        
+        # Check if user exists
+        if email not in DEMO_USERS:
+            flash('Invalid credentials. Please try again.', 'error')
+            return render_template('login.html')
+        
+        # Verify password
+        user_data = DEMO_USERS[email]
+        if not bcrypt.checkpw(password.encode('utf-8'), user_data['password_hash']):
+            flash('Invalid credentials. Please try again.', 'error')
+            return render_template('login.html')
+        
+        # Verify role matches
+        if user_data['role'] != role:
+            flash('Role mismatch. Please select the correct role.', 'error')
+            return render_template('login.html')
+        
+        # Create user and login
+        user = User(email, user_data['role'], user_data['name'])
+        login_user(user)
+        
+        # Generate JWT token
+        jwt_token = generate_jwt_token(user)
+        session['jwt_token'] = jwt_token
+        
+        # Log successful login
+        logging.info(f"Successful login: {email} as {role}")
+        
+        flash(f'Welcome back, {user.name}!', 'success')
+        return redirect(url_for('role_dashboard'))
+    
+    return render_template('login.html')
+
+@consumer_app.route('/logout')
+@login_required
+def secure_logout():
+    """Secure logout with session cleanup"""
+    logging.info(f"User logout: {current_user.email}")
+    session.clear()
+    logout_user()
+    flash('You have been logged out successfully.', 'info')
+    return redirect(url_for('login'))
+
+@consumer_app.route('/role_dashboard')
+@login_required
+def role_dashboard():
+    """Role-specific dashboard with comprehensive features and admin storyboards"""
+    user_role = current_user.role
+    
+    # Role-specific dashboard data
+    dashboard_data = {
+        'user': current_user,
+        'role': user_role,
+        'booking_stats': BOOKING_STATS,
+        'sample_bookings': SAMPLE_BOOKINGS[:3],
+        'current_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'storyboard_data': {
+            'revenue_milestone': '$847,500 achieved',
+            'security_score': '94% HIPAA compliance',
+            'migration_progress': '70% toward Bubble threshold',
+            'provider_tiers': '3 active reward levels'
+        }
+    }
+    
+    if user_role == 'family':
+        dashboard_data.update({
+            'family_bookings': [b for b in SAMPLE_BOOKINGS if 'family' in str(b).lower()][:2],
+            'upcoming_appointments': [],
+            'support_contacts': {
+                'emergency': '1-800-MEDIFLY',
+                'family_advocate': 'advocate@medifly.com',
+                'insurance_help': 'insurance@medifly.com'
+            }
+        })
+        return render_template('family_dashboard.html', **dashboard_data)
+    elif user_role == 'hospital':
+        dashboard_data.update({
+            'bulk_requests': SAMPLE_BOOKINGS,
+            'compliance_score': 94,
+            'monthly_volume': 7,
+            'average_response_time': '4.2 minutes'
+        })
+        return render_template('hospital_dashboard.html', **dashboard_data)
+    elif user_role == 'provider':
+        dashboard_data.update({
+            'available_requests': [b for b in SAMPLE_BOOKINGS if b['status'] == 'Pending'][:3],
+            'active_bookings': [b for b in SAMPLE_BOOKINGS if b['status'] in ['In Progress', 'Completed']][:2],
+            'earnings_summary': {
+                'this_month': 45000,
+                'pending_payments': 12000,
+                'total_flights': 5
+            }
+        })
+        return render_template('provider_dashboard.html', **dashboard_data)
+    elif user_role == 'mvp':
+        dashboard_data.update({
+            'early_features': ['AI Cost Estimator', 'Route Optimizer', 'Family Communication Hub'],
+            'feedback_requests': 3,
+            'beta_access': True
+        })
+        return render_template('mvp_dashboard.html', **dashboard_data)
+    elif user_role == 'admin':
+        # Admin gets access to comprehensive admin panel with storyboards
+        return redirect(url_for('admin_panel'))
+    else:
+        return render_template('generic_dashboard.html', **dashboard_data)
 
 @consumer_app.route('/')
 def landing():
@@ -742,6 +972,13 @@ def admin_panel():
                          security_scan=SECURITY_SCAN_RESULTS,
                          migration_checklist=BUBBLE_MIGRATION_CHECKLIST,
                          stats=BOOKING_STATS)
+
+@consumer_app.route('/admin_storyboard')
+def admin_storyboard():
+    """Admin feature storyboard demonstration"""
+    return render_template('admin_storyboard.html',
+                         booking_stats=BOOKING_STATS,
+                         sample_bookings=SAMPLE_BOOKINGS)
 
 @consumer_app.route('/provider_search')
 def provider_search():

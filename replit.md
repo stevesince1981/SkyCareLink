@@ -6,6 +6,27 @@ MediFly is a Flask-based web application that simulates a hospital interface for
 
 ## Recent Enhancements (August 2025)
 
+### Role-Based Authentication System (Latest)
+- Comprehensive Flask-Login integration with JWT token management
+- Secure role-based access control for Family, Hospital, Provider, MVP, and Admin users
+- bcrypt password hashing with rate limiting (Flask-Limiter) for security
+- Role-specific dashboards with tailored interfaces and functionality
+- Session-based authentication with automatic token refresh capabilities
+- OWASP-compliant security features with fraud prevention
+
+### Admin Storyboard Demonstrations
+- Interactive admin feature storyboard with live data visualization
+- Business performance highlights showcasing $847,500 revenue achievement
+- Comprehensive feature demonstrations including provider search, security scanning, and migration status
+- Auto-demo mode with sequential feature walkthrough capabilities
+- Timeline-based business intelligence presentation with growth metrics
+
+### Enhanced Dashboard Suite
+- Family Dashboard: Pastel-themed interface with family support features, comfort options, and privacy assurance
+- Hospital Dashboard: Clinical-focused interface with bulk request management, HIPAA compliance tracking, and emergency protocols
+- Provider Dashboard: Earnings tracking, bid management, flight planning tools, and performance metrics
+- MVP Dashboard: Beta feature access, feedback collection, usage analytics, and exclusive early adopter perks
+
 ### Visual and UX Improvements
 - Enhanced provider comparison page with larger pricing displays and capability badges
 - Improved hover animations and transitions throughout the interface
@@ -22,6 +43,7 @@ MediFly is a Flask-based web application that simulates a hospital interface for
 - HIPAA-compliant data masking in admin panel for sensitive patient information
 - Enhanced session data protection with automatic masking of medical/patient fields
 - Improved admin interface with refresh functionality and better table styling
+- JWT token security with HMAC-SHA256 signing and refresh token management
 
 ### Technical Enhancements
 - Bootstrap tooltip integration throughout the application
