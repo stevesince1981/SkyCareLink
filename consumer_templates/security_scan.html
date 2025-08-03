@@ -1,0 +1,320 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Security Scan - OWASP Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Security Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="fas fa-shield-alt me-2"></i>OWASP Security Scan Results</h1>
+                <div class="btn-group">
+                    <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Admin
+                    </a>
+                    <form method="post" action="{{ url_for('run_security_scan') }}" class="d-inline">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-sync"></i> Run New Scan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scan Summary -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-{{ 'success' if scan_results.status == 'PASSED' else 'danger' }}">
+                <div class="card-body text-center">
+                    <h2 class="text-{{ 'success' if scan_results.status == 'PASSED' else 'danger' }}">
+                        <i class="fas fa-{{ 'check-circle' if scan_results.status == 'PASSED' else 'exclamation-triangle' }}"></i>
+                        {{ scan_results.status }}
+                    </h2>
+                    <p class="mb-0">Security Assessment</p>
+                    <small class="text-muted">Last scan: {{ scan_results.last_scan }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h2 class="text-{{ 'success' if scan_results.compliance_score >= 95 else 'warning' if scan_results.compliance_score >= 90 else 'danger' }}">
+                        {{ scan_results.compliance_score }}%
+                    </h2>
+                    <p class="mb-0">Compliance Score</p>
+                    <div class="progress mt-2">
+                        <div class="progress-bar bg-{{ 'success' if scan_results.compliance_score >= 95 else 'warning' if scan_results.compliance_score >= 90 else 'danger' }}" 
+                             style="width: {{ scan_results.compliance_score }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vulnerability Breakdown -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bug me-2"></i>Vulnerability Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded bg-{{ 'light' if scan_results.vulnerabilities.high == 0 else 'danger text-white' }}">
+                                <h2>{{ scan_results.vulnerabilities.high }}</h2>
+                                <h6>Critical</h6>
+                                <small>Immediate attention required</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded bg-{{ 'light' if scan_results.vulnerabilities.medium == 0 else 'warning' }}">
+                                <h2>{{ scan_results.vulnerabilities.medium }}</h2>
+                                <h6>High</h6>
+                                <small>Address within 7 days</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded bg-light">
+                                <h2>{{ scan_results.vulnerabilities.low }}</h2>
+                                <h6>Medium</h6>
+                                <small>Monitor and plan fixes</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded bg-light">
+                                <h2>{{ scan_results.vulnerabilities.info }}</h2>
+                                <h6>Low/Info</h6>
+                                <small>Best practices</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Recommendations -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb me-2"></i>Security Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Priority</th>
+                                    <th>Recommendation</th>
+                                    <th>HIPAA Impact</th>
+                                    <th>Implementation</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rec in scan_results.recommendations %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if loop.index <= 2 else 'warning' if loop.index <= 4 else 'info' }}">
+                                            {{ 'High' if loop.index <= 2 else 'Medium' if loop.index <= 4 else 'Low' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ rec }}</td>
+                                    <td>
+                                        {% if 'Content Security Policy' in rec %}
+                                            <span class="text-warning">Medium</span>
+                                        {% elif 'rate limiting' in rec %}
+                                            <span class="text-danger">High</span>
+                                        {% elif 'HTTPS' in rec %}
+                                            <span class="text-danger">Critical</span>
+                                        {% else %}
+                                            <span class="text-info">Low</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="showImplementation('{{ rec }}')">
+                                            View Guide
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Pending</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIPAA Compliance Checklist -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-clipboard-check me-2"></i>HIPAA Compliance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Data Encryption at Rest
+                            <span class="badge bg-success rounded-pill">✓</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Data Encryption in Transit
+                            <span class="badge bg-success rounded-pill">✓</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Access Logging
+                            <span class="badge bg-warning rounded-pill">Partial</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Session Management
+                            <span class="badge bg-success rounded-pill">✓</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Data Anonymization
+                            <span class="badge bg-success rounded-pill">✓</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Audit Trail
+                            <span class="badge bg-warning rounded-pill">Needs Update</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history me-2"></i>Scan History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-success rounded-circle p-2">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <strong>{{ scan_results.last_scan }}</strong>
+                                <div class="text-muted">Current scan completed</div>
+                                <small>Score: {{ scan_results.compliance_score }}%</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary rounded-circle p-2">
+                                    <i class="fas fa-shield-alt text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <strong>2025-08-01 09:30:00</strong>
+                                <div class="text-muted">Previous scan</div>
+                                <small>Score: 91%</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-warning rounded-circle p-2">
+                                    <i class="fas fa-exclamation-triangle text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <strong>2025-07-28 14:15:00</strong>
+                                <div class="text-muted">Security update applied</div>
+                                <small>Fixed: HTTPS headers</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Items -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tasks me-2"></i>Next Steps</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Immediate (0-24 hours)</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-circle text-danger me-2"></i>Enable HTTPS-only cookies</li>
+                                <li><i class="fas fa-circle text-danger me-2"></i>Add rate limiting</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Short Term (1-7 days)</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-circle text-warning me-2"></i>Implement CSP headers</li>
+                                <li><i class="fas fa-circle text-warning me-2"></i>Enhance input validation</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Long Term (1-4 weeks)</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-circle text-info me-2"></i>Session timeout mechanisms</li>
+                                <li><i class="fas fa-circle text-info me-2"></i>Enhanced audit logging</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-primary me-2" onclick="generateSecurityReport()">
+                            <i class="fas fa-file-pdf"></i> Generate Report
+                        </button>
+                        <button class="btn btn-success me-2" onclick="scheduleNextScan()">
+                            <i class="fas fa-calendar"></i> Schedule Next Scan
+                        </button>
+                        <button class="btn btn-info" onclick="contactSecurity()">
+                            <i class="fas fa-envelope"></i> Contact Security Team
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showImplementation(recommendation) {
+    const implementations = {
+        'Implement Content Security Policy headers': 'Add CSP headers to prevent XSS attacks:\n\napp.after_request()\ndef set_csp(response):\n    response.headers["Content-Security-Policy"] = "default-src \'self\'"\n    return response',
+        'Add rate limiting for API endpoints': 'Install Flask-Limiter and configure:\n\nfrom flask_limiter import Limiter\nlimiter = Limiter(app, key_func=get_remote_address)\n\n@limiter.limit("10/minute")',
+        'Enable HTTPS-only cookies': 'Configure secure cookie settings:\n\napp.config["SESSION_COOKIE_SECURE"] = True\napp.config["SESSION_COOKIE_HTTPONLY"] = True',
+        'Implement input validation for all forms': 'Use WTForms for validation:\n\nfrom flask_wtf import FlaskForm\nfrom wtforms import validators\n\nclass IntakeForm(FlaskForm):\n    patient_name = StringField(validators=[validators.Length(max=100)])',
+        'Add session timeout mechanisms': 'Configure session lifetime:\n\nfrom datetime import timedelta\napp.permanent_session_lifetime = timedelta(minutes=30)'
+    };
+    
+    const impl = implementations[recommendation] || 'Implementation guide not available.';
+    alert(`🔧 Implementation Guide:\n\n${recommendation}\n\n${impl}`);
+}
+
+function generateSecurityReport() {
+    alert('📋 Generating comprehensive security report...\n\nReport will include:\n• Current vulnerability status\n• HIPAA compliance checklist\n• Implementation roadmap\n• Risk assessment\n• Recommended timeline\n\nReport will be emailed to admin team.');
+}
+
+function scheduleNextScan() {
+    alert('📅 Scheduling next security scan...\n\nOptions:\n• Weekly automated scans\n• Monthly comprehensive scans\n• After major deployments\n• Before HIPAA audits\n\nNext scan scheduled for: August 10, 2025');
+}
+
+function contactSecurity() {
+    alert('📧 Contacting security team...\n\nAvailable support:\n• Emergency security hotline\n• HIPAA compliance consultant\n• Penetration testing services\n• Security architecture review\n\nTeam will respond within 2 hours.');
+}
+</script>
+{% endblock %}

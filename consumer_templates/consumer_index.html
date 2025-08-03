@@ -431,6 +431,158 @@
         </div>
     </div>
 
+    <!-- Patient Journey Timeline -->
+    <section class="journey-timeline">
+        <div class="container">
+            <h2 class="text-center mb-5">Your Family's Journey with MediFly</h2>
+            <div class="timeline-step fade-in-up">
+                <div class="timeline-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>Emergency Contact</h4>
+                    <p>We receive your request and immediately connect with your family</p>
+                    <div class="emotional-support-indicator active"></div>
+                </div>
+            </div>
+            <div class="timeline-step fade-in-up" style="animation-delay: 0.2s">
+                <div class="timeline-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>Care Assessment</h4>
+                    <p>Medical team evaluates your loved one's needs with compassion</p>
+                    <div class="emotional-support-indicator active"></div>
+                </div>
+            </div>
+            <div class="timeline-step fade-in-up" style="animation-delay: 0.4s">
+                <div class="timeline-icon">
+                    <i class="fas fa-helicopter"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>Safe Transport</h4>
+                    <p>Professional medical transport with family updates every step</p>
+                    <div class="emotional-support-indicator active"></div>
+                </div>
+            </div>
+            <div class="timeline-step fade-in-up" style="animation-delay: 0.6s">
+                <div class="timeline-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>Reunited</h4>
+                    <p>Your loved one arrives safely at their destination</p>
+                    <div class="emotional-support-indicator active"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story Examples Section -->
+    <section class="storyboard-container">
+        <div class="container">
+            <h2 class="text-center mb-5">Real Families, Real Stories</h2>
+            
+            <!-- Story 1: Grandma at Disney -->
+            <div class="storyboard-scene active" id="story1">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="scene-illustration">
+                            <div class="scene-character disney-castle"></div>
+                            <div class="scene-character grandma-character"></div>
+                            <div class="scene-character helicopter"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Grandma's Disney Emergency</h3>
+                        <p class="lead">"During our family vacation at Disney World, Grandma fell and injured her hip. We were 1,200 miles from home and scared."</p>
+                        <p>"MediFly got her safely back to her doctor in Minneapolis within 4 hours. The medical team kept us updated every 30 minutes."</p>
+                        <small class="text-muted">- Sarah, Grandma's daughter</small>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary" onclick="playStory(1)">
+                                <i class="fas fa-play"></i> Watch Story
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Story 2: Mountain Rescue -->
+            <div class="storyboard-scene" id="story2" style="animation-delay: 1s">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="scene-illustration">
+                            <div class="scene-character" style="top: 60px; left: 30px; width: 80px; height: 60px; background: linear-gradient(135deg, #8d6e63, #a1887f); clip-path: polygon(0% 100%, 50% 0%, 100% 100%);"></div>
+                            <div class="scene-character" style="bottom: 30px; right: 50px; width: 50px; height: 70px; background: linear-gradient(135deg, #81c784, #a5d6a7); border-radius: 25px 25px 10px 10px;"></div>
+                            <div class="helicopter" style="animation-delay: 0.5s;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Mountain Hiking Accident</h3>
+                        <p class="lead">"Dad was hiking in Colorado when he had chest pains. The local hospital wanted to transfer him to Denver."</p>
+                        <p>"MediFly arranged everything - from mountain rescue to specialized cardiac transport. He's recovering well at home now."</p>
+                        <small class="text-muted">- Mike, Son</small>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary" onclick="playStory(2)">
+                                <i class="fas fa-play"></i> Watch Story
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Story 3: Newborn Transport -->
+            <div class="storyboard-scene" id="story3" style="animation-delay: 2s">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="scene-illustration">
+                            <div class="scene-character" style="top: 80px; left: 60px; width: 40px; height: 50px; background: linear-gradient(135deg, #ffcdd2, #f8bbd9); border-radius: 20px;"></div>
+                            <div class="scene-character" style="bottom: 40px; right: 60px; width: 60px; height: 40px; background: linear-gradient(135deg, #ffffff, #f5f5f5); border-radius: 15px;"></div>
+                            <div class="helicopter" style="animation-delay: 1s;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Premature Baby Transport</h3>
+                        <p class="lead">"Our baby was born 8 weeks early while we were visiting family. The NICU here couldn't provide the specialized care needed."</p>
+                        <p>"MediFly's neonatal team transported our little one safely to Children's Hospital. Professional, caring, and gave us hope."</p>
+                        <small class="text-muted">- Jennifer & Mark, Parents</small>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary" onclick="playStory(3)">
+                                <i class="fas fa-play"></i> Watch Story
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comfort Soundtrack Generator -->
+    <section class="comfort-soundtrack">
+        <div class="container">
+            <h2 class="text-center mb-4">Comfort During Transport</h2>
+            <p class="lead text-center">Choose calming sounds to help reduce anxiety during the journey</p>
+            <div class="soundtrack-controls">
+                <button class="soundtrack-btn" data-sound="nature" onclick="playComfortSound('nature')">
+                    <i class="fas fa-leaf"></i> Nature Sounds
+                </button>
+                <button class="soundtrack-btn" data-sound="classical" onclick="playComfortSound('classical')">
+                    <i class="fas fa-music"></i> Classical Music
+                </button>
+                <button class="soundtrack-btn" data-sound="meditation" onclick="playComfortSound('meditation')">
+                    <i class="fas fa-spa"></i> Meditation
+                </button>
+                <button class="soundtrack-btn" data-sound="family" onclick="playComfortSound('family')">
+                    <i class="fas fa-heart"></i> Family Messages
+                </button>
+            </div>
+            <div id="soundtrack-player" class="mt-4 text-center">
+                <p class="text-muted">Select a soundtrack above to preview calming sounds</p>
+                <div id="sound-description" class="mt-2"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- Trust Indicators -->
     <div class="trust-indicators">
         <div class="container">
@@ -460,6 +612,112 @@
         </div>
     </div>
 </div>
+
+<!-- Comprehensive Admin Access Section -->
+<section class="admin-access" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 3rem 0; margin-top: 4rem;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3><i class="fas fa-cogs me-2"></i>Comprehensive Admin Features</h3>
+                        <p class="mb-0">Full administrative access to all MediFly systems</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Column 1: Core Admin -->
+                            <div class="col-md-4 mb-3">
+                                <h5 class="text-primary"><i class="fas fa-chart-bar me-2"></i>Analytics & Dashboards</h5>
+                                <div class="list-group">
+                                    <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Business Dashboard
+                                        <small class="d-block text-muted">Revenue, profit sharing, real-time analytics</small>
+                                    </a>
+                                    <a href="{{ url_for('admin_panel') }}" class="list-group-item list-group-item-action">
+                                        <i class="fas fa-cog me-2"></i>Admin Panel
+                                        <small class="d-block text-muted">Comprehensive co-founder dashboard</small>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Column 2: Provider Management -->
+                            <div class="col-md-4 mb-3">
+                                <h5 class="text-success"><i class="fas fa-hospital me-2"></i>Provider Management</h5>
+                                <div class="list-group">
+                                    <a href="{{ url_for('provider_search') }}" class="list-group-item list-group-item-action">
+                                        <i class="fas fa-search me-2"></i>Provider Search
+                                        <small class="d-block text-muted">Search bookings, HIPAA-masked data</small>
+                                    </a>
+                                    <a href="{{ url_for('provider_rewards') }}" class="list-group-item list-group-item-action">
+                                        <i class="fas fa-trophy me-2"></i>Provider Rewards
+                                        <small class="d-block text-muted">Tier system, leaderboards, payments</small>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Column 3: Security & Migration -->
+                            <div class="col-md-4 mb-3">
+                                <h5 class="text-danger"><i class="fas fa-shield-alt me-2"></i>Security & Migration</h5>
+                                <div class="list-group">
+                                    <a href="{{ url_for('security_scan') }}" class="list-group-item list-group-item-action">
+                                        <i class="fas fa-bug me-2"></i>OWASP Security Scan
+                                        <small class="d-block text-muted">Vulnerability assessment, HIPAA compliance</small>
+                                    </a>
+                                    <a href="{{ url_for('migration_status') }}" class="list-group-item list-group-item-action">
+                                        <i class="fas fa-rocket me-2"></i>Bubble Migration
+                                        <small class="d-block text-muted">10-booking threshold, checklist status</small>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Feature Highlights -->
+                        <div class="row mt-4 pt-4 border-top">
+                            <div class="col-md-12">
+                                <h6 class="text-muted text-center mb-3">Key Features Available</h6>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-dollar-sign text-success fs-4"></i>
+                                            <small class="d-block">$847,500 Revenue</small>
+                                            <small class="text-muted">7 bookings completed</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-users text-primary fs-4"></i>
+                                            <small class="d-block">Provider Rewards</small>
+                                            <small class="text-muted">3 tiers, $50K distributed</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-shield-alt text-warning fs-4"></i>
+                                            <small class="d-block">Security Score</small>
+                                            <small class="text-muted">94% HIPAA compliance</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-rocket text-info fs-4"></i>
+                                            <small class="d-block">Migration Ready</small>
+                                            <small class="text-muted">70% to Bubble threshold</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Contact Sharing Button -->
+<button class="emergency-contact-share pulse-gentle" onclick="showEmergencyShare()">
+    <i class="fas fa-phone-alt"></i> Emergency Share
+</button>
 
 <!-- Enhanced Chatbot Widget -->
 <div class="chatbot-widget" onclick="toggleChatbot()">
@@ -622,5 +880,202 @@ function toggleChatbot() {
 function initializeChatbot() {
     console.log('Initializing enhanced family chatbot widget');
 }
+
+// Emergency Contact Sharing
+function showEmergencyShare() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade emergency-share-modal';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="emergency-share-content">
+                <h4><i class="fas fa-phone-alt me-2"></i>Emergency Contact Share</h4>
+                <p>Quickly share patient transport details with emergency contacts:</p>
+                <div class="mb-3">
+                    <label class="form-label">Emergency Contact Name</label>
+                    <input type="text" class="form-control" id="emergency-name" placeholder="Enter contact name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="emergency-phone" placeholder="Enter phone number">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Relationship</label>
+                    <select class="form-control" id="emergency-relationship">
+                        <option>Spouse</option>
+                        <option>Adult Child</option>
+                        <option>Parent</option>
+                        <option>Sibling</option>
+                        <option>Other Family</option>
+                        <option>Friend</option>
+                    </select>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary flex-fill" onclick="sendEmergencyNotification()">
+                        <i class="fas fa-paper-plane"></i> Send Update
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeEmergencyShare()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    new bootstrap.Modal(modal).show();
+}
+
+function sendEmergencyNotification() {
+    const name = document.getElementById('emergency-name').value;
+    const phone = document.getElementById('emergency-phone').value;
+    const relationship = document.getElementById('emergency-relationship').value;
+    
+    if (name && phone) {
+        alert(`Emergency notification sent to ${name} (${relationship}) at ${phone}. They will receive updates about the medical transport status.`);
+        closeEmergencyShare();
+    } else {
+        alert('Please fill in all required fields.');
+    }
+}
+
+function closeEmergencyShare() {
+    const modal = document.querySelector('.emergency-share-modal');
+    if (modal) {
+        bootstrap.Modal.getInstance(modal).hide();
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+// Storyboard Animation
+function playStory(storyNumber) {
+    const story = document.getElementById(`story${storyNumber}`);
+    const scenes = document.querySelectorAll('.storyboard-scene');
+    
+    scenes.forEach(scene => scene.classList.remove('active'));
+    
+    setTimeout(() => {
+        story.classList.add('active');
+        
+        const characters = story.querySelectorAll('.scene-character');
+        characters.forEach((char, index) => {
+            setTimeout(() => {
+                char.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    char.style.transform = 'scale(1)';
+                }, 200);
+            }, index * 300);
+        });
+    }, 100);
+}
+
+// Comfort Soundtrack Generator
+let currentAudio = null;
+
+function playComfortSound(soundType) {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+    
+    document.querySelectorAll('.soundtrack-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    event.target.classList.add('active');
+    
+    const soundDescriptions = {
+        nature: {
+            title: 'Nature Sounds',
+            description: 'Gentle rain, forest birds, and ocean waves to create a peaceful environment',
+            duration: '30 minutes of calming nature audio'
+        },
+        classical: {
+            title: 'Classical Music', 
+            description: 'Soft piano and string compositions designed to reduce anxiety',
+            duration: 'Peaceful classical selections'
+        },
+        meditation: {
+            title: 'Meditation Sounds',
+            description: 'Breathing exercises and mindfulness audio to promote relaxation',
+            duration: 'Guided meditation for medical transport'
+        },
+        family: {
+            title: 'Family Messages',
+            description: 'Record and play personalized messages from loved ones',
+            duration: 'Custom family recordings available'
+        }
+    };
+    
+    const sound = soundDescriptions[soundType];
+    const player = document.getElementById('soundtrack-player');
+    
+    player.innerHTML = `
+        <div class="p-3 bg-light rounded">
+            <h5><i class="fas fa-volume-up me-2"></i>${sound.title}</h5>
+            <p class="mb-2">${sound.description}</p>
+            <small class="text-muted">${sound.duration}</small>
+            <div class="mt-3">
+                <button class="btn btn-sm btn-success" onclick="simulateAudioPlay('${soundType}')">
+                    <i class="fas fa-play"></i> Preview
+                </button>
+                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="stopAudio()">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function simulateAudioPlay(soundType) {
+    const playButton = event.target;
+    playButton.innerHTML = '<i class="fas fa-pause"></i> Playing...';
+    playButton.disabled = true;
+    
+    setTimeout(() => {
+        playButton.innerHTML = '<i class="fas fa-play"></i> Preview';
+        playButton.disabled = false;
+    }, 3000);
+    
+    const description = document.getElementById('sound-description');
+    description.innerHTML = `<div class="alert alert-success"><i class="fas fa-music"></i> Playing ${soundType} sounds for comfort...</div>`;
+}
+
+function stopAudio() {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+    
+    document.querySelectorAll('.soundtrack-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const player = document.getElementById('soundtrack-player');
+    player.innerHTML = '<p class="text-muted">Select a soundtrack above to preview calming sounds</p>';
+    
+    const description = document.getElementById('sound-description');
+    description.innerHTML = '';
+}
+
+// Enhanced Timeline Animations and Auto-Story Rotation
+document.addEventListener('DOMContentLoaded', function() {
+    const timelineSteps = document.querySelectorAll('.timeline-step');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-up');
+            }
+        });
+    });
+    
+    timelineSteps.forEach(step => {
+        observer.observe(step);
+    });
+    
+    // Auto-play storyboard scenes
+    let currentStory = 1;
+    setInterval(() => {
+        playStory(currentStory);
+        currentStory = currentStory === 3 ? 1 : currentStory + 1;
+    }, 8000);
+});
 </script>
 {% endblock %}

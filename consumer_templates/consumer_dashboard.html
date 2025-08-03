@@ -227,13 +227,38 @@
             MediFly Business Dashboard
         </h1>
         <p class="lead">Real-time analytics, profit tracking, and notifications</p>
-        <div class="d-flex justify-content-center gap-3 mt-3">
+        <div class="d-flex justify-content-center gap-3 mt-3 mb-3">
             <button class="btn btn-light btn-sm" onclick="refreshDashboard()">
                 <i class="fas fa-sync-alt me-2"></i>Refresh Data
             </button>
             <a href="{{ url_for('dashboard_export_csv') }}" class="btn btn-outline-light btn-sm">
                 <i class="fas fa-download me-2"></i>Export CSV
             </a>
+        </div>
+        
+        <!-- Comprehensive Admin Navigation -->
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-10">
+                <div class="btn-group-vertical btn-group-lg w-100" role="group">
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-light">
+                            <i class="fas fa-cog me-2"></i>Admin Panel
+                        </a>
+                        <a href="{{ url_for('provider_search') }}" class="btn btn-outline-light">
+                            <i class="fas fa-search me-2"></i>Provider Search
+                        </a>
+                        <a href="{{ url_for('security_scan') }}" class="btn btn-outline-light">
+                            <i class="fas fa-shield-alt me-2"></i>Security Scan
+                        </a>
+                        <a href="{{ url_for('provider_rewards') }}" class="btn btn-outline-light">
+                            <i class="fas fa-trophy me-2"></i>Provider Rewards
+                        </a>
+                        <a href="{{ url_for('migration_status') }}" class="btn btn-outline-light">
+                            <i class="fas fa-rocket me-2"></i>Migration Status
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

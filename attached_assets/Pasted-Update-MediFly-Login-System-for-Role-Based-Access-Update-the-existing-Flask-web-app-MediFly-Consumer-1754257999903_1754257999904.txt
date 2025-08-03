@@ -1,0 +1,94 @@
+Update MediFly Login System for Role-Based Access
+Update the existing Flask web app MediFly Consumer MVP (medtransportlink-consumer.replit.app) to include a secure, role-based login system for four user types: Hospital, Providers, MVP users (early adopters), and Family users. Ensure HIPAA compliance (transient PHI/PII, no credit card/care credit storage) and robust security/fraud prevention. Integrate with the current structure, maintaining the toggle (Family/Individual vs. Hospital/Insurance) and other features (AI estimates, chatbot, deposit flow).
+File Structure Updates:
+
+app.py: Add login routes, authentication logic, token generation/handling, role-based access control (RBAC).
+templates/: Add login.html (role selection), dashboard.html (role-specific views), base.html (navbar updates).
+static/css/style.css: Style login page (pastel for Family, blue for Hospital).
+static/js/main.js: Validate login inputs, handle token refreshes.
+pyproject.toml: Add flask-login, pyjwt for tokens (replit = "3.2", flask, python-dotenv).
+
+Login System Requirements:
+
+Login Page (/login):
+
+Unified entry point with role selector dropdown (options: Hospital, Provider, MVP User, Family) styled per toggle (pastel #e6f3ff for Family, #0056b3 for others).
+Form: Email (required, ARIA-label), Password (required, masked), Submit button.
+Redirects: Post-login to /dashboard with role-specific views.
+
+
+Authentication Logic (app.py):
+
+Use Flask-Login for session management, PyJWT for JSON Web Tokens (JWTs).
+Token Issuance: On successful login, issue a short-lived JWT (e.g., 1-hour expiration) to the user’s email via a secure endpoint (/token). Token contains role (e.g., {"role": "hospital", "email": "user@hospital.com"}) encrypted with a secret key (stored in .env).
+Expert Practice: Per OWASP/NIST, use HMAC-SHA256 for token signing, refresh tokens (24-hour validity) for re-authentication, and invalidate on logout.
+Security: Enforce HTTPS, rate-limit login attempts (e.g., 5/hour via Flask-Limiter), hash passwords with bcrypt, store credentials in memory (no DB).
+
+
+Role-Based Access (/dashboard):
+
+Hospital: View bulk quote requests, patient tracking dashboard, compliance audit logs (masked PHI).
+Provider: Bid on anonymized requests (e.g., “NYC to Florida, Severity 5”), track accepted bookings, financial summary (deposits received).
+MVP User: Access early features (e.g., AI estimates), feedback form, basic tracking.
+Family: Personal booking details, tracking, cancellation request form, financial aid links.
+Restrict via @login_required decorator, check role in JWT (e.g., if role == "hospital": render hospital_dashboard.html).
+
+
+Security and Fraud Prevention (Expert Recommendations):
+
+Token Security: Send JWT via email (Twilio/SMTP stub) with a unique link to activate; require email verification (one-time code) to prevent credential stuffing. Use double-opt-in for new accounts.
+Fraud Mitigation: Implement CAPTCHA (reCAPTCHA free tier), monitor login anomalies (e.g., multiple failed attempts trigger lockout), log IP addresses (transient, no storage beyond session).
+HIPAA Compliance: No PHI/PII stored long-term; use transient session data, encrypt tokens (PyJWT), sign BAAs with providers (HHS templates).
+Compartmentalization: Isolate financials—store only deposit status ($1,000 nonrefundable, $6,500 refundable flow) in session, no credit card/care credit data (users pay providers directly). Mask sensitive fields (e.g., replace with asterisks) in logs.
+
+
+Logout and Token Management:
+
+/logout: Invalidate JWT, clear session, redirect to /login.
+Refresh endpoint (/refresh_token): Issue new JWT if valid refresh token, log activity.
+
+
+
+Styling:
+
+Login: Centered form, role dropdown styled per toggle, error alerts in red.
+Dashboard: Role-specific colors (pastel for Family, blue for Hospital/Provider/MVP).
+
+Implementation Notes:
+
+Update existing app.py to include login routes, integrate with current flow (e.g., /confirm deposit after login).
+Add .env file: JWT_SECRET_KEY, EMAIL_HOST, etc. (keep secure, not in repo).
+Test with dummy accounts (e.g., hospital@example.com, provider@lifeflight.com).
+
+Testing Scenarios:
+
+Hospital login → bulk quote request.
+Provider login → bid on anonymized request.
+MVP login → feedback submission.
+Family login → book Orlando coma, cancel medically.
+Verify: Role access, token issuance/refresh, fraud blocks (e.g., 5 failed logins), no PHI storage, dashboard compartmentalization.
+
+Deliverables:
+
+Updated code (app.py, templates, static files).
+Deployed URL with login active.
+Text wireframes for login/dashboard.
+Security audit notes (e.g., CAPTCHA effectiveness).
+
+
+Explanation of Token Usage and Expert Practices
+
+Token Issuance: Yes, we issue a JWT to the user’s email after login, activated via a one-time code (double-opt-in), aligning with OWASP’s secure authentication standards. Experts (e.g., NIST) recommend short-lived tokens (1 hour) with refresh tokens (24 hours) to balance security and usability, preventing replay attacks.
+Security/Fraud Focus: CAPTCHA and rate-limiting deter bots, while IP logging (transient) and anomaly detection (e.g., geo-mismatch) flag fraud, per cybersecurity best practices. Hashing passwords with bcrypt and using MFA stubs (password + email code) align with HIPAA and PCI DSS for health tech.
+
+Compartmentalizing Financials for Breach Protection
+
+Minimal Data Exposure: Store only deposit status ($1,000/$6,500 flow) in session, masked (e.g., “--1000”) in logs. No credit card/care credit data is processed or held—users pay providers directly via their portals, reducing our PCI scope to the $7,500 deposit.
+Breach Impact: If hacked, attackers see only session IDs and masked deposit totals—no PII/PHI or payment details. Use in-memory storage (no DB) and clear sessions post-use, per HIPAA’s minimum necessary rule.
+
+Missing Elements to Consider
+
+Account Recovery: Add a “Forgot Password” flow with email reset links (secure token), missing from current design.
+User Roles Expansion: Consider “Admin” role for Mike/Steve with elevated access (e.g., override cancellations), not yet defined.
+Audit Trail: Lack of detailed access logs—add timestamps/user actions for HIPAA audits.
+Multi-Factor Authentication (MFA): Beyond email codes, explore app-based MFA (e.g., Google Authenticator stub) for high-risk roles (e.g., Providers).

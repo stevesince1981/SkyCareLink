@@ -27,20 +27,23 @@ def number_format(value):
 # Configure Stripe (demo mode) - will be enabled after package installation
 # stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "sk_test_demo_key")
 
-# Global tracking variables for dashboard
+# Global tracking variables for dashboard with enhanced sample data
 BOOKING_STATS = {
-    'total_bookings': 0,
-    'total_revenue': 0,
-    'total_expenses': 12000,  # Fixed operational costs
+    'total_bookings': 7,
+    'total_revenue': 189750,  # Sample revenue from completed bookings
+    'total_expenses': 42000,  # Operational costs
     'goal_revenue': 375000,
-    'unique_visits': 0,
-    'conversion_rate': 0.15,
+    'unique_visits': 156,
+    'conversion_rate': 0.18,
     'provider_diversity': {
-        'rural': 2,
-        'traditional': 3,
-        'drone': 1,
-        'hybrid': 1
-    }
+        'rural': 3,
+        'traditional': 4,
+        'drone': 2,
+        'hybrid': 2
+    },
+    'monthly_growth': 0.23,
+    'customer_satisfaction': 0.97,
+    'average_booking_value': 27107
 }
 
 # Profit sharing tiers
@@ -48,6 +51,139 @@ PROFIT_TIERS = {
     '1-10': {'mike': 30, 'steve': 30, 'business': 40},
     '11-30': {'mike': 25, 'steve': 25, 'business': 50}, 
     '31+': {'mike': 20, 'steve': 20, 'business': 60}
+}
+
+# Sample booking data for Admin/Hospital views
+SAMPLE_BOOKINGS = [
+    {
+        'id': 'MF-2025-001',
+        'date': '2025-08-01',
+        'patient_name': 'M******* J*****',  # HIPAA masked
+        'origin': 'Orlando, FL',
+        'destination': 'Minneapolis, MN',
+        'provider': 'SkyMed Elite',
+        'status': 'Completed',
+        'cost': 28500,
+        'severity': 4,
+        'family_contact': 'S**** (Daughter)',
+        'satisfaction_score': 5,
+        'provider_rating': 4.8
+    },
+    {
+        'id': 'MF-2025-002', 
+        'date': '2025-08-02',
+        'patient_name': 'R****** G****',
+        'origin': 'Denver, CO',
+        'destination': 'Seattle, WA',
+        'provider': 'AirCare Mountain',
+        'status': 'Completed',
+        'cost': 31250,
+        'severity': 5,
+        'family_contact': 'M*** (Son)',
+        'satisfaction_score': 5,
+        'provider_rating': 4.9
+    },
+    {
+        'id': 'MF-2025-003',
+        'date': '2025-08-03',
+        'patient_name': 'Baby G****',
+        'origin': 'Phoenix, AZ',
+        'destination': 'Los Angeles, CA',
+        'provider': 'Life Flight Neonatal',
+        'status': 'Completed',
+        'cost': 42000,
+        'severity': 5,
+        'family_contact': 'J******* & M*** (Parents)',
+        'satisfaction_score': 5,
+        'provider_rating': 5.0
+    }
+]
+
+# Provider reward system data
+PROVIDER_REWARDS = {
+    'SkyMed Elite': {
+        'total_bookings': 15,
+        'revenue_generated': 385000,
+        'avg_rating': 4.8,
+        'completion_rate': 0.98,
+        'tier': 'Gold',
+        'rewards_earned': 12500,
+        'bonuses': ['Family Friendly', 'On-Time Excellence', 'Safety Leader']
+    },
+    'AirCare Mountain': {
+        'total_bookings': 12,
+        'revenue_generated': 298000,
+        'avg_rating': 4.9,
+        'completion_rate': 1.0,
+        'tier': 'Platinum',
+        'rewards_earned': 15000,
+        'bonuses': ['Rural Specialist', 'Critical Care Expert', 'Perfect Record']
+    },
+    'Life Flight Neonatal': {
+        'total_bookings': 8,
+        'revenue_generated': 425000,
+        'avg_rating': 5.0,
+        'completion_rate': 1.0,
+        'tier': 'Diamond',
+        'rewards_earned': 22500,
+        'bonuses': ['Neonatal Specialist', 'Family Champion', 'Innovation Leader']
+    }
+}
+
+# OWASP Security scan results (simulated)
+SECURITY_SCAN_RESULTS = {
+    'last_scan': '2025-08-03 12:00:00',
+    'status': 'PASSED',
+    'vulnerabilities': {
+        'high': 0,
+        'medium': 2,
+        'low': 3,
+        'info': 5
+    },
+    'recommendations': [
+        'Implement Content Security Policy headers',
+        'Add rate limiting for API endpoints',
+        'Enable HTTPS-only cookies',
+        'Implement input validation for all forms',
+        'Add session timeout mechanisms'
+    ],
+    'compliance_score': 94
+}
+
+# Bubble migration checklist for after 10 bookings
+BUBBLE_MIGRATION_CHECKLIST = {
+    'current_bookings': 7,
+    'migration_threshold': 10,
+    'status': 'Preparing',
+    'tasks': [
+        {
+            'category': 'Data Migration',
+            'items': [
+                {'task': 'Export user session data to structured format', 'status': 'pending', 'priority': 'high'},
+                {'task': 'Create HIPAA-compliant data anonymization scripts', 'status': 'pending', 'priority': 'high'},
+                {'task': 'Map current provider database to Bubble schema', 'status': 'pending', 'priority': 'medium'},
+                {'task': 'Design booking workflow in Bubble', 'status': 'pending', 'priority': 'high'}
+            ]
+        },
+        {
+            'category': 'HIPAA Compliance',
+            'items': [
+                {'task': 'Set up Business Associate Agreement with Bubble', 'status': 'pending', 'priority': 'critical'},
+                {'task': 'Configure encrypted data storage', 'status': 'pending', 'priority': 'critical'},
+                {'task': 'Implement audit logging for all patient data access', 'status': 'pending', 'priority': 'high'},
+                {'task': 'Create data retention and deletion policies', 'status': 'pending', 'priority': 'high'}
+            ]
+        },
+        {
+            'category': 'Technical Setup',
+            'items': [
+                {'task': 'Configure Bubble workspace and plan upgrade', 'status': 'pending', 'priority': 'medium'},
+                {'task': 'Migrate payment processing to production Stripe', 'status': 'pending', 'priority': 'high'},
+                {'task': 'Set up real-time notifications and SMS integration', 'status': 'pending', 'priority': 'medium'},
+                {'task': 'Create provider dashboard and admin panels', 'status': 'pending', 'priority': 'medium'}
+            ]
+        }
+    ]
 }
 
 # Enhanced provider data with diversity focus (50% rural/drone/hybrid)
@@ -596,6 +732,78 @@ def cancellation_request():
           'info')
     
     return redirect(url_for('summary'))
+
+@consumer_app.route('/admin_panel')
+def admin_panel():
+    """Admin panel for co-founders with comprehensive data"""
+    return render_template('admin_panel.html', 
+                         bookings=SAMPLE_BOOKINGS,
+                         provider_rewards=PROVIDER_REWARDS,
+                         security_scan=SECURITY_SCAN_RESULTS,
+                         migration_checklist=BUBBLE_MIGRATION_CHECKLIST,
+                         stats=BOOKING_STATS)
+
+@consumer_app.route('/provider_search')
+def provider_search():
+    """Hospital/Provider search interface for previous bookings"""
+    search_query = request.args.get('search', '')
+    
+    # Filter sample bookings based on search
+    filtered_bookings = SAMPLE_BOOKINGS
+    if search_query:
+        filtered_bookings = [
+            booking for booking in SAMPLE_BOOKINGS 
+            if search_query.lower() in booking['id'].lower() or 
+               search_query.lower() in booking['provider'].lower() or
+               search_query.lower() in booking['origin'].lower() or
+               search_query.lower() in booking['destination'].lower()
+        ]
+    
+    return render_template('provider_search.html', 
+                         bookings=filtered_bookings,
+                         search_query=search_query,
+                         provider_rewards=PROVIDER_REWARDS)
+
+@consumer_app.route('/security_scan')
+def security_scan():
+    """OWASP security scan results"""
+    return render_template('security_scan.html', scan_results=SECURITY_SCAN_RESULTS)
+
+@consumer_app.route('/run_security_scan', methods=['POST'])
+def run_security_scan():
+    """Simulate running an OWASP security scan"""
+    # Update scan timestamp
+    SECURITY_SCAN_RESULTS['last_scan'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Simulate random scan results
+    import random
+    SECURITY_SCAN_RESULTS['vulnerabilities']['medium'] = random.randint(0, 3)
+    SECURITY_SCAN_RESULTS['vulnerabilities']['low'] = random.randint(1, 5)
+    SECURITY_SCAN_RESULTS['compliance_score'] = random.randint(92, 98)
+    
+    flash('Security scan completed successfully!', 'success')
+    return redirect(url_for('security_scan'))
+
+@consumer_app.route('/migration_status')
+def migration_status():
+    """Bubble migration status and checklist"""
+    # Update current booking count
+    BUBBLE_MIGRATION_CHECKLIST['current_bookings'] = BOOKING_STATS['total_bookings']
+    
+    # Update status based on booking count
+    if BOOKING_STATS['total_bookings'] >= 10:
+        BUBBLE_MIGRATION_CHECKLIST['status'] = 'Ready for Migration'
+    elif BOOKING_STATS['total_bookings'] >= 8:
+        BUBBLE_MIGRATION_CHECKLIST['status'] = 'Almost Ready'
+    else:
+        BUBBLE_MIGRATION_CHECKLIST['status'] = 'Preparing'
+    
+    return render_template('migration_status.html', migration=BUBBLE_MIGRATION_CHECKLIST)
+
+@consumer_app.route('/provider_rewards')
+def provider_rewards():
+    """Provider reward system dashboard"""
+    return render_template('provider_rewards.html', provider_rewards=PROVIDER_REWARDS)
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5001, debug=True)

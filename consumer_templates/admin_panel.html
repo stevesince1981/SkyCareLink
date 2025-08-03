@@ -1,0 +1,308 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Admin Panel - MediFly Consumer MVP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Admin Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="fas fa-cog me-2"></i>Admin Panel - Co-Founders Dashboard</h1>
+                <div class="btn-group">
+                    <a href="{{ url_for('security_scan') }}" class="btn btn-outline-danger">
+                        <i class="fas fa-shield-alt"></i> Security Scan
+                    </a>
+                    <a href="{{ url_for('migration_status') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-rocket"></i> Migration Status
+                    </a>
+                    <a href="{{ url_for('provider_rewards') }}" class="btn btn-outline-success">
+                        <i class="fas fa-trophy"></i> Provider Rewards
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-chart-line"></i> Total Bookings</h5>
+                    <h2>{{ stats.total_bookings }}</h2>
+                    <small>+23% this month</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-dollar-sign"></i> Revenue</h5>
+                    <h2>${{ "{:,}".format(stats.total_revenue) }}</h2>
+                    <small>Goal: ${{ "{:,}".format(stats.goal_revenue) }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-users"></i> Unique Visits</h5>
+                    <h2>{{ stats.unique_visits }}</h2>
+                    <small>{{ "%.1f"|format(stats.conversion_rate * 100) }}% conversion</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-star"></i> Satisfaction</h5>
+                    <h2>{{ "%.0f"|format(stats.customer_satisfaction * 100) }}%</h2>
+                    <small>Family feedback</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-table me-2"></i>Recent Bookings (HIPAA Masked)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Date</th>
+                                    <th>Patient</th>
+                                    <th>Route</th>
+                                    <th>Provider</th>
+                                    <th>Status</th>
+                                    <th>Cost</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td><strong>{{ booking.id }}</strong></td>
+                                    <td>{{ booking.date }}</td>
+                                    <td>{{ booking.patient_name }}</td>
+                                    <td>{{ booking.origin }} → {{ booking.destination }}</td>
+                                    <td>{{ booking.provider }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ booking.status }}</span>
+                                    </td>
+                                    <td>${{ "{:,}".format(booking.cost) }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-1">{{ booking.provider_rating }}</span>
+                                            <div style="color: #ffc107;">
+                                                {% for i in range(5) %}
+                                                    {% if i < booking.provider_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Migration Checklist Preview -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-rocket me-2"></i>Bubble Migration Status</h5>
+                    <span class="badge bg-{{ 'success' if migration_checklist.current_bookings >= 10 else 'warning' }}">
+                        {{ migration_checklist.status }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Progress to Migration</span>
+                            <span>{{ migration_checklist.current_bookings }}/{{ migration_checklist.migration_threshold }}</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ (migration_checklist.current_bookings / migration_checklist.migration_threshold * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <h6>Critical Tasks Remaining:</h6>
+                    <ul class="list-unstyled">
+                        {% for category in migration_checklist.tasks %}
+                            {% for item in category.items %}
+                                {% if item.priority == 'critical' %}
+                                <li class="mb-2">
+                                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                                    {{ item.task }}
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                    
+                    <a href="{{ url_for('migration_status') }}" class="btn btn-primary btn-sm">
+                        View Full Checklist
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-shield-alt me-2"></i>Security Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Last Scan:</span>
+                        <span class="text-muted">{{ security_scan.last_scan }}</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Compliance Score:</span>
+                        <span class="badge bg-{{ 'success' if security_scan.compliance_score >= 95 else 'warning' }} fs-6">
+                            {{ security_scan.compliance_score }}%
+                        </span>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-3">
+                            <div class="text-danger">
+                                <strong>{{ security_scan.vulnerabilities.high }}</strong>
+                                <br><small>High</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-warning">
+                                <strong>{{ security_scan.vulnerabilities.medium }}</strong>
+                                <br><small>Medium</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-info">
+                                <strong>{{ security_scan.vulnerabilities.low }}</strong>
+                                <br><small>Low</small>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-secondary">
+                                <strong>{{ security_scan.vulnerabilities.info }}</strong>
+                                <br><small>Info</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('security_scan') }}" class="btn btn-outline-danger btn-sm">
+                            View Full Report
+                        </a>
+                        <form method="post" action="{{ url_for('run_security_scan') }}" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-sync"></i> Run Scan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider Performance Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-trophy me-2"></i>Top Performing Providers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for provider_name, data in provider_rewards.items() %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-{{ 'warning' if data.tier == 'Gold' else 'primary' if data.tier == 'Platinum' else 'success' }}">
+                                <div class="card-body">
+                                    <h6>{{ provider_name }}</h6>
+                                    <div class="d-flex justify-content-between">
+                                        <small>Tier:</small>
+                                        <span class="badge bg-{{ 'warning' if data.tier == 'Gold' else 'primary' if data.tier == 'Platinum' else 'success' }}">
+                                            {{ data.tier }}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small>Bookings:</small>
+                                        <strong>{{ data.total_bookings }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small>Rating:</small>
+                                        <strong>{{ data.avg_rating }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small>Rewards:</small>
+                                        <strong>${{ "{:,}".format(data.rewards_earned) }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group me-2">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-chart-bar"></i> View Dashboard
+                        </a>
+                        <a href="{{ url_for('provider_search') }}" class="btn btn-outline-info">
+                            <i class="fas fa-search"></i> Provider Search
+                        </a>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-success" onclick="generateReport()">
+                            <i class="fas fa-file-export"></i> Export Report
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="backupData()">
+                            <i class="fas fa-download"></i> Backup Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateReport() {
+    alert('📊 Generating comprehensive admin report...\n\nReport will include:\n• Booking analytics\n• Provider performance\n• Security status\n• Migration readiness\n\nReport will be emailed to co-founders.');
+}
+
+function backupData() {
+    alert('💾 Backing up system data...\n\nBackup includes:\n• Booking records (HIPAA masked)\n• Provider data\n• System configurations\n• Security logs\n\nBackup will be stored securely.');
+}
+</script>
+{% endblock %}

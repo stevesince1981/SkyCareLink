@@ -528,6 +528,305 @@ body {
     overflow-y: auto;
 }
 
+/* Enhanced Gentle Micro-Animations */
+.form-control {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.form-control:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 0.3rem rgba(102, 187, 106, 0.25);
+    border-color: var(--primary-color);
+}
+
+.form-control:hover {
+    border-color: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* Calming Palette Transitions */
+.anxiety-reducing {
+    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+    transition: background 0.5s ease;
+}
+
+.anxiety-reducing:hover {
+    background: linear-gradient(135deg, #e8f4f8, #dbeafe);
+}
+
+.calm-transition {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Emergency Contact Sharing */
+.emergency-contact-share {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1000;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 25px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+    transition: all 0.3s ease;
+}
+
+.emergency-contact-share:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(255, 107, 107, 0.6);
+    background: linear-gradient(135deg, #ff5252, #ff7979);
+}
+
+.emergency-share-modal {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+}
+
+.emergency-share-content {
+    background: var(--warm-white);
+    border-radius: var(--card-border-radius);
+    padding: 2rem;
+    max-width: 500px;
+    margin: 2rem auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+/* Patient Journey Timeline */
+.journey-timeline {
+    position: relative;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f8fffe, #e6f7ff);
+    border-radius: var(--card-border-radius);
+    margin: 2rem 0;
+}
+
+.timeline-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: var(--warm-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.timeline-step:hover {
+    transform: translateX(10px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+}
+
+.timeline-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.5rem;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.emotional-support-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff9800, #ffc107);
+    animation: gentle-pulse 2s infinite;
+}
+
+.emotional-support-indicator.active {
+    background: linear-gradient(135deg, #4caf50, #8bc34a);
+}
+
+/* Story Board Animation */
+.storyboard-container {
+    background: linear-gradient(135deg, #fff9f0, #ffeaa7);
+    border-radius: var(--card-border-radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.storyboard-scene {
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    margin: 2rem 0;
+}
+
+.storyboard-scene.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.scene-illustration {
+    width: 100%;
+    max-width: 400px;
+    height: 250px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: var(--border-radius);
+    position: relative;
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.scene-character {
+    position: absolute;
+    transition: all 1s ease-in-out;
+}
+
+.grandma-character {
+    bottom: 20px;
+    left: 50px;
+    width: 60px;
+    height: 80px;
+    background: linear-gradient(135deg, #ffcdd2, #f8bbd9);
+    border-radius: 30px 30px 15px 15px;
+}
+
+.disney-castle {
+    top: 30px;
+    right: 40px;
+    width: 80px;
+    height: 100px;
+    background: linear-gradient(135deg, #e1bee7, #ce93d8);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.helicopter {
+    top: 50px;
+    left: 20px;
+    width: 100px;
+    height: 40px;
+    background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+    border-radius: 20px;
+    animation: helicopter-hover 2s ease-in-out infinite;
+}
+
+@keyframes helicopter-hover {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+/* Comfort Soundtrack Generator */
+.comfort-soundtrack {
+    background: linear-gradient(135deg, #f3e5f5, #e8eaf6);
+    border-radius: var(--card-border-radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.soundtrack-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.soundtrack-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #9c27b0, #ba68c8);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.soundtrack-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+}
+
+.soundtrack-btn.active {
+    background: linear-gradient(135deg, #4caf50, #8bc34a);
+}
+
+/* Gentle pulse animation for important elements */
+@keyframes gentle-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+.pulse-gentle {
+    animation: gentle-pulse 2s infinite;
+}
+
+/* Smooth fade-in animations */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fade-in-up 0.8s ease-out;
+}
+
+/* Form section enhanced animations */
+.form-section {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.form-section.active {
+    animation: fade-in-up 0.8s ease-out;
+}
+
+/* Breathing animation for calming effect */
+@keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.breathe-calm {
+    animation: breathe 4s ease-in-out infinite;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-title {
@@ -564,6 +863,26 @@ body {
         max-width: 280px;
         bottom: 15px;
         right: 15px;
+    }
+    
+    .emergency-contact-share {
+        bottom: 70px;
+        right: 15px;
+        padding: 12px 20px;
+    }
+    
+    .timeline-step {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .timeline-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .scene-illustration {
+        height: 200px;
     }
 }
 
