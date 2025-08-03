@@ -1,188 +1,531 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Transport Options for Your Loved One - MediFly Consumer{% endblock %}
+{% block title %}Available Medical Transport Options{% endblock %}
+
+{% block head %}
+<style>
+.results-header {
+    background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink));
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--text-dark);
+}
+
+.ai-comparison {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid #007bff;
+}
+
+.provider-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.provider-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.provider-card.green-optimized {
+    border-color: #28a745;
+}
+
+.provider-card.green-optimized::before {
+    content: "🌱 Green Route Optimized";
+    background: #28a745;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: block;
+}
+
+.provider-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 1px solid #dee2e6;
+}
+
+.provider-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.provider-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.provider-type.traditional {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.provider-type.rural {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.provider-type.drone {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.provider-type.hybrid {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.price-section {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.price-main {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.price-comparison {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.green-score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.score-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    margin-right: 1rem;
+}
+
+.score-excellent {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.score-good {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+}
+
+.score-fair {
+    background: linear-gradient(135deg, #fd7e14, #dc3545);
+}
+
+.provider-details {
+    padding: 1.5rem;
+}
+
+.capabilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.capability-badge {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--pastel-blue);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #007bff;
+}
+
+.capability-badge i {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.eta-info {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.eta-info i {
+    font-size: 1.5rem;
+    color: #007bff;
+    margin-right: 1rem;
+}
+
+.location-coverage {
+    margin: 1rem 0;
+}
+
+.coverage-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.coverage-tag {
+    padding: 0.25rem 0.75rem;
+    background: #e9ecef;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.select-provider-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.filter-section {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.filter-chip {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.filter-chip:hover {
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.05);
+}
+
+.filter-chip.active {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+}
+
+.diversity-indicator {
+    background: linear-gradient(135deg, #e8f5e8, #f3e5f5);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .price-main {
+        font-size: 2rem;
+    }
+    
+    .capabilities-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-options {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="results-header">
+    <div class="container">
+        <h1 class="mb-3">
+            <i class="fas fa-plane-departure me-3"></i>
+            Available Transport Options
+        </h1>
+        <p class="lead">We found {{ providers|length }} providers ready to help your family</p>
+    </div>
+</div>
+
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="text-center mb-5">
-                <h2 class="section-title">
-                    <i class="fas fa-heart text-primary me-2"></i>
-                    Ready to Help Your Family
-                </h2>
-                <p class="section-subtitle">
-                    We've found medical transport options that match your loved one's needs. 
-                    Each provider is ready to provide compassionate care during this important journey.
-                </p>
+    {% if ai_estimate %}
+    <!-- AI Estimate Comparison -->
+    <div class="ai-comparison">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h5><i class="fas fa-robot me-2"></i>AI Price Estimate</h5>
+                <p class="mb-2">Based on your requirements, our AI estimates <strong>${{ ai_estimate.total|number_format }}</strong> for this transport.</p>
+                <small class="text-muted">Distance: {{ ai_estimate.distance_miles }} miles | Compare this with provider quotes below</small>
             </div>
-
-            <!-- Provider Options -->
-            <div class="row g-4 mb-5">
-                {% for provider_id, provider in providers.items() %}
-                <div class="col-lg-4">
-                    <div class="provider-card text-center h-100">
-                        <!-- Provider Header -->
-                        <div class="provider-header mb-3">
-                            <div class="provider-rating mb-2">
-                                {% for i in range(5) %}
-                                    <i class="fas fa-star"></i>
-                                {% endfor %}
-                            </div>
-                            <h5 class="provider-name">{{ provider.name }}</h5>
-                            <p class="provider-tagline text-muted">{{ provider.description }}</p>
-                        </div>
-
-                        <!-- Large Price Display -->
-                        <div class="provider-price mb-3">
-                            ${{ "{:,}".format(provider.price) }}
-                        </div>
-                        
-                        <!-- ETA Display -->
-                        <div class="provider-eta mb-3">
-                            ETA: {{ provider.eta }}
-                        </div>
-                        
-                        <!-- Provider Capabilities -->
-                        <div class="provider-capabilities mb-4">
-                            {% for capability in provider.capabilities %}
-                                <span class="badge me-1 mb-1">{{ capability }}</span>
-                            {% endfor %}
-                        </div>
-                        
-                        <!-- Description -->
-                        <div class="provider-details mb-4">
-                            <p class="card-text">{{ provider.details }}</p>
-                        </div>
-                        
-                        <!-- Family-Focused Features -->
-                        <div class="family-features mb-4">
-                            {% if provider_id == 'airmed' %}
-                                <div class="feature-item">
-                                    <i class="fas fa-user-md text-primary me-2"></i>
-                                    <span>ICU-certified medical team</span>
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-phone text-primary me-2"></i>
-                                    <span>Family updates every 30 minutes</span>
-                                </div>
-                            {% elif provider_id == 'reva' %}
-                                <div class="feature-item">
-                                    <i class="fas fa-stethoscope text-primary me-2"></i>
-                                    <span>Licensed physician onboard</span>
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-clock text-primary me-2"></i>
-                                    <span>Rapid response team</span>
-                                </div>
-                            {% else %}
-                                <div class="feature-item">
-                                    <i class="fas fa-heart text-primary me-2"></i>
-                                    <span>Family-friendly approach</span>
-                                </div>
-                                <div class="feature-item">
-                                    <i class="fas fa-dollar-sign text-primary me-2"></i>
-                                    <span>Most affordable option</span>
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Select Provider Button -->
-                        <div class="mt-auto">
-                            <a href="{{ url_for('confirm', provider_id=provider_id) }}" 
-                               class="btn btn-primary w-100 py-3"
-                               aria-label="Choose {{ provider.name }} for your loved one's transport">
-                                <i class="fas fa-hand-holding-heart me-2"></i>
-                                Choose This Provider
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- What's Included Section -->
-            <div class="whats-included-section">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center mb-4">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            What's Included in Every Flight
-                        </h5>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="included-item">
-                                    <i class="fas fa-user-nurse text-primary me-2"></i>
-                                    <span>Certified medical team</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="included-item">
-                                    <i class="fas fa-heartbeat text-primary me-2"></i>
-                                    <span>Continuous monitoring</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="included-item">
-                                    <i class="fas fa-phone-alt text-primary me-2"></i>
-                                    <span>Family communication</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="included-item">
-                                    <i class="fas fa-clipboard-list text-primary me-2"></i>
-                                    <span>Medical records transfer</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="included-item">
-                                    <i class="fas fa-ambulance text-primary me-2"></i>
-                                    <span>Ground transport coordination</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="included-item">
-                                    <i class="fas fa-shield-alt text-primary me-2"></i>
-                                    <span>Full insurance coverage</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Back Button -->
-            <div class="text-center mt-4">
-                <a href="{{ url_for('intake') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>
-                    Change Requirements
-                </a>
+            <div class="col-md-4 text-end">
+                <div class="h3 text-primary mb-0">${{ ai_estimate.total|number_format }}</div>
+                <small class="text-muted">AI Estimate</small>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endif %}
 
-{% block scripts %}
+    <!-- Diversity Indicator -->
+    <div class="diversity-indicator">
+        <h5><i class="fas fa-network-wired me-2"></i>Provider Network Diversity</h5>
+        <p class="mb-3">Our network prioritizes access to rural specialists, emerging drone technology, and hybrid aircraft for comprehensive coverage.</p>
+        <div class="row text-center">
+            <div class="col-6 col-md-3">
+                <div class="h4 text-success mb-0">50%</div>
+                <small class="text-muted">Rural/Emerging Tech</small>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="h4 text-primary mb-0">100%</div>
+                <small class="text-muted">Green Score Available</small>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="h4 text-warning mb-0">24/7</div>
+                <small class="text-muted">Emergency Ready</small>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="h4 text-info mb-0">6</div>
+                <small class="text-muted">Provider Options</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h5><i class="fas fa-filter me-2"></i>Filter Options</h5>
+        <div class="filter-options">
+            <div class="filter-chip active" data-filter="all">All Providers</div>
+            <div class="filter-chip" data-filter="green">Green Routes Only</div>
+            <div class="filter-chip" data-filter="rural">Rural Specialists</div>
+            <div class="filter-chip" data-filter="drone">Drone Technology</div>
+            <div class="filter-chip" data-filter="traditional">Traditional</div>
+            <div class="filter-chip" data-filter="price-low">Lowest Price</div>
+            <div class="filter-chip" data-filter="speed">Fastest ETA</div>
+        </div>
+    </div>
+
+    <!-- Provider Cards -->
+    <div class="providers-grid" id="providers-container">
+        {% for provider_id, provider in providers.items() %}
+        <div class="provider-card {% if provider.green_optimized %}green-optimized{% endif %}" 
+             data-type="{{ provider.type }}" 
+             data-price="{{ provider.price }}" 
+             data-eta="{{ provider.eta }}"
+             data-green-score="{{ provider.green_score }}">
+            
+            <div class="provider-header">
+                <div class="provider-name">{{ provider.name }}</div>
+                <span class="provider-type {{ provider.type }}">{{ provider.type|title }}</span>
+                <p class="text-muted mb-0">{{ provider.description }}</p>
+            </div>
+
+            <div class="price-section">
+                <div class="price-main">${{ provider.price|number_format }}</div>
+                {% if ai_estimate %}
+                    {% set price_diff = provider.price - ai_estimate.total %}
+                    {% if price_diff > 0 %}
+                        <div class="price-comparison text-danger">
+                            +${{ price_diff|number_format }} vs AI estimate
+                        </div>
+                    {% elif price_diff < 0 %}
+                        <div class="price-comparison text-success">
+                            ${{ (price_diff * -1)|number_format }} below AI estimate
+                        </div>
+                    {% else %}
+                        <div class="price-comparison text-primary">Matches AI estimate</div>
+                    {% endif %}
+                {% endif %}
+                
+                <div class="green-score">
+                    <div class="score-circle {% if provider.green_score >= 9.0 %}score-excellent{% elif provider.green_score >= 7.0 %}score-good{% else %}score-fair{% endif %}">
+                        {{ provider.green_score }}
+                    </div>
+                    <div>
+                        <div class="fw-bold">Green Score</div>
+                        <small class="text-muted">Environmental rating</small>
+                        {% if provider.emission_offset %}
+                            <div><i class="fas fa-leaf text-success"></i> Carbon offset included</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="provider-details">
+                <div class="eta-info">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>Ready in {{ provider.eta }}</strong>
+                        <div class="small text-muted">Estimated time to arrival</div>
+                    </div>
+                </div>
+
+                <div class="capabilities">
+                    <h6>Medical Capabilities</h6>
+                    <div class="capabilities-grid">
+                        {% for capability in provider.capabilities %}
+                        <div class="capability-badge">
+                            {% if 'ICU' in capability %}
+                                <i class="fas fa-hospital"></i>
+                            {% elif 'Doctor' in capability %}
+                                <i class="fas fa-user-md"></i>
+                            {% elif 'Family' in capability %}
+                                <i class="fas fa-heart"></i>
+                            {% elif 'Zero Emission' in capability %}
+                                <i class="fas fa-leaf"></i>
+                            {% elif 'Rural' in capability %}
+                                <i class="fas fa-mountain"></i>
+                            {% elif 'Rapid' in capability %}
+                                <i class="fas fa-bolt"></i>
+                            {% else %}
+                                <i class="fas fa-check"></i>
+                            {% endif %}
+                            {{ capability }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="location-coverage">
+                    <h6>Service Coverage</h6>
+                    <div class="coverage-tags">
+                        {% for coverage in provider.location_coverage %}
+                        <span class="coverage-tag">{{ coverage }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="provider-description mt-3">
+                    <p class="text-muted">{{ provider.details }}</p>
+                </div>
+
+                {% if provider.green_optimized %}
+                <div class="alert alert-success mt-3">
+                    <i class="fas fa-leaf me-2"></i>
+                    <strong>Green Route Savings:</strong> 5% discount applied for eco-friendly routing
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('confirm', provider_id=provider_id) }}" 
+                   class="btn btn-primary select-provider-btn">
+                    <i class="fas fa-heart me-2"></i>
+                    Choose {{ provider.name }} for Your Family
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Emergency Support Notice -->
+    <div class="alert alert-info mt-4 text-center">
+        <i class="fas fa-phone me-2"></i>
+        <strong>Need immediate assistance?</strong> Call our 24/7 family support line: 
+        <a href="tel:+1-800-MEDIFLY" class="fw-bold">(800) MEDIFLY</a>
+        <div class="mt-2 small">
+            Reference ID: <span class="font-monospace">{{ session.get('booking_reference', 'MF-' + range(1000, 9999)|random|string) }}</span>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Add hover animations to provider cards
-    const providerCards = document.querySelectorAll('.provider-card');
-    providerCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-8px) scale(1.02)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-    });
+    console.log('Provider results page initialized');
     
-    // Initialize tooltips for any that might be present
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    // Initialize filter functionality
+    initializeFilters();
 });
+
+function initializeFilters() {
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const providerCards = document.querySelectorAll('.provider-card');
+    
+    filterChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+            // Remove active from all chips
+            filterChips.forEach(c => c.classList.remove('active'));
+            // Add active to clicked chip
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            filterProviders(filter, providerCards);
+        });
+    });
+}
+
+function filterProviders(filter, cards) {
+    cards.forEach(card => {
+        let show = true;
+        
+        switch(filter) {
+            case 'all':
+                show = true;
+                break;
+            case 'green':
+                show = card.classList.contains('green-optimized');
+                break;
+            case 'rural':
+                show = card.dataset.type === 'rural';
+                break;
+            case 'drone':
+                show = card.dataset.type === 'drone';
+                break;
+            case 'traditional':
+                show = card.dataset.type === 'traditional';
+                break;
+            case 'price-low':
+                // Sort by price (implement if needed)
+                show = true;
+                break;
+            case 'speed':
+                // Sort by ETA (implement if needed)
+                show = true;
+                break;
+        }
+        
+        if (show) {
+            card.style.display = 'block';
+            card.style.animation = 'fadeInUp 0.5s ease';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Add number formatting filter for Jinja2 (would be done in Flask app)
+function numberFormat(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 </script>
 {% endblock %}

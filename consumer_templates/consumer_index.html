@@ -2,7 +2,277 @@
 
 {% block title %}MediFly Consumer - Get Your Loved One Home Safely{% endblock %}
 
+{% block head %}
+<style>
+/* Enhanced Hero Section with Clean Professional Design */
+.hero-section {
+    background: linear-gradient(135deg, var(--pastel-blue) 0%, var(--pastel-pink) 50%, var(--pastel-blue) 100%);
+    padding: 4rem 0;
+    margin-top: 0;
+    text-align: center;
+    color: var(--text-dark);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+    color: var(--text-muted);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+    margin: 1rem;
+    border: none;
+}
+
+.cta-button:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+}
+
+.toggle-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.toggle-options {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.toggle-option {
+    position: relative;
+}
+
+.toggle-option input[type="radio"] {
+    display: none;
+}
+
+.toggle-option label {
+    display: block;
+    padding: 1rem 2rem;
+    border: 2px solid var(--border-light);
+    border-radius: 25px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    text-align: center;
+    min-width: 180px;
+}
+
+.toggle-option input[type="radio"]:checked + label {
+    background: var(--pastel-blue);
+    border-color: #007bff;
+    color: #007bff;
+    transform: scale(1.05);
+}
+
+.toggle-option label:hover {
+    border-color: #007bff;
+    background: rgba(230, 243, 255, 0.5);
+}
+
+/* Enhanced Features with Financial Aid and Education */
+.features-section {
+    padding: 4rem 0;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-card h4 {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+}
+
+.feature-card .fa {
+    font-size: 2.5rem;
+    color: var(--accent-pink);
+    margin-bottom: 1rem;
+}
+
+.crisis-guide-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--pastel-pink);
+    color: #007bff;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.crisis-guide-link:hover {
+    background: #ffe6f3;
+    transform: translateY(-2px);
+}
+
+.financial-aid-section {
+    background: linear-gradient(135deg, #e6f3ff, #ffe6f3);
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.financial-aid-embed {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.trust-indicators {
+    background: var(--background-light);
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.trust-badge {
+    display: inline-block;
+    margin: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* Enhanced Chatbot Widget */
+.chatbot-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.chatbot-widget:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+}
+
+.chatbot-widget i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+.chatbot-pulse {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 15px;
+    height: 15px;
+    background: #28a745;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Security & Compliance Indicators */
+.security-banner {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.security-icon {
+    color: #28a745;
+    margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .toggle-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .chatbot-widget {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+    }
+}
+</style>
+{% endblock %}
+
 {% block content %}
+<!-- Security Banner -->
+<div class="security-banner">
+    <i class="fas fa-shield-alt security-icon"></i>
+    HIPAA-compliant transient data handling • No permanent storage • Secure encrypted transport
+</div>
+
 <div class="container">
     <!-- Hero Section -->
     <div class="hero-section text-center py-5">
@@ -18,23 +288,27 @@
                 </p>
                 
                 <!-- Enhanced Toggle Switch -->
-                <div class="user-type-toggle mb-5">
+                <div class="toggle-section">
                     <div class="toggle-container">
-                        <span class="toggle-label">I am a:</span>
-                        <div class="toggle-switch">
-                            <input type="radio" id="family" name="userType" value="family" checked>
-                            <label for="family" class="toggle-option family-option">
-                                <i class="fas fa-users me-2"></i>
-                                Family/Individual
-                            </label>
+                        <span class="toggle-label mb-3 d-block">I am a:</span>
+                        <div class="toggle-options">
+                            <div class="toggle-option">
+                                <input type="radio" id="family" name="userType" value="family" checked>
+                                <label for="family">
+                                    <i class="fas fa-users me-2"></i>
+                                    Family/Individual
+                                </label>
+                            </div>
                             
-                            <input type="radio" id="hospital" name="userType" value="hospital">
-                            <label for="hospital" class="toggle-option hospital-option">
-                                <i class="fas fa-hospital me-2"></i>
-                                Hospital/Provider
-                            </label>
+                            <div class="toggle-option">
+                                <input type="radio" id="hospital" name="userType" value="hospital">
+                                <label for="hospital">
+                                    <i class="fas fa-hospital me-2"></i>
+                                    Hospital/Provider
+                                </label>
+                            </div>
                         </div>
-                        <div class="toggle-description mt-2">
+                        <div class="toggle-description mt-3">
                             <small class="text-muted" id="toggle-description">
                                 Personal medical transport for your loved one
                             </small>
@@ -50,8 +324,16 @@
                     </a>
                     <p class="cta-subtitle mt-3 text-muted">
                         <i class="fas fa-shield-alt me-1"></i>
-                        Secure • Private • No data stored permanently
+                        Secure • Private • AI-powered estimates
                     </p>
+                </div>
+
+                <!-- Crisis Guide Link -->
+                <div class="mt-4">
+                    <a href="#crisis-guide" class="crisis-guide-link" onclick="showCrisisGuide()">
+                        <i class="fas fa-book-medical me-2"></i>
+                        Crisis Guide: What to Expect in Medical Transport
+                    </a>
                 </div>
             </div>
         </div>
@@ -61,108 +343,175 @@
     <div class="features-section py-5">
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="feature-card text-center">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-md"></i>
+                <div class="feature-card text-center h-100">
+                    <i class="fas fa-user-md fa-3x text-primary mb-3"></i>
+                    <h4>Medical Expertise</h4>
+                    <p>Certified medical teams with ICU experience accompany every flight</p>
+                    <div class="mt-auto">
+                        <small class="text-muted">✓ Doctor on board available</small>
                     </div>
-                    <h5 class="feature-title">Medical Expertise</h5>
-                    <p class="feature-description">
-                        Certified medical teams with ICU experience accompany every flight
-                    </p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="feature-card text-center">
-                    <div class="feature-icon">
-                        <i class="fas fa-clock"></i>
+                <div class="feature-card text-center h-100">
+                    <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                    <h4>Green Routing</h4>
+                    <p>Eco-friendly flight paths with carbon offset options available</p>
+                    <div class="mt-auto">
+                        <small class="text-muted">✓ 5% discount for green routes</small>
                     </div>
-                    <h5 class="feature-title">24/7 Availability</h5>
-                    <p class="feature-description">
-                        Emergency medical transport available around the clock when needed
-                    </p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="feature-card text-center">
-                    <div class="feature-icon">
-                        <i class="fas fa-heart"></i>
+                <div class="feature-card text-center h-100">
+                    <i class="fas fa-robot fa-3x text-info mb-3"></i>
+                    <h4>AI Estimates</h4>
+                    <p>Instant pricing estimates based on distance, severity, and equipment needs</p>
+                    <div class="mt-auto">
+                        <small class="text-muted">✓ Compare against provider quotes</small>
                     </div>
-                    <h5 class="feature-title">Family Support</h5>
-                    <p class="feature-description">
-                        Compassionate care with family seating options and regular updates
-                    </p>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- How It Works Section -->
-    <div class="how-it-works py-5">
-        <div class="text-center mb-5">
-            <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">Simple steps to get your loved one the care they need</p>
         </div>
         
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h6 class="step-title">Tell Us About Your Situation</h6>
-                    <p class="step-description">Share where your loved one is and their medical needs</p>
+        <div class="row g-4 mt-2">
+            <div class="col-md-6">
+                <div class="feature-card text-center h-100">
+                    <i class="fas fa-hands-helping fa-3x text-warning mb-3"></i>
+                    <h4>Emergency Handoff</h4>
+                    <p>Seamless coordination with ground ambulances and destination facilities</p>
+                    <div class="mt-auto">
+                        <small class="text-muted">✓ RapidSOS integration for EMS alerts</small>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h6 class="step-title">Compare Options</h6>
-                    <p class="step-description">See medical transport providers suited to your needs</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h6 class="step-title">Book Your Flight</h6>
-                    <p class="step-description">Confirm details and any family accommodations</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="step-card">
-                    <div class="step-number">4</div>
-                    <h6 class="step-title">Track Progress</h6>
-                    <p class="step-description">Follow your loved one's journey in real-time</p>
+            <div class="col-md-6">
+                <div class="feature-card text-center h-100">
+                    <i class="fas fa-network-wired fa-3x text-secondary mb-3"></i>
+                    <h4>Provider Diversity</h4>
+                    <p>Access to rural specialists, drones, and hybrid aircraft for comprehensive coverage</p>
+                    <div class="mt-auto">
+                        <small class="text-muted">✓ 50% rural/emerging tech network</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Testimonial Section -->
-    <div class="testimonial-section py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <i class="fas fa-quote-left testimonial-quote"></i>
-                        <p class="testimonial-text">
-                            "When my father needed emergency transport from Florida to New York, MediFly made 
-                            the impossible possible. The medical team was incredible, and I could fly with him. 
-                            It gave our whole family peace of mind during such a difficult time."
-                        </p>
-                        <div class="testimonial-author">
-                            <strong>- Sarah M., Daughter</strong>
-                            <span class="text-muted">Critical Care Transport</span>
+    <!-- Financial Aid Section -->
+    <div class="financial-aid-section">
+        <div class="container">
+            <h3 class="mb-4">
+                <i class="fas fa-heart me-2"></i>
+                Financial Support Available
+            </h3>
+            <div class="financial-aid-embed">
+                <p class="mb-3">We understand medical emergencies can be financially overwhelming.</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h5><i class="fas fa-donate me-2"></i>GoFundMe Integration</h5>
+                            <p class="small mb-2">Set up crowdfunding for medical transport costs</p>
+                            <button class="btn btn-outline-primary btn-sm" onclick="showFinancialAid('gofundme')">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h5><i class="fas fa-file-invoice me-2"></i>Insurance Support</h5>
+                            <p class="small mb-2">Help with insurance claims and documentation</p>
+                            <button class="btn btn-outline-primary btn-sm" onclick="showFinancialAid('insurance')">
+                                Learn More
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block scripts %}
+    <!-- Trust Indicators -->
+    <div class="trust-indicators">
+        <div class="container">
+            <h4 class="mb-4">Trusted by Families Nationwide</h4>
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <span class="trust-badge">
+                        <i class="fas fa-shield-alt me-2"></i>HIPAA Compliant
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span class="trust-badge">
+                        <i class="fas fa-certificate me-2"></i>$1M Insurance
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span class="trust-badge">
+                        <i class="fas fa-clock me-2"></i>24/7 Support
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span class="trust-badge">
+                        <i class="fas fa-star me-2"></i>98% Family Satisfaction
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Chatbot Widget -->
+<div class="chatbot-widget" onclick="toggleChatbot()">
+    <i class="fas fa-comments"></i>
+    <div class="chatbot-pulse"></div>
+</div>
+
+<!-- Modals for Education and Financial Aid -->
+<div class="modal fade" id="crisisGuideModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-book-medical me-2"></i>
+                    Crisis Guide: What to Expect in Medical Transport
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-clipboard-list me-2"></i>Before Transport</h6>
+                        <ul class="small">
+                            <li>Gather medical records and insurance information</li>
+                            <li>Pack essential medications (7-day supply)</li>
+                            <li>Bring comfortable clothing and personal items</li>
+                            <li>Arrange for family transportation to destination</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-plane me-2"></i>During Transport</h6>
+                        <ul class="small">
+                            <li>Medical team monitors patient continuously</li>
+                            <li>Family updates provided every 30 minutes</li>
+                            <li>Ground ambulance coordinates for arrival</li>
+                            <li>Emergency handoff protocols activated if needed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-// Handle enhanced toggle switch functionality
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('MediFly Consumer application initialized');
+    
+    // Initialize chatbot
+    initializeChatbot();
+    
+    // Initialize toggle functionality
     const hospitalRadio = document.getElementById('hospital');
     const familyRadio = document.getElementById('family');
     const mainCTA = document.getElementById('main-cta');
@@ -174,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update description and CTA
             toggleDescription.textContent = 'Professional medical transport coordination';
             mainCTA.innerHTML = '<i class="fas fa-building me-2"></i>Hospital Portal Available';
-            mainCTA.className = 'btn btn-outline-primary btn-lg px-5 py-3';
+            mainCTA.className = 'btn btn-outline-primary btn-lg cta-button';
             mainCTA.style.cursor = 'not-allowed';
             
             // Transform to hospital styling
@@ -195,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleDescription.textContent = 'Personal medical transport for your loved one';
             mainCTA.href = '{{ url_for("intake") }}';
             mainCTA.innerHTML = '<i class="fas fa-plane-departure me-2"></i>Find a Medical Flight';
-            mainCTA.className = 'cta-button';
+            mainCTA.className = 'btn btn-primary btn-lg cta-button';
             mainCTA.style.cursor = 'pointer';
             
             // Restore family styling
@@ -211,10 +560,67 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-    
-    // Initialize with family mode
-    familyRadio.checked = true;
-    toggleDescription.textContent = 'Personal medical transport for your loved one';
 });
+
+function showCrisisGuide() {
+    const modal = new bootstrap.Modal(document.getElementById('crisisGuideModal'));
+    modal.show();
+}
+
+function showFinancialAid(type) {
+    if (type === 'gofundme') {
+        alert('GoFundMe Integration: Set up a medical fundraising campaign to help cover transport costs. Our team can help you create compelling campaign messaging and share with your network.');
+    } else if (type === 'insurance') {
+        alert('Insurance Support: We provide detailed documentation for insurance claims, including medical necessity forms, transport receipts, and provider certifications to maximize your reimbursement.');
+    }
+}
+
+function toggleChatbot() {
+    // Enhanced chatbot with family context
+    const messages = [
+        {
+            trigger: 'welcome',
+            message: 'Hello! I\'m here to help you understand our medical transport options for your loved one. How can I assist you today?',
+            type: 'text'
+        },
+        {
+            trigger: 'severity',
+            message: 'Can you explain the severity levels?',
+            type: 'text'
+        },
+        {
+            trigger: 'severity_response', 
+            message: 'Severity 1: Minor conditions like fractures. Severity 2-3: Moderate conditions requiring monitoring. Severity 4: Serious conditions needing ICU care. Severity 5: Critical conditions with life support.',
+            type: 'text'
+        },
+        {
+            trigger: 'equipment',
+            message: 'What medical equipment is available?',
+            type: 'text'
+        },
+        {
+            trigger: 'equipment_response',
+            message: 'We provide ventilators, ECMO machines, incubators, oxygen support, and medical escorts. Each provider has different equipment capabilities displayed in their profile.',
+            type: 'text'
+        },
+        {
+            trigger: 'family_options',
+            message: 'What family accommodations are available?',
+            type: 'text'
+        },
+        {
+            trigger: 'family_response',
+            message: 'We offer Family Seat (+$5,000) for a companion to travel with the patient, and VIP Cabin (+$10,000) with enhanced comfort features and priority medical attention.',
+            type: 'text'
+        }
+    ];
+    
+    console.log('Initializing family-focused chatbot with messages:', messages);
+    alert('💬 Family Support Chat: "I can help explain our services, severity levels, equipment options, and family accommodations. What would you like to know about bringing your loved one home safely?"');
+}
+
+function initializeChatbot() {
+    console.log('Initializing enhanced family chatbot widget');
+}
 </script>
 {% endblock %}

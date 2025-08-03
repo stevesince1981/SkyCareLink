@@ -1,0 +1,133 @@
+Update the existing Flask web app called MediFly Consumer MVP (medtransportlink-consumer.replit.app), incorporating all new features, refinements, and overhauls from recent discussions. This is a secure air medical transport aggregator with empathetic family UX and professional hospital toggle. Mirror hospital functionality but focus on family/individual users (e.g., coma transport from Orlando to LA or VIP hair transplant from NY to Turkey). Use Bootstrap 5, HIPAA demo (transient data, no stored PHI/PII). Add AI-driven estimates, green routing, financial aid, emergency handoffs, user education, provider diversity, ethics framework, hybrid deposit ($1,000 nonrefundable service fee, $6,500 refundable prepayment), tiered profit-sharing dashboard, owner notifications, and top animation. Ensure cybersecurity (parameterized queries to prevent SQL injections, input escaping, HTTPS, MFA/RBAC stubs, vulnerability scan notes). Plan for migration to Bubble post-10 bookings for HIPAA scalability.
+File Structure:
+
+app.py: Main Flask app with routes, toggle logic, AI estimates (SymPy for basic regression on distance/severity), deposit handling (Stripe integration), profit-sharing calculator (tiered: 1-10 bookings 30/30/40 split Mike/Steve/business; 11-30 25/25/50; 31+ 20/20/60), notifications (Twilio/Zapier stubs for email/SMS on visits/bookings), green routing (geo-API like Google Maps Distance Matrix free tier for low-emission optimization), emergency handoff (RapidSOS API stub for EMS alerts).
+templates/: index.html (toggle/animation), intake.html (guided form with education pop-ups), results.html (provider cards with green scores), confirm.html (deposit form, financial aid embeds like GoFundMe), tracking.html (progress bar with handoff alerts), summary.html (feedback/receipt), base.html (shared navbar/footer), dashboard.html (profit/revenue/expenses tracking, CSV export).
+static/css/style.css: Pastel theme (#e6f3ff blue, #ffe6f3 pink for family; #0056b3 blue for hospital toggle), animation keyframes (helicopter fly left-right, fade to plane circling globe, 10s loop).
+static/js/main.js: Chatbot logic, form steps/validation, tracking timer (10s auto-advance), toggle JS (switch styling/routes), ARIA enhancements.
+static/js/botui.min.js: BotUI CDN.
+static/img/helicopter.svg, plane.svg, globe.svg: Icons for animation.
+pyproject.toml: flask, python-dotenv, replit = "3.2" (add sympy for AI, stripe for payments).
+
+Views and Routes:
+
+/ – Landing Page
+
+Navbar: Soft blue (#e6f3ff), MediFly logo (text placeholder).
+Hero: “MediFly: Get Your Loved One Home Safely” (empathetic tone).
+Toggle: "Family/Individual" (default, pastel styling) vs "Hospital/Insurer" (redirect to medtransportlink-prototype.replit.app or switch to professional blue #0056b3 styling/routes).
+Button: “Find a Medical Flight” → /intake.
+Animation: Top header - @keyframes fly {0% left:0 helicopter; 50% left:100% fade to plane; 100% circle globe.svg (10s loop)}.
+Footer: “We prioritize your family’s peace of mind. HIPAA-compliant transient data.”
+Chatbot widget (bottom-right): Greeting “Need help with options for your loved one?”; suggests add-ons, explains severity, FAQs; reads session for context (e.g., “Severity 5: Suggest ventilator?”).
+Education: Pop-up link “Crisis Guide: What to Expect in Medevac”.
+Financial Aid: Embed GoFundMe link for uninsured.
+
+
+/intake – Guided Form
+
+Multi-step form (Bootstrap cards, JS hide/show on “Next”).
+Questions (gentle): “Where is your family member now?” (text, required, ARIA-label), “Where do they need to go?” (text, required), “How serious is their condition?” (dropdown 1=minor sprain to 5=critical ventilator/coma, tooltips/help text, ARIA), “What medical support do they need?” (checkboxes: Ventilator, ECMO, Incubator, Escort only, Oxygen, Other; ARIA), “When are they ready to travel?” (date input, JS validate future).
+AI Estimate: On submit, calculate rough price ($50k base + distance100/mile + severity10k + repositioning via geo-API stub) before pinging providers.
+Validation: JS checks required fields, show alerts.
+Alert: “Info used only for matching. No storage.”
+Submit → /results (auto-request quotes from diverse providers, including rural/drones/hybrids for 50% network focus).
+Ethics: Bias audit stub (e.g., log matching data for review).
+
+
+/results – Provider Options
+
+3-5 mock/real provider cards (responsive grid row-cols-1 md-3, icons, h5 name, large price, ETA, badges e.g. "ICU Certified", green score "Low emission via optimized route").
+Friendly language: “Ready to help your family” (toggle adjusts to professional for hospital).
+Button → /confirm?provider_id=X.
+
+
+/confirm – Confirmation
+
+Summary table (provider, details, AI-estimated vs. quote price, cost breakdown).
+Add-ons: Checkboxes for Family Seat ($5k), VIP Cabin ($10k with pampering like IVs/oxygen).
+Deposit: $7,500 total ($1,000 nonrefundable service fee, $6,500 refundable prepayment); Stripe form with breakdown.
+Consent: “I agree to $1,000 nonrefundable fee and secure transient sharing.”
+Financial Aid: Embed GoFundMe/insurers for payment plans.
+Education: Links to "What to Pack for Flight".
+Button → /tracking after payment (notify provider for balance direct pay).
+
+
+/tracking – Real-Time Tracker
+
+Animated progress bar (Dispatched → En Route → Arrived, JS timer 10s auto-advance, striped/animated Bootstrap).
+Status text: ETA, low-emission updates.
+Emergency Handoff: Stub for RapidSOS API alert ("Ground ambulance notified").
+Message: “We’re with you every step.”
+Cancellation Button: Upload docs for medically justified refund request.
+Button → /summary.
+
+
+/summary – Completion Page
+
+Green check, booking table (provider, severity, route, equipment, cost with breakdown).
+Feedback textarea + Submit.
+Mock “Download PDF Receipt” button.
+Education/Aid: Links to resources, crowdfunding.
+
+
+/admin – Debug Route
+
+Password: admin:demo123.
+Session logs/table (masked sensitive PHI/PII), refresh button.
+
+
+/dashboard – Profit/Notifications Tracker
+
+Real-time: Bookings, revenue ($375k goal), tiered profit split (calculator/log), expenses ($12k), deposits/refunds, provider stats (leads converted, diversity metrics e.g. rural %).
+Notifications: Email/SMS stubs (Twilio) for "100 unique visits today (up 20%)" or "New booking: $7,500 fee—conversion 15%"; thresholds/anomalies (e.g., "Visits drop 50%").
+CSV export, refresh button.
+
+
+
+Styling:
+
+Family: Pastel #e6f3ff blue, #ffe6f3 pink backgrounds/cards, rounded buttons (8px), shadows, 'Segoe UI' font.
+Hospital Toggle: Professional #0056b3 blue, clean grids.
+Animation: Smooth, responsive.
+Chatbot: Rounded, warm (family) or efficient (hospital) replies.
+
+Chatbot (BotUI):
+
+All pages, greeting “Need help with options?” (adjust per toggle).
+Suggest add-ons, explain severity/estimates, FAQs; read session for context (e.g., “Severity 5: Suggest ventilator?”).
+Ethics: No bias in suggestions.
+
+AI/Features:
+
+Estimates: SymPy in app.py (base $50k + distance100 + severity10k + repositioning geo-stub + green optimization).
+Green Routing: Prioritize low-emission providers/routes, offset add-on ($500).
+Provider Diversity: Stub for rural/drones/hybrids (50% network).
+Emergency Handoff: RapidSOS API stub in /tracking.
+Education: Pop-ups/links (e.g., "Crisis Guide").
+Financial Aid: Embeds in /confirm.
+Ethics Framework: Bias audits (log matching), $1M insurance note.
+
+Cybersecurity:
+
+Prevention: Parameterized queries/escaping in app.py (block SQL injections), input validation, WAF (Cloudflare free stub), HTTPS, MFA/RBAC (password stubs), no DB (transient session), OWASP ZAP scan notes.
+Measurement: HHS audit stubs, CVSS scoring, ELK-like logs for breaches (e.g., "50 records exposed"), HHS reporting if >500 affected.
+
+Security & Deployment:
+
+Flask session only, clear at /summary.
+HTTPS note: “Secure transient data handling.”
+Deploy: medtransportlink-consumer.replit.app (MVP; migrate to Bubble post-10 bookings for HIPAA plugins/scalability).
+
+Testing Scenarios:
+
+Brandon (11), Severity 4, Ventilator, Orlando → LA (test deposit, cancellation medical refund, green route, aid link).
+VIP NYC → Turkey, Severity 1, Oxygen + VIP Cabin (test non-medical cancel forfeit, ethics AI, education pop-up).
+Verify: Toggle/styling switch, animation responsiveness, session clearing, ARIA/accessibility, notifications, cybersecurity (simulate injection), dashboard splits.
+
+Deliverables:
+
+Full updated code for all files.
+Deployed URL with changes.
+Text wireframes for each page (e.g., "Landing: Navbar logo, hero text, toggle centered, animation top, chatbot bottom-right").
+Testing results summary, including cybersecurity validation.
