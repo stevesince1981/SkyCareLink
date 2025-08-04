@@ -93,6 +93,10 @@ def authenticate():
         # Redirect based on role
         if DEMO_USERS[username]['role'] == 'admin':
             return redirect(url_for('admin_panel'))
+        elif DEMO_USERS[username]['role'] == 'family':
+            return redirect(url_for('family_dashboard'))
+        elif DEMO_USERS[username]['role'] == 'provider':
+            return redirect(url_for('provider_dashboard'))
         else:
             return redirect(url_for('dashboard'))
     else:
@@ -108,11 +112,21 @@ def dashboard():
     user_role = session.get('user_role')
     user_name = session.get('user_name')
     
+    # Calculate revenue metrics
+    total_service_value = 847500
+    deposits_collected = 7 * 1000
+    commission_earned = total_service_value * 0.05
+    actual_revenue = deposits_collected + commission_earned
+    
     dashboard_data = {
         'user_name': user_name,
         'user_role': user_role,
         'total_bookings': 7,
-        'total_revenue': 847500,
+        'total_service_value': total_service_value,
+        'actual_revenue': actual_revenue,
+        'deposits_collected': deposits_collected,
+        'commission_earned': commission_earned,
+        'conversion_rate': 0.029,
         'current_time': datetime.now().strftime('%Y-%m-%d %H:%M')
     }
     
@@ -125,13 +139,30 @@ def admin_panel():
         flash('Admin access required.', 'error')
         return redirect(url_for('login'))
     
-    # Accurate revenue metrics for 7 bookings
+    # Modifiable admin goals and realistic revenue calculations
+    ADMIN_GOALS = {
+        'booking_goal': 25,
+        'revenue_goal': 1000000,
+        'monthly_booking_target': 15,
+        'quarterly_revenue_target': 2500000
+    }
+    
+    # Revenue calculations: $1,000 non-refundable deposit + 5% commission on booking
+    total_service_value = 847500  # Total booking value
+    deposits_collected = 7 * 1000  # $1,000 per booking
+    commission_earned = total_service_value * 0.05  # 5% commission
+    actual_revenue = deposits_collected + commission_earned  # What MediFly actually makes
+    
     stats = {
         'total_bookings': 7,
-        'total_revenue': 847500,  # $128.5k + $112k + $102k + $95k + $118k + $145k + $147k
+        'total_service_value': total_service_value,  # Total booking value for customers
+        'actual_revenue': actual_revenue,  # What MediFly actually earns
+        'deposits_collected': deposits_collected,
+        'commission_earned': commission_earned,
         'unique_visits': 245,
         'conversion_rate': 0.029,  # 7/245 = 2.9%
-        'customer_satisfaction': 0.98
+        'customer_satisfaction': 0.98,
+        'goals': ADMIN_GOALS
     }
     
     return render_template('admin_panel.html', stats=stats)
@@ -143,14 +174,43 @@ def admin_storyboard():
         flash('Admin access required.', 'error')
         return redirect(url_for('login'))
     
+    # Calculate revenue metrics for storyboard
+    total_service_value = 847500
+    deposits_collected = 7 * 1000
+    commission_earned = total_service_value * 0.05
+    actual_revenue = deposits_collected + commission_earned
+    
     booking_stats = {
         'total_bookings': 7,
-        'total_revenue': 847500,
+        'total_service_value': total_service_value,
+        'actual_revenue': actual_revenue,
+        'deposits_collected': deposits_collected,
+        'commission_earned': commission_earned,
         'goal_revenue': 1000000,
         'conversion_rate': 0.029
     }
     
     return render_template('admin_storyboard.html', booking_stats=booking_stats)
+
+@app.route('/family_dashboard')
+def family_dashboard():
+    """Family dashboard with family-specific features"""
+    if not session.get('logged_in') or session.get('user_role') != 'family':
+        flash('Family access required.', 'error')
+        return redirect(url_for('login'))
+    
+    user_name = session.get('user_name')
+    return render_template('family_dashboard.html', user_name=user_name)
+
+@app.route('/provider_dashboard')
+def provider_dashboard():
+    """Provider dashboard with provider-specific features"""
+    if not session.get('logged_in') or session.get('user_role') != 'provider':
+        flash('Provider access required.', 'error')
+        return redirect(url_for('login'))
+    
+    user_name = session.get('user_name')
+    return render_template('provider_dashboard.html', user_name=user_name)
 
 @app.route('/logout')
 def logout():

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Family Dashboard - MediFly{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Welcome, {{ user_name }}</h2>
+            <div>
+                <span class="badge bg-success me-2">Family Member</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Family Support Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>24/7</h4>
+                        <small>Family Support</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4>Safe</h4>
+                        <small>Transport Priority</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4>Comfort</h4>
+                        <small>Family-First Care</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Family Features -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Your Family Transport Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>We understand how important your loved one's safety and comfort are during medical transport.</p>
+                        
+                        <h6>Available Services:</h6>
+                        <ul>
+                            <li><strong>Family Seat Option:</strong> Travel with your loved one (+$5,000)</li>
+                            <li><strong>VIP Cabin Upgrade:</strong> Enhanced comfort and privacy (+$10,000)</li>
+                            <li><strong>24/7 Family Updates:</strong> Regular communication during transport</li>
+                            <li><strong>Medical Escort:</strong> Dedicated medical professional</li>
+                        </ul>
+                        
+                        <a href="{{ url_for('intake') }}" class="btn btn-primary">
+                            <i class="fas fa-heart me-2"></i>Book Safe Transport for Your Loved One
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Family Support</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Emergency Line:</strong><br>1-800-MEDIFLY</p>
+                        <p><strong>Family Advocate:</strong><br>advocate@medifly.com</p>
+                        <p><strong>Insurance Help:</strong><br>insurance@medifly.com</p>
+                        
+                        <div class="alert alert-info">
+                            <small><i class="fas fa-info-circle me-1"></i>All family data is kept private and secure per HIPAA regulations.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

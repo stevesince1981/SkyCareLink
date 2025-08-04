@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Provider Dashboard - MediFly{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Welcome, {{ user_name }}</h2>
+            <div>
+                <span class="badge bg-warning me-2">Medical Provider</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Provider Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>5</h4>
+                        <small>Completed Flights</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4>$45K</h4>
+                        <small>Monthly Earnings</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4>3</h4>
+                        <small>Available Requests</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h4>98%</h4>
+                        <small>Safety Rating</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Provider Features -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Available Transport Requests</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Route</th>
+                                        <th>Severity</th>
+                                        <th>Equipment</th>
+                                        <th>Payout</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Denver → Miami</td>
+                                        <td><span class="badge bg-danger">Critical</span></td>
+                                        <td>ICU, Ventilator</td>
+                                        <td>$85,000</td>
+                                        <td><button class="btn btn-sm btn-primary" disabled>Bid</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Seattle → Phoenix</td>
+                                        <td><span class="badge bg-warning">Serious</span></td>
+                                        <td>Basic Life Support</td>
+                                        <td>$65,000</td>
+                                        <td><button class="btn btn-sm btn-primary" disabled>Bid</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Flight Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>On-Time Rate:</strong> 95%</p>
+                        <p><strong>Customer Rating:</strong> 4.9/5</p>
+                        <p><strong>Safety Score:</strong> 98%</p>
+                        <p><strong>Equipment Level:</strong> ICU Certified</p>
+                        
+                        <div class="alert alert-success">
+                            <small><i class="fas fa-star me-1"></i>Top-rated provider in your region!</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

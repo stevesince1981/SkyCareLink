@@ -15,41 +15,97 @@
             </div>
         </div>
         
-        <!-- Revenue Metrics -->
+        <!-- Role-specific Metrics -->
+        {% if user_role == 'admin' %}
         <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <h5>Total Bookings</h5>
-                        <h3>{{ total_bookings }}</h3>
+                    <div class="card-body text-center">
+                        <h4>{{ total_bookings }}</h4>
+                        <small>Bookings</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <h5>Total Revenue</h5>
-                        <h3>${{ "{:,}".format(total_revenue) }}</h3>
+                    <div class="card-body text-center">
+                        <h4>${{ "{:,}".format(actual_revenue|int) }}</h4>
+                        <small>MediFly Revenue</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card bg-info text-white">
-                    <div class="card-body">
-                        <h5>Goal Progress</h5>
-                        <h3>{{ "%.1f"|format((total_revenue / 1000000) * 100) }}%</h3>
+                    <div class="card-body text-center">
+                        <h4>${{ "{:,}".format(total_service_value|int) }}</h4>
+                        <small>Service Value</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="card bg-warning text-white">
-                    <div class="card-body">
-                        <h5>Current Time</h5>
-                        <h6>{{ current_time }}</h6>
+                    <div class="card-body text-center">
+                        <h4>{{ "%.1f"|format(conversion_rate * 100) }}%</h4>
+                        <small>Conversion</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ current_time.split(' ')[1] }}</h4>
+                        <small>Time</small>
                     </div>
                 </div>
             </div>
         </div>
+        {% elif user_role == 'mvp' %}
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ total_bookings }}</h4>
+                        <small>Total Bookings</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4>3</h4>
+                        <small>Beta Features</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4>Early</h4>
+                        <small>Access Status</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ total_bookings }}</h4>
+                        <small>Active Bookings</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4>24/7</h4>
+                        <small>Support Available</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         
         <!-- Role-specific actions -->
         <div class="row">

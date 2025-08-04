@@ -21,7 +21,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark" id="main-navbar" style="background-color: #007bff;">
         <div class="container">
             <h1 class="navbar-brand text-white mb-0" aria-label="MediFly Hospital Transport System">
-                <i class="fas fa-helicopter me-2" aria-hidden="true"></i>MediFly
+                <i class="fas fa-helicopter me-1" aria-hidden="true"></i>
+                <i class="fas fa-plane me-1" aria-hidden="true"></i>
+                MediFly
             </h1>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -43,17 +45,6 @@
                 </ul>
                 
                 <ul class="navbar-nav">
-                    <!-- Theme Switcher -->
-                    <li class="nav-item me-3">
-                        <div class="nav-link p-0">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="themeSwitch" onchange="toggleTheme()">
-                                <label class="form-check-label text-white" for="themeSwitch">
-                                    <small><span id="themeLabel">Professional</span></small>
-                                </label>
-                            </div>
-                        </div>
-                    </li>
                     
                     {% if session.logged_in %}
                         <li class="nav-item dropdown">
@@ -137,47 +128,17 @@
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
-    <!-- Theme Switcher JavaScript -->
+    <!-- Default Calming Theme -->
     <script>
-        // Set default theme to calming
-        let isCalming = true;
-        
-        function toggleTheme() {
-            const navbar = document.getElementById('main-navbar');
-            const themeLabel = document.getElementById('themeLabel');
-            const body = document.body;
-            
-            if (isCalming) {
-                // Switch to Professional theme
-                navbar.style.backgroundColor = '#007bff';
-                body.style.backgroundColor = '#ffffff';
-                body.style.color = '#333333';
-                themeLabel.textContent = 'Calming';
-                isCalming = false;
-            } else {
-                // Switch to Calming theme
-                navbar.style.backgroundColor = '#87CEEB';
-                body.style.backgroundColor = '#f8f9fa';
-                body.style.color = '#495057';
-                themeLabel.textContent = 'Professional';
-                isCalming = true;
-            }
-        }
-        
-        // Initialize calming theme on page load
+        // Set calming theme as default
         document.addEventListener('DOMContentLoaded', function() {
             const navbar = document.getElementById('main-navbar');
-            const themeLabel = document.getElementById('themeLabel');
             const body = document.body;
             
-            // Set calming theme as default
+            // Apply calming theme
             navbar.style.backgroundColor = '#87CEEB';
             body.style.backgroundColor = '#f8f9fa';
             body.style.color = '#495057';
-            themeLabel.textContent = 'Professional';
-            
-            // Set theme switch to show we're in calming mode
-            document.getElementById('themeSwitch').checked = false;
         });
     </script>
     

@@ -27,35 +27,43 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="card bg-success text-white">
                     <div class="card-body text-center">
-                        <h4>${{ "{:,}".format(stats.total_revenue) }}</h4>
-                        <small>Total Revenue</small>
+                        <h4>${{ "{:,}".format(stats.actual_revenue|int) }}</h4>
+                        <small>MediFly Revenue</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="card bg-info text-white">
                     <div class="card-body text-center">
-                        <h4>{{ stats.unique_visits }}</h4>
-                        <small>Unique Visits</small>
+                        <h4>${{ "{:,}".format(stats.total_service_value|int) }}</h4>
+                        <small>Service Value</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="card bg-warning text-white">
                     <div class="card-body text-center">
-                        <h4>{{ "%.1f"|format(stats.conversion_rate * 100) }}%</h4>
-                        <small>Conversion Rate</small>
+                        <h4>${{ "{:,}".format(stats.deposits_collected|int) }}</h4>
+                        <small>Deposits</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="card bg-secondary text-white">
                     <div class="card-body text-center">
-                        <h4>{{ "%.0f"|format(stats.customer_satisfaction * 100) }}%</h4>
-                        <small>Customer Satisfaction</small>
+                        <h4>${{ "{:,}".format(stats.commission_earned|int) }}</h4>
+                        <small>Commission</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ "%.1f"|format(stats.conversion_rate * 100) }}%</h4>
+                        <small>Conversion</small>
                     </div>
                 </div>
             </div>
@@ -66,19 +74,20 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Revenue Analysis</h5>
+                        <h5>MediFly Revenue Analysis</h5>
                     </div>
                     <div class="card-body">
-                        <p><strong>Average Booking Value:</strong> ${{ "{:,}".format(stats.total_revenue // stats.total_bookings) }}</p>
-                        <p><strong>Goal Progress:</strong> {{ "%.1f"|format((stats.total_revenue / 1000000) * 100) }}% of $1M goal</p>
-                        <p><strong>Bookings to Goal:</strong> {{ 25 - stats.total_bookings }} more bookings needed for 25-booking milestone</p>
+                        <p><strong>Revenue per Booking:</strong> ${{ "{:,}".format((stats.actual_revenue / stats.total_bookings)|int) }}</p>
+                        <p><strong>Deposit Collection:</strong> $1,000 × {{ stats.total_bookings }} = ${{ "{:,}".format(stats.deposits_collected|int) }}</p>
+                        <p><strong>Commission (5%):</strong> ${{ "{:,}".format(stats.commission_earned|int) }}</p>
+                        <p><strong>Goal Progress:</strong> {{ "%.1f"|format((stats.total_bookings / stats.goals.booking_goal) * 100) }}% of {{ stats.goals.booking_goal }}-booking goal</p>
                         
                         <!-- Progress bar -->
                         <div class="progress mb-2">
                             <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: {{ (stats.total_bookings / 25) * 100 }}%" 
-                                 aria-valuenow="{{ stats.total_bookings }}" aria-valuemin="0" aria-valuemax="25">
-                                {{ stats.total_bookings }}/25 bookings
+                                 style="width: {{ (stats.total_bookings / stats.goals.booking_goal) * 100 }}%" 
+                                 aria-valuenow="{{ stats.total_bookings }}" aria-valuemin="0" aria-valuemax="{{ stats.goals.booking_goal }}">
+                                {{ stats.total_bookings }}/{{ stats.goals.booking_goal }} bookings
                             </div>
                         </div>
                     </div>
@@ -87,13 +96,23 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Revenue Breakdown</h5>
+                        <h5>Modifiable Goals & Projections</h5>
                     </div>
                     <div class="card-body">
-                        <p><strong>7 Bookings @ $121k avg:</strong> ${{ "{:,}".format(stats.total_revenue) }}</p>
-                        <p><strong>Estimated Q1 Revenue:</strong> ${{ "{:,}".format(stats.total_revenue * 3) }}</p>
-                        <p><strong>Annual Projection:</strong> ${{ "{:,}".format(stats.total_revenue * 12) }}</p>
-                        <small class="text-muted">Based on current conversion rate of {{ "%.1f"|format(stats.conversion_rate * 100) }}%</small>
+                        <form>
+                            <div class="mb-2">
+                                <label class="form-label">Booking Goal:</label>
+                                <input type="number" class="form-control form-control-sm" value="{{ stats.goals.booking_goal }}" readonly>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Monthly Target:</label>
+                                <input type="number" class="form-control form-control-sm" value="{{ stats.goals.monthly_booking_target }}" readonly>
+                            </div>
+                        </form>
+                        <hr>
+                        <p><strong>Q1 Projection:</strong> ${{ "{:,}".format((stats.actual_revenue * 3)|int) }}</p>
+                        <p><strong>Annual Projection:</strong> ${{ "{:,}".format((stats.actual_revenue * 12)|int) }}</p>
+                        <small class="text-muted">Based on ${{ "{:,}".format((stats.actual_revenue / stats.total_bookings)|int) }} per booking</small>
                     </div>
                 </div>
             </div>

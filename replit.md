@@ -6,13 +6,21 @@ MediFly is a Flask-based web application that simulates a hospital interface for
 
 ## Recent Enhancements (August 2025)
 
-### Role-Based Authentication System (Latest)
-- Comprehensive Flask-Login integration with JWT token management
-- Secure role-based access control for Family, Hospital, Provider, MVP, and Admin users
-- bcrypt password hashing with rate limiting (Flask-Limiter) for security
+### Simplified Authentication & Revenue Model (Latest - August 4, 2025)
+- Removed professional theme switcher, defaulting to calming light blue theme
+- Updated MediFly branding with helicopter + aircraft icons in navigation
+- Implemented realistic revenue calculations: $1,000 non-refundable deposit + 5% commission per booking
+- Created role-specific dashboards: Family (comfort-focused), Provider (earnings-focused), Admin (revenue analytics)
+- Modifiable admin goals system with accurate financial projections
+- Actual MediFly revenue: $49,375 (7 bookings × $1,000 deposits + $42,375 commission from $847,500 service value)
+
+### Role-Based Authentication System
+- Simplified session-based authentication without complex dependencies
+- Role-based access control for Family, Hospital, Provider, MVP, and Admin users
 - Role-specific dashboards with tailored interfaces and functionality
-- Session-based authentication with automatic token refresh capabilities
-- OWASP-compliant security features with fraud prevention
+- Family users see comfort and support options, not revenue data
+- Provider users see earnings and available requests, not company financials
+- Admin users see comprehensive revenue analytics and modifiable business goals
 
 ### Admin Storyboard Demonstrations
 - Interactive admin feature storyboard with live data visualization

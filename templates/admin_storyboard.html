@@ -22,15 +22,30 @@
             <div class="col-12">
                 <div class="card bg-gradient-success text-white">
                     <div class="card-body text-center">
-                        <h1 class="display-4">$847,500 Revenue Achieved!</h1>
-                        <p class="lead">7 Successful Bookings • 84.8% of $1M Goal</p>
-                        <div class="progress mb-3" style="height: 30px;">
-                            <div class="progress-bar bg-warning" role="progressbar" 
-                                 style="width: 84.8%" aria-valuenow="84.8" aria-valuemin="0" aria-valuemax="100">
-                                84.8% Complete
+                        <h1 class="display-4">${{ "{:,}".format(booking_stats.actual_revenue|int) }} MediFly Revenue!</h1>
+                        <p class="lead">7 Successful Bookings • ${{ "{:,}".format(booking_stats.total_service_value|int) }} Service Value Generated</p>
+                        <div class="row text-center mb-3">
+                            <div class="col-md-4">
+                                <h5>${{ "{:,}".format(booking_stats.deposits_collected|int) }}</h5>
+                                <small>Deposits Collected</small>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>${{ "{:,}".format(booking_stats.commission_earned|int) }}</h5>
+                                <small>Commission Earned (5%)</small>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>{{ "%.1f"|format((booking_stats.total_bookings / 25) * 100) }}%</h5>
+                                <small>Booking Goal Progress</small>
                             </div>
                         </div>
-                        <small>Target: 25 bookings by Q2 • Current: 7 bookings (28% booking milestone)</small>
+                        <div class="progress mb-3" style="height: 30px;">
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: {{ (booking_stats.total_bookings / 25) * 100 }}%" 
+                                 aria-valuenow="{{ booking_stats.total_bookings }}" aria-valuemin="0" aria-valuemax="25">
+                                {{ booking_stats.total_bookings }}/25 Bookings
+                            </div>
+                        </div>
+                        <small>Target: 25 bookings by Q2 • Revenue Model: $1,000 deposit + 5% commission</small>
                     </div>
                 </div>
             </div>
