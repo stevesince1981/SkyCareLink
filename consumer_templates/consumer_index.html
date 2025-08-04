@@ -34,15 +34,31 @@
 
 .transport-card {
     background: white;
-    padding: 2rem;
+    padding: 0;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     text-align: center;
     transition: all 0.3s ease;
-    height: 350px;
+    height: 420px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.card-content {
+    padding: 2rem 1.5rem 1rem 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-content p {
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.card-footer {
+    padding: 1rem 1.5rem 2rem 1.5rem;
 }
 
 .transport-card:hover {
@@ -204,17 +220,21 @@
                     <div class="col-lg-4 mb-3">
                         <div class="transport-option" data-type="critical">
                             <div class="transport-card critical-card h-100">
-                                <i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i>
-                                <h5>Critical Transport</h5>
-                                <p class="small">Urgent medical emergencies requiring immediate attention and rapid response.</p>
-                                <div class="mb-2">
-                                    <small class="text-muted">
-                                        <i class="fas fa-clock me-1"></i> Same-day available (+20% urgency fee)
-                                    </small>
+                                <div class="card-content">
+                                    <i class="fas fa-exclamation-triangle text-danger fa-2x mb-3"></i>
+                                    <h5>Critical Transport</h5>
+                                    <p class="flex-grow-1">Urgent medical emergencies requiring immediate attention and rapid response with same-day availability.</p>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i> Same-day available (+20% urgency fee)
+                                        </small>
+                                    </div>
                                 </div>
-                                <a href="{{ url_for('consumer_intake') }}?type=critical" class="btn btn-danger">
-                                    Emergency Transport
-                                </a>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('consumer_intake') }}?type=critical" class="btn btn-danger w-100">
+                                        Emergency Transport
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -223,17 +243,21 @@
                     <div class="col-lg-4 mb-3">
                         <div class="transport-option" data-type="non-critical">
                             <div class="transport-card non-critical-card h-100">
-                                <i class="fas fa-heart text-primary fa-2x mb-2"></i>
-                                <h5>Non-Critical Transport</h5>
-                                <p class="small">Planned medical transport with comfort options, family seats, and VIP cabin upgrades.</p>
-                                <div class="mb-2">
-                                    <small class="text-muted">
-                                        <i class="fas fa-users me-1"></i> Family seat +$5K | VIP cabin +$10K
-                                    </small>
+                                <div class="card-content">
+                                    <i class="fas fa-heart text-primary fa-2x mb-3"></i>
+                                    <h5>Non-Critical Transport</h5>
+                                    <p class="flex-grow-1">Planned medical transport with comfort options, family seats, and VIP cabin upgrades available.</p>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-users me-1"></i> Family seat +$5K | VIP cabin +$10K
+                                        </small>
+                                    </div>
                                 </div>
-                                <a href="{{ url_for('consumer_intake') }}?type=non-critical" class="btn btn-primary">
-                                    Plan Transport
-                                </a>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('consumer_intake') }}?type=non-critical" class="btn btn-primary w-100">
+                                        Plan Transport
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -242,17 +266,21 @@
                     <div class="col-lg-4 mb-3">
                         <div class="transport-option" data-type="hospital">
                             <div class="transport-card hospital-card h-100">
-                                <i class="fas fa-hospital text-success fa-2x mb-2"></i>
-                                <h5>Hospital Partnership</h5>
-                                <p class="small">Institutional bulk pricing, priority matching, and 24/7 dedicated support for hospitals.</p>
-                                <div class="mb-2">
-                                    <small class="text-muted">
-                                        <i class="fas fa-handshake me-1"></i> Our core customer program
-                                    </small>
+                                <div class="card-content">
+                                    <i class="fas fa-hospital text-success fa-2x mb-3"></i>
+                                    <h5>Hospital Partnership</h5>
+                                    <p class="flex-grow-1">Institutional bulk pricing, priority matching, and 24/7 dedicated support for healthcare facilities.</p>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-handshake me-1"></i> Our core customer program
+                                        </small>
+                                    </div>
                                 </div>
-                                <a href="{{ url_for('consumer_intake') }}?type=hospital" class="btn btn-success">
-                                    Hospital Access
-                                </a>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('consumer_intake') }}?type=hospital" class="btn btn-success w-100">
+                                        Hospital Access
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

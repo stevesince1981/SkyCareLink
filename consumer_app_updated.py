@@ -351,7 +351,7 @@ def login():
             print(f"Login failed for {username}")
             flash('Invalid username or password. Try: family, hospital, provider, mvp, or admin (password: demo123)', 'error')
     
-    return render_template('login.html')
+    return render_template('login_simple.html')
 
 @consumer_app.route('/logout')
 def logout():
