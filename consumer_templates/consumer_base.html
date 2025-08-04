@@ -50,6 +50,11 @@
                         </ul>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link text-muted" href="#" style="opacity: 0.6; cursor: not-allowed;">
+                            <i class="fas fa-crown me-1"></i>MVP <small>(Coming Soon)</small>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('login') }}">
                             <i class="fas fa-sign-in-alt me-1"></i>Login
                         </a>
@@ -144,9 +149,35 @@
         </div>
     </div>
 
-    <!-- Chatbot Widget -->
-    <div class="chatbot-widget">
-        <div class="botui-app-container" id="botui-app"></div>
+    <!-- Floating AI Assistant -->
+    <div class="floating-ai-assistant" id="floatingAI">
+        <div class="ai-toggle-btn" onclick="toggleAIAssistant()">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="ai-chat-panel" id="aiChatPanel" style="display: none;">
+            <div class="ai-header">
+                <h6><i class="fas fa-robot me-2"></i>AI Transport Assistant</h6>
+                <button class="btn-close" onclick="toggleAIAssistant()"></button>
+            </div>
+            <div class="ai-body">
+                <input type="text" class="form-control mb-3" id="floatingAICommand" 
+                       placeholder="Ask about transport options...">
+                <div class="ai-suggestions">
+                    <button class="btn btn-outline-primary btn-sm mb-2 w-100" 
+                            onclick="sendAICommand('help me build a flight for grandma from Orlando to NYC')">
+                        Orlando to NYC for Grandma
+                    </button>
+                    <button class="btn btn-outline-success btn-sm mb-2 w-100" 
+                            onclick="sendAICommand('what emergency transport options are available')">
+                        Emergency Options
+                    </button>
+                    <button class="btn btn-outline-info btn-sm w-100" 
+                            onclick="sendAICommand('show me family seat options')">
+                        Family Seat Options
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -158,6 +189,84 @@
     
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Floating AI Assistant Styles and Script -->
+    <style>
+    .floating-ai-assistant {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    
+    .ai-toggle-btn {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4);
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+    }
+    
+    .ai-toggle-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 25px rgba(0, 123, 255, 0.6);
+    }
+    
+    .ai-chat-panel {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 300px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid #e9ecef;
+    }
+    
+    .ai-header {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 15px;
+        border-radius: 15px 15px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .ai-body {
+        padding: 20px;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4); }
+        50% { box-shadow: 0 6px 25px rgba(0, 123, 255, 0.7); }
+        100% { box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4); }
+    }
+    </style>
+    
+    <script>
+    function toggleAIAssistant() {
+        const panel = document.getElementById('aiChatPanel');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+    
+    function sendAICommand(command) {
+        document.getElementById('floatingAICommand').value = command;
+        // Process AI command here
+        alert('AI Assistant: ' + command);
+    }
+    </script>
     
     {% block scripts %}{% endblock %}
 </body>

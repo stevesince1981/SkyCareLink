@@ -10,13 +10,14 @@ logging.basicConfig(level=logging.DEBUG)
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static', static_url_path='/consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
 
-# Demo user accounts
+# Demo user accounts - Fixed login credentials
 DEMO_USERS = {
-    'family_user': {'password': 'demo123', 'role': 'family', 'name': 'Sarah Johnson'},
-    'hospital_staff': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
+    'family': {'password': 'demo123', 'role': 'family', 'name': 'Sarah Johnson'},
+    'hospital': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
     'provider': {'password': 'demo123', 'role': 'provider', 'name': 'Captain Lisa Martinez'},
-    'mvp_user': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
-    'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'}
+    'mvp': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
+    'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'},
+    'demo': {'password': 'demo123', 'role': 'admin', 'name': 'Demo User'}
 }
 
 # Equipment pricing (dynamic)
@@ -227,7 +228,14 @@ def consumer_tracking():
     if not session.get('booking_confirmed'):
         return redirect(url_for('consumer_index'))
     
-    return render_template('consumer_tracking.html')
+    # Mock provider data for tracking
+    provider = {
+        'name': 'AirMed Response',
+        'aircraft': 'Helicopter EC-145',
+        'pilot': 'Captain Smith',
+        'crew': 'Nurse Johnson, Paramedic Davis'
+    }
+    return render_template('consumer_tracking.html', provider=provider)
 
 @consumer_app.route('/partner_dashboard')
 def partner_dashboard():

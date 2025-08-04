@@ -107,13 +107,20 @@
     <div class="container">
         <h1 class="hero-title">
             <i class="fas fa-helicopter me-3"></i>
-            <i class="fas fa-plane me-3"></i>
+            <i class="fas fa-plane me-3"></i>  
+            <i class="fas fa-ambulance me-3"></i>
             Get Your Loved One Home Safely
         </h1>
         <p class="hero-subtitle">
             Compassionate medical transport with family-first care and transparent pricing
         </p>
         
+        <!-- Login Button on Home Page -->
+        <div class="text-center mb-4">
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Access Portal
+            </a>
+        </div>
 
     </div>
 </div>
@@ -181,12 +188,77 @@
                         <a href="#" class="btn btn-outline-info btn-sm">Other Financing</a>
                     </div>
                 </div>
-                
-                <div class="text-center mt-3">
-                    <small class="text-muted">
-                        <i class="fas fa-shield-alt me-1"></i>
-                        All transports are HIPAA-compliant with secure, temporary data handling. No credit card details stored.
-                    </small>
+
+<!-- Why Choose Us Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="why-choose-us-section">
+                <h3 class="text-center mb-4">
+                    <i class="fas fa-heart-pulse me-2"></i>
+                    Why Choose MediFly?
+                </h3>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="scenario-card p-4 border rounded h-100">
+                            <div class="scenario-icon text-center mb-3">
+                                <i class="fas fa-baby text-danger fa-3x"></i>
+                            </div>
+                            <h5 class="text-center">Emergency Toddler Transport</h5>
+                            <p class="scenario-text">
+                                Your 3-year-old falls seriously ill while on vacation in Florida. Traditional services 
+                                require 10+ hours of phone calls, paperwork, and uncertainty about pricing.
+                            </p>
+                            <div class="solution-highlight alert alert-success">
+                                <strong>With MediFly:</strong> Get real-time quotes from multiple providers in minutes, 
+                                not hours. Compare prices, aircraft types, and medical capabilities instantly.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="scenario-card p-4 border rounded h-100">
+                            <div class="scenario-icon text-center mb-3">
+                                <i class="fas fa-person-cane text-info fa-3x"></i>
+                            </div>
+                            <h5 class="text-center">Grandma's Safe Journey Home</h5>
+                            <p class="scenario-text">
+                                Grandma suffered a stroke while visiting family in New York. She needs specialized 
+                                medical transport back home, but you're overwhelmed by complex medical transport processes.
+                            </p>
+                            <div class="solution-highlight alert alert-info">
+                                <strong>With MediFly:</strong> Transparent pricing, family seat options, VIP comfort 
+                                upgrades, and real-time tracking so you know she's in safe hands.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <div class="time-comparison">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="comparison-old p-3 border rounded">
+                                    <h6 class="text-danger">Traditional Process</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="fas fa-clock text-danger me-2"></i>10+ hours of phone calls</li>
+                                        <li><i class="fas fa-question-circle text-danger me-2"></i>Unknown pricing until the end</li>
+                                        <li><i class="fas fa-file-contract text-danger me-2"></i>Complex paperwork</li>
+                                        <li><i class="fas fa-phone text-danger me-2"></i>Limited provider comparison</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="comparison-new p-3 border rounded border-success">
+                                    <h6 class="text-success">MediFly Process</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="fas fa-bolt text-success me-2"></i>Real quotes in minutes</li>
+                                        <li><i class="fas fa-dollar-sign text-success me-2"></i>Transparent pricing upfront</li>
+                                        <li><i class="fas fa-mouse-pointer text-success me-2"></i>Simple online booking</li>
+                                        <li><i class="fas fa-star text-success me-2"></i>Multiple provider comparison</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
