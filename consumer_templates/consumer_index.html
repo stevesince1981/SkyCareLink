@@ -125,59 +125,113 @@
     </div>
 </div>
 
-<!-- Transport Type Selection -->
+<!-- Individual vs Hospital Partnership Section -->
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="toggle-section">
-                <h3 class="text-center mb-4">Choose Your Transport Type</h3>
-                <div class="transport-type-grid">
-                    <div class="transport-option" data-type="critical">
-                        <div class="transport-card critical-card">
-                            <i class="fas fa-exclamation-triangle text-danger fa-3x mb-3"></i>
-                            <h4>Critical Transport</h4>
-                            <p>Urgent medical emergencies requiring immediate attention and rapid response with same-day options.</p>
-                            <div class="mb-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i> Same-day available (+20% urgency fee)
-                                </small>
+        <div class="col-lg-12">
+            <h3 class="text-center mb-5">Choose Your Transport Solution</h3>
+            <div class="row">
+                <!-- Individual/Family Transport -->
+                <div class="col-lg-6 mb-4">
+                    <div class="partnership-section individual-section">
+                        <h4 class="text-center mb-4">
+                            <i class="fas fa-user-friends me-2"></i>Individual & Family Transport
+                        </h4>
+                        <div class="transport-type-grid">
+                            <div class="transport-option mb-3" data-type="critical">
+                                <div class="transport-card critical-card">
+                                    <i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i>
+                                    <h5>Critical Transport</h5>
+                                    <p class="small">Urgent medical emergencies requiring immediate attention and rapid response with same-day options.</p>
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i> Same-day available (+20% urgency fee)
+                                        </small>
+                                    </div>
+                                    <a href="{{ url_for('consumer_intake') }}?type=critical" class="btn btn-danger">
+                                        Emergency Transport
+                                    </a>
+                                </div>
                             </div>
-                            <a href="{{ url_for('consumer_intake') }}?type=critical" class="btn btn-danger btn-lg">
-                                Emergency Transport
-                            </a>
-                        </div>
-                    </div>
-                    <div class="transport-option" data-type="non-critical">
-                        <div class="transport-card non-critical-card">
-                            <i class="fas fa-heart text-primary fa-3x mb-3"></i>
-                            <h4>Non-Critical Transport</h4>
-                            <p>Planned medical transport with comfort options, family seats, and VIP cabin upgrades available.</p>
-                            <div class="mb-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-users me-1"></i> Family seat +$5K | VIP cabin +$10K
-                                </small>
+                            <div class="transport-option mb-3" data-type="non-critical">
+                                <div class="transport-card non-critical-card">
+                                    <i class="fas fa-heart text-primary fa-2x mb-2"></i>
+                                    <h5>Non-Critical Transport</h5>
+                                    <p class="small">Planned medical transport with comfort options, family seats, and VIP cabin upgrades available.</p>
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-users me-1"></i> Family seat +$5K | VIP cabin +$10K
+                                        </small>
+                                    </div>
+                                    <a href="{{ url_for('consumer_intake') }}?type=non-critical" class="btn btn-primary">
+                                        Plan Transport
+                                    </a>
+                                </div>
                             </div>
-                            <a href="{{ url_for('consumer_intake') }}?type=non-critical" class="btn btn-primary btn-lg">
-                                Plan Transport
-                            </a>
-                        </div>
-                    </div>
-                    <div class="transport-option" data-type="mvp">
-                        <div class="transport-card mvp-card priority-card">
-                            <i class="fas fa-star text-warning fa-3x mb-3"></i>
-                            <h4>MVP Membership</h4>
-                            <p>Premium service with 10% discounts, priority booking queue, and exclusive beta features.</p>
-                            <div class="mb-3">
-                                <small class="text-warning">
-                                    <i class="fas fa-crown me-1"></i> $49/month membership
-                                </small>
+                            <div class="transport-option" data-type="mvp">
+                                <div class="transport-card mvp-card priority-card">
+                                    <i class="fas fa-star text-warning fa-2x mb-2"></i>
+                                    <h5>MVP Membership</h5>
+                                    <p class="small">Premium service with 10% discounts, priority booking queue, and exclusive beta features.</p>
+                                    <div class="mb-2">
+                                        <small class="text-warning">
+                                            <i class="fas fa-crown me-1"></i> $1,000/year auto-renewal
+                                        </small>
+                                    </div>
+                                    <a href="{{ url_for('mvp_incentive') }}" class="btn btn-warning">
+                                        Join MVP Program
+                                    </a>
+                                </div>
                             </div>
-                            <a href="{{ url_for('mvp_incentive') }}" class="btn btn-warning btn-lg">
-                                Join MVP Program
-                            </a>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Hospital Partnership -->
+                <div class="col-lg-6 mb-4">
+                    <div class="partnership-section hospital-section">
+                        <h4 class="text-center mb-4">
+                            <i class="fas fa-hospital me-2"></i>Hospital Partnership Program
+                        </h4>
+                        <div class="hospital-benefits">
+                            <div class="card border-success h-100">
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        <i class="fas fa-handshake text-success fa-3x"></i>
+                                    </div>
+                                    <h5 class="text-center">Our Core Partnership</h5>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Institutional bulk pricing</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Priority partner matching</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>24/7 dedicated support line</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>HIPAA-compliant data handling</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Streamlined billing process</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Multi-transport coordination</li>
+                                    </ul>
+                                    <div class="text-center mt-4">
+                                        <a href="{{ url_for('consumer_intake') }}?type=hospital" class="btn btn-success btn-lg">
+                                            Hospital Access
+                                        </a>
+                                        <div class="mt-2">
+                                            <small class="text-muted">Contact for partnership details</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Note: No Mobile App for MVP -->
+<div class="container mt-4">
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Note:</strong> MVP members receive web-based priority access. Mobile app coming in future releases.
+    </div>
                 
                 <!-- Partnership Note -->
                 <div class="text-center mt-4">

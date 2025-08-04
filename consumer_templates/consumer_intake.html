@@ -216,14 +216,36 @@
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="patient_name" class="form-label">Patient Name</label>
-                            <input type="text" class="form-control" id="patient_name" name="patient_name" 
-                                   placeholder="First and last name" required>
-                            <small class="text-muted">
-                                <i class="fas fa-shield-alt me-1"></i>
-                                All patient information is handled securely per HIPAA guidelines
-                            </small>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="patient_name" class="form-label">Patient Name</label>
+                                <input type="text" class="form-control" id="patient_name" name="patient_name" 
+                                       placeholder="First and last name" required>
+                                <small class="text-muted">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    All patient information is handled securely per HIPAA guidelines
+                                </small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="patient_age" class="form-label">Approximate Age</label>
+                                <input type="number" class="form-control" id="patient_age" name="patient_age" 
+                                       placeholder="Age" min="0" max="120" required>
+                                <small class="text-muted">Helps determine medical equipment needs</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3" id="passportField" style="display: none;">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-passport me-2"></i>
+                                <strong>International Transport Detected:</strong> 
+                                Please confirm the patient has a valid passport for international travel.
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="passport_confirmed" name="passport_confirmed">
+                                    <label class="form-check-label" for="passport_confirmed">
+                                        Patient has valid passport for international travel
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -417,12 +439,49 @@
 let currentStep = 1;
 const totalSteps = 5;
 
-// Address suggestions (Google Places API stub)
+// Enhanced address suggestions (Google Places API stub)
 const addressSuggestions = {
-    'orlando': ['Orlando International Airport', 'Orlando Regional Medical Center', 'AdventHealth Orlando'],
-    'nyc': ['LaGuardia Airport, NYC', 'JFK Airport, NYC', 'Mount Sinai Hospital, NYC'],
-    'miami': ['Miami International Airport', 'Jackson Memorial Hospital', 'Baptist Hospital Miami'],
-    'hospital': ['Orlando Regional Medical Center', 'Tampa General Hospital', 'Baptist Health Jacksonville']
+    'orlando': [
+        'Orlando International Airport (MCO) - Orlando, FL',
+        'Orlando Regional Medical Center - 1414 Kuhl Ave, Orlando, FL',
+        'AdventHealth Orlando - 601 E Rollins St, Orlando, FL',
+        'Orlando Executive Airport (ORL) - Orlando, FL',
+        'Florida Hospital East Orlando - 7727 Lake Underhill Rd, Orlando, FL'
+    ],
+    'nyc': [
+        'LaGuardia Airport (LGA) - Queens, NY',
+        'JFK International Airport (JFK) - Queens, NY', 
+        'Newark Liberty Airport (EWR) - Newark, NJ',
+        'Mount Sinai Hospital - 1 Gustave L. Levy Pl, New York, NY',
+        'NewYork-Presbyterian Hospital - 525 E 68th St, New York, NY',
+        'Teterboro Airport (TEB) - Teterboro, NJ'
+    ],
+    'miami': [
+        'Miami International Airport (MIA) - Miami, FL',
+        'Jackson Memorial Hospital - 1611 NW 12th Ave, Miami, FL',
+        'Baptist Hospital of Miami - 8900 N Kendall Dr, Miami, FL',
+        'Opa-locka Executive Airport (OPF) - Miami, FL',
+        'University of Miami Hospital - 1400 NW 12th Ave, Miami, FL'
+    ],
+    'hospital': [
+        'Orlando Regional Medical Center - Orlando, FL',
+        'Tampa General Hospital - Tampa, FL', 
+        'Baptist Health Jacksonville - Jacksonville, FL',
+        'Mayo Clinic Florida - Jacksonville, FL',
+        'Florida Hospital Tampa - Tampa, FL'
+    ],
+    'boston': [
+        'Logan International Airport (BOS) - Boston, MA',
+        'Massachusetts General Hospital - 55 Fruit St, Boston, MA',
+        'Brigham and Women\'s Hospital - 75 Francis St, Boston, MA',
+        'Hanscom Field (BED) - Bedford, MA'
+    ],
+    'atlanta': [
+        'Hartsfield-Jackson Atlanta Airport (ATL) - Atlanta, GA',
+        'Emory University Hospital - 1364 Clifton Rd NE, Atlanta, GA',
+        'Grady Memorial Hospital - 80 Jesse Hill Jr Dr SE, Atlanta, GA',
+        'DeKalb-Peachtree Airport (PDK) - Atlanta, GA'
+    ]
 };
 
 function changeStep(direction) {

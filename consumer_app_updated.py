@@ -76,13 +76,15 @@ def consumer_intake_post():
     session['patient_data'] = {
         'transport_type': request.form.get('transport_type'),
         'patient_name': request.form.get('patient_name'),
+        'patient_age': request.form.get('patient_age'),
         'origin': request.form.get('origin'),
         'destination': request.form.get('destination'),
         'severity': int(request.form.get('severity', 1)),
         'equipment': request.form.getlist('equipment'),
         'same_day': 'same_day' in request.form,
         'date_time': request.form.get('date_time'),
-        'additional_notes': request.form.get('additional_notes')
+        'additional_notes': request.form.get('additional_notes'),
+        'passport_confirmed': 'passport_confirmed' in request.form
     }
     
     # Calculate equipment costs
@@ -314,7 +316,7 @@ def ai_chat():
 # Login routes
 @consumer_app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Simplified login"""
+    """Fixed login with proper authentication"""
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
@@ -324,17 +326,23 @@ def login():
             session['logged_in'] = True
             session['user_role'] = user_data['role']
             session['user_name'] = user_data['name']
+            session['username'] = username
             
             flash(f'Welcome, {user_data["name"]}!', 'success')
             
+            # Role-based redirection
             if user_data['role'] == 'admin':
                 return redirect(url_for('admin_dashboard'))
             elif user_data['role'] == 'provider':
                 return redirect(url_for('partner_dashboard'))
-            else:
+            elif user_data['role'] == 'hospital':
+                return redirect(url_for('hospital_dashboard'))
+            elif user_data['role'] == 'mvp':
+                return redirect(url_for('mvp_dashboard'))
+            else:  # family
                 return redirect(url_for('family_dashboard'))
         else:
-            flash('Invalid credentials. Try "demo123" for all accounts.', 'error')
+            flash('Invalid credentials. Use: family/hospital/provider/mvp/admin with password "demo123"', 'error')
     
     return render_template('login.html')
 
