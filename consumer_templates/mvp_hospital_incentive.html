@@ -1,0 +1,315 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}MVP Membership - MediFly Consumer{% endblock %}
+
+{% block head %}
+<style>
+.mvp-hero {
+    background: linear-gradient(135deg, #ffc107, #ff8c00);
+    color: #333;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.mvp-card {
+    border: 3px solid #ffc107;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #fff9e6, #ffffff);
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 20px rgba(255, 193, 7, 0.5); }
+    to { box-shadow: 0 0 30px rgba(255, 193, 7, 0.8); }
+}
+
+.benefit-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.benefit-item:hover {
+    transform: translateY(-5px);
+}
+
+.hospital-section {
+    background: #e8f4fd;
+    padding: 3rem 0;
+    margin: 3rem 0;
+}
+
+.pricing-comparison {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.beta-feature {
+    background: linear-gradient(135deg, #6f42c1, #8c5cf6);
+    color: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- MVP Hero Section -->
+<div class="mvp-hero">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-crown me-3"></i>
+            MediFly MVP Membership
+        </h1>
+        <p class="lead mb-4">Premium medical transport with exclusive benefits and priority service</p>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="mvp-card p-4">
+                    <h2 class="fw-bold">$49/month</h2>
+                    <p class="lead">Unlock premium benefits and save on every booking</p>
+                    <button class="btn btn-dark btn-lg">
+                        <i class="fas fa-star me-2"></i>Join MVP Program
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MVP Benefits -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2>MVP Membership Benefits</h2>
+            <p class="lead">Everything you need for stress-free medical transport</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="benefit-item">
+                <i class="fas fa-percentage fa-3x text-warning mb-3"></i>
+                <h4>10% Discount on All Bookings</h4>
+                <p>Save on every transport with automatic 10% discount applied at checkout. Average savings of $12,000 per booking.</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="benefit-item">
+                <i class="fas fa-fast-forward fa-3x text-primary mb-3"></i>
+                <h4>Priority Booking Queue</h4>
+                <p>Your requests are processed ahead of standard bookings for the same flight dates, ensuring better availability.</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="benefit-item">
+                <i class="fas fa-user-tie fa-3x text-success mb-3"></i>
+                <h4>Dedicated Family Advocate</h4>
+                <p>Personal advocate assigned to your account for 24/7 support, family updates, and coordination assistance.</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="benefit-item">
+                <i class="fas fa-flask fa-3x text-info mb-3"></i>
+                <h4>Early Access to Beta Features</h4>
+                <p>Try new features before public release, including AI chat upgrades and enhanced family communication tools.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Beta Features Preview -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="text-center mb-4">Exclusive Beta Features for MVP Members</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="beta-feature text-center">
+                        <i class="fas fa-robot fa-2x mb-2"></i>
+                        <h5>Advanced AI Chat</h5>
+                        <p>Enhanced AI assistant with natural language transport planning and real-time flight optimization.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="beta-feature text-center">
+                        <i class="fas fa-mobile-alt fa-2x mb-2"></i>
+                        <h5>Family Mobile App</h5>
+                        <p>Dedicated mobile app for real-time tracking, communication, and document sharing with medical teams.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="beta-feature text-center">
+                        <i class="fas fa-calendar-plus fa-2x mb-2"></i>
+                        <h5>Smart Scheduling</h5>
+                        <p>AI-powered scheduling that optimizes flight times based on medical needs and family preferences.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hospital Section -->
+<div class="hospital-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2>
+                    <i class="fas fa-hospital me-2"></i>
+                    Hospital Partnership Program
+                </h2>
+                <p class="lead">Institutional benefits for medical facilities and insurance providers</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Priority matching for same flight/date bookings
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Custom dashboard for bulk booking management
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Dedicated account manager for institutional support
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Volume pricing discounts for frequent bookings
+                    </li>
+                </ul>
+                <button class="btn btn-primary btn-lg">
+                    <i class="fas fa-handshake me-2"></i>Request Partnership Info
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-4x text-primary mb-3"></i>
+                        <h4>Volume Discounts Available</h4>
+                        <p>Institutions booking 10+ transports per month receive additional savings and priority service allocation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Comparison -->
+<div class="container">
+    <div class="pricing-comparison">
+        <h3 class="text-center mb-4">See the MVP Difference</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header text-center">
+                        <h5>Standard</h5>
+                        <p class="text-muted">Pay per booking</p>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-times text-danger me-2"></i>No discounts</li>
+                            <li><i class="fas fa-times text-danger me-2"></i>Standard queue</li>
+                            <li><i class="fas fa-times text-danger me-2"></i>Basic support</li>
+                            <li><i class="fas fa-times text-danger me-2"></i>No beta access</li>
+                        </ul>
+                        <hr>
+                        <h4 class="text-center">$120,000</h4>
+                        <p class="text-center text-muted">Sample booking cost</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-warning">
+                    <div class="card-header text-center bg-warning">
+                        <h5>MVP Membership</h5>
+                        <p class="text-dark">$49/month + savings</p>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>10% discount</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Priority queue</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Dedicated advocate</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Beta features</li>
+                        </ul>
+                        <hr>
+                        <h4 class="text-center text-success">$108,000</h4>
+                        <p class="text-center text-muted">Same booking with MVP discount</p>
+                        <div class="alert alert-success text-center">
+                            <strong>Save $12,000!</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header text-center">
+                        <h5>Hospital Partnership</h5>
+                        <p class="text-muted">Custom enterprise pricing</p>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Volume discounts</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Priority matching</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Account manager</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Custom dashboard</li>
+                        </ul>
+                        <hr>
+                        <h4 class="text-center">Contact Us</h4>
+                        <p class="text-center text-muted">Custom quote based on volume</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="container text-center mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-primary text-white">
+                <div class="card-body p-4">
+                    <h3>Ready to Upgrade Your Medical Transport Experience?</h3>
+                    <p class="lead mb-4">Join thousands of families who trust MediFly MVP for their critical transport needs.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('consumer_intake', type='mvp') }}" class="btn btn-warning btn-lg">
+                            <i class="fas fa-star me-2"></i>Start MVP Booking
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Account
+                        </a>
+                    </div>
+                    <p class="mt-3 mb-0">
+                        <small>30-day money-back guarantee • Cancel anytime • No setup fees</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click tracking for MVP benefits
+    document.querySelectorAll('.benefit-item').forEach(item => {
+        item.addEventListener('click', function() {
+            console.log('MVP benefit viewed:', this.querySelector('h4').textContent);
+        });
+    });
+    
+    // Animate MVP card on page load
+    setTimeout(() => {
+        document.querySelector('.mvp-card').style.transform = 'scale(1.05)';
+        setTimeout(() => {
+            document.querySelector('.mvp-card').style.transform = 'scale(1)';
+        }, 300);
+    }, 1000);
+});
+</script>
+{% endblock %}

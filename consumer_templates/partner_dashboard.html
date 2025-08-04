@@ -1,0 +1,288 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Partner Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.priority-booking {
+    border: 3px solid gold !important;
+    background: linear-gradient(135deg, #fff9e6, #ffffff);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.revenue-card {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.mou-section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.booking-table td {
+    vertical-align: middle;
+}
+
+.priority-badge {
+    background: linear-gradient(135deg, #ffc107, #ff8c00);
+    color: black;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-handshake me-2"></i>
+                    Partner Dashboard
+                </h2>
+                <div>
+                    <span class="badge bg-warning me-2">Provider Partner</span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card revenue-card text-white">
+                <div class="card-body text-center">
+                    <h3>${{ "{:,}".format(total_revenue|default(45000)) }}</h3>
+                    <small>Monthly Revenue</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ bookings|length|default(12) }}</h3>
+                    <small>Total Bookings</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ priority_count|default(4) }}</h3>
+                    <small>Priority Bookings</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h3>4.9</h3>
+                    <small>Average Rating</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MOU Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="mou-section">
+                <h4>
+                    <i class="fas fa-file-contract me-2"></i>
+                    Partnership Agreement (MOU)
+                </h4>
+                <p>Access your full Memorandum of Understanding and partnership terms.</p>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('mou') }}" class="btn btn-primary">
+                        <i class="fas fa-eye me-1"></i>View Full MOU
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fas fa-download me-1"></i>Download PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bookings Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>
+                        <i class="fas fa-list me-2"></i>
+                        Booking History
+                    </h5>
+                    <div>
+                        <input type="date" class="form-control form-control-sm d-inline-block" 
+                               style="width: auto;" id="dateFilter" placeholder="Filter by date">
+                        <button class="btn btn-outline-primary btn-sm ms-2" onclick="filterBookings()">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover booking-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Date</th>
+                                    <th>Route</th>
+                                    <th>Revenue</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr {% if booking.priority %}class="priority-booking"{% endif %}>
+                                    <td>
+                                        <strong>{{ booking.id }}</strong>
+                                        {% if booking.priority %}
+                                        <i class="fas fa-star text-warning ms-1" title="Priority Partner Booking"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ booking.date }}</td>
+                                    <td>
+                                        <i class="fas fa-plane me-1"></i>
+                                        {{ booking.route }}
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success">${{ "{:,}".format(booking.revenue) }}</span>
+                                    </td>
+                                    <td>
+                                        {% if booking.priority %}
+                                        <span class="badge priority-badge">
+                                            <i class="fas fa-crown me-1"></i>Priority
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-light text-dark">Standard</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if booking.status == 'Completed' %}
+                                        <span class="badge bg-success">{{ booking.status }}</span>
+                                        {% elif booking.status == 'In Progress' %}
+                                        <span class="badge bg-warning text-dark">{{ booking.status }}</span>
+                                        {% else %}
+                                        <span class="badge bg-info">{{ booking.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                
+                                <!-- Sample data if no bookings provided -->
+                                {% if not bookings %}
+                                <tr class="priority-booking">
+                                    <td>
+                                        <strong>MF-001</strong>
+                                        <i class="fas fa-star text-warning ms-1"></i>
+                                    </td>
+                                    <td>2025-08-01</td>
+                                    <td><i class="fas fa-plane me-1"></i>Orlando → NYC</td>
+                                    <td><span class="fw-bold text-success">$6,000</span></td>
+                                    <td><span class="badge priority-badge"><i class="fas fa-crown me-1"></i>Priority</span></td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>MF-002</strong></td>
+                                    <td>2025-08-02</td>
+                                    <td><i class="fas fa-plane me-1"></i>Miami → Boston</td>
+                                    <td><span class="fw-bold text-success">$5,500</span></td>
+                                    <td><span class="badge bg-light text-dark">Standard</span></td>
+                                    <td><span class="badge bg-warning text-dark">In Progress</span></td>
+                                </tr>
+                                <tr class="priority-booking">
+                                    <td>
+                                        <strong>MF-003</strong>
+                                        <i class="fas fa-star text-warning ms-1"></i>
+                                    </td>
+                                    <td>2025-08-03</td>
+                                    <td><i class="fas fa-plane me-1"></i>Denver → Seattle</td>
+                                    <td><span class="fw-bold text-success">$7,200</span></td>
+                                    <td><span class="badge priority-badge"><i class="fas fa-crown me-1"></i>Priority</span></td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Priority Partner Benefits -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-crown me-2"></i>
+                        Priority Partner Benefits
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Current Benefits:</h6>
+                            <ul>
+                                <li>Front and center listing in search results</li>
+                                <li>Animated priority highlighting</li>
+                                <li>Higher revenue share (15% vs 10%)</li>
+                                <li>24/7 support priority line</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Performance Metrics:</h6>
+                            <ul>
+                                <li>On-time rate: <strong>98%</strong></li>
+                                <li>Customer satisfaction: <strong>4.9/5</strong></li>
+                                <li>Priority bookings this month: <strong>{{ priority_count|default(4) }}</strong></li>
+                                <li>Revenue bonus earned: <strong>${{ "{:,}".format(2500) }}</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterBookings() {
+    const filterDate = document.getElementById('dateFilter').value;
+    const rows = document.querySelectorAll('.booking-table tbody tr');
+    
+    rows.forEach(row => {
+        const bookingDate = row.cells[1].textContent;
+        if (!filterDate || bookingDate.includes(filterDate)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Initialize priority animations
+document.addEventListener('DOMContentLoaded', function() {
+    const priorityRows = document.querySelectorAll('.priority-booking');
+    console.log(`Found ${priorityRows.length} priority bookings with enhanced styling`);
+});
+</script>
+{% endblock %}

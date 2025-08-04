@@ -1,0 +1,297 @@
+import os
+import logging
+from datetime import datetime, timedelta
+from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Create Flask app
+consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static')
+consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
+
+# Demo user accounts
+DEMO_USERS = {
+    'family_user': {'password': 'demo123', 'role': 'family', 'name': 'Sarah Johnson'},
+    'hospital_staff': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
+    'provider': {'password': 'demo123', 'role': 'provider', 'name': 'Captain Lisa Martinez'},
+    'mvp_user': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
+    'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'}
+}
+
+# Equipment pricing (dynamic)
+EQUIPMENT_PRICING = {
+    'ventilator': 5000,
+    'ecmo': 10000,
+    'incubator': 3000,
+    'escort': 2000,
+    'oxygen': 1000,
+    'other': 0  # Custom pricing
+}
+
+# Priority partner providers
+PRIORITY_PARTNERS = ['AirMed Response', 'LifeFlight Elite', 'CriticalCare Jets']
+
+# Authentication helper
+def authenticate_user(username, password):
+    if username in DEMO_USERS and DEMO_USERS[username]['password'] == password:
+        return DEMO_USERS[username]
+    return None
+
+# Revenue calculations: $1,000 deposit + 5% commission
+def calculate_revenue_metrics():
+    total_service_value = 847500
+    deposits_collected = 7 * 1000
+    commission_earned = total_service_value * 0.05
+    actual_revenue = deposits_collected + commission_earned
+    return {
+        'total_bookings': 7,
+        'total_service_value': total_service_value,
+        'actual_revenue': actual_revenue,
+        'deposits_collected': deposits_collected,
+        'commission_earned': commission_earned
+    }
+
+# Routes
+@consumer_app.route('/')
+def consumer_index():
+    """Landing page with Critical/Non-Critical/MVP toggle"""
+    return render_template('consumer_index.html')
+
+@consumer_app.route('/intake')
+def consumer_intake():
+    """Enhanced intake form with type selector and dynamic pricing"""
+    transport_type = request.args.get('type', 'critical')  # critical, non-critical, mvp
+    return render_template('consumer_intake.html', 
+                         transport_type=transport_type,
+                         equipment_pricing=EQUIPMENT_PRICING)
+
+@consumer_app.route('/intake', methods=['POST'])
+def consumer_intake_post():
+    """Process intake form with equipment pricing calculations"""
+    # Store form data in session
+    session['patient_data'] = {
+        'transport_type': request.form.get('transport_type'),
+        'patient_name': request.form.get('patient_name'),
+        'origin': request.form.get('origin'),
+        'destination': request.form.get('destination'),
+        'severity': int(request.form.get('severity', 1)),
+        'equipment': request.form.getlist('equipment'),
+        'same_day': 'same_day' in request.form,
+        'date_time': request.form.get('date_time'),
+        'additional_notes': request.form.get('additional_notes')
+    }
+    
+    # Calculate equipment costs
+    equipment_cost = 0
+    for item in session['patient_data']['equipment']:
+        if item in EQUIPMENT_PRICING:
+            equipment_cost += EQUIPMENT_PRICING[item]
+    
+    # Same-day upcharge (20%)
+    if session['patient_data']['same_day']:
+        equipment_cost *= 1.2
+    
+    session['equipment_cost'] = equipment_cost
+    
+    return redirect(url_for('consumer_results'))
+
+@consumer_app.route('/results')
+def consumer_results():
+    """Provider results with blurred names and priority partners"""
+    if 'patient_data' not in session:
+        return redirect(url_for('consumer_intake'))
+    
+    # Generate providers with blurred names
+    providers = [
+        {
+            'id': 'provider_a',
+            'name': 'Provider A ****',
+            'actual_name': 'AirMed Response',
+            'cost': 125000,
+            'eta': '2.5 hours',
+            'aircraft': 'Fixed-wing jet',
+            'rating': 4.9,
+            'is_priority': True
+        },
+        {
+            'id': 'provider_b', 
+            'name': 'Provider B ****',
+            'actual_name': 'LifeFlight Elite',
+            'cost': 118000,
+            'eta': '3.0 hours',
+            'aircraft': 'Helicopter',
+            'rating': 4.8,
+            'is_priority': True
+        },
+        {
+            'id': 'provider_c',
+            'name': 'Provider C ****',
+            'actual_name': 'SkyMed Standard',
+            'cost': 95000,
+            'eta': '4.0 hours',
+            'aircraft': 'Fixed-wing',
+            'rating': 4.6,
+            'is_priority': False
+        }
+    ]
+    
+    return render_template('consumer_results.html', 
+                         providers=providers,
+                         equipment_cost=session.get('equipment_cost', 0))
+
+@consumer_app.route('/confirm')
+def consumer_confirm():
+    """Confirmation with family seat options and payment links"""
+    if 'selected_provider' not in session:
+        return redirect(url_for('consumer_results'))
+    
+    return render_template('consumer_confirm.html')
+
+@consumer_app.route('/confirm', methods=['POST'])
+def consumer_confirm_post():
+    """Process confirmation with add-ons"""
+    session['booking_confirmed'] = True
+    session['family_seat'] = 'family_seat' in request.form
+    session['vip_cabin'] = 'vip_cabin' in request.form
+    session['confirmation_id'] = f"MF-{datetime.now().strftime('%Y%m%d')}-{datetime.now().microsecond // 1000:03d}"
+    
+    return redirect(url_for('consumer_tracking'))
+
+@consumer_app.route('/tracking')
+def consumer_tracking():
+    """Enhanced tracking with family updates"""
+    if not session.get('booking_confirmed'):
+        return redirect(url_for('consumer_index'))
+    
+    return render_template('consumer_tracking.html')
+
+@consumer_app.route('/partner_dashboard')
+def partner_dashboard():
+    """Partner dashboard with bookings and revenue"""
+    if not session.get('logged_in') or session.get('user_role') != 'provider':
+        flash('Provider access required.', 'error')
+        return redirect(url_for('login'))
+    
+    # Sample partner bookings
+    bookings = [
+        {
+            'id': 'MF-001',
+            'date': '2025-08-01',
+            'route': 'Orlando → NYC',
+            'revenue': 6000,
+            'priority': True,
+            'status': 'Completed'
+        },
+        {
+            'id': 'MF-002',
+            'date': '2025-08-02', 
+            'route': 'Miami → Boston',
+            'revenue': 5500,
+            'priority': False,
+            'status': 'In Progress'
+        }
+    ]
+    
+    return render_template('partner_dashboard.html', bookings=bookings)
+
+@consumer_app.route('/mvp_incentive')
+def mvp_incentive():
+    """MVP/Hospital membership perks"""
+    return render_template('mvp_hospital_incentive.html')
+
+@consumer_app.route('/mou')
+def mou():
+    """MOU document display"""
+    return render_template('mou.html')
+
+@consumer_app.route('/ai_chat', methods=['POST'])
+def ai_chat():
+    """AI command processing stub"""
+    command = request.json.get('command', '').lower()
+    
+    # Simple command parsing (NLTK stub)
+    if 'orlando' in command and 'nyc' in command:
+        response = {
+            'action': 'fill_form',
+            'data': {
+                'origin': 'Orlando, FL',
+                'destination': 'New York, NY',
+                'suggestion': 'I've filled in Orlando to NYC for you. What severity level is this transport?'
+            }
+        }
+    elif 'grandma' in command or 'grandmother' in command:
+        response = {
+            'action': 'suggest_options',
+            'data': {
+                'family_seat': True,
+                'vip_cabin': True,
+                'suggestion': 'For elderly patients, I recommend adding a family seat and considering VIP cabin for comfort.'
+            }
+        }
+    else:
+        response = {
+            'action': 'clarify',
+            'data': {
+                'suggestion': 'I can help you plan a transport. Try saying "help me build a flight from Orlando to NYC" or "what options are good for my grandmother?"'
+            }
+        }
+    
+    return jsonify(response)
+
+# Login routes
+@consumer_app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Simplified login"""
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        user_data = authenticate_user(username, password)
+        if user_data:
+            session['logged_in'] = True
+            session['user_role'] = user_data['role']
+            session['user_name'] = user_data['name']
+            
+            flash(f'Welcome, {user_data["name"]}!', 'success')
+            
+            if user_data['role'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
+            elif user_data['role'] == 'provider':
+                return redirect(url_for('partner_dashboard'))
+            else:
+                return redirect(url_for('family_dashboard'))
+        else:
+            flash('Invalid credentials. Try "demo123" for all accounts.', 'error')
+    
+    return render_template('login.html')
+
+@consumer_app.route('/logout')
+def logout():
+    """Logout"""
+    session.clear()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('consumer_index'))
+
+# Dashboard routes
+@consumer_app.route('/family_dashboard')
+def family_dashboard():
+    """Family dashboard"""
+    if not session.get('logged_in') or session.get('user_role') != 'family':
+        flash('Family access required.', 'error')
+        return redirect(url_for('login'))
+    
+    return render_template('family_dashboard.html', user_name=session.get('user_name'))
+
+@consumer_app.route('/admin_dashboard')
+def admin_dashboard():
+    """Admin dashboard with revenue metrics"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    metrics = calculate_revenue_metrics()
+    return render_template('consumer_admin_dashboard.html', **metrics)
+
+if __name__ == '__main__':
+    consumer_app.run(host='0.0.0.0', port=5001, debug=True)

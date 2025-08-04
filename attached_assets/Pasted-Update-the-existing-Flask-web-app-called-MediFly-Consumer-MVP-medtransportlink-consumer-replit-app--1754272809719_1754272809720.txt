@@ -1,0 +1,62 @@
+Update the existing Flask web app called MediFly Consumer MVP (medtransportlink-consumer.replit.app) to incorporate all new features, refinements, and updates from recent discussions. Maintain HIPAA compliance (transient data, no stored PHI/PII, no credit card/care credit details—link externally to providers like CareCredit for payments, explore partnerships in notes). Use Bootstrap 5, add AI function for guided commands, adjust intake for Critical/Non-Critical/MVP, enhance equipment/pricing, validate addresses, modify search dialog, blur provider names, clarify ETA/aircraft, incentivize VIP, add partner dashboard with perks, MVP/hospital incentives, and include MOU link on partner page.
+File Structure Updates:
+
+app.py: Add partner dashboard route, AI command logic (use NLTK/SymPy stubs for parsing commands like "help me build a flight for grandma from Orlando to NYC"—guide steps, update session/screen dynamically), intake type selector (Critical/Non-Critical/MVP), equipment pricing logic ($X added per check, "Other" text box, note on additional needs), same-day upcharge (+20% if selected, reasonable for urgency but note risks), address validation (Google Places API free tier stub for US/international autocomplete), modify search dialog (preselected options editable), priority matching (first partners pop with animation/larger border in results), MVP/hospital priority (queue bookings ahead), external payment links (CareCredit embed on /confirm).
+templates/: Add partner_dashboard.html (bookings list/table, revenue filter by date, priority status badge), mvp_hospital_incentive.html (monthly membership $49 for discounts/priority), mou.html (embed MOU text/link).
+static/css/style.css: Animate priority partners (e.g., .priority-card { border: 3px solid gold; animation: pulse 1s infinite; } @keyframes pulse {0% scale(1); 50% scale(1.05); }).
+static/js/main.js: AI command input (parse/update form dynamically, e.g., fill origin/destination from "Orlando to NYC"), VIP pop-up (enhanced description: "VIP Cabin: $10k for relaxation, pampering, IVs, champagne, priority boarding—worth it for stress-free travel!").
+
+Views and Routes Updates:
+
+/ – Landing Page
+
+Add toggle for Critical/Non-Critical/MVP transport (adjusts wording/flow: Critical = urgent language, Non-Critical/MVP = relaxed with incentives).
+
+
+/intake – Guided Form
+
+Step 1: Type selector (Critical/Non-Critical/MVP) – MVP offers monthly membership prompt ($49/month for 10% discounts/priority bookings over others for same flight/date).
+Step 2: Address validation (Google Places API stub for autocomplete/validation of hospital/business/other country—e.g., suggest "Orlando International Airport" or "NYC Hospital").
+Step 4: Equipment checkboxes display dynamic prices (e.g., Ventilator +$5k, ECMO +$10k, Incubator +$3k, Escort Only +$2k, Oxygen +$1k, Other text box + custom request). Note: "If provider deems additional life-saving equipment needed, you'll be notified prior to flight."
+Step 5: Date/time with same-day option (upcharge +20% for urgency, note: "Same-day reasonable but subject to availability/weather risks—provider confirms").
+
+
+/results – Provider Options
+
+Blur names (e.g., "Provider A" until booked) to prevent direct contact.
+Clarify ETA: "Estimated Time to Arrival (from dispatch to destination, subject to weather/medical factors)."
+List possible aircraft (e.g., "Fixed-wing jet for long-haul" or "Rotor-wing helicopter for short/urban").
+Note: "Medical/factors may modify request—final details confirmed by provider."
+Modify search: Dialog with preselected options (change on fly, e.g., edit severity/date without restart).
+Priority partners: Front/center with larger border/animated pulse in cards.
+
+
+/confirm – Confirmation
+
+Family seat note: "Additional seats possible based on injury/aircraft—provider confirms."
+VIP description: "VIP Cabin ($10k): Luxury pampering with IV treatments, relaxation seats, champagne, priority service—perfect for stress-free high-end travel!"
+Payment links: Embed CareCredit/other medical credit cards (explore partnerships in notes: "Partner with CareCredit for low-interest plans").
+
+
+/partner_dashboard – Partner Dashboard
+
+Listings: Table of bookings (filter by date, show revenue generated, priority status "Yes/No").
+Priority partners: Highlighted rows (larger border/animated).
+MOU link: Embed full MOU text or PDF download on page.
+
+
+/mvp_incentive – MVP/Hospital Perks
+
+MVP: Monthly $49 membership for 10% discounts/early access (e.g., beta features like AI chat upgrades).
+Hospital: Priority in matching (bookings queued ahead for same flight/date), custom dashboard.
+
+
+
+AI Function:
+
+Add /ai_chat route: Input commands (e.g., "help me build a flight for grandma from Orlando to NYC") – parse with NLTK stub, guide steps (fill forms dynamically, update screen via JS).
+
+Cybersecurity/Financial Compartmentalization:
+
+No credit/care credit storage—external links only.
+If breached, see only masked session data (e.g., "****-1000" for deposits), no PHI.

@@ -61,35 +61,64 @@ MediFly is a Flask-based web application that simulates a hospital interface for
 
 ## MediFly Consumer MVP (August 2025)
 
-### Overview
-Created a separate Flask web application called "MediFly Consumer MVP" tailored specifically for families and individuals seeking medical transport for their loved ones. This family-focused version uses empathetic language, pastel styling, and provides a more personal, compassionate interface compared to the clinical Hospital MVP.
+### Enhanced Consumer MVP Features (Latest Update - August 4, 2025)
+Comprehensive update incorporating all advanced features for the Consumer MVP application with focus on user experience, revenue transparency, and operational efficiency.
 
-### Key Features
-- **Family-Focused Design**: Empathetic language throughout ("Get Your Loved One Home Safely", "We're With You Every Step")
-- **Toggle Interface**: Landing page toggle between "Family/Individual" (default) vs "Hospital/Insurance" modes
-- **Animated Header**: CSS keyframes helicopter flying left-to-right, transitioning to plane circling globe animation
-- **Pastel Theme**: Soft blues (#e6f3ff), pinks (#ffe6f3), and warm whites with rounded corners and gentle shadows
-- **Enhanced UX**: Larger touch targets, family-friendly messaging, and simplified navigation flow
+#### Critical/Non-Critical/MVP Transport Types
+- **Landing Page Toggle**: Three-tier transport selection (Critical/Non-Critical/MVP)
+- **Critical Transport**: Same-day urgency options with 20% upcharge and weather risk warnings
+- **Non-Critical Transport**: Planned transports with family accommodation options
+- **MVP Membership**: $49/month program with 10% discounts, priority queue, and beta features
+- **Hospital Partnerships**: Institutional pricing and priority matching for bulk bookings
 
-### Consumer App Architecture
-- **File Structure**: Separate templates (consumer_templates/), static files (consumer_static/), and consumer_app.py
-- **Pastel Styling**: Custom CSS with variables for consistent pastel color scheme and smooth animations
-- **Family Chatbot**: Context-aware chatbot providing family-specific guidance and support
-- **HIPAA Compliance**: Session-based data handling with automatic masking of sensitive information
-- **Accessibility**: ARIA labels, semantic HTML, and screen reader compatibility throughout
+#### Enhanced Equipment & Pricing System
+- **Dynamic Equipment Pricing**: Ventilator (+$5K), ECMO (+$10K), Incubator (+$3K), Escort (+$2K), Oxygen (+$1K)
+- **Custom Equipment**: "Other" option with text field for specialized medical equipment requests
+- **Same-Day Upcharge**: 20% fee for urgent requests with availability warnings
+- **Equipment Notifications**: "Provider may recommend additional life-saving equipment" disclaimers
 
-### Consumer-Specific Features
-- **Family Accommodations**: Family Seat option (+$5,000) and VIP Cabin upgrade (+$10,000)
-- **Compassionate Messaging**: "Ready to help your family", "We prioritize your family's peace of mind"
-- **Enhanced Tracking**: Family update timeline with regular communication during transport
-- **Support Integration**: 24/7 family support line with dedicated reference numbers
-- **Privacy Assurance**: Clear messaging about temporary data use and automatic session clearing
+#### AI Command Processing & Address Validation
+- **AI Chat Integration**: Natural language transport planning ("help me build a flight for grandma from Orlando to NYC")
+- **Google Places API Stub**: Address autocomplete for hospitals, airports, and international destinations
+- **Smart Form Filling**: AI commands automatically populate origin/destination and suggest options
+- **Command Examples**: Emergency transport, family-friendly options, MVP membership inquiries
 
-### Deployment Configuration
-- **Separate App**: consumer_app.py runs independently from hospital app
-- **Port Configuration**: Consumer app runs on port 5001, Hospital app remains on port 5000
-- **Environment Toggling**: Can be deployed separately or with toggle functionality
-- **URL Structure**: Designed for medtransportlink-consumer.replit.app deployment
+#### Provider Competition & Privacy Protection
+- **Name Blurring**: Providers shown as "Provider A****", "Provider B****" until booking confirmation
+- **Priority Partner Animations**: Gold borders with pulse animations for featured providers
+- **Provider Capabilities**: Clear ETA estimates, aircraft type (fixed-wing/helicopter), and certification levels
+- **Fair Competition**: Prevents direct contact bypassing to ensure transparent pricing
+
+#### Partnership Integration & Payment Options
+- **CareCredit Partnership**: Embedded financing options with low-interest medical payment plans
+- **External Payment Links**: No credit card storage, redirects to secure partner payment systems
+- **Partnership Exploration**: "Partner with CareCredit for low-interest plans" noted in requirements
+- **Security Compliance**: No stored credit card data, session-based temporary information only
+
+#### Enhanced VIP Services & Family Support
+- **VIP Cabin Description**: "$10k for luxury pampering with IV treatments, relaxation seats, champagne, priority service"
+- **Family Seat Options**: Additional seating based on injury/aircraft with provider confirmation
+- **24/7 Family Support**: Dedicated advocate assignment for MVP members
+- **Real-Time Updates**: Family communication timeline during transport
+
+#### Partner Dashboard & MOU System
+- **Provider Dashboard**: Booking history, revenue tracking, priority status indicators
+- **MOU Integration**: Full Memorandum of Understanding with download and email capabilities
+- **Priority Partner Benefits**: Enhanced revenue share (90% vs 85%), front-page placement, performance bonuses
+- **Revenue Filtering**: Date-based booking filters and performance analytics
+
+#### Cybersecurity & HIPAA Compliance
+- **Data Compartmentalization**: Session-based temporary data, automatic purging after 30 days
+- **Breach Protection**: Only masked session data visible (e.g., "****-1000" for deposits)
+- **No PHI Storage**: Patient information handled securely per HIPAA with temporary session storage
+- **Security Indicators**: Visual HIPAA compliance badges and data protection messaging
+
+### Technical Architecture Updates
+- **File Structure**: consumer_app_updated.py with enhanced routing and AI integration stubs
+- **Enhanced Templates**: Updated consumer_index_updated.html, consumer_intake_updated.html with new features
+- **CSS Animations**: Priority partner pulse animations, VIP styling, same-day warning effects
+- **Revenue Calculations**: $1,000 deposits + 5% commission structure with transparent breakdowns
+- **Port Configuration**: Consumer app on port 5001, Hospital app on port 5000
 
 ## User Preferences
 

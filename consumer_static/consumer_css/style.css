@@ -886,3 +886,61 @@ body {
     }
 }
 
+
+/* Enhanced Consumer MVP Features - August 2025 */
+
+/* Priority partner animations */
+.priority-card {
+    border: 3px solid gold !important;
+    animation: pulse 1s infinite;
+    background: linear-gradient(135deg, #fff9e6, #ffffff);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Equipment pricing displays */
+.equipment-pricing {
+    background: #e8f5e8;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin: 0.5rem 0;
+    border-left: 4px solid #28a745;
+}
+
+/* VIP cabin enhancement */
+.vip-popup {
+    background: linear-gradient(135deg, #6f42c1, #8c5cf6);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(111, 66, 193, 0.3);
+}
+
+/* AI Command styling */
+.ai-command-section {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    border: 2px dashed #007bff;
+}
+
+/* Same-day upcharge warning */
+.same-day-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    animation: warning-pulse 2s ease-in-out infinite;
+}
+
+@keyframes warning-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
