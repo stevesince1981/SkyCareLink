@@ -203,21 +203,31 @@
                                 <i class="fas fa-heart role-icon"></i>
                                 <strong>Family / Individual</strong>
                                 <div class="role-description">Personal medical transport for your loved one</div>
+                                <small class="text-muted">Username: family | Password: demo123</small>
                             </button>
                             <button type="button" class="role-option" data-role="hospital" onclick="selectRole('hospital')">
                                 <i class="fas fa-hospital role-icon"></i>
                                 <strong>Hospital Staff</strong>
                                 <div class="role-description">Bulk quotes, patient tracking, compliance audit</div>
+                                <small class="text-muted">Username: hospital | Password: demo123</small>
                             </button>
                             <button type="button" class="role-option" data-role="provider" onclick="selectRole('provider')">
                                 <i class="fas fa-helicopter role-icon"></i>
                                 <strong>Medical Provider</strong>
                                 <div class="role-description">Bid on requests, track bookings, financial summary</div>
+                                <small class="text-muted">Username: provider | Password: demo123</small>
                             </button>
                             <button type="button" class="role-option" data-role="mvp" onclick="selectRole('mvp')">
                                 <i class="fas fa-star role-icon"></i>
                                 <strong>MVP Early Adopter</strong>
                                 <div class="role-description">Access early features, AI estimates, feedback</div>
+                                <small class="text-muted">Username: mvp | Password: demo123</small>
+                            </button>
+                            <button type="button" class="role-option" data-role="admin" onclick="selectRole('admin')">
+                                <i class="fas fa-cog role-icon"></i>
+                                <strong>Admin User</strong>
+                                <div class="role-description">Fee management, system administration</div>
+                                <small class="text-muted">Username: admin | Password: demo123</small>
                             </button>
                         </div>
                     </div>
@@ -227,14 +237,15 @@
                         <input type="hidden" name="role" id="selectedRole" value="">
                         
                         <div class="form-group">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" 
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" 
                                    class="form-control" 
-                                   id="email" 
-                                   name="email" 
+                                   id="username" 
+                                   name="username" 
                                    required
-                                   aria-label="Email address for login"
-                                   placeholder="Enter your email address">
+                                   aria-label="Username for login"
+                                   placeholder="Enter your username">
+                            <small class="text-muted">Demo: family, hospital, provider, mvp, or admin</small>
                         </div>
 
                         <div class="form-group">
@@ -360,14 +371,7 @@ function togglePassword() {
 }
 
 function fillDemo(type) {
-    const emails = {
-        family: 'family@mediflytest.com',
-        hospital: 'hospital@mediflytest.com',
-        provider: 'provider@mediflytest.com',
-        mvp: 'mvp@mediflytest.com'
-    };
-    
-    document.getElementById('email').value = emails[type];
+    document.getElementById('username').value = type;
     document.getElementById('password').value = 'demo123';
     selectRole(type);
 }
@@ -384,10 +388,10 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         return false;
     }
     
-    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    if (!email || !password) {
+    if (!username || !password) {
         e.preventDefault();
         alert('Please fill in all required fields.');
         return false;
