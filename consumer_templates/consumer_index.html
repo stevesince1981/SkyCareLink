@@ -114,24 +114,7 @@
             Compassionate medical transport with family-first care and transparent pricing
         </p>
         
-        <!-- AI Command Input -->
-        <div class="ai-chat-section">
-            <h4 class="mb-3">
-                <i class="fas fa-robot me-2"></i>
-                AI Transport Assistant
-            </h4>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <input type="text" class="form-control ai-input" 
-                           id="aiCommand" 
-                           placeholder="Try: 'Help me build a flight for grandma from Orlando to NYC'"
-                           onkeypress="handleAICommand(event)">
-                    <small class="text-muted mt-2 d-block">
-                        Ask me anything about planning your transport - I'll guide you through each step!
-                    </small>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
 
@@ -204,6 +187,33 @@
                         <i class="fas fa-shield-alt me-1"></i>
                         All transports are HIPAA-compliant with secure, temporary data handling. No credit card details stored.
                     </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Transport Assistant Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="ai-chat-section">
+                <div class="text-center">
+                    <h4 class="mb-3">
+                        <i class="fas fa-robot me-2"></i>
+                        AI Transport Assistant
+                    </h4>
+                    <div class="row justify-content-center">
+                        <div class="col-md-10">
+                            <input type="text" class="form-control ai-input" 
+                                   id="aiCommand" 
+                                   placeholder="Try: 'Help me build a flight for grandma from Orlando to NYC'"
+                                   onkeypress="handleAICommand(event)">
+                            <small class="text-muted mt-2 d-block">
+                                Ask me anything about planning your transport - I'll guide you through each step!
+                            </small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

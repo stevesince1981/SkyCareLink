@@ -61,10 +61,12 @@ def consumer_index():
 @consumer_app.route('/intake')
 def consumer_intake():
     """Enhanced intake form with type selector and dynamic pricing"""
+    from datetime import datetime
     transport_type = request.args.get('type', 'critical')  # critical, non-critical, mvp
     return render_template('consumer_intake.html', 
                          transport_type=transport_type,
-                         equipment_pricing=EQUIPMENT_PRICING)
+                         equipment_pricing=EQUIPMENT_PRICING,
+                         datetime=datetime)
 
 @consumer_app.route('/intake', methods=['POST'])
 def consumer_intake_post():
@@ -269,7 +271,8 @@ def mou():
 @consumer_app.route('/ai_chat', methods=['POST'])
 def ai_chat():
     """AI command processing stub"""
-    command = request.json.get('command', '').lower()
+    data = request.get_json() or {}
+    command = data.get('command', '').lower()
     
     # Simple command parsing (NLTK stub)
     if 'orlando' in command and 'nyc' in command:
