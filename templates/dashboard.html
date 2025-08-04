@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - MediFly{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Welcome, {{ user_name }}</h2>
+            <div>
+                <span class="badge bg-primary me-2">{{ user_role.title() }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Revenue Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5>Total Bookings</h5>
+                        <h3>{{ total_bookings }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5>Total Revenue</h5>
+                        <h3>${{ "{:,}".format(total_revenue) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5>Goal Progress</h5>
+                        <h3>{{ "%.1f"|format((total_revenue / 1000000) * 100) }}%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5>Current Time</h5>
+                        <h6>{{ current_time }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Role-specific actions -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ user_role.title() }} Dashboard</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user_role == 'admin' %}
+                            <p>Admin features:</p>
+                            <a href="{{ url_for('admin_panel') }}" class="btn btn-primary me-2">Admin Panel</a>
+                            <a href="{{ url_for('admin_storyboard') }}" class="btn btn-info">Revenue Storyboard</a>
+                        {% elif user_role == 'family' %}
+                            <p>Family dashboard with booking history and support options.</p>
+                            <a href="{{ url_for('intake') }}" class="btn btn-primary">Book Medical Transport</a>
+                        {% elif user_role == 'hospital' %}
+                            <p>Hospital staff dashboard with bulk booking and patient management.</p>
+                            <a href="{{ url_for('intake') }}" class="btn btn-primary">New Patient Transport</a>
+                        {% elif user_role == 'provider' %}
+                            <p>Provider dashboard with available requests and earnings.</p>
+                            <button class="btn btn-success" disabled>View Available Requests</button>
+                        {% elif user_role == 'mvp' %}
+                            <p>MVP user dashboard with early feature access and feedback options.</p>
+                            <button class="btn btn-info" disabled>Beta Features</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

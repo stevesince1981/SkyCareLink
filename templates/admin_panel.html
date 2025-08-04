@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - MediFly{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-cogs me-2"></i>Admin Panel</h2>
+            <div>
+                <a href="{{ url_for('admin_storyboard') }}" class="btn btn-info me-2">
+                    <i class="fas fa-chart-line me-1"></i>Revenue Storyboard
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ stats.total_bookings }}</h4>
+                        <small>Total Bookings</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4>${{ "{:,}".format(stats.total_revenue) }}</h4>
+                        <small>Total Revenue</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ stats.unique_visits }}</h4>
+                        <small>Unique Visits</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ "%.1f"|format(stats.conversion_rate * 100) }}%</h4>
+                        <small>Conversion Rate</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ "%.0f"|format(stats.customer_satisfaction * 100) }}%</h4>
+                        <small>Customer Satisfaction</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Revenue Analysis -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Revenue Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Average Booking Value:</strong> ${{ "{:,}".format(stats.total_revenue // stats.total_bookings) }}</p>
+                        <p><strong>Goal Progress:</strong> {{ "%.1f"|format((stats.total_revenue / 1000000) * 100) }}% of $1M goal</p>
+                        <p><strong>Bookings to Goal:</strong> {{ 25 - stats.total_bookings }} more bookings needed for 25-booking milestone</p>
+                        
+                        <!-- Progress bar -->
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ (stats.total_bookings / 25) * 100 }}%" 
+                                 aria-valuenow="{{ stats.total_bookings }}" aria-valuemin="0" aria-valuemax="25">
+                                {{ stats.total_bookings }}/25 bookings
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Revenue Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>7 Bookings @ $121k avg:</strong> ${{ "{:,}".format(stats.total_revenue) }}</p>
+                        <p><strong>Estimated Q1 Revenue:</strong> ${{ "{:,}".format(stats.total_revenue * 3) }}</p>
+                        <p><strong>Annual Projection:</strong> ${{ "{:,}".format(stats.total_revenue * 12) }}</p>
+                        <small class="text-muted">Based on current conversion rate of {{ "%.1f"|format(stats.conversion_rate * 100) }}%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Activity</th>
+                                        <th>Revenue</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Today</td>
+                                        <td>Critical Transport - Denver to Miami</td>
+                                        <td>$128,500</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Yesterday</td>
+                                        <td>Emergency Evacuation - Seattle to Phoenix</td>
+                                        <td>$112,000</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2 days ago</td>
+                                        <td>Neonatal Transport - Austin to Houston</td>
+                                        <td>$102,000</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3 days ago</td>
+                                        <td>Organ Transport - Los Angeles to Portland</td>
+                                        <td>$95,000</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>4 days ago</td>
+                                        <td>ICU Patient - Chicago to Atlanta</td>
+                                        <td>$118,000</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
