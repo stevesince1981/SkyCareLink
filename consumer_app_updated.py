@@ -17,7 +17,8 @@ DEMO_USERS = {
     'provider': {'password': 'demo123', 'role': 'provider', 'name': 'Captain Lisa Martinez'},
     'mvp': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
     'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'},
-    'demo': {'password': 'demo123', 'role': 'admin', 'name': 'Demo User'}
+    'demo': {'password': 'demo123', 'role': 'admin', 'name': 'Demo User'},
+    'demo123': {'password': 'demo123', 'role': 'family', 'name': 'Test User'}  # Additional fallback
 }
 
 # Equipment pricing (dynamic)
