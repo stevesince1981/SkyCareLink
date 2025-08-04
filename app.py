@@ -9,6 +9,15 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "medifly_demo_key_2025")
 
+# Simple user accounts for demo
+DEMO_USERS = {
+    'family_user': {'password': 'demo123', 'role': 'family', 'name': 'Sarah Johnson'},
+    'hospital_staff': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
+    'provider': {'password': 'demo123', 'role': 'provider', 'name': 'Captain Lisa Martinez'},
+    'mvp_user': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
+    'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'}
+}
+
 # Mock provider data
 PROVIDERS = {
     'provider_1': {
@@ -39,8 +48,115 @@ TRACKING_STAGES = ['Dispatched', 'En Route', 'Arrived', 'Complete']
 
 @app.route('/')
 def index():
-    """Landing page with hero content and chatbot widget"""
+    """Landing page with hero content, chatbot widget and login access"""
     return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login page with role selection"""
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        if username in DEMO_USERS and DEMO_USERS[username]['password'] == password:
+            session['logged_in'] = True
+            session['user_role'] = DEMO_USERS[username]['role']
+            session['user_name'] = DEMO_USERS[username]['name']
+            session['username'] = username
+            
+            flash(f'Welcome, {DEMO_USERS[username]["name"]}!', 'success')
+            
+            # Redirect based on role
+            if DEMO_USERS[username]['role'] == 'admin':
+                return redirect(url_for('admin_panel'))
+            else:
+                return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password.', 'error')
+    
+    return render_template('login.html')
+
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+    """Handle login authentication from homepage form"""
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '').strip()
+    
+    if username in DEMO_USERS and DEMO_USERS[username]['password'] == password:
+        session['logged_in'] = True
+        session['user_role'] = DEMO_USERS[username]['role']
+        session['user_name'] = DEMO_USERS[username]['name']
+        session['username'] = username
+        
+        flash(f'Welcome, {DEMO_USERS[username]["name"]}!', 'success')
+        
+        # Redirect based on role
+        if DEMO_USERS[username]['role'] == 'admin':
+            return redirect(url_for('admin_panel'))
+        else:
+            return redirect(url_for('dashboard'))
+    else:
+        flash('Invalid username or password.', 'error')
+        return redirect(url_for('index'))
+
+@app.route('/dashboard')
+def dashboard():
+    """Role-based dashboard"""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    user_role = session.get('user_role')
+    user_name = session.get('user_name')
+    
+    dashboard_data = {
+        'user_name': user_name,
+        'user_role': user_role,
+        'total_bookings': 7,
+        'total_revenue': 847500,
+        'current_time': datetime.now().strftime('%Y-%m-%d %H:%M')
+    }
+    
+    return render_template('dashboard.html', **dashboard_data)
+
+@app.route('/admin_panel')
+def admin_panel():
+    """Admin panel with comprehensive data"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    stats = {
+        'total_bookings': 7,
+        'total_revenue': 847500,
+        'unique_visits': 245,
+        'conversion_rate': 0.029,
+        'customer_satisfaction': 0.98
+    }
+    
+    return render_template('admin_panel.html', stats=stats)
+
+@app.route('/admin_storyboard')
+def admin_storyboard():
+    """Admin feature storyboard demonstration"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    booking_stats = {
+        'total_bookings': 7,
+        'total_revenue': 847500,
+        'goal_revenue': 1000000,
+        'conversion_rate': 0.029
+    }
+    
+    return render_template('admin_storyboard.html', booking_stats=booking_stats)
+
+@app.route('/logout')
+def logout():
+    """Logout and clear session"""
+    session.clear()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('index'))
 
 @app.route('/intake', methods=['GET', 'POST'])
 def intake():

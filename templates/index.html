@@ -49,6 +49,65 @@
             </a>
         </div>
 
+        <!-- Login Access Section -->
+        <div class="login-access-section mt-5 p-4" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,123,255,0.3);">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3 class="mb-2"><i class="fas fa-tachometer-alt me-2"></i>Access Dashboard & Features</h3>
+                    <p class="mb-3">Login to access admin panel, revenue storyboard, and role-based dashboards</p>
+                    <div class="feature-highlights">
+                        <span class="badge bg-light text-primary me-2">Revenue: $847,500</span>
+                        <span class="badge bg-light text-primary me-2">7 Bookings Complete</span>
+                        <span class="badge bg-light text-primary">Goal: 25 Bookings</span>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="login-buttons">
+                        <a href="{{ url_for('login') }}" class="btn btn-light btn-lg mb-2 d-block">
+                            <i class="fas fa-sign-in-alt me-2"></i>LOGIN TO DASHBOARD
+                        </a>
+                        <a href="{{ url_for('admin_storyboard') }}" class="btn btn-outline-light btn-lg d-block">
+                            <i class="fas fa-chart-line me-2"></i>VIEW REVENUE STORYBOARD
+                        </a>
+                        <small class="text-white-50 mt-2 d-block">Use password "demo123" for any role</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direct Login Form Section -->
+        <div class="direct-login-section mt-4 p-4" style="background: linear-gradient(135deg, #6f42c1, #563d7c); color: white; border-radius: 15px;">
+            <h4 class="text-center mb-3"><i class="fas fa-sign-in-alt me-2"></i>Quick Login Access</h4>
+            <form action="{{ url_for('authenticate') }}" method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Username/Role</label>
+                    <select class="form-select" name="username" id="username" required>
+                        <option value="">Select your role...</option>
+                        <option value="family_user">Family User</option>
+                        <option value="hospital_staff">Hospital Staff</option>
+                        <option value="provider">Provider</option>
+                        <option value="mvp_user">MVP User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" id="password" 
+                           placeholder="demo123" required>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-light btn-lg w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard
+                    </button>
+                </div>
+                <div class="col-12 text-center">
+                    <small class="text-white-50">
+                        Demo password: "demo123" works for all roles
+                    </small>
+                </div>
+            </form>
+        </div>
+
         <!-- Features Section -->
         <div class="row mt-5">
             <div class="col-md-4 mb-4">

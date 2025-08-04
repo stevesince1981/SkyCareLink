@@ -2,16 +2,16 @@ import os
 import logging
 import json
 import math
-import jwt
-import bcrypt
+# import jwt
+# import bcrypt
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
 # import sympy as sp  # Will be enabled after package installation  
 # import stripe  # Will be enabled after package installation
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+# from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+# from flask_limiter import Limiter
+# from flask_limiter.util import get_remote_address
 from functools import wraps
 
 # Configure logging
@@ -21,108 +21,75 @@ logging.basicConfig(level=logging.DEBUG)
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
 
-# Initialize Flask-Login
-login_manager = LoginManager()
-login_manager.init_app(consumer_app)
-login_manager.login_view = 'login'
-login_manager.login_message = 'Please log in to access this page.'
-login_manager.login_message_category = 'info'
+# # Initialize Flask-Login
+# login_manager = LoginManager()
+# login_manager.init_app(consumer_app)
+# login_manager.login_view = 'login'
+# login_manager.login_message = 'Please log in to access this page.'
+# login_manager.login_message_category = 'info'
 
-# Initialize Flask-Limiter for rate limiting
-limiter = Limiter(
-    app=consumer_app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
-)
+# # Initialize Flask-Limiter for rate limiting
+# limiter = Limiter(
+#     app=consumer_app,
+#     key_func=get_remote_address,
+#     default_limits=["200 per day", "50 per hour"]
+# )
 
-# JWT Configuration
-JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "jwt-demo-key-change-in-production")
-JWT_ALGORITHM = "HS256"
-JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
-JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
+# # JWT Configuration
+# JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "jwt-demo-key-change-in-production")
+# JWT_ALGORITHM = "HS256"
+# JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+# JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=1)
 
-# User class for Flask-Login
-class User(UserMixin):
-    def __init__(self, email, role, name=None):
-        self.id = email
-        self.email = email
-        self.role = role
-        self.name = name or email.split('@')[0].title()
-        self.is_authenticated = True
-        self.is_active = True
-        self.is_anonymous = False
+# # User class for Flask-Login
+# class User(UserMixin):
+#     def __init__(self, email, role, name=None):
+#         self.id = email
+#         self.email = email
+#         self.role = role
+#         self.name = name or email.split('@')[0].title()
+#         self.is_authenticated = True
+#         self.is_active = True
+#         self.is_anonymous = False
 
-    def get_id(self):
-        return self.email
+#     def get_id(self):
+#         return self.email
 
-# Demo user accounts (in production, these would be in a database)
+# Demo user accounts (simple version without bcrypt)
 DEMO_USERS = {
-    'family@mediflytest.com': {
-        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+    'family_user': {
+        'password': 'demo123',
         'role': 'family',
         'name': 'Sarah Johnson'
     },
-    'hospital@mediflytest.com': {
-        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+    'hospital_staff': {
+        'password': 'demo123',
         'role': 'hospital', 
         'name': 'Dr. Michael Chen'
     },
-    'provider@mediflytest.com': {
-        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+    'provider': {
+        'password': 'demo123',
         'role': 'provider',
         'name': 'Captain Lisa Martinez'
     },
-    'mvp@mediflytest.com': {
-        'password_hash': bcrypt.hashpw('demo123'.encode('utf-8'), bcrypt.gensalt()),
+    'mvp_user': {
+        'password': 'demo123',
         'role': 'mvp',
         'name': 'Alex Thompson'
     },
-    'admin@mediflytest.com': {
-        'password_hash': bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt()),
+    'admin': {
+        'password': 'demo123',
         'role': 'admin',
         'name': 'Admin User'
     }
 }
 
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id in DEMO_USERS:
-        user_data = DEMO_USERS[user_id]
-        return User(user_id, user_data['role'], user_data['name'])
+# Simplified authentication without complex dependencies
+def authenticate_user(username, password):
+    """Simple authentication function"""
+    if username in DEMO_USERS and DEMO_USERS[username]['password'] == password:
+        return DEMO_USERS[username]
     return None
-
-# Role-based access decorator
-def role_required(*roles):
-    def decorator(f):
-        @wraps(f)
-        @login_required
-        def decorated_function(*args, **kwargs):
-            if current_user.role not in roles:
-                flash('You do not have permission to access this page.', 'error')
-                return redirect(url_for('dashboard'))
-            return f(*args, **kwargs)
-        return decorated_function
-    return decorator
-
-# JWT token functions
-def generate_jwt_token(user):
-    payload = {
-        'email': user.email,
-        'role': user.role,
-        'name': user.name,
-        'exp': datetime.utcnow() + JWT_ACCESS_TOKEN_EXPIRES,
-        'iat': datetime.utcnow()
-    }
-    return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
-
-def verify_jwt_token(token):
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        return None
-    except jwt.InvalidTokenError:
-        return None
 
 # Add Jinja2 filters
 @consumer_app.template_filter('number_format')
