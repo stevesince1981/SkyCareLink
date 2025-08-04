@@ -1,371 +1,403 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Tracking Your Loved One's Journey - MediFly Consumer{% endblock %}
+{% block title %}Track Your Flight - MediFly{% endblock %}
 
-{% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="tracking-container">
-                <div class="text-center mb-5">
-                    <h2 class="tracking-title">
-                        <i class="fas fa-heart-pulse text-primary me-2"></i>
-                        We're With You Every Step
-                    </h2>
-                    <p class="tracking-subtitle">
-                        Your loved one's medical transport is in progress. We'll keep you updated throughout their journey.
-                    </p>
-                </div>
-
-                <!-- Provider Info -->
-                <div class="provider-info-card mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h5 class="mb-1">
-                                        <i class="fas fa-plane text-primary me-2"></i>
-                                        {{ provider.name }}
-                                    </h5>
-                                    <p class="text-muted mb-0">{{ provider.description }} • ETA: {{ provider.eta }}</p>
-                                </div>
-                                <div class="col-md-4 text-md-end">
-                                    <span class="badge bg-success fs-6 px-3 py-2">In Progress</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Progress Section -->
-                <div class="progress-section mb-5">
-                    <div class="card">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">
-                                <i class="fas fa-route text-primary me-2"></i>
-                                Transport Progress
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <!-- Enhanced Progress Bar -->
-                            <div class="progress mb-4" style="height: 30px;" role="progressbar" aria-label="Transport progress">
-                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
-                                     id="progress-bar"
-                                     style="width: {{ progress_percentage }}%; transition: width 0.8s ease;"
-                                     aria-valuenow="{{ progress_percentage }}" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100">
-                                    <strong>{{ progress_percentage|round|int }}%</strong>
-                                </div>
-                            </div>
-
-                            <!-- Progress Steps -->
-                            <div class="progress-steps">
-                                <div class="row text-center">
-                                    {% for i, stage in enumerate(stages) %}
-                                    <div class="col-3">
-                                        <div class="step-indicator {% if i <= current_stage %}completed{% endif %} {% if i == current_stage %}active{% endif %}">
-                                            <div class="step-number">
-                                                {% if i < current_stage %}
-                                                    <i class="fas fa-check"></i>
-                                                {% elif i == current_stage %}
-                                                    <i class="fas fa-spinner fa-spin"></i>
-                                                {% else %}
-                                                    {{ i + 1 }}
-                                                {% endif %}
-                                            </div>
-                                            <div class="step-label">{{ stage }}</div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-
-                            <!-- Enhanced Status Message -->
-                            <div class="alert alert-info mt-4 text-center" role="alert" id="status-message">
-                                <div class="tracking-status-text">
-                                    <strong>Current Status:</strong> 
-                                    <span id="current-status">{{ stages[current_stage] }}</span>
-                                </div>
-                                {% if current_stage < stages|length - 1 %}
-                                    <div class="eta-remaining mt-2">
-                                        Updates automatically every 10 seconds
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <!-- Enhanced Estimated Time -->
-                            {% if current_stage < stages|length - 1 %}
-                            <div class="text-center">
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-clock me-2"></i>
-                                    <strong>ETA: {{ provider.eta }} remaining</strong>
-                                    {% if current_stage == 0 %}
-                                        <br><small>Medical team is being dispatched to your loved one</small>
-                                    {% elif current_stage == 1 %}
-                                        <br><small>Transport team is traveling to pickup location</small>
-                                    {% elif current_stage == 2 %}
-                                        <br><small>Medical team has arrived and is preparing your loved one for transport</small>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Family Updates Section -->
-                <div class="family-updates mb-4">
-                    <div class="card">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">
-                                <i class="fas fa-comments text-primary me-2"></i>
-                                Family Updates
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="update-timeline" id="update-timeline">
-                                <div class="update-item">
-                                    <div class="update-time">Just now</div>
-                                    <div class="update-message">
-                                        <i class="fas fa-check-circle text-success me-2"></i>
-                                        Transport booking confirmed. Medical team has been notified.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Emergency Contact Info -->
-                <div class="emergency-contact mb-4">
-                    <div class="card border-warning">
-                        <div class="card-body">
-                            <h6 class="card-title">
-                                <i class="fas fa-phone-alt text-warning me-2"></i>
-                                Need to Reach Us?
-                            </h6>
-                            <p class="card-text mb-2">
-                                Our family support team is available 24/7 during your loved one's transport.
-                            </p>
-                            <div class="contact-info">
-                                <strong>Emergency Line:</strong> 1-800-MEDIFLY<br>
-                                <strong>Reference Number:</strong> <code>MF-{{ session.booking_time[-6:] if session.booking_time else '000001' }}</code>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="text-center">
-                    {% if current_stage >= stages|length - 1 %}
-                        <a href="{{ url_for('summary') }}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-clipboard-check me-2"></i>
-                            View Summary
-                        </a>
-                    {% else %}
-                        <button class="btn btn-outline-secondary" onclick="location.reload()">
-                            <i class="fas fa-sync-alt me-2"></i>
-                            Refresh Status
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let currentStage = {{ current_stage }};
-    const maxStages = {{ stages|length }};
-    const stages = {{ stages|tojson }};
-    
-    // Auto-update tracking every 10 seconds
-    function updateTracking() {
-        if (currentStage < maxStages - 1) {
-            fetch('/tracking_update')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.current_stage > currentStage) {
-                        currentStage = data.current_stage;
-                        updateUI(data);
-                        addFamilyUpdate(data.status);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error updating tracking:', error);
-                });
-        }
-    }
-    
-    function updateUI(data) {
-        // Update progress bar
-        const progressBar = document.getElementById('progress-bar');
-        progressBar.style.width = data.progress_percentage + '%';
-        progressBar.setAttribute('aria-valuenow', data.progress_percentage);
-        progressBar.innerHTML = '<strong>' + Math.round(data.progress_percentage) + '%</strong>';
-        
-        // Update current status
-        document.getElementById('current-status').textContent = data.status;
-        
-        // Update step indicators
-        updateStepIndicators(data.current_stage);
-        
-        // If complete, show summary button
-        if (data.current_stage >= maxStages - 1) {
-            setTimeout(() => {
-                window.location.href = '{{ url_for("summary") }}';
-            }, 3000);
-        }
-    }
-    
-    function updateStepIndicators(currentStep) {
-        const stepIndicators = document.querySelectorAll('.step-indicator');
-        stepIndicators.forEach((indicator, index) => {
-            const stepNumber = indicator.querySelector('.step-number');
-            
-            indicator.classList.remove('active', 'completed');
-            
-            if (index < currentStep) {
-                indicator.classList.add('completed');
-                stepNumber.innerHTML = '<i class="fas fa-check"></i>';
-            } else if (index === currentStep) {
-                indicator.classList.add('active');
-                stepNumber.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            } else {
-                stepNumber.textContent = index + 1;
-            }
-        });
-    }
-    
-    function addFamilyUpdate(status) {
-        const timeline = document.getElementById('update-timeline');
-        const updateItem = document.createElement('div');
-        updateItem.className = 'update-item';
-        
-        const now = new Date();
-        const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        updateItem.innerHTML = `
-            <div class="update-time">${timeString}</div>
-            <div class="update-message">
-                <i class="fas fa-info-circle text-primary me-2"></i>
-                ${status}
-            </div>
-        `;
-        
-        timeline.insertBefore(updateItem, timeline.firstChild);
-    }
-    
-    // Start auto-update
-    if (currentStage < maxStages - 1) {
-        setInterval(updateTracking, 10000); // 10 seconds
-    }
-});
-</script>
-
+{% block head %}
 <style>
-.progress-steps {
-    margin-top: 2rem;
+.tracking-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0;
 }
 
-.step-indicator {
+.flight-header {
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.virtual-map {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    border-radius: 15px;
+    padding: 3rem;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+}
+
+.us-map-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.flight-path {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #ffeaa7, #fdcb6e, #e17055);
+    transform: translateY(-50%);
+}
+
+.flight-plane {
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: #fff;
+    animation: flyAcrossUS 10s linear infinite;
+    z-index: 10;
+}
+
+@keyframes flyAcrossUS {
+    0% { left: 0%; }
+    25% { left: 25%; top: 45%; }
+    50% { left: 50%; top: 40%; }
+    75% { left: 75%; top: 45%; }
+    100% { left: 100%; top: 50%; }
+}
+
+.map-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.city-label {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    color: #2c3e50;
+    padding: 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.orlando-label {
+    bottom: 20%;
+    left: 70%;
+}
+
+.nyc-label {
+    top: 20%;
+    right: 15%;
+}
+
+.tracking-timeline {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
     position: relative;
 }
 
-.step-number {
-    width: 50px;
-    height: 50px;
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    width: 2px;
+    height: 60px;
+    background: #e9ecef;
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-icon {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1rem;
-    background: #e9ecef;
-    color: #6c757d;
-    font-weight: 600;
-    border: 3px solid #e9ecef;
-    transition: all 0.3s ease;
+    margin-right: 1rem;
+    color: white;
+    font-size: 1.2rem;
 }
 
-.step-indicator.completed .step-number {
+.timeline-icon.completed {
     background: #28a745;
-    color: white;
-    border-color: #28a745;
 }
 
-.step-indicator.active .step-number {
-    background: var(--primary-blue);
-    color: white;
-    border-color: var(--primary-blue);
+.timeline-icon.active {
+    background: #007bff;
     animation: pulse 2s infinite;
 }
 
-.step-label {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.step-indicator.active .step-label {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.update-timeline {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.update-item {
-    border-left: 3px solid var(--primary-blue);
-    padding-left: 1rem;
-    margin-bottom: 1rem;
-    position: relative;
-}
-
-.update-item:before {
-    content: '';
-    position: absolute;
-    left: -6px;
-    top: 0;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--primary-blue);
-}
-
-.update-time {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.update-message {
-    margin-top: 0.25rem;
-    color: var(--text-primary);
-}
-
-.contact-info {
-    background: var(--pastel-yellow);
-    padding: 0.75rem;
-    border-radius: var(--border-radius);
-    font-size: 0.9rem;
+.timeline-icon.pending {
+    background: #6c757d;
 }
 
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(135,206,235, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(135,206,235, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(135,206,235, 0);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.weather-panel {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.weather-location {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 10px;
+    margin: 0.5rem;
+}
+
+.delay-prediction {
+    background: linear-gradient(135deg, #ff9f43, #feca57);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.prediction-probability {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.family-updates {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.support-contact {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
 }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="tracking-container">
+        <!-- Flight Header -->
+        <div class="flight-header">
+            <h1><i class="fas fa-route me-2"></i>Flight Tracking</h1>
+            <h3>{{ quote.provider_name }}</h3>
+            <p class="mb-0">{{ patient_data.origin }} → {{ patient_data.destination }}</p>
+        </div>
+
+        <!-- Virtual Map -->
+        <div class="virtual-map">
+            <h4 class="text-white text-center mb-4">
+                <i class="fas fa-map me-2"></i>Live Flight Path Simulation
+            </h4>
+            
+            <div class="us-map-container">
+                <div class="flight-path"></div>
+                <div class="flight-plane">
+                    <i class="fas fa-plane"></i>
+                </div>
+                
+                <div class="map-labels">
+                    <div class="city-label orlando-label">
+                        <i class="fas fa-map-marker-alt me-1"></i>Orlando, FL
+                    </div>
+                    <div class="city-label nyc-label">
+                        <i class="fas fa-map-marker-alt me-1"></i>New York, NY
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-3 text-white">
+                <p><i class="fas fa-info-circle me-2"></i>Real-time flight simulation - Florida to New York route</p>
+            </div>
+        </div>
+
+        <!-- AI Delay Prediction -->
+        <div class="delay-prediction">
+            <h4><i class="fas fa-brain me-2"></i>AI Delay Prediction</h4>
+            <div class="prediction-probability">{{ delay_prediction.probability }}%</div>
+            <p class="lead">Chance of {{ delay_prediction.potential_delay }} delay</p>
+            <p><strong>Reason:</strong> {{ delay_prediction.reason }}</p>
+            <p><strong>Mitigation:</strong> {{ delay_prediction.alternatives }}</p>
+            
+            {% if delay_prediction.probability > 20 %}
+            <div class="alert alert-warning mt-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Potential delay alert:</strong> Alternatives being prepared. You'll be notified immediately of any changes.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tracking Timeline -->
+        <div class="tracking-timeline">
+            <h4><i class="fas fa-clock me-2"></i>Flight Progress</h4>
+            
+            {% for stage in tracking_stages %}
+            <div class="timeline-item">
+                <div class="timeline-icon {{ stage.status }}">
+                    <i class="fas fa-{{ stage.icon }}"></i>
+                </div>
+                <div class="timeline-content">
+                    <h6 class="mb-1">{{ stage.stage }}</h6>
+                    <small class="text-muted">{{ stage.time }}</small>
+                    {% if stage.status == 'active' %}
+                    <span class="badge bg-primary ms-2">In Progress</span>
+                    {% elif stage.status == 'completed' %}
+                    <span class="badge bg-success ms-2">Completed</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Weather Conditions -->
+        <div class="weather-panel">
+            <h4 class="text-center mb-4">
+                <i class="fas fa-cloud-sun me-2"></i>Weather Conditions
+            </h4>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="weather-location">
+                        <h6>Origin</h6>
+                        <p class="mb-1"><strong>{{ weather_data.origin_weather.condition }}</strong></p>
+                        <p class="mb-1">{{ weather_data.origin_weather.temp }}°F</p>
+                        <p class="mb-0">Wind: {{ weather_data.origin_weather.wind }}</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="weather-location">
+                        <h6>Route</h6>
+                        <p class="mb-0">{{ weather_data.route_weather }}</p>
+                        <div class="mt-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <small class="text-success">Clear for flight</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="weather-location">
+                        <h6>Destination</h6>
+                        <p class="mb-1"><strong>{{ weather_data.destination_weather.condition }}</strong></p>
+                        <p class="mb-1">{{ weather_data.destination_weather.temp }}°F</p>
+                        <p class="mb-0">Wind: {{ weather_data.destination_weather.wind }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-sync-alt me-1"></i>Weather data updates every 15 minutes
+                </small>
+            </div>
+        </div>
+
+        <!-- Family Updates -->
+        <div class="family-updates">
+            <h4><i class="fas fa-heart me-2"></i>Family Communication Timeline</h4>
+            <p><strong>Real-time updates for {{ session.contact_name or 'family' }}:</strong></p>
+            
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <strong>10:00 AM:</strong> Booking confirmed - medical team briefed
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-clock text-warning me-2"></i>
+                    <strong>10:30 AM:</strong> Aircraft preparation underway
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    <strong>11:00 AM:</strong> Medical team conducting final briefing
+                </li>
+                <li class="mb-0 text-muted">
+                    <i class="fas fa-bell me-2"></i>
+                    Next update expected at departure (estimated 11:30 AM)
+                </li>
+            </ul>
+        </div>
+
+        <!-- 24/7 Support -->
+        <div class="support-contact">
+            <h4><i class="fas fa-headset me-2"></i>24/7 Family Support</h4>
+            <p>Our dedicated advocate team is standing by for any questions or concerns</p>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <a href="tel:+1-800-MEDFLY" class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-phone me-2"></i>Call Support
+                    </a>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <a href="sms:+1-800-MEDFLY" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-sms me-2"></i>Text Updates
+                    </a>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>MVP Member Benefit:</strong> You have access to priority support and dedicated advocacy throughout your transport.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update tracking status simulation
+function updateTrackingStatus() {
+    // In production, this would poll the actual tracking API
+    console.log('Tracking status updated');
+}
+
+// Simulate real-time updates every 30 seconds
+setInterval(updateTrackingStatus, 30000);
+
+// Weather update simulation
+function updateWeather() {
+    console.log('Weather data refreshed from OpenWeatherMap API');
+}
+
+setInterval(updateWeather, 900000); // Every 15 minutes
+
+// Family notification simulation
+function sendFamilyUpdate(message) {
+    console.log(`FAMILY UPDATE SENT: ${message}`);
+    // In production, integrate with Twilio/SendGrid
+}
+
+// Simulate sending updates
+setTimeout(() => sendFamilyUpdate('Departure confirmed - aircraft airborne'), 1800000); // 30 minutes
+</script>
 {% endblock %}

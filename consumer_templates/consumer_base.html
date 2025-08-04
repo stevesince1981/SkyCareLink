@@ -45,12 +45,13 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ url_for('partner_dashboard') }}">Partner Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Admin Panel</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('mvp_incentive') }}">MVP Program</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('partners_page') }}">Partner Program</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_fee_adjustment') }}">Admin Panel</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('subscribe', plan='monthly') }}">MVP Program</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-warning fw-bold" href="{{ url_for('mvp_incentive') }}">
+                        <a class="nav-link text-warning fw-bold" href="{{ url_for('subscribe', plan='monthly') }}">
                             <i class="fas fa-crown me-1"></i>MVP Program
                         </a>
                     </li>

@@ -1,0 +1,92 @@
+Update the existing Flask web app MediFly Consumer MVP (medtransportlink-consumer.replit.app) to reflect all recent discussions and prior features. Maintain HIPAA compliance (transient data, no PHI/PII/credit storage), use Bootstrap 5, and target a lean, two-founder operation (Mike on sales/logistics, Steve on tech/UX) for 50 bookings in Year 1 ($375k revenue, $12k expenses, tiered profit-sharing: 30/30/40 to 20/20/60 post-expenses). Ensure all updates are deployed and tested.
+
+Step 1: Implement Urgency and Payment Lock
+
+Add a soft urgency mechanism on the confirmation page with a 24-hour countdown timer (starting at quote selection) and limited slots badge (e.g., "2 slots left today"), toggling wording: empathetic for family users ("Secure now—slots can fill quickly, but take your time if needed") and factual for hospital/partners ("Lock for priority—availability limited in [geo area]").
+Include SMS/email alerts (Twilio/SendGrid stubs) at 12-hour, 6-hour, and 1-hour intervals before expiration ("Your quote expires in 12 hours—secure now?", "6 hours remaining—act soon", "1 hour left—finalize payment!"), with a disclaimer ("No pressure—contact us if you need support").
+Ensure timer resets on deposit payment initiation.
+
+
+Step 2: Enhance Multi-Quote Aggregation
+
+Update quote aggregation to send anonymized requests to 3-5 providers (or 0-1 based on geolocation/availability via API/email), displaying blinded quotes (e.g., "Provider A: $128k") for family users.
+Unmask provider names for MVP/hospital subscribers ($49/month or $499/year, 12-month minimum, cancel after 30 days notice with full payment, perks: 10% discounts, priority bookings).
+If zero quotes, show "No options—try modifying search" with ground transport alternatives; for one quote, note "Limited availability—check back soon."
+Notify all providers initially to maximize competition, aggregate responses on a single page for price shopping.
+
+
+Step 3: Integrate Subscription Tiers
+
+Add subscription options on signup/confirmation pages: $49/month or $499/year (12-month minimum, cancel after with 30 days notice, no refund for committed period, auto-renew opt-out in account settings).
+Promote with freemium teasers ("Upgrade for unmasked providers and priority!"), offering perks: unmasked quotes, 10% add-on discounts, exclusive dashboards, free aid tools.
+Track subscriptions in a dashboard with auto-renew opt-out.
+
+
+Step 4: Develop Referral Dashboard for Partners
+
+Create a dashboard for preferred partners (hospitals/referrers) showing referral listings (filterable by date), star ratings (bronze at 10, silver at 25, gold at 50, platinum at 100 referrals), and incentives every 10 referrals (e.g., priority support, "Top Referrer" badge, free month extension for subscribers—non-financial to avoid tax/complexity).
+Highlight priority partners with animated borders (e.g., pulse animation) and larger display in quote results.
+
+
+Step 5: Update Account Setup Process
+
+Require account creation on the confirmation page before finalizing, collecting contact name, email, password, patient's name, age, and gender (transient session storage only).
+Add email verification (send activation link/code via Twilio/SMTP stub) and easy password reset (secure token emailed, rate-limiting with CAPTCHA stub).
+Debug prior login issues (ensure dummy credentials work, add "Forgot Password" flow with email reset).
+
+
+Step 6: Design Engaging Referral and Partner Pages
+
+Build a referral member page (/referrals) with engaging visuals (hero image of safe flights, testimonials carousel, animated stats like "Save 20% on average"), outlining services (AI quotes, tracking, aid) and trust elements (HIPAA badge, "100% secure transient data", partner testimonials).
+Create a partner referral page (/partners) with infographics, stats (e.g., "Cut sales costs 50%"), and perks outline (free leads, volume growth, efficiency, market expansion, incentives), including trust builders (testimonials).
+
+
+Step 7: Adjust Non-Refundable Fee and Payment Flow
+
+Make the non-refundable fee ($1,000) adjustable via admin dashboard (changeable on fly, stored in encrypted .env file for security).
+Update confirmation to show hybrid deposit breakdown ($1k nonrefundable to MediFly, $6.5k refundable to provider), with payment collected via Stripe integration.
+Display fee/breakdown in partner and owner dashboards (e.g., "Revenue: $142,500, MediFly Fee: $7,500 deducted upfront").
+
+
+Step 8: Add New Features
+
+Implement a virtual map in the tracking page with a basic overview of the United States, featuring a mini plane (same as main page animation) flying a repeating path (e.g., Florida to New York) using CSS keyframes (e.g., @keyframes flyUS {0% left:0; 50% top:50% FL to NY; 100% left:100%; 10s loop}).
+Add an AI-powered delay prediction tool in tracking, using OpenWeatherMap free tier (1,000 calls/day) for weather data and manual traffic inputs from public sources (e.g., NOAA), with alerts (e.g., "Potential 2-hour delay—alternatives available") in dashboard/email/SMS (Twilio stub).
+Exclude wearable data collection, blockchain, and community forum as per your preference.
+
+
+Step 9: Enhance International Address Validation
+
+Integrate Google Places API free tier (200 calls/day) for international address autocomplete/validation (e.g., "Lahore Hospital, Pakistan"), handling non-US formats (postal codes, street names).
+Add a manual entry fallback (text box with country dropdown) if API limits are reached, allowing users to input details for review by Mike/Steve.
+
+
+Step 10: Handle No Availability with Compassion
+
+Update the results page to display compassionate messaging for no availability (e.g., "We're sorry—no options available through our preferred partners at this time. Please modify your search or check back soon—we're here to help with alternatives.") when zero quotes return (e.g., NYC to Pakistan).
+
+
+Step 11: Debug and Redeploy
+
+Investigate why previous updates aren’t showing—check deployment (re-run, clear cache), verify code commits, and reapply all features if missing.
+Redeploy to ensure all changes are live and test thoroughly.
+
+
+Security and Compliance:
+
+Use transient session data only, enforce HTTPS, implement parameterized queries to prevent SQL injections, add WAF stub (Cloudflare), and include MFA/password reset stubs.
+Ensure no credit card/care credit data is stored—link externally to providers or CareCredit.
+
+
+Testing Scenarios:
+
+Family: Orlando to LA coma, test map/delay, subscription, urgency alerts (12h/6h/1h), account setup, no availability (NYC to Pakistan).
+Hospital: Priority booking, unmasked quote, referral dashboard, subscription perk.
+Verify: All new features (map, delay, urgency, subscriptions, dashboards), account flow, no PHI storage, security measures.
+
+
+Deliverables:
+
+Updated code for all necessary components.
+Deployed URL reflecting all changes.
+Detailed test summary, including debug notes on prior update failures.

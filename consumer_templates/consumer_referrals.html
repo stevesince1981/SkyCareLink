@@ -1,0 +1,247 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Referral Program - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5rem 0;
+    text-align: center;
+}
+
+.stats-section {
+    background: #f8f9fa;
+    padding: 4rem 0;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.testimonials-carousel {
+    background: white;
+    border-radius: 15px;
+    padding: 3rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-card {
+    text-align: center;
+    padding: 2rem;
+}
+
+.testimonial-text {
+    font-style: italic;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.testimonial-author {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.stars {
+    color: #ffc107;
+    margin: 1rem 0;
+}
+
+.trust-elements {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.service-highlight {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cta-section {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1 class="display-4 mb-4">Join Our Referral Network</h1>
+        <p class="lead mb-4">Connecting families with life-saving medical transport when time matters most</p>
+        <div class="hero-image mt-4">
+            <i class="fas fa-helicopter" style="font-size: 5rem; opacity: 0.8;"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Proven Results That Matter</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.average_savings }}</div>
+                    <h5>Average Savings</h5>
+                    <p>Compared to direct booking</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.response_time }}</div>
+                    <h5>Response Time</h5>
+                    <p>From request to quote</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.success_rate }}</div>
+                    <h5>Success Rate</h5>
+                    <p>Successful transports completed</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.family_satisfaction }}</div>
+                    <h5>Family Rating</h5>
+                    <p>Average satisfaction score</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5">What We Provide</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="service-highlight">
+                <h4><i class="fas fa-robot text-primary me-2"></i>AI-Powered Quotes</h4>
+                <p>Intelligent matching system connects you with the best providers for your specific medical transport needs.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="service-highlight">
+                <h4><i class="fas fa-route text-success me-2"></i>Real-Time Tracking</h4>
+                <p>Live flight tracking with family updates, weather monitoring, and AI delay predictions for peace of mind.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="service-highlight">
+                <h4><i class="fas fa-life-ring text-warning me-2"></i>24/7 Support</h4>
+                <p>Dedicated family advocate available around the clock for assistance and emergency coordination.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials -->
+<div class="container">
+    <div class="testimonials-carousel">
+        <h2 class="text-center mb-5">What Families Are Saying</h2>
+        
+        <div class="row">
+            {% for testimonial in testimonials %}
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">"{{ testimonial.text }}"</div>
+                    <div class="stars">
+                        {% for i in range(testimonial.rating) %}
+                        <i class="fas fa-star"></i>
+                        {% endfor %}
+                    </div>
+                    <div class="testimonial-author">{{ testimonial.name }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Trust Elements -->
+<div class="container">
+    <div class="trust-elements">
+        <h3 class="text-center mb-4">
+            <i class="fas fa-shield-alt text-success me-2"></i>Your Trust Is Our Priority
+        </h3>
+        
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <h5><i class="fas fa-certificate text-primary me-2"></i>HIPAA Compliant</h5>
+                <p>100% secure transient data handling with no permanent storage of patient information</p>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <h5><i class="fas fa-handshake text-success me-2"></i>Trusted Partners</h5>
+                <p>Only certified, verified medical transport providers in our exclusive network</p>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <h5><i class="fas fa-clock text-warning me-2"></i>No Hidden Fees</h5>
+                <p>Transparent pricing with clear breakdown of all costs upfront</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="cta-section">
+    <div class="container">
+        <h2 class="mb-4">Ready to Get Started?</h2>
+        <p class="lead mb-4">Join thousands of families who trust MediFly for their critical transport needs</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <a href="{{ url_for('consumer_intake') }}" class="btn btn-light btn-lg w-100">
+                            <i class="fas fa-plane-departure me-2"></i>Start Your Transport Request
+                        </a>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <a href="{{ url_for('subscribe', plan='monthly') }}" class="btn btn-outline-light btn-lg w-100">
+                            <i class="fas fa-crown me-2"></i>Upgrade to Premium
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <small>Questions? Call us at <strong>1-800-MEDFLY</strong> or email <strong>support@medifly.com</strong></small>
+        </div>
+    </div>
+</div>
+{% endblock %}

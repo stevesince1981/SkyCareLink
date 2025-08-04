@@ -459,7 +459,7 @@ function handleAICommand(event) {
         } else if (command.includes('emergency') || command.includes('urgent')) {
             window.location.href = "{{ url_for('consumer_intake') }}?type=critical";
         } else if (command.includes('mvp') || command.includes('membership')) {
-            window.location.href = "{{ url_for('mvp_incentive') }}";
+            window.location.href = "{{ url_for('subscribe', plan='monthly') }}";
         } else {
             // Show help popup
             alert('I can help you with:\n• "Help me build a flight from Orlando to NYC"\n• "What options are good for my grandmother?"\n• "I need emergency transport"\n• "Tell me about MVP membership"');

@@ -18,19 +18,7 @@ DEMO_USERS = {
     'hospital': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
     'provider': {'password': 'demo123', 'role': 'provider', 'name': 'Captain Lisa Martinez'},
     'mvp': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
-    'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'},
-    'demo': {'password': 'demo123', 'role': 'admin', 'name': 'Demo User'},
-    'demo123': {'password': 'demo123', 'role': 'family', 'name': 'Test User'}  # Additional fallback
-}
-
-# Equipment pricing (dynamic)
-EQUIPMENT_PRICING = {
-    'ventilator': 5000,
-    'ecmo': 10000,
-    'incubator': 3000,
-    'escort': 2000,
-    'oxygen': 1000,
-    'other': 0  # Custom pricing
+    'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'}
 }
 
 # Global configuration - adjustable non-refundable fee
@@ -41,6 +29,16 @@ MEDFLY_CONFIG = {
     'twilio_account_sid': os.environ.get("TWILIO_ACCOUNT_SID", "demo-sid"),
     'twilio_auth_token': os.environ.get("TWILIO_AUTH_TOKEN", "demo-token"),
     'sendgrid_api_key': os.environ.get("SENDGRID_API_KEY", "demo-key")
+}
+
+# Equipment pricing (dynamic)
+EQUIPMENT_PRICING = {
+    'ventilator': 5000,
+    'ecmo': 10000,
+    'incubator': 3000,
+    'escort': 2000,
+    'oxygen': 1000,
+    'other': 0
 }
 
 # Subscription pricing
@@ -58,71 +56,28 @@ MOCK_PROVIDERS = [
     {'name': 'Emergency Wings', 'base_price': 138000, 'capabilities': ['ventilator', 'incubator'], 'priority': False}
 ]
 
-# Referral tracking
-REFERRAL_TIERS = {
-    'bronze': {'min_referrals': 10, 'badge': 'bronze'},
-    'silver': {'min_referrals': 25, 'badge': 'silver'},
-    'gold': {'min_referrals': 50, 'badge': 'gold'},
-    'platinum': {'min_referrals': 100, 'badge': 'platinum'}
-}
-
-# Priority partner providers
-PRIORITY_PARTNERS = ['AirMed Response', 'LifeFlight Elite', 'CriticalCare Jets']
-
-# Authentication helper
 def authenticate_user(username, password):
     if username in DEMO_USERS and DEMO_USERS[username]['password'] == password:
         return DEMO_USERS[username]
     return None
-
-# Revenue calculations: $1,000 deposit + 5% commission
-def calculate_revenue_metrics():
-    total_service_value = 847500
-    deposits_collected = 7 * 1000
-    commission_earned = total_service_value * 0.05
-    actual_revenue = deposits_collected + commission_earned
-    return {
-        'total_bookings': 7,
-        'total_service_value': total_service_value,
-        'actual_revenue': actual_revenue,
-        'deposits_collected': deposits_collected,
-        'commission_earned': commission_earned
-    }
-
-# Routes
-@consumer_app.route('/')
-def consumer_index():
-    """Landing page with Critical/Non-Critical/MVP toggle"""
-    return render_template('consumer_index.html')
-
-@consumer_app.route('/intake')
-def consumer_intake():
-    """Enhanced intake form with type selector and dynamic pricing"""
-    from datetime import datetime
-    transport_type = request.args.get('type', 'critical')  # critical, non-critical, mvp
-    return render_template('consumer_intake.html', 
-                         transport_type=transport_type,
-                         equipment_pricing=EQUIPMENT_PRICING,
-                         datetime=datetime)
 
 def generate_quote_session():
     """Generate unique quote session with 24-hour expiry"""
     quote_id = str(uuid.uuid4())
     session['quote_id'] = quote_id
     session['quote_expiry'] = (datetime.now() + timedelta(hours=24)).isoformat()
-    session['slots_remaining'] = 2  # Soft urgency mechanism
+    session['slots_remaining'] = 2
     return quote_id
 
 def get_provider_quotes(origin, destination, equipment_list, transport_type):
     """Generate mock provider quotes based on parameters"""
     import random
     
-    # Filter providers based on availability (geographic simulation)
     available_providers = MOCK_PROVIDERS.copy()
     
     # Simulate geographic limitations
     if 'pakistan' in destination.lower() or 'international' in transport_type.lower():
-        available_providers = [p for p in available_providers if p['priority']]  # Only priority partners for international
+        available_providers = [p for p in available_providers if p['priority']]
     
     # Random availability simulation
     num_quotes = min(random.randint(0, 5), len(available_providers))
@@ -134,14 +89,10 @@ def get_provider_quotes(origin, destination, equipment_list, transport_type):
     quotes = []
     
     for i, provider in enumerate(selected_providers):
-        # Calculate equipment costs
         equipment_cost = sum(EQUIPMENT_PRICING.get(eq, 0) for eq in equipment_list)
-        
-        # Add random variation
         variation = random.uniform(0.9, 1.1)
         total_cost = int((provider['base_price'] + equipment_cost) * variation)
         
-        # Apply same-day upcharge for critical
         if transport_type == 'critical':
             total_cost = int(total_cost * 1.2)
         
@@ -167,18 +118,56 @@ def send_urgency_alert(user_contact, hours_remaining, quote_data):
     }
     
     message = alert_messages.get(hours_remaining, "Quote expiring soon!")
-    
-    # Mock Twilio/SendGrid integration
     logging.info(f"ALERT STUB - To: {user_contact}, Message: {message}")
-    logging.info(f"Quote Data: {quote_data}")
-    
-    # In production, implement actual Twilio/SendGrid calls here
     return True
+
+# Routes
+@consumer_app.route('/')
+def consumer_index():
+    """Landing page with Critical/Non-Critical/MVP toggle"""
+    return render_template('consumer_index.html')
+
+@consumer_app.route('/login')
+def login():
+    """Login page"""
+    return render_template('login.html')
+
+@consumer_app.route('/login', methods=['POST'])
+def login_post():
+    """Process login"""
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    user = authenticate_user(username, password)
+    if user:
+        session['logged_in'] = True
+        session['user_role'] = user['role']
+        session['contact_name'] = user['name']
+        flash(f'Welcome, {user["name"]}!', 'success')
+        return redirect(url_for('consumer_index'))
+    else:
+        flash('Invalid credentials. Try: family, hospital, provider, mvp, or admin with password: demo123', 'error')
+        return redirect(url_for('login'))
+
+@consumer_app.route('/logout')
+def logout():
+    """Logout"""
+    session.clear()
+    flash('Logged out successfully.', 'info')
+    return redirect(url_for('consumer_index'))
+
+@consumer_app.route('/intake')
+def consumer_intake():
+    """Enhanced intake form with type selector and dynamic pricing"""
+    transport_type = request.args.get('type', 'critical')
+    return render_template('consumer_intake.html', 
+                         transport_type=transport_type,
+                         equipment_pricing=EQUIPMENT_PRICING,
+                         datetime=datetime)
 
 @consumer_app.route('/intake', methods=['POST'])
 def consumer_intake_post():
     """Process intake form with equipment pricing calculations"""
-    # Store form data in session
     session['patient_data'] = {
         'transport_type': request.form.get('transport_type'),
         'patient_name': request.form.get('patient_name'),
@@ -193,83 +182,16 @@ def consumer_intake_post():
         'passport_confirmed': 'passport_confirmed' in request.form
     }
     
-    # Calculate equipment costs
     equipment_cost = 0
     for item in session['patient_data']['equipment']:
         if item in EQUIPMENT_PRICING:
             equipment_cost += EQUIPMENT_PRICING[item]
     
-    # Same-day upcharge (20%)
     if session['patient_data']['same_day']:
         equipment_cost *= 1.2
     
     session['equipment_cost'] = equipment_cost
-    
     return redirect(url_for('consumer_quotes'))
-
-@consumer_app.route('/results')
-def consumer_results():
-    """Provider results with blurred names and priority partners"""
-    if 'patient_data' not in session:
-        flash('Please complete the intake form first.', 'warning')
-        return redirect(url_for('consumer_intake'))
-    
-    # Generate providers with blurred names and dynamic pricing
-    base_cost = 95000
-    equipment_cost = session.get('equipment_cost', 0)
-    same_day_multiplier = 1.2 if session.get('patient_data', {}).get('same_day') else 1.0
-    
-    providers = [
-        {
-            'id': 'provider_a',
-            'name': 'Provider A****',
-            'actual_name': 'AirMed Response',
-            'blurred_name': 'Provider A**** (Name revealed after booking)',
-            'cost': int((base_cost + 30000 + equipment_cost) * same_day_multiplier),
-            'eta': '2.5 hours',
-            'aircraft': 'Fixed-wing jet',
-            'capabilities': ['ICU Support', 'Neonatal', 'Cardiac'],
-            'rating': 4.9,
-            'is_priority': True,
-            'priority_note': 'Priority Partner - Featured placement'
-        },
-        {
-            'id': 'provider_b', 
-            'name': 'Provider B****',
-            'actual_name': 'LifeFlight Elite',
-            'blurred_name': 'Provider B**** (Name revealed after booking)',
-            'cost': int((base_cost + 23000 + equipment_cost) * same_day_multiplier),
-            'eta': '3.0 hours',
-            'aircraft': 'Helicopter',
-            'capabilities': ['Emergency', 'Rural Access', 'Weather Ready'],
-            'rating': 4.8,
-            'is_priority': True,
-            'priority_note': 'Priority Partner - Enhanced service'
-        },
-        {
-            'id': 'provider_c',
-            'name': 'Provider C****',
-            'actual_name': 'SkyMed Standard',
-            'blurred_name': 'Provider C**** (Name revealed after booking)',
-            'cost': int((base_cost + equipment_cost) * same_day_multiplier),
-            'eta': '4.0 hours',
-            'aircraft': 'Fixed-wing',
-            'capabilities': ['Standard Care', 'Long Distance'],
-            'rating': 4.6,
-            'is_priority': False,
-            'priority_note': None
-        }
-    ]
-    
-    # Add provider modification note
-    modification_note = "Provider may recommend additional life-saving equipment during pre-flight assessment. You'll be notified of any changes before departure."
-    
-    return render_template('consumer_results.html', 
-                         providers=providers,
-                         equipment_cost=equipment_cost,
-                         same_day_upcharge=same_day_multiplier > 1,
-                         modification_note=modification_note,
-                         patient_data=session.get('patient_data', {}))
 
 @consumer_app.route('/quotes')
 def consumer_quotes():
@@ -278,11 +200,9 @@ def consumer_quotes():
         flash('Please complete the intake form first.', 'warning')
         return redirect(url_for('consumer_intake'))
     
-    # Generate quote session if not exists
     if 'quote_id' not in session:
         generate_quote_session()
     
-    # Get quotes from providers
     patient_data = session['patient_data']
     quotes = get_provider_quotes(
         patient_data['origin'],
@@ -291,7 +211,6 @@ def consumer_quotes():
         patient_data['transport_type']
     )
     
-    # Handle no availability case
     if not quotes:
         return render_template('consumer_no_availability.html', 
                              patient_data=patient_data,
@@ -300,11 +219,9 @@ def consumer_quotes():
                                  'destination': patient_data['destination']
                              })
     
-    # Check subscription status for unmasked names
     user_subscription = session.get('subscription_status', None)
     show_names = user_subscription in ['monthly', 'yearly'] or session.get('user_role') in ['mvp', 'hospital']
     
-    # Calculate urgency timing
     quote_expiry = datetime.fromisoformat(session['quote_expiry'])
     time_remaining = quote_expiry - datetime.now()
     hours_remaining = max(0, int(time_remaining.total_seconds() // 3600))
@@ -332,7 +249,6 @@ def subscribe(plan):
 @consumer_app.route('/subscribe/<plan>', methods=['POST'])
 def subscribe_post(plan):
     """Process subscription signup"""
-    # Validate account creation
     email = request.form.get('email')
     password = request.form.get('password')
     contact_name = request.form.get('contact_name')
@@ -341,7 +257,6 @@ def subscribe_post(plan):
         flash('Please fill in all required fields.', 'error')
         return redirect(url_for('subscribe', plan=plan))
     
-    # Store subscription in session (in production, save to database)
     session['subscription_status'] = plan
     session['subscription_start'] = datetime.now().isoformat()
     session['user_email'] = email
@@ -359,12 +274,12 @@ def consumer_confirm():
         flash('Invalid booking session. Please start over.', 'error')
         return redirect(url_for('consumer_intake'))
     
-    # Find selected quote
+    patient_data = session['patient_data']
     quotes = get_provider_quotes(
-        session['patient_data']['origin'],
-        session['patient_data']['destination'],
-        session['patient_data']['equipment'],
-        session['patient_data']['transport_type']
+        patient_data['origin'],
+        patient_data['destination'],
+        patient_data['equipment'],
+        patient_data['transport_type']
     )
     
     selected_quote = None
@@ -377,10 +292,8 @@ def consumer_confirm():
         flash('Selected provider not found. Please choose again.', 'error')
         return redirect(url_for('consumer_quotes'))
     
-    # Store selected provider in session
     session['selected_quote'] = selected_quote
     
-    # Calculate fee breakdown
     medfly_fee = MEDFLY_CONFIG['non_refundable_fee']
     provider_payment = selected_quote['total_cost'] - medfly_fee
     
@@ -400,7 +313,6 @@ def consumer_confirm():
 @consumer_app.route('/create_account_confirm', methods=['POST'])
 def create_account_confirm():
     """Create account during confirmation process"""
-    # Collect account data
     contact_name = request.form.get('contact_name')
     email = request.form.get('email')
     password = request.form.get('password')
@@ -410,13 +322,11 @@ def create_account_confirm():
         flash('Please fill in all required fields.', 'error')
         return redirect(url_for('consumer_confirm', provider=session.get('selected_quote', {}).get('provider_id')))
     
-    # Store account data in session (transient only)
     session['user_email'] = email
     session['contact_name'] = contact_name
     session['patient_gender'] = patient_gender
     session['account_created'] = datetime.now().isoformat()
     
-    # Mock email verification
     logging.info(f"EMAIL VERIFICATION STUB - To: {email}, Activation code: DEMO123")
     
     flash('Account created successfully! Email verification sent (check console for demo code).', 'success')
@@ -429,7 +339,6 @@ def consumer_tracking():
         flash('No active booking found.', 'warning')
         return redirect(url_for('consumer_intake'))
     
-    # Simulate tracking stages
     tracking_stages = [
         {'stage': 'Booking Confirmed', 'time': '10:00 AM', 'status': 'completed', 'icon': 'check-circle'},
         {'stage': 'Aircraft Preparation', 'time': '10:30 AM', 'status': 'completed', 'icon': 'tools'},
@@ -439,16 +348,14 @@ def consumer_tracking():
         {'stage': 'Arrival', 'time': 'TBD', 'status': 'pending', 'icon': 'map-marker-alt'}
     ]
     
-    # Mock weather data (in production, use OpenWeatherMap API)
     weather_data = {
         'origin_weather': {'condition': 'Clear', 'temp': 75, 'wind': '5 mph'},
         'destination_weather': {'condition': 'Partly Cloudy', 'temp': 68, 'wind': '10 mph'},
         'route_weather': 'Favorable conditions expected'
     }
     
-    # AI delay prediction (mock)
     delay_prediction = {
-        'probability': 15,  # 15% chance of delay
+        'probability': 15,
         'potential_delay': '30 minutes',
         'reason': 'Minor air traffic congestion possible',
         'alternatives': 'Alternative routes prepared'
@@ -460,40 +367,108 @@ def consumer_tracking():
                          tracking_stages=tracking_stages,
                          weather_data=weather_data,
                          delay_prediction=delay_prediction)
-    
-    return render_template('consumer_confirm.html',
-                         base_cost=base_cost,
-                         equipment_cost=equipment_cost,
-                         family_seat_cost=family_seat_cost,
-                         vip_description=vip_description,
-                         carecredit_info=carecredit_info,
-                         patient_data=session.get('patient_data', {}))
 
-@consumer_app.route('/confirm', methods=['POST'])
-def consumer_confirm_post():
-    """Process confirmation with add-ons"""
-    session['booking_confirmed'] = True
-    session['family_seat'] = 'family_seat' in request.form
-    session['vip_cabin'] = 'vip_cabin' in request.form
-    session['confirmation_id'] = f"MF-{datetime.now().strftime('%Y%m%d')}-{datetime.now().microsecond // 1000:03d}"
+@consumer_app.route('/referrals')
+def referrals_page():
+    """Referral member page with engaging visuals"""
+    testimonials = [
+        {'name': 'Sarah M.', 'text': 'MediFly saved precious time during our emergency. Professional and caring.', 'rating': 5},
+        {'name': 'Dr. Johnson', 'text': 'As a hospital partner, their service consistently exceeds expectations.', 'rating': 5},
+        {'name': 'Mike T.', 'text': 'The family support and communication was outstanding during a difficult time.', 'rating': 5}
+    ]
     
-    return redirect(url_for('consumer_tracking'))
-
-@consumer_app.route('/tracking')
-def consumer_tracking():
-    """Enhanced tracking with family updates"""
-    if not session.get('booking_confirmed'):
-        return redirect(url_for('consumer_index'))
-    
-    # Mock provider data for tracking
-    provider = {
-        'name': 'AirMed Response',
-        'aircraft': 'Helicopter EC-145',
-        'pilot': 'Captain Smith',
-        'crew': 'Nurse Johnson, Paramedic Davis'
+    stats = {
+        'average_savings': '20%',
+        'response_time': '< 2 hours',
+        'success_rate': '99.8%',
+        'family_satisfaction': '4.9/5'
     }
-    return render_template('consumer_tracking.html', provider=provider)
+    
+    return render_template('consumer_referrals.html', testimonials=testimonials, stats=stats)
 
+@consumer_app.route('/partners')
+def partners_page():
+    """Partner referral page with infographics and stats"""
+    partner_benefits = [
+        {'title': 'Free Lead Generation', 'description': 'No cost referrals from our platform', 'icon': 'users'},
+        {'title': 'Volume Growth', 'description': 'Access to expanded patient network', 'icon': 'chart-line'},
+        {'title': 'Efficiency Tools', 'description': 'Streamlined booking and management', 'icon': 'cogs'},
+        {'title': 'Market Expansion', 'description': 'Geographic reach beyond current service area', 'icon': 'globe'}
+    ]
+    
+    partner_stats = {
+        'cost_reduction': '50%',
+        'volume_increase': '35%',
+        'partner_count': '150+',
+        'success_stories': '500+'
+    }
+    
+    return render_template('consumer_partners.html', benefits=partner_benefits, stats=partner_stats)
+
+@consumer_app.route('/admin/fee_adjustment')
+def admin_fee_adjustment():
+    """Admin dashboard for adjusting non-refundable fee"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    current_fee = MEDFLY_CONFIG['non_refundable_fee']
+    
+    return render_template('admin_fee_adjustment.html', current_fee=current_fee)
+
+@consumer_app.route('/admin/fee_adjustment', methods=['POST'])
+def admin_fee_adjustment_post():
+    """Update non-refundable fee"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    new_fee = request.form.get('new_fee', type=int)
+    if new_fee and new_fee > 0:
+        MEDFLY_CONFIG['non_refundable_fee'] = new_fee
+        flash(f'Non-refundable fee updated to ${new_fee:,}', 'success')
+        logging.info(f"ADMIN: Fee updated to ${new_fee} by {session.get('contact_name', 'admin')}")
+    else:
+        flash('Please enter a valid fee amount.', 'error')
+    
+    return redirect(url_for('admin_fee_adjustment'))
+
+# AI Command Processing and Chat Integration
+@consumer_app.route('/ai_command', methods=['POST'])
+def ai_command():
+    """Process AI commands for smart form filling"""
+    command = request.form.get('command', '').lower()
+    response = {'status': 'success', 'suggestions': {}}
+    
+    # AI command patterns (stub implementation)
+    if 'grandma' in command and 'orlando' in command and 'nyc' in command:
+        response['suggestions'] = {
+            'origin': 'Orlando International Airport (MCO)',
+            'destination': 'LaGuardia Airport (LGA)',
+            'transport_type': 'non-critical',
+            'equipment': ['oxygen', 'escort'],
+            'message': 'I suggest comfortable transport with oxygen support and medical escort for elderly patient.'
+        }
+    elif 'emergency' in command or 'urgent' in command:
+        response['suggestions'] = {
+            'transport_type': 'critical',
+            'same_day': True,
+            'message': 'Emergency transport recommended with same-day priority.'
+        }
+    elif 'family' in command:
+        response['suggestions'] = {
+            'equipment': ['escort'],
+            'message': 'Family accommodation options available.'
+        }
+    else:
+        response = {
+            'status': 'info',
+            'message': 'Try commands like: "Help me build a flight for grandma from Orlando to NYC" or "Emergency transport needed"'
+        }
+    
+    return jsonify(response)
+
+# Partner Dashboard (for providers)
 @consumer_app.route('/partner_dashboard')
 def partner_dashboard():
     """Partner dashboard with bookings and revenue"""
@@ -501,138 +476,24 @@ def partner_dashboard():
         flash('Provider access required.', 'error')
         return redirect(url_for('login'))
     
-    # Sample partner bookings
-    bookings = [
-        {
-            'id': 'MF-001',
-            'date': '2025-08-01',
-            'route': 'Orlando → NYC',
-            'revenue': 6000,
-            'priority': True,
-            'status': 'Completed'
-        },
-        {
-            'id': 'MF-002',
-            'date': '2025-08-02', 
-            'route': 'Miami → Boston',
-            'revenue': 5500,
-            'priority': False,
-            'status': 'In Progress'
-        }
+    # Mock partner data
+    partner_bookings = [
+        {'date': '2025-08-01', 'origin': 'Orlando', 'destination': 'NYC', 'revenue': 128000, 'status': 'completed'},
+        {'date': '2025-08-03', 'origin': 'Miami', 'destination': 'Atlanta', 'revenue': 135000, 'status': 'active'},
+        {'date': '2025-08-04', 'origin': 'Tampa', 'destination': 'Boston', 'revenue': 142000, 'status': 'pending'}
     ]
     
-    return render_template('partner_dashboard.html', bookings=bookings)
-
-@consumer_app.route('/mvp_incentive')
-def mvp_incentive():
-    """MVP/Hospital membership perks"""
-    return render_template('mvp_hospital_incentive.html')
-
-@consumer_app.route('/mou')
-def mou():
-    """MOU document display"""
-    return render_template('mou.html')
-
-@consumer_app.route('/ai_chat', methods=['POST'])
-def ai_chat():
-    """AI command processing stub"""
-    data = request.get_json() or {}
-    command = data.get('command', '').lower()
+    total_revenue = sum(booking['revenue'] for booking in partner_bookings)
+    partner_stats = {
+        'total_bookings': len(partner_bookings),
+        'total_revenue': total_revenue,
+        'success_rate': '98.5%',
+        'priority_status': True
+    }
     
-    # Simple command parsing (NLTK stub)
-    if 'orlando' in command and 'nyc' in command:
-        response = {
-            'action': 'fill_form',
-            'data': {
-                'origin': 'Orlando, FL',
-                'destination': 'New York, NY',
-                'suggestion': 'I have filled in Orlando to NYC for you. What severity level is this transport?'
-            }
-        }
-    elif 'grandma' in command or 'grandmother' in command:
-        response = {
-            'action': 'suggest_options',
-            'data': {
-                'family_seat': True,
-                'vip_cabin': True,
-                'suggestion': 'For elderly patients, I recommend adding a family seat and considering VIP cabin for comfort.'
-            }
-        }
-    else:
-        response = {
-            'action': 'clarify',
-            'data': {
-                'suggestion': 'I can help you plan a transport. Try saying "help me build a flight from Orlando to NYC" or "what options are good for my grandmother?"'
-            }
-        }
-    
-    return jsonify(response)
-
-# Login routes
-@consumer_app.route('/login', methods=['GET', 'POST'])
-def login():
-    """Fixed login with proper authentication"""
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        password = request.form.get('password', '').strip()
-        
-        # Debug logging
-        print(f"Login attempt: username='{username}', password='{password}'")
-        print(f"Available users: {list(DEMO_USERS.keys())}")
-        
-        user_data = authenticate_user(username, password)
-        if user_data:
-            session['logged_in'] = True
-            session['user_role'] = user_data['role']
-            session['user_name'] = user_data['name']
-            session['username'] = username
-            
-            print(f"Login successful for {username} as {user_data['role']}")
-            flash(f'Welcome, {user_data["name"]}!', 'success')
-            
-            # Role-based redirection
-            if user_data['role'] == 'admin':
-                return redirect(url_for('admin_dashboard'))
-            elif user_data['role'] == 'provider':
-                return redirect(url_for('partner_dashboard'))
-            elif user_data['role'] == 'hospital':
-                return redirect(url_for('hospital_dashboard'))
-            elif user_data['role'] == 'mvp':
-                return redirect(url_for('mvp_dashboard'))
-            else:  # family
-                return redirect(url_for('family_dashboard'))
-        else:
-            print(f"Login failed for {username}")
-            flash('Invalid username or password. Try: family, hospital, provider, mvp, or admin (password: demo123)', 'error')
-    
-    return render_template('login_simple.html')
-
-@consumer_app.route('/logout')
-def logout():
-    """Logout"""
-    session.clear()
-    flash('You have been logged out.', 'info')
-    return redirect(url_for('consumer_index'))
-
-# Dashboard routes
-@consumer_app.route('/family_dashboard')
-def family_dashboard():
-    """Family dashboard"""
-    if not session.get('logged_in') or session.get('user_role') != 'family':
-        flash('Family access required.', 'error')
-        return redirect(url_for('login'))
-    
-    return render_template('family_dashboard.html', user_name=session.get('user_name'))
-
-@consumer_app.route('/admin_dashboard')
-def admin_dashboard():
-    """Admin dashboard with revenue metrics"""
-    if not session.get('logged_in') or session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('login'))
-    
-    metrics = calculate_revenue_metrics()
-    return render_template('consumer_admin_dashboard.html', **metrics)
+    return render_template('partner_dashboard.html', 
+                         bookings=partner_bookings, 
+                         stats=partner_stats)
 
 if __name__ == '__main__':
-    consumer_app.run(host='0.0.0.0', port=5001, debug=True)
+    consumer_app.run(host='0.0.0.0', port=5000, debug=True)
