@@ -1,864 +1,519 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Medical Transport Request - Tell Us About Your Loved One{% endblock %}
+{% block title %}Book Transport - MediFly Consumer{% endblock %}
 
 {% block head %}
 <style>
-.intake-header {
-    background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink));
-    padding: 3rem 0;
-    text-align: center;
-    color: var(--text-dark);
-}
-
-.step-container {
-    max-width: 800px;
-    margin: 2rem auto;
+.intake-form {
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-.progress-bar-container {
-    background: #f8f9fa;
-    padding: 1rem 2rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.form-step {
-    display: none;
     padding: 2rem;
-    min-height: 400px;
-}
-
-.form-step.active {
-    display: block;
-}
-
-.form-step h3 {
-    color: var(--primary-blue);
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.form-step h3 i {
-    margin-right: 1rem;
-    color: var(--accent-pink);
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-label {
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-}
-
-.form-label .help-icon {
-    margin-left: 0.5rem;
-    color: #007bff;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.form-control {
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.severity-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.severity-option {
-    border: 2px solid #e9ecef;
     border-radius: 15px;
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
 }
 
-.severity-option:hover {
-    border-color: #007bff;
-    background: rgba(0, 123, 255, 0.05);
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
 }
 
-.severity-option.selected {
-    border-color: #007bff;
-    background: rgba(0, 123, 255, 0.1);
-}
-
-.severity-option .severity-number {
-    font-size: 2rem;
+.step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 1rem;
     font-weight: bold;
-    color: #007bff;
+    transition: all 0.3s ease;
 }
 
-.severity-option .severity-title {
-    font-weight: 600;
-    margin: 0.5rem 0;
+.step.active {
+    background: #007bff;
+    color: white;
 }
 
-.severity-option .severity-description {
-    font-size: 0.9rem;
-    color: #6c757d;
+.step.completed {
+    background: #28a745;
+    color: white;
 }
 
 .equipment-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
-    margin-top: 1rem;
+    margin: 1rem 0;
 }
 
 .equipment-option {
     border: 2px solid #e9ecef;
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 1rem;
     text-align: center;
-    cursor: pointer;
     transition: all 0.3s ease;
-    background: white;
+    cursor: pointer;
 }
 
 .equipment-option:hover {
     border-color: #007bff;
-    background: rgba(0, 123, 255, 0.05);
+    background: #f8f9ff;
 }
 
 .equipment-option.selected {
     border-color: #007bff;
-    background: rgba(0, 123, 255, 0.1);
+    background: #e7f3ff;
 }
 
-.equipment-option i {
-    font-size: 2rem;
-    color: #007bff;
-    margin-bottom: 0.5rem;
-}
-
-.ai-estimate-card {
-    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+.price-tag {
+    background: #28a745;
+    color: white;
+    padding: 0.25rem 0.5rem;
     border-radius: 15px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    display: none;
+    font-size: 0.9rem;
+    font-weight: bold;
 }
 
-.ai-estimate-card.show {
-    display: block;
-    animation: fadeInUp 0.5s ease;
-}
-
-.step-navigation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    background: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-}
-
-.btn-nav {
-    padding: 0.75rem 2rem;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn-nav:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.education-popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    padding: 2rem;
-    max-width: 500px;
-    width: 90%;
-    z-index: 1050;
-    display: none;
-}
-
-.education-popup.show {
-    display: block;
-    animation: fadeInScale 0.3s ease;
-}
-
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1040;
-    display: none;
-}
-
-.popup-overlay.show {
-    display: block;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-}
-
-.alert-info {
-    background: rgba(230, 243, 255, 0.8);
-    border: 1px solid #bee5eb;
-    color: #0c5460;
-    border-radius: 10px;
+.same-day-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
     padding: 1rem;
     margin: 1rem 0;
 }
 
-@media (max-width: 768px) {
-    .severity-grid, .equipment-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .step-navigation {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .step-container {
-        margin: 1rem;
-    }
+.address-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.address-suggestion {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.address-suggestion:hover {
+    background: #f8f9fa;
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="intake-header">
-    <div class="container">
-        <h1 class="mb-3">
-            <i class="fas fa-clipboard-list me-3"></i>
-            Tell Us About Your Loved One
-        </h1>
-        <p class="lead">We'll guide you through a few gentle questions to find the best transport options</p>
-        <div class="alert alert-info d-inline-block">
-            <i class="fas fa-shield-alt me-2"></i>
-            Information used only for matching providers. No permanent storage.
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="step-container">
-        <!-- Progress Bar -->
-        <div class="progress-bar-container">
-            <div class="progress" style="height: 10px;">
-                <div class="progress-bar bg-primary" id="progress-bar" role="progressbar" style="width: 20%"></div>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">1</div>
+                <div class="step" id="step2">2</div>
+                <div class="step" id="step3">3</div>
+                <div class="step" id="step4">4</div>
+                <div class="step" id="step5">5</div>
             </div>
-            <div class="d-flex justify-content-between mt-2">
-                <small class="text-muted">Step <span id="current-step">1</span> of 5</small>
-                <small class="text-muted">Getting AI estimate...</small>
-            </div>
-        </div>
-
-        <form id="intake-form" action="{{ url_for('results') }}" method="POST">
-            <!-- Step 1: Location Information -->
-            <div class="form-step active" data-step="1">
-                <h3>
-                    <i class="fas fa-map-marker-alt"></i>
-                    Where is your family member now?
-                </h3>
-                <div class="form-group">
-                    <label for="pickup_location" class="form-label">
-                        Current Location
-                        <i class="fas fa-info-circle help-icon" onclick="showEducationPopup('location')"></i>
-                    </label>
-                    <input type="text" 
-                           class="form-control" 
-                           id="pickup_location" 
-                           name="pickup_location" 
-                           placeholder="e.g., Orlando Regional Medical Center, Orlando FL"
-                           aria-label="Current location of patient"
-                           required>
-                    <div class="form-text">Include hospital name and city for accurate routing</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="destination" class="form-label">
-                        Where do they need to go?
-                        <i class="fas fa-info-circle help-icon" onclick="showEducationPopup('destination')"></i>
-                    </label>
-                    <input type="text" 
-                           class="form-control" 
-                           id="destination" 
-                           name="destination" 
-                           placeholder="e.g., UCLA Medical Center, Los Angeles CA"
-                           aria-label="Destination hospital or facility"
-                           required>
-                    <div class="form-text">Destination hospital or medical facility</div>
-                </div>
-            </div>
-
-            <!-- Step 2: Medical Condition -->
-            <div class="form-step" data-step="2">
-                <h3>
-                    <i class="fas fa-heartbeat"></i>
-                    How serious is their condition?
-                </h3>
-                <p class="text-muted mb-3">This helps us recommend appropriate medical support and equipment</p>
-                
-                <div class="severity-grid">
-                    <div class="severity-option" data-severity="1">
-                        <div class="severity-number">1</div>
-                        <div class="severity-title">Stable</div>
-                        <div class="severity-description">Minor conditions, routine transport</div>
-                    </div>
-                    <div class="severity-option" data-severity="2">
-                        <div class="severity-number">2</div>
-                        <div class="severity-title">Monitoring</div>
-                        <div class="severity-description">Needs medical observation</div>
-                    </div>
-                    <div class="severity-option" data-severity="3">
-                        <div class="severity-number">3</div>
-                        <div class="severity-title">Moderate</div>
-                        <div class="severity-description">Requires medical attention</div>
-                    </div>
-                    <div class="severity-option" data-severity="4">
-                        <div class="severity-number">4</div>
-                        <div class="severity-title">Serious</div>
-                        <div class="severity-description">ICU-level care needed</div>
-                    </div>
-                    <div class="severity-option" data-severity="5">
-                        <div class="severity-number">5</div>
-                        <div class="severity-title">Critical</div>
-                        <div class="severity-description">Life support required</div>
-                    </div>
-                </div>
-                
-                <input type="hidden" id="severity" name="severity" required>
-                
-                <div class="alert alert-info mt-3" id="severity-recommendations" style="display: none;">
-                    <strong>Recommended equipment based on condition severity:</strong>
-                    <ul id="severity-equipment-list" class="mb-0 mt-2"></ul>
-                </div>
-            </div>
-
-            <!-- Step 3: Medical Equipment -->
-            <div class="form-step" data-step="3">
-                <h3>
-                    <i class="fas fa-medical-kit"></i>
-                    What medical support do they need?
-                </h3>
-                <p class="text-muted mb-3">Select all equipment and support your loved one requires during transport</p>
-                
-                <div class="equipment-grid">
-                    <div class="equipment-option" data-equipment="ventilator">
-                        <i class="fas fa-lungs"></i>
-                        <div class="fw-bold">Ventilator</div>
-                        <small class="text-muted">Breathing assistance</small>
-                    </div>
-                    <div class="equipment-option" data-equipment="ecmo">
-                        <i class="fas fa-heart"></i>
-                        <div class="fw-bold">ECMO</div>
-                        <small class="text-muted">Heart/lung support</small>
-                    </div>
-                    <div class="equipment-option" data-equipment="incubator">
-                        <i class="fas fa-baby"></i>
-                        <div class="fw-bold">Incubator</div>
-                        <small class="text-muted">Neonatal care</small>
-                    </div>
-                    <div class="equipment-option" data-equipment="oxygen">
-                        <i class="fas fa-wind"></i>
-                        <div class="fw-bold">Oxygen</div>
-                        <small class="text-muted">Supplemental oxygen</small>
-                    </div>
-                    <div class="equipment-option" data-equipment="escort">
-                        <i class="fas fa-user-nurse"></i>
-                        <div class="fw-bold">Medical Escort</div>
-                        <small class="text-muted">Dedicated nurse</small>
-                    </div>
-                    <div class="equipment-option" data-equipment="other">
-                        <i class="fas fa-plus"></i>
-                        <div class="fw-bold">Other</div>
-                        <small class="text-muted">Specialized equipment</small>
-                    </div>
-                </div>
-                
-                <input type="hidden" id="equipment" name="equipment">
-            </div>
-
-            <!-- Step 4: Travel Date -->
-            <div class="form-step" data-step="4">
-                <h3>
-                    <i class="fas fa-calendar-alt"></i>
-                    When are they ready to travel?
-                </h3>
-                <div class="form-group">
-                    <label for="travel_date" class="form-label">
-                        Preferred Travel Date
-                        <i class="fas fa-info-circle help-icon" onclick="showEducationPopup('timing')"></i>
-                    </label>
-                    <input type="date" 
-                           class="form-control" 
-                           id="travel_date" 
-                           name="travel_date" 
-                           aria-label="Preferred travel date"
-                           required>
-                    <div class="form-text">Medical team will coordinate with doctors for optimal timing</div>
-                </div>
-
-                <div class="alert alert-info">
-                    <i class="fas fa-clock me-2"></i>
-                    <strong>Emergency transports:</strong> Available 24/7 for critical situations
-                </div>
-            </div>
-
-            <!-- Step 5: AI Estimate & Review -->
-            <div class="form-step" data-step="5">
-                <h3>
-                    <i class="fas fa-robot"></i>
-                    Review & Get AI Estimate
-                </h3>
-                
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h5>Transport Summary</h5>
-                        <div id="summary-content">
-                            <!-- Will be populated by JavaScript -->
+            
+            <div class="intake-form">
+                <form id="intakeForm" action="{{ url_for('consumer_intake') }}" method="post">
+                    <!-- Step 1: Transport Type -->
+                    <div class="form-step" id="formStep1">
+                        <h3 class="mb-4">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Transport Type Selection
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card transport-type-card" data-type="critical">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i>
+                                        <h5>Critical</h5>
+                                        <p><small>Urgent medical emergency</small></p>
+                                        <input type="radio" name="transport_type" value="critical" 
+                                               {% if request.args.get('type') == 'critical' %}checked{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card transport-type-card" data-type="non-critical">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-heart text-primary fa-2x mb-2"></i>
+                                        <h5>Non-Critical</h5>
+                                        <p><small>Planned transport</small></p>
+                                        <input type="radio" name="transport_type" value="non-critical" 
+                                               {% if request.args.get('type') == 'non-critical' or not request.args.get('type') %}checked{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card transport-type-card" data-type="mvp">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-star text-warning fa-2x mb-2"></i>
+                                        <h5>MVP Member</h5>
+                                        <p><small>Priority service</small></p>
+                                        <input type="radio" name="transport_type" value="mvp">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- MVP Membership Prompt -->
+                        <div class="alert alert-warning mt-3" id="mvpPrompt" style="display: none;">
+                            <h5><i class="fas fa-crown me-2"></i>MVP Membership Benefits</h5>
+                            <p>Join our MVP program for $49/month and get:</p>
+                            <ul>
+                                <li>10% discount on all bookings</li>
+                                <li>Priority booking queue ahead of others</li>
+                                <li>Early access to beta features</li>
+                                <li>Dedicated family advocate</li>
+                            </ul>
+                            <a href="{{ url_for('mvp_incentive') }}" class="btn btn-warning">Learn More About MVP</a>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="ai-estimate-card" id="ai-estimate">
-                            <h5>
-                                <i class="fas fa-brain me-2"></i>
-                                AI Cost Estimate
-                            </h5>
-                            <div id="estimate-content">
-                                <!-- Will be populated by JavaScript -->
+                    
+                    <!-- Step 2: Address Validation -->
+                    <div class="form-step" id="formStep2" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Transport Locations
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="origin" class="form-label">From (Origin)</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control address-input" id="origin" name="origin" 
+                                           placeholder="Enter hospital, airport, or address"
+                                           value="{% if request.args.get('prefill') == 'orlando-nyc' %}Orlando International Airport{% endif %}"
+                                           required>
+                                    <div class="address-suggestions" id="originSuggestions"></div>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    We support hospitals, airports, and international locations
+                                </small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="destination" class="form-label">To (Destination)</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control address-input" id="destination" name="destination" 
+                                           placeholder="Enter hospital, airport, or address"
+                                           value="{% if request.args.get('prefill') == 'orlando-nyc' %}LaGuardia Airport, NYC{% endif %}"
+                                           required>
+                                    <div class="address-suggestions" id="destinationSuggestions"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="patient_name" class="form-label">Patient Name</label>
+                            <input type="text" class="form-control" id="patient_name" name="patient_name" 
+                                   placeholder="First and last name" required>
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                All patient information is handled securely per HIPAA guidelines
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Severity Level -->
+                    <div class="form-step" id="formStep3" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-thermometer-half me-2"></i>
+                            Medical Severity Level
+                        </h3>
+                        
+                        <div class="severity-grid">
+                            <div class="row">
+                                {% for severity in range(1, 6) %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card severity-card" data-severity="{{ severity }}">
+                                        <div class="card-body text-center">
+                                            <div class="severity-indicator severity-{{ severity }} mb-2"></div>
+                                            <h6>Severity {{ severity }}</h6>
+                                            <p class="small">
+                                                {% if severity == 1 %}Minor injuries like fractures
+                                                {% elif severity == 2 %}Stable but needs monitoring
+                                                {% elif severity == 3 %}Serious conditions requiring attention
+                                                {% elif severity == 4 %}Critical requiring ICU support
+                                                {% elif severity == 5 %}Life support/critical care needed
+                                                {% endif %}
+                                            </p>
+                                            <input type="radio" name="severity" value="{{ severity }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    This AI estimate helps you compare actual provider quotes. Final pricing may vary based on specific provider capabilities and availability.
-                </div>
+                    
+                    <!-- Step 4: Equipment Selection -->
+                    <div class="form-step" id="formStep4" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-tools me-2"></i>
+                            Medical Equipment Needed
+                        </h3>
+                        
+                        <div class="equipment-grid">
+                            <div class="equipment-option" data-equipment="ventilator">
+                                <i class="fas fa-lungs fa-2x mb-2 text-danger"></i>
+                                <h6>Ventilator</h6>
+                                <div class="price-tag">+$5,000</div>
+                                <input type="checkbox" name="equipment" value="ventilator" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="ecmo">
+                                <i class="fas fa-heart-pulse fa-2x mb-2 text-warning"></i>
+                                <h6>ECMO Machine</h6>
+                                <div class="price-tag">+$10,000</div>
+                                <input type="checkbox" name="equipment" value="ecmo" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="incubator">
+                                <i class="fas fa-baby fa-2x mb-2 text-info"></i>
+                                <h6>Incubator</h6>
+                                <div class="price-tag">+$3,000</div>
+                                <input type="checkbox" name="equipment" value="incubator" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="escort">
+                                <i class="fas fa-user-md fa-2x mb-2 text-success"></i>
+                                <h6>Medical Escort</h6>
+                                <div class="price-tag">+$2,000</div>
+                                <input type="checkbox" name="equipment" value="escort" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="oxygen">
+                                <i class="fas fa-wind fa-2x mb-2 text-primary"></i>
+                                <h6>Oxygen Support</h6>
+                                <div class="price-tag">+$1,000</div>
+                                <input type="checkbox" name="equipment" value="oxygen" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="other">
+                                <i class="fas fa-plus fa-2x mb-2 text-secondary"></i>
+                                <h6>Other Equipment</h6>
+                                <div class="price-tag">Custom Quote</div>
+                                <input type="checkbox" name="equipment" value="other" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3" id="otherEquipmentField" style="display: none;">
+                            <label for="other_equipment" class="form-label">Specify Other Equipment Needed</label>
+                            <textarea class="form-control" id="other_equipment" name="other_equipment" 
+                                      placeholder="Describe any specialized medical equipment or support needed"></textarea>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> If the provider deems additional life-saving equipment necessary, 
+                            you'll be notified and given the option to approve before the flight.
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5: Date/Time -->
+                    <div class="form-step" id="formStep5" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Schedule Transport
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="transport_date" class="form-label">Preferred Date</label>
+                                <input type="date" class="form-control" id="transport_date" name="transport_date" 
+                                       min="{{ datetime.now().strftime('%Y-%m-%d') }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="transport_time" class="form-label">Preferred Time</label>
+                                <input type="time" class="form-control" id="transport_time" name="transport_time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="same_day" name="same_day">
+                            <label class="form-check-label" for="same_day">
+                                <strong>Same-day transport needed</strong>
+                                <span class="badge bg-warning ms-2">+20% urgency fee</span>
+                            </label>
+                        </div>
+                        
+                        <div class="same-day-warning" id="sameDayWarning" style="display: none;">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            <strong>Same-day Transport Notice:</strong> Same-day requests are reasonable but subject to 
+                            availability and weather conditions. The provider will confirm feasibility and any risks before proceeding.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="additional_notes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="additional_notes" name="additional_notes" 
+                                      placeholder="Any special requirements, medical conditions, or family considerations"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                            <i class="fas fa-arrow-left me-2"></i>Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                            Next<i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                        <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                            <i class="fas fa-search me-2"></i>Find Providers
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
-
-        <!-- Navigation -->
-        <div class="step-navigation">
-            <button type="button" class="btn btn-outline-secondary btn-nav" id="prev-btn" onclick="previousStep()" disabled>
-                <i class="fas fa-arrow-left me-2"></i>Previous
-            </button>
-            <div class="step-indicator">
-                <span class="badge bg-primary" id="step-badge">Step 1 of 5</span>
-            </div>
-            <button type="button" class="btn btn-primary btn-nav" id="next-btn" onclick="nextStep()">
-                Next<i class="fas fa-arrow-right ms-2"></i>
-            </button>
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- Education Popups -->
-<div class="popup-overlay" id="popup-overlay" onclick="hideEducationPopup()"></div>
-<div class="education-popup" id="education-popup">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 id="popup-title">Information</h5>
-        <button type="button" class="btn-close" onclick="hideEducationPopup()"></button>
-    </div>
-    <div id="popup-content"></div>
-</div>
-
+{% block scripts %}
 <script>
 let currentStep = 1;
-let selectedSeverity = null;
-let selectedEquipment = [];
+const totalSteps = 5;
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Enhanced intake form initialized');
-    
-    // Set minimum date to today
-    document.getElementById('travel_date').min = new Date().toISOString().split('T')[0];
-    
-    // Initialize form validation
-    setupFormValidation();
-    
-    // Initialize equipment and severity selection
-    setupSeveritySelection();
-    setupEquipmentSelection();
-});
+// Address suggestions (Google Places API stub)
+const addressSuggestions = {
+    'orlando': ['Orlando International Airport', 'Orlando Regional Medical Center', 'AdventHealth Orlando'],
+    'nyc': ['LaGuardia Airport, NYC', 'JFK Airport, NYC', 'Mount Sinai Hospital, NYC'],
+    'miami': ['Miami International Airport', 'Jackson Memorial Hospital', 'Baptist Hospital Miami'],
+    'hospital': ['Orlando Regional Medical Center', 'Tampa General Hospital', 'Baptist Health Jacksonville']
+};
 
-function setupFormValidation() {
-    const form = document.getElementById('intake-form');
-    const inputs = form.querySelectorAll('input[required]');
-    
-    inputs.forEach(input => {
-        input.addEventListener('blur', validateField);
-        input.addEventListener('input', validateField);
-    });
-}
-
-function validateField(event) {
-    const field = event.target;
-    const value = field.value.trim();
-    
-    if (field.hasAttribute('required') && !value) {
-        field.classList.add('is-invalid');
-        return false;
-    } else {
-        field.classList.remove('is-invalid');
-        field.classList.add('is-valid');
-        return true;
-    }
-}
-
-function setupSeveritySelection() {
-    const severityOptions = document.querySelectorAll('.severity-option');
-    const severityInput = document.getElementById('severity');
-    
-    severityOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            // Remove previous selection
-            severityOptions.forEach(opt => opt.classList.remove('selected'));
-            
-            // Add selection to clicked option
-            this.classList.add('selected');
-            selectedSeverity = parseInt(this.dataset.severity);
-            severityInput.value = selectedSeverity;
-            
-            // Show equipment recommendations
-            showSeverityRecommendations(selectedSeverity);
-            
-            // Enable next button
-            document.getElementById('next-btn').disabled = false;
-        });
-    });
-}
-
-function showSeverityRecommendations(severity) {
-    const recommendations = document.getElementById('severity-recommendations');
-    const equipmentList = document.getElementById('severity-equipment-list');
-    
-    const equipmentBySevertiy = {
-        1: ['Basic monitoring', 'Medical escort if needed'],
-        2: ['Oxygen support', 'Basic monitoring equipment'],
-        3: ['Oxygen support', 'Cardiac monitoring', 'Medical escort'],
-        4: ['Ventilator support', 'ICU monitoring', 'Medical escort'],
-        5: ['Ventilator', 'ECMO if applicable', 'Full ICU equipment', 'Medical escort']
-    };
-    
-    const recommended = equipmentBySevertiy[severity] || [];
-    equipmentList.innerHTML = recommended.map(item => `<li>${item}</li>`).join('');
-    recommendations.style.display = 'block';
-}
-
-function setupEquipmentSelection() {
-    const equipmentOptions = document.querySelectorAll('.equipment-option');
-    const equipmentInput = document.getElementById('equipment');
-    
-    equipmentOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            const equipment = this.dataset.equipment;
-            
-            if (this.classList.contains('selected')) {
-                // Deselect
-                this.classList.remove('selected');
-                selectedEquipment = selectedEquipment.filter(item => item !== equipment);
-            } else {
-                // Select
-                this.classList.add('selected');
-                selectedEquipment.push(equipment);
-            }
-            
-            // Update hidden input (convert array to comma-separated string)
-            equipmentInput.value = selectedEquipment.join(',');
-        });
-    });
-}
-
-function nextStep() {
-    if (!validateCurrentStep()) {
-        return;
-    }
-    
-    if (currentStep < 5) {
-        currentStep++;
-        showStep(currentStep);
-        
-        if (currentStep === 5) {
-            generateSummaryAndEstimate();
+function changeStep(direction) {
+    if (direction === 1 && currentStep < totalSteps) {
+        if (validateCurrentStep()) {
+            hideStep(currentStep);
+            currentStep++;
+            showStep(currentStep);
         }
-    } else {
-        // Submit form
-        document.getElementById('intake-form').submit();
-    }
-}
-
-function previousStep() {
-    if (currentStep > 1) {
+    } else if (direction === -1 && currentStep > 1) {
+        hideStep(currentStep);
         currentStep--;
         showStep(currentStep);
     }
-}
-
-function showStep(step) {
-    // Hide all steps
-    document.querySelectorAll('.form-step').forEach(stepElement => {
-        stepElement.classList.remove('active');
-    });
     
-    // Show current step
-    document.querySelector(`[data-step="${step}"]`).classList.add('active');
-    
-    // Update progress bar
-    const progress = (step / 5) * 100;
-    document.getElementById('progress-bar').style.width = progress + '%';
-    document.getElementById('current-step').textContent = step;
-    document.getElementById('step-badge').textContent = `Step ${step} of 5`;
-    
-    // Update navigation buttons
-    document.getElementById('prev-btn').disabled = step === 1;
-    const nextBtn = document.getElementById('next-btn');
-    
-    if (step === 5) {
-        nextBtn.innerHTML = 'Get Provider Quotes<i class="fas fa-search ms-2"></i>';
-    } else {
-        nextBtn.innerHTML = 'Next<i class="fas fa-arrow-right ms-2"></i>';
-    }
+    updateNavigation();
+    updateStepIndicator();
 }
 
 function validateCurrentStep() {
-    const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
-    const requiredFields = currentStepElement.querySelectorAll('input[required]');
-    let isValid = true;
+    const currentStepElement = document.getElementById(`formStep${currentStep}`);
+    const requiredFields = currentStepElement.querySelectorAll('[required]');
     
-    requiredFields.forEach(field => {
-        if (field.type === 'hidden') {
-            if (!field.value) {
-                isValid = false;
-                
-                // Show specific validation messages
-                if (field.id === 'severity') {
-                    alert('Please select a severity level for your loved one\'s condition.');
-                }
-            }
-        } else {
-            if (!validateField({target: field})) {
-                isValid = false;
-            }
+    for (let field of requiredFields) {
+        if (!field.value.trim()) {
+            field.focus();
+            alert('Please complete all required fields before proceeding.');
+            return false;
         }
+    }
+    return true;
+}
+
+function hideStep(step) {
+    document.getElementById(`formStep${step}`).style.display = 'none';
+}
+
+function showStep(step) {
+    document.getElementById(`formStep${step}`).style.display = 'block';
+}
+
+function updateNavigation() {
+    document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-block';
+    document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-block';
+    document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+}
+
+function updateStepIndicator() {
+    for (let i = 1; i <= totalSteps; i++) {
+        const stepElement = document.getElementById(`step${i}`);
+        stepElement.classList.remove('active', 'completed');
+        
+        if (i < currentStep) {
+            stepElement.classList.add('completed');
+        } else if (i === currentStep) {
+            stepElement.classList.add('active');
+        }
+    }
+}
+
+// Equipment selection
+document.addEventListener('DOMContentLoaded', function() {
+    // Equipment options
+    document.querySelectorAll('.equipment-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            this.classList.toggle('selected', checkbox.checked);
+            
+            // Show other equipment field
+            if (this.dataset.equipment === 'other' && checkbox.checked) {
+                document.getElementById('otherEquipmentField').style.display = 'block';
+            } else if (this.dataset.equipment === 'other') {
+                document.getElementById('otherEquipmentField').style.display = 'none';
+            }
+        });
     });
     
-    return isValid;
-}
-
-function generateSummaryAndEstimate() {
-    const pickup = document.getElementById('pickup_location').value;
-    const destination = document.getElementById('destination').value;
-    const severity = selectedSeverity;
-    const equipment = selectedEquipment;
-    const travelDate = document.getElementById('travel_date').value;
-    
-    // Generate summary
-    const summaryContent = document.getElementById('summary-content');
-    summaryContent.innerHTML = `
-        <div class="mb-3">
-            <strong><i class="fas fa-map-marker-alt me-2"></i>Route:</strong><br>
-            ${pickup} → ${destination}
-        </div>
-        <div class="mb-3">
-            <strong><i class="fas fa-heartbeat me-2"></i>Condition Severity:</strong><br>
-            Level ${severity} (${getSeverityDescription(severity)})
-        </div>
-        <div class="mb-3">
-            <strong><i class="fas fa-medical-kit me-2"></i>Equipment Needed:</strong><br>
-            ${equipment.length ? equipment.join(', ') : 'Basic monitoring'}
-        </div>
-        <div class="mb-3">
-            <strong><i class="fas fa-calendar-alt me-2"></i>Travel Date:</strong><br>
-            ${new Date(travelDate).toLocaleDateString()}
-        </div>
-    `;
-    
-    // Generate AI estimate (simplified calculation)
-    generateAIEstimate(pickup, destination, severity, equipment);
-}
-
-function generateAIEstimate(pickup, destination, severity, equipment) {
-    // Simplified AI calculation (would use actual API in production)
-    const baseost = 50000;
-    const distanceMultiplier = 100; // Simplified distance calculation
-    const severityMultiplier = severity * 10000;
-    const equipmentCost = equipment.length * 5000;
-    
-    // Mock distance calculation
-    const distance = Math.floor(Math.random() * 2000) + 500; // 500-2500 miles
-    const distanceCost = distance * distanceMultiplier;
-    
-    const total = baseost + distanceCost + severityMultiplier + equipmentCost;
-    const greenDiscount = total * 0.05; // 5% green discount
-    
-    const estimateContent = document.getElementById('estimate-content');
-    estimateContent.innerHTML = `
-        <div class="row text-center mb-3">
-            <div class="col">
-                <div class="h3 text-primary mb-0">$${total.toLocaleString()}</div>
-                <small class="text-muted">Estimated Total Cost</small>
-            </div>
-        </div>
-        <div class="row text-sm">
-            <div class="col-6">Base Cost:</div>
-            <div class="col-6 text-end">$${baseost.toLocaleString()}</div>
-            <div class="col-6">Distance (${distance} mi):</div>
-            <div class="col-6 text-end">$${distanceCost.toLocaleString()}</div>
-            <div class="col-6">Severity Level:</div>
-            <div class="col-6 text-end">$${severityMultiplier.toLocaleString()}</div>
-            <div class="col-6">Equipment:</div>
-            <div class="col-6 text-end">$${equipmentCost.toLocaleString()}</div>
-            <div class="col-6 text-success">Green Discount:</div>
-            <div class="col-6 text-end text-success">-$${greenDiscount.toLocaleString()}</div>
-        </div>
-        <div class="mt-3 text-muted small">
-            <i class="fas fa-info-circle me-2"></i>
-            Final pricing varies by provider. This estimate helps you compare quotes.
-        </div>
-    `;
-    
-    document.getElementById('ai-estimate').classList.add('show');
-}
-
-function getSeverityDescription(severity) {
-    const descriptions = {
-        1: 'Stable condition',
-        2: 'Needs monitoring',
-        3: 'Moderate condition',
-        4: 'Serious condition',
-        5: 'Critical condition'
-    };
-    return descriptions[severity] || 'Unknown';
-}
-
-function showEducationPopup(topic) {
-    const popup = document.getElementById('education-popup');
-    const overlay = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const content = document.getElementById('popup-content');
-    
-    const educationContent = {
-        location: {
-            title: 'Current Location Information',
-            content: `
-                <p>Please provide the exact hospital or medical facility where your loved one is currently located.</p>
-                <ul>
-                    <li>Include the full facility name</li>
-                    <li>Add the city and state</li>
-                    <li>This helps us coordinate with medical staff</li>
-                    <li>Ensures accurate flight planning and timing</li>
-                </ul>
-                <p><strong>Example:</strong> "Mayo Clinic, Rochester MN" or "Orlando Regional Medical Center, Orlando FL"</p>
-            `
-        },
-        destination: {
-            title: 'Destination Information',
-            content: `
-                <p>Where does your loved one need to be transported for their care?</p>
-                <ul>
-                    <li>Receiving hospital or medical facility</li>
-                    <li>Include city and state for routing</li>
-                    <li>Our team will coordinate arrival logistics</li>
-                    <li>Ground ambulance arrangements included</li>
-                </ul>
-                <p><strong>Note:</strong> We handle all coordination with the receiving facility.</p>
-            `
-        },
-        timing: {
-            title: 'Travel Timing Considerations',
-            content: `
-                <p>When selecting a travel date, consider:</p>
-                <ul>
-                    <li>Doctor approval for medical clearance</li>
-                    <li>Current stability of patient condition</li>
-                    <li>Receiving facility availability</li>
-                    <li>Weather conditions for safe travel</li>
-                </ul>
-                <p><strong>Emergency transports:</strong> Available 24/7 when medically necessary.</p>
-                <p><strong>Planned transports:</strong> Allow time for proper coordination.</p>
-            `
-        }
-    };
-    
-    const topicData = educationContent[topic];
-    if (topicData) {
-        title.textContent = topicData.title;
-        content.innerHTML = topicData.content;
-        
-        popup.classList.add('show');
-        overlay.classList.add('show');
-    }
-}
-
-function hideEducationPopup() {
-    document.getElementById('education-popup').classList.remove('show');
-    document.getElementById('popup-overlay').classList.remove('show');
-}
-
-// Handle equipment input as array for form submission
-document.getElementById('intake-form').addEventListener('submit', function() {
-    // Convert equipment array back to form-compatible format
-    const equipmentInput = document.getElementById('equipment');
-    if (selectedEquipment.length > 0) {
-        // Create hidden inputs for each equipment item
-        selectedEquipment.forEach(equipment => {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'equipment';
-            hiddenInput.value = equipment;
-            this.appendChild(hiddenInput);
+    // Transport type selection
+    document.querySelectorAll('.transport-type-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Show MVP prompt
+            if (this.dataset.type === 'mvp') {
+                document.getElementById('mvpPrompt').style.display = 'block';
+            } else {
+                document.getElementById('mvpPrompt').style.display = 'none';
+            }
         });
-    }
+    });
+    
+    // Same-day warning
+    document.getElementById('same_day').addEventListener('change', function() {
+        document.getElementById('sameDayWarning').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    // Address autocomplete (stub)
+    document.querySelectorAll('.address-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const suggestionsContainer = this.parentNode.querySelector('.address-suggestions');
+            
+            if (query.length > 2) {
+                const suggestions = [];
+                for (let key in addressSuggestions) {
+                    if (query.includes(key)) {
+                        suggestions.push(...addressSuggestions[key]);
+                    }
+                }
+                
+                suggestionsContainer.innerHTML = suggestions.map(suggestion => 
+                    `<div class="address-suggestion" onclick="selectAddress('${this.id}', '${suggestion}')">${suggestion}</div>`
+                ).join('');
+                suggestionsContainer.style.display = suggestions.length ? 'block' : 'none';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+    });
 });
+
+function selectAddress(inputId, address) {
+    document.getElementById(inputId).value = address;
+    document.querySelector(`#${inputId} + .address-suggestions`).style.display = 'none';
+}
 </script>
 {% endblock %}

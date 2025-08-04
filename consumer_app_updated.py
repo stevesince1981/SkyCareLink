@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, f
 logging.basicConfig(level=logging.DEBUG)
 
 # Create Flask app
-consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static')
+consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static', static_url_path='/consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
 
 # Demo user accounts
@@ -100,53 +100,114 @@ def consumer_intake_post():
 def consumer_results():
     """Provider results with blurred names and priority partners"""
     if 'patient_data' not in session:
+        flash('Please complete the intake form first.', 'warning')
         return redirect(url_for('consumer_intake'))
     
-    # Generate providers with blurred names
+    # Generate providers with blurred names and dynamic pricing
+    base_cost = 95000
+    equipment_cost = session.get('equipment_cost', 0)
+    same_day_multiplier = 1.2 if session.get('patient_data', {}).get('same_day') else 1.0
+    
     providers = [
         {
             'id': 'provider_a',
-            'name': 'Provider A ****',
+            'name': 'Provider A****',
             'actual_name': 'AirMed Response',
-            'cost': 125000,
+            'blurred_name': 'Provider A**** (Name revealed after booking)',
+            'cost': int((base_cost + 30000 + equipment_cost) * same_day_multiplier),
             'eta': '2.5 hours',
             'aircraft': 'Fixed-wing jet',
+            'capabilities': ['ICU Support', 'Neonatal', 'Cardiac'],
             'rating': 4.9,
-            'is_priority': True
+            'is_priority': True,
+            'priority_note': 'Priority Partner - Featured placement'
         },
         {
             'id': 'provider_b', 
-            'name': 'Provider B ****',
+            'name': 'Provider B****',
             'actual_name': 'LifeFlight Elite',
-            'cost': 118000,
+            'blurred_name': 'Provider B**** (Name revealed after booking)',
+            'cost': int((base_cost + 23000 + equipment_cost) * same_day_multiplier),
             'eta': '3.0 hours',
             'aircraft': 'Helicopter',
+            'capabilities': ['Emergency', 'Rural Access', 'Weather Ready'],
             'rating': 4.8,
-            'is_priority': True
+            'is_priority': True,
+            'priority_note': 'Priority Partner - Enhanced service'
         },
         {
             'id': 'provider_c',
-            'name': 'Provider C ****',
+            'name': 'Provider C****',
             'actual_name': 'SkyMed Standard',
-            'cost': 95000,
+            'blurred_name': 'Provider C**** (Name revealed after booking)',
+            'cost': int((base_cost + equipment_cost) * same_day_multiplier),
             'eta': '4.0 hours',
             'aircraft': 'Fixed-wing',
+            'capabilities': ['Standard Care', 'Long Distance'],
             'rating': 4.6,
-            'is_priority': False
+            'is_priority': False,
+            'priority_note': None
         }
     ]
     
+    # Add provider modification note
+    modification_note = "Provider may recommend additional life-saving equipment during pre-flight assessment. You'll be notified of any changes before departure."
+    
     return render_template('consumer_results.html', 
                          providers=providers,
-                         equipment_cost=session.get('equipment_cost', 0))
+                         equipment_cost=equipment_cost,
+                         same_day_upcharge=same_day_multiplier > 1,
+                         modification_note=modification_note,
+                         patient_data=session.get('patient_data', {}))
 
 @consumer_app.route('/confirm')
 def consumer_confirm():
-    """Confirmation with family seat options and payment links"""
-    if 'selected_provider' not in session:
+    """Confirmation with family seat options, VIP upgrades, and payment links"""
+    provider_id = request.args.get('provider')
+    if not provider_id:
+        flash('Please select a provider first.', 'warning')
         return redirect(url_for('consumer_results'))
     
-    return render_template('consumer_confirm.html')
+    # Store selected provider
+    session['selected_provider'] = provider_id
+    
+    # Calculate final pricing
+    base_cost = session.get('base_cost', 95000)
+    equipment_cost = session.get('equipment_cost', 0)
+    family_seat_cost = 5000
+    vip_cabin_cost = 10000
+    
+    # VIP cabin description
+    vip_description = {
+        'title': 'VIP Luxury Medical Cabin',
+        'price': vip_cabin_cost,
+        'features': [
+            'Premium leather seating with full recline',
+            'IV hydration and wellness treatments during flight',
+            'Champagne service (when medically appropriate)',
+            'Priority boarding and departure',
+            'Enhanced privacy with luxury amenities',
+            'Dedicated cabin attendant for comfort needs'
+        ],
+        'note': 'VIP cabin provides ultimate comfort while maintaining all medical safety standards.'
+    }
+    
+    # CareCredit partnership info
+    carecredit_info = {
+        'available': True,
+        'interest_rate': '0% for 12 months',
+        'minimum_amount': 5000,
+        'approval_time': '5 minutes online',
+        'link': 'https://www.carecredit.com/apply'  # External link
+    }
+    
+    return render_template('consumer_confirm.html',
+                         base_cost=base_cost,
+                         equipment_cost=equipment_cost,
+                         family_seat_cost=family_seat_cost,
+                         vip_description=vip_description,
+                         carecredit_info=carecredit_info,
+                         patient_data=session.get('patient_data', {}))
 
 @consumer_app.route('/confirm', methods=['POST'])
 def consumer_confirm_post():
@@ -217,7 +278,7 @@ def ai_chat():
             'data': {
                 'origin': 'Orlando, FL',
                 'destination': 'New York, NY',
-                'suggestion': 'I've filled in Orlando to NYC for you. What severity level is this transport?'
+                'suggestion': 'I have filled in Orlando to NYC for you. What severity level is this transport?'
             }
         }
     elif 'grandma' in command or 'grandmother' in command:

@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/botui/build/botui.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('consumer_static', filename='consumer_css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='consumer_css/style.css') }}">
     
     {% block head %}{% endblock %}
 </head>
@@ -23,7 +23,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('landing') }}">
+            <a class="navbar-brand" href="{{ url_for('consumer_index') }}">
                 <i class="fas fa-heart-pulse me-2"></i>
                 <strong>MediFly</strong>
             </a>
@@ -35,7 +35,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('landing') }}">
+                        <a class="nav-link" href="{{ url_for('consumer_index') }}">
                             <i class="fas fa-home me-1"></i>Home
                         </a>
                     </li>
@@ -142,7 +142,7 @@
     <script src="https://unpkg.com/botui/build/botui.min.js"></script>
     
     <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='consumer_js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     {% block scripts %}{% endblock %}
 </body>
