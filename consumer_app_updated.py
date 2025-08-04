@@ -322,6 +322,10 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
         
+        # Debug logging
+        print(f"Login attempt: username='{username}', password='{password}'")
+        print(f"Available users: {list(DEMO_USERS.keys())}")
+        
         user_data = authenticate_user(username, password)
         if user_data:
             session['logged_in'] = True
@@ -329,6 +333,7 @@ def login():
             session['user_name'] = user_data['name']
             session['username'] = username
             
+            print(f"Login successful for {username} as {user_data['role']}")
             flash(f'Welcome, {user_data["name"]}!', 'success')
             
             # Role-based redirection
@@ -343,7 +348,8 @@ def login():
             else:  # family
                 return redirect(url_for('family_dashboard'))
         else:
-            flash('Invalid credentials. Use: family/hospital/provider/mvp/admin with password "demo123"', 'error')
+            print(f"Login failed for {username}")
+            flash('Invalid username or password. Try: family, hospital, provider, mvp, or admin (password: demo123)', 'error')
     
     return render_template('login.html')
 
