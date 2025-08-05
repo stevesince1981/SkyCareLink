@@ -1,0 +1,295 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}My Transport Requests - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Request History Styles */
+.request-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border-left: 5px solid var(--primary-blue);
+}
+
+.request-card.completed {
+    border-left-color: var(--success-green);
+}
+
+.request-card.pending {
+    border-left-color: var(--warning-orange);
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.request-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-completed { background: rgba(40, 167, 69, 0.1); color: var(--success-green); }
+.status-pending { background: rgba(255, 193, 7, 0.1); color: var(--warning-orange); }
+.status-active { background: rgba(25, 118, 210, 0.1); color: var(--primary-blue); }
+
+.request-route {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.request-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.detail-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.detail-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.detail-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+.pending-message {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffeaa7;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.refresh-timer {
+    font-weight: 600;
+    color: var(--warning-orange);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-clipboard-list me-2"></i>My Transport Requests</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#intakeModal">
+            <i class="fas fa-plus me-1"></i>New Request
+        </button>
+    </div>
+
+    <!-- Active Request -->
+    {% if session.get('patient_data') %}
+    <div class="request-card pending">
+        <div class="request-header">
+            <div>
+                <div class="request-route">
+                    <i class="fas fa-plane-departure me-2"></i>
+                    {{ session.patient_data.origin.split(',')[0] }} → {{ session.patient_data.destination.split(',')[0] }}
+                </div>
+                <small class="text-muted">Request submitted {{ session.patient_data.get('created_at', 'today') }}</small>
+            </div>
+            <span class="request-status status-pending">Pending Partner Response</span>
+        </div>
+
+        <div class="request-details">
+            <div class="detail-item">
+                <div class="detail-value">{{ session.patient_data.get('patient_name', 'Patient') }}</div>
+                <div class="detail-label">Patient Name</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">{{ session.patient_data.get('transport_type', 'Non-Critical').title() }}</div>
+                <div class="detail-label">Transport Type</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">{{ session.patient_data.get('equipment', [])|length }}</div>
+                <div class="detail-label">Equipment Items</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">{{ session.patient_data.get('transport_date', 'TBD') }}</div>
+                <div class="detail-label">Preferred Date</div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ url_for('consumer_quotes') }}" class="btn btn-primary">
+                <i class="fas fa-eye me-1"></i>View Quotes
+            </a>
+            <button class="btn btn-outline-primary" onclick="modifyCurrentRequest()">
+                <i class="fas fa-edit me-1"></i>Modify Request
+            </button>
+        </div>
+    </div>
+
+    <div class="pending-message">
+        <h5><i class="fas fa-clock me-2"></i>Partners Responding</h5>
+        <p>We're currently collecting quotes from certified medical aviation providers in your area.</p>
+        <small>Auto-refreshing every <span class="refresh-timer">15 seconds</span> for new responses</small>
+    </div>
+    {% endif %}
+
+    <!-- Historical Requests -->
+    <h3 class="mt-4 mb-3">Previous Requests</h3>
+    
+    <!-- Recent Completed Request -->
+    <div class="request-card completed">
+        <div class="request-header">
+            <div>
+                <div class="request-route">
+                    <i class="fas fa-plane-departure me-2"></i>
+                    Miami Medical Center → Johns Hopkins Hospital
+                </div>
+                <small class="text-muted">Completed 2 weeks ago</small>
+            </div>
+            <span class="request-status status-completed">Completed</span>
+        </div>
+
+        <div class="request-details">
+            <div class="detail-item">
+                <div class="detail-value">Sarah Johnson</div>
+                <div class="detail-label">Patient Name</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">Critical</div>
+                <div class="detail-label">Transport Type</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">$45,750</div>
+                <div class="detail-label">Total Cost</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">Provider A****</div>
+                <div class="detail-label">Selected Provider</div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-outline-success" disabled>
+                <i class="fas fa-check me-1"></i>Transport Completed
+            </button>
+            <button class="btn btn-outline-primary" onclick="viewFlightDetails(1)">
+                <i class="fas fa-file-alt me-1"></i>View Receipt
+            </button>
+        </div>
+    </div>
+
+    <!-- Older Request -->
+    <div class="request-card completed">
+        <div class="request-header">
+            <div>
+                <div class="request-route">
+                    <i class="fas fa-plane-departure me-2"></i>
+                    Orlando Regional → UCLA Medical Center
+                </div>
+                <small class="text-muted">Completed 8 months ago</small>
+            </div>
+            <span class="request-status status-completed">Completed</span>
+        </div>
+
+        <div class="request-details">
+            <div class="detail-item">
+                <div class="detail-value">Michael Johnson</div>
+                <div class="detail-label">Patient Name</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">Non-Critical</div>
+                <div class="detail-label">Transport Type</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">$32,500</div>
+                <div class="detail-label">Total Cost</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-value">Provider B****</div>
+                <div class="detail-label">Selected Provider</div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-outline-success" disabled>
+                <i class="fas fa-check me-1"></i>Transport Completed
+            </button>
+            <button class="btn btn-outline-primary" onclick="viewFlightDetails(2)">
+                <i class="fas fa-file-alt me-1"></i>View Receipt
+            </button>
+        </div>
+    </div>
+
+    {% if not session.get('patient_data') %}
+    <div class="text-center py-5">
+        <i class="fas fa-clipboard-list text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3 text-muted">No Active Requests</h4>
+        <p class="text-muted">Start by requesting quotes for medical transport services</p>
+        <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#intakeModal">
+            <i class="fas fa-plus me-2"></i>Create New Request
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Include the enhanced pancake form modal -->
+{% include 'consumer_index_enhanced.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function modifyCurrentRequest() {
+    // Load existing data into pancake form
+    const patientData = {{ session.get('patient_data', {})|tojson }};
+    
+    // Pre-populate form with existing data
+    if (patientData.transport_type) {
+        // This will trigger the pancake modal with preserved data
+        window.location.href = '{{ url_for("consumer_index") }}?modify=true&preserve_data=true';
+    }
+}
+
+function viewFlightDetails(requestId) {
+    alert(`Viewing detailed receipt for Request #${requestId}...\n\nIncludes:\n• Complete flight manifest\n• Medical equipment used\n• Crew certifications\n• Payment details\n• Insurance claims\n• Completion certificate`);
+}
+
+// Auto-refresh for pending requests
+let refreshTimer = 15;
+function updateRefreshTimer() {
+    const timerElement = document.querySelector('.refresh-timer');
+    if (timerElement) {
+        timerElement.textContent = `${refreshTimer} seconds`;
+        refreshTimer--;
+        
+        if (refreshTimer <= 0) {
+            // Check for new quotes
+            window.location.reload();
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    {% if session.get('patient_data') %}
+    // Only start timer if there's an active request
+    setInterval(updateRefreshTimer, 1000);
+    {% endif %}
+    
+    console.log('Request history page loaded');
+});
+</script>
+{% endblock %}

@@ -192,6 +192,43 @@ def consumer_referrals():
     """Referral program page"""
     return render_template('consumer_referrals.html')
 
+@consumer_app.route('/requests')
+def consumer_requests():
+    """Unified request/quote management page with historical data"""
+    return render_template('consumer_requests.html')
+
+@consumer_app.route('/portal-views')
+def portal_views():
+    """Portal dashboard views without login requirement"""
+    return render_template('portal_views.html')
+
+@consumer_app.route('/admin-dashboard')
+def admin_dashboard():
+    """Enhanced admin dashboard with comprehensive controls"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('consumer_index'))
+    
+    # Admin dashboard data
+    admin_data = {
+        'total_revenue': 847500,
+        'monthly_revenue': 127000,
+        'total_users': 1247,
+        'new_users_week': 89,
+        'flight_requests': 342,
+        'completed_flights': 156,
+        'active_quotes': 67,
+        'paid_quotes_today': 23,
+        'providers': [
+            {'name': 'AeroMed Services', 'flights': 45, 'revenue': 234500},
+            {'name': 'SkyLife Medical', 'flights': 38, 'revenue': 198750},
+            {'name': 'CriticalCare Air', 'flights': 42, 'revenue': 215600},
+            {'name': 'MedTransport Plus', 'flights': 31, 'revenue': 167200}
+        ]
+    }
+    
+    return render_template('admin_dashboard_enhanced.html', admin_data=admin_data)
+
 @consumer_app.route('/confirm')
 def confirm_account():
     """Account confirmation page with email verification"""
