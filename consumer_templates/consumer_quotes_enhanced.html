@@ -1,0 +1,596 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Professional Transport Quotes - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Professional Quotes Page */
+:root {
+    --primary-blue: #1976d2;
+    --secondary-blue: #42a5f5;
+    --accent-red: #dc3545;
+    --success-green: #28a745;
+    --warning-orange: #fd7e14;
+    --early-adopter: #ffc107;
+    --light-blue: #e3f2fd;
+}
+
+.quotes-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+/* Same-row Quote Layout */
+.quotes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.quote-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.quote-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Early Adopter Highlighting */
+.quote-card.early-adopter {
+    background: linear-gradient(145deg, #fff9c4 0%, #ffffff 100%);
+    border-color: var(--early-adopter);
+    box-shadow: 0 5px 20px rgba(255, 193, 7, 0.3);
+}
+
+.early-adopter-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: var(--early-adopter);
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(255, 193, 7, 0.4);
+}
+
+.quote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.provider-info {
+    flex-grow: 1;
+}
+
+.provider-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.provider-rating {
+    color: var(--warning-orange);
+    margin-bottom: 0.5rem;
+}
+
+.eta-info {
+    background: var(--light-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.quote-price {
+    text-align: center;
+    background: var(--success-green);
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.price-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.price-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.quote-details {
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.detail-value {
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.aircraft-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.aircraft-icon {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.quote-actions {
+    margin-top: auto;
+}
+
+.btn-book {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+}
+
+.btn-book:hover {
+    background: #0d47a1;
+    transform: translateY(-1px);
+    color: white;
+}
+
+.btn-details {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.btn-details:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+/* Quote Expiring Notice - Less Aggressive */
+.quote-expiry {
+    background: rgba(253, 126, 20, 0.1);
+    border: 1px solid var(--warning-orange);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #856404;
+}
+
+.expiry-timer {
+    font-weight: 600;
+    color: var(--warning-orange);
+}
+
+/* MVP Membership - Smaller, Less Overwhelming */
+.mvp-notice {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid var(--early-adopter);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.mvp-notice h6 {
+    color: #856404;
+    margin-bottom: 0.5rem;
+}
+
+.mvp-notice p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.btn-mvp {
+    background: var(--early-adopter);
+    color: #000;
+    border: none;
+    border-radius: 15px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Auto-refresh Notification */
+.refresh-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--success-green);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+}
+
+.refresh-notification.show {
+    transform: translateX(0);
+}
+
+.loading-quotes {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No Account Message */
+.account-notice {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.account-notice h4 {
+    margin-bottom: 1rem;
+}
+
+.account-notice p {
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+}
+
+.btn-create-account {
+    background: white;
+    color: var(--primary-blue);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-create-account:hover {
+    background: #f8f9fa;
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .quotes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quote-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .price-amount {
+        font-size: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Professional Quotes Header -->
+<div class="quotes-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <h1><i class="fas fa-calculator me-2"></i>Transport Quotes</h1>
+                <p class="mb-0">Professional medical aviation providers ready to serve you</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Account Notice for No Pending Account -->
+    {% if not session.get('user_role') and not session.get('pending_signup') %}
+    <div class="account-notice">
+        <h4><i class="fas fa-user-plus me-2"></i>Create Your Account</h4>
+        <p>Your quotes will be available within 24-48 hours after account creation - industry standard timeframe for verification and provider matching.</p>
+        <button class="btn btn-create-account" data-bs-toggle="modal" data-bs-target="#signupModal">
+            <i class="fas fa-user-plus me-1"></i>Create Account - Get Quotes
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Auto-refresh Notification -->
+    <div class="refresh-notification" id="refreshNotification">
+        <i class="fas fa-sync-alt me-2"></i>New quote received! Page refreshing...
+    </div>
+
+    <!-- Quote Expiry Notice - Less Aggressive Position -->
+    {% if hours_remaining and hours_remaining <= 6 %}
+    <div class="quote-expiry">
+        <i class="fas fa-clock me-2"></i>
+        <strong>Quotes expire in <span class="expiry-timer">{{ hours_remaining }} hours</span></strong>
+        <br><small>Secure your transport by booking before {{ urgency_deadline.strftime('%Y-%m-%d %H:%M') }}</small>
+    </div>
+    {% endif %}
+
+    <!-- MVP Notice - Smaller, Less Overwhelming -->
+    {% if not session.get('user_role') == 'mvp' %}
+    <div class="mvp-notice">
+        <h6><i class="fas fa-crown me-1"></i>MVP Membership Benefits</h6>
+        <p>See full provider names, get priority booking, and access exclusive features</p>
+        <a href="{{ url_for('subscribe', plan='monthly') }}" class="btn btn-mvp">
+            Learn More - $49/month
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Loading State -->
+    {% if not quotes %}
+    <div class="loading-quotes">
+        <div class="loading-spinner"></div>
+        <h4>Searching Professional Providers</h4>
+        <p>We're contacting certified medical aviation providers in your area...</p>
+        <small class="text-muted">New quotes arrive every 15 seconds</small>
+    </div>
+    {% endif %}
+
+    <!-- Professional Quotes Grid - Same Row, Equal Heights -->
+    {% if quotes %}
+    <div class="quotes-grid">
+        {% for quote in quotes %}
+        <div class="quote-card {% if quote.early_adopter %}early-adopter{% endif %}">
+            {% if quote.early_adopter %}
+            <div class="early-adopter-badge">
+                <i class="fas fa-star me-1"></i>Early Adopter Partner
+            </div>
+            {% endif %}
+            
+            <div class="quote-header">
+                <div class="provider-info">
+                    <div class="provider-name">
+                        {% if session.get('user_role') == 'mvp' %}
+                            {{ quote.name }}
+                        {% else %}
+                            Provider {{ quote.name[:1] }}****
+                        {% endif %}
+                    </div>
+                    <div class="provider-rating">
+                        {% for i in range(5) %}
+                            {% if i < quote.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="ms-1">({{ quote.rating }}/5)</span>
+                    </div>
+                </div>
+                <div class="eta-info">
+                    <i class="fas fa-clock me-1"></i>
+                    Flight Time: {{ quote.flight_time or '2-3 hours' }}
+                </div>
+            </div>
+
+            <div class="quote-price">
+                <div class="price-amount">${{ "{:,.0f}".format(quote.total_cost) }}</div>
+                <div class="price-label">Total Transport Cost</div>
+            </div>
+
+            <div class="aircraft-info">
+                <i class="fas fa-helicopter aircraft-icon"></i>
+                <div><strong>{{ quote.aircraft_type or 'Medical Helicopter' }}</strong></div>
+                <small>Advanced Life Support Equipped</small>
+            </div>
+
+            <div class="quote-details">
+                <div class="detail-row">
+                    <span class="detail-label">Base Transport</span>
+                    <span class="detail-value">${{ "{:,.0f}".format(quote.base_price) }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Medical Equipment</span>
+                    <span class="detail-value">${{ "{:,.0f}".format(quote.equipment_cost) }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Non-refundable Deposit</span>
+                    <span class="detail-value">${{ "{:,.0f}".format(1000) }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Crew</span>
+                    <span class="detail-value">{{ quote.crew_size or '2 Medical Professionals' }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Certifications</span>
+                    <span class="detail-value">{{ quote.certifications or 'FAA + Medical' }}</span>
+                </div>
+            </div>
+
+            <div class="quote-actions">
+                <button class="btn btn-book" onclick="bookQuote({{ loop.index }}, '{{ quote.name }}', {{ quote.total_cost }})">
+                    <i class="fas fa-credit-card me-1"></i>Book Transport - $1,000 Deposit
+                </button>
+                <button class="btn btn-details" onclick="viewQuoteDetails({{ loop.index }})">
+                    <i class="fas fa-info-circle me-1"></i>View Full Details
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Quote Statistics -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="text-center">
+                <h4 class="text-primary">{{ quotes|length }}</h4>
+                <small class="text-muted">Providers Available</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <h4 class="text-success">${{ "{:,.0f}".format(quotes|map(attribute='total_cost')|min) if quotes else '0' }}</h4>
+                <small class="text-muted">Lowest Quote</small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <h4 class="text-warning">{{ (quotes|selectattr('early_adopter')|list|length) if quotes else '0' }}</h4>
+                <small class="text-muted">Early Adopter Partners</small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh for new quotes
+let quotesReceived = {{ quotes|length if quotes else 0 }};
+const totalExpectedQuotes = 5; // Expected number of providers
+let refreshInterval;
+
+function startAutoRefresh() {
+    if (quotesReceived < totalExpectedQuotes) {
+        refreshInterval = setInterval(() => {
+            // Simulate new quote arrival
+            if (quotesReceived < totalExpectedQuotes) {
+                quotesReceived++;
+                showRefreshNotification();
+                
+                // Refresh page after notification
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                clearInterval(refreshInterval);
+            }
+        }, 15000); // Every 15 seconds
+    }
+}
+
+function showRefreshNotification() {
+    const notification = document.getElementById('refreshNotification');
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// Booking functions
+function bookQuote(quoteIndex, providerName, totalCost) {
+    const depositAmount = 1000;
+    const message = `Confirm booking with ${providerName}?\n\nTotal Cost: $${totalCost.toLocaleString()}\nNon-refundable Deposit: $${depositAmount.toLocaleString()}\n\nYou will be redirected to secure payment processing.`;
+    
+    if (confirm(message)) {
+        // In production, redirect to payment processing
+        alert(`Booking confirmed!\n\nProvider: ${providerName}\nBooking Reference: BK-${Date.now()}\n\nRedirecting to secure payment...`);
+        
+        // Simulate redirect to booking confirmation
+        setTimeout(() => {
+            window.location.href = `{{ url_for('consumer_booking') }}?quote=${quoteIndex}&provider=${encodeURIComponent(providerName)}`;
+        }, 1500);
+    }
+}
+
+function viewQuoteDetails(quoteIndex) {
+    // In production, this would show a detailed modal or navigate to details page
+    alert(`Viewing detailed information for Quote ${quoteIndex}...\n\nIncludes:\n• Full provider profile\n• Aircraft specifications\n• Crew certifications\n• Equipment details\n• Insurance information\n• Customer reviews`);
+}
+
+// Initialize auto-refresh if user is logged in
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Professional Quotes Page Loaded');
+    console.log('Quotes received:', quotesReceived);
+    console.log('Expected quotes:', totalExpectedQuotes);
+    
+    // Start auto-refresh only if logged in and quotes are incomplete
+    {% if session.get('user_role') %}
+    if (quotesReceived < totalExpectedQuotes) {
+        console.log('Starting auto-refresh for new quotes...');
+        startAutoRefresh();
+    }
+    {% endif %}
+    
+    // Update flight time explanation
+    const etaElements = document.querySelectorAll('.eta-info');
+    etaElements.forEach(element => {
+        element.title = 'Approximate flight time from pickup to destination, including medical preparation';
+    });
+});
+
+// Clean up interval when leaving page
+window.addEventListener('beforeunload', function() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+    }
+});
+</script>
+{% endblock %}

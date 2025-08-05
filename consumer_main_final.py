@@ -125,7 +125,7 @@ def send_urgency_alert(user_contact, hours_remaining, quote_data):
 @consumer_app.route('/')
 def consumer_index():
     """Bubble-inspired landing page with popup forms and enhanced UI"""
-    return render_template('consumer_index_bubble.html')
+    return render_template('consumer_index_enhanced.html')
 
 @consumer_app.route('/login')
 def login():
@@ -196,10 +196,24 @@ def confirm_account():
     """Account confirmation page with email verification"""
     pending = session.get('pending_signup', {})
     if not pending:
-        flash('No pending account found.', 'warning')
+        flash('No pending account found. Your quotes will be available within 24-48 hours after account creation.', 'warning')
         return redirect(url_for('consumer_index'))
     
     return render_template('consumer_confirm.html', pending_signup=pending)
+
+@consumer_app.route('/booking')
+def consumer_booking():
+    """Booking confirmation page"""
+    quote_id = request.args.get('quote')
+    provider = request.args.get('provider', 'Selected Provider')
+    
+    # In production, this would process the actual booking
+    booking_ref = f"BK-{random.randint(100000, 999999)}"
+    
+    return render_template('consumer_booking.html', 
+                         quote_id=quote_id,
+                         provider=provider,
+                         booking_ref=booking_ref)
 
 @consumer_app.route('/intake')
 def consumer_intake():
@@ -271,12 +285,24 @@ def consumer_quotes():
     time_remaining = quote_expiry - datetime.now()
     hours_remaining = max(0, int(time_remaining.total_seconds() // 3600))
     
-    return render_template('consumer_quotes.html',
+    # Add early adopter status and enhanced data for professional display
+    for i, quote in enumerate(quotes):
+        quote['early_adopter'] = i < 2  # First 2 providers are early adopters
+        quote['rating'] = random.randint(4, 5)
+        quote['flight_time'] = f"{random.randint(2, 4)} hours"
+        quote['aircraft_type'] = random.choice(['Medical Helicopter', 'Fixed Wing Aircraft', 'Medical Jet'])
+        quote['crew_size'] = '2 Medical Professionals'
+        quote['certifications'] = 'FAA Part 135 + Medical'
+        quote['name'] = quote.get('provider_name', f"Provider {chr(65 + i)}")
+        quote['base_price'] = quote['total_cost'] - quote.get('equipment_cost', 0)
+    
+    return render_template('consumer_quotes_enhanced.html',
                          quotes=quotes,
                          patient_data=patient_data,
                          show_names=show_names,
-                         quote_expiry=session['quote_expiry'],
+                         quote_expiry=session.get('quote_expiry'),
                          hours_remaining=hours_remaining,
+                         urgency_deadline=quote_expiry,
                          slots_remaining=session.get('slots_remaining', 2),
                          subscription_pricing=SUBSCRIPTION_PRICING,
                          medfly_fee=MEDFLY_CONFIG['non_refundable_fee'])
