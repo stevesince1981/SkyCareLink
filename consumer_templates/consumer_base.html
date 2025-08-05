@@ -60,16 +60,29 @@
                             <i class="fas fa-cog me-1"></i>Admin
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('login') }}">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary rounded-pill px-3 ms-2" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">
-                            <i class="fas fa-user-plus me-1"></i>Signup
-                        </a>
-                    </li>
+                    {% if session.get('logged_in') %}
+                        <li class="nav-item">
+                            <span class="nav-link text-success">
+                                <i class="fas fa-user-md me-1"></i>{{ session.get('contact_name', 'User') }}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-danger rounded-pill px-3 ms-2" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-primary rounded-pill px-3 ms-2" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">
+                                <i class="fas fa-user-plus me-1"></i>Signup
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

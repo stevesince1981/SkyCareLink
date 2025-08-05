@@ -360,9 +360,14 @@
     <div class="account-notice">
         <h4><i class="fas fa-user-plus me-2"></i>Create Your Account</h4>
         <p>Your quotes will be available within 24-48 hours after account creation - industry standard timeframe for verification and provider matching.</p>
-        <button class="btn btn-create-account" data-bs-toggle="modal" data-bs-target="#signupModal">
-            <i class="fas fa-user-plus me-1"></i>Create Account - Get Quotes
-        </button>
+        <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-create-account" data-bs-toggle="modal" data-bs-target="#signupModal">
+                <i class="fas fa-user-plus me-1"></i>Create Account - Get Quotes
+            </button>
+            <button class="btn btn-secondary" onclick="modifyRequest()">
+                <i class="fas fa-edit me-1"></i>Modify Request
+            </button>
+        </div>
     </div>
     {% endif %}
 
@@ -563,6 +568,18 @@ function bookQuote(quoteIndex, providerName, totalCost) {
 function viewQuoteDetails(quoteIndex) {
     // In production, this would show a detailed modal or navigate to details page
     alert(`Viewing detailed information for Quote ${quoteIndex}...\n\nIncludes:\n• Full provider profile\n• Aircraft specifications\n• Crew certifications\n• Equipment details\n• Insurance information\n• Customer reviews`);
+}
+
+// Modify request function that returns to pancakes
+function modifyRequest() {
+    // Check if parent window has modifyRequest function (from main page)
+    if (window.opener && window.opener.modifyRequest) {
+        window.opener.modifyRequest();
+        window.close();
+    } else {
+        // Redirect to main page with modify flag
+        window.location.href = '{{ url_for("consumer_index") }}?modify=true';
+    }
 }
 
 // Initialize auto-refresh if user is logged in

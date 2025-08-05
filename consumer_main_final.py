@@ -3,6 +3,7 @@ import logging
 import json
 import uuid
 from datetime import datetime, timedelta
+import random
 from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
 
 # Configure logging
