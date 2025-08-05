@@ -1,0 +1,51 @@
+Update the existing Flask web app MediFly Consumer MVP (medtransportlink-consumer.replit.app) to blend Bubble ideas (popup forms, metrics cards, workflow steps, role dropdowns, clean CTAs) with all prior features (urgency, multi-quote, subscriptions, referral dashboards, account setup, non-refundable fee, map/delay, international validation, compassionate messaging). Maintain HIPAA compliance (transient data), use Bootstrap 5 for responsive UI, target 50 bookings.
+
+Step 1: Blend Main Page UI
+
+Update landing with hero image/plane, navigation (Home/Requests/Quotes/Portal/Admin/Login/Signup), features icons (24/7, network, quotes), workflow steps (submit/receive/compare/secure), CTAs ("Request Quotes"/"Provider Portal").
+
+
+Step 2: Implement Popup Forms
+
+Convert /intake to popup modal (Bootstrap modal on main CTA click) with condition/urgency/location/staff/equipment/patient details, structured like Bubble.
+
+
+Step 3: Update Quote Management
+
+Enhance /results with request list (origin/destination/condition), quotes table (available quotes), blending Bubble's layout—add multi-quote (3-5, blinded/unmasked per subscription), urgency timer/alerts (24h, 12h/6h/1h SMS/email).
+
+
+Step 4: Refine Provider Portal
+
+Update /partners to include active quotes, incoming requests, submission button, metrics (e.g., 12 active)—add referral dashboard (listings/filter/date, star ratings/badges at 10/25/50/100, 10-referral incentives like badge/support).
+
+
+Step 5: Enhance Admin Dashboard
+
+Add high-level metrics cards (users/requests/quotes/revenue like $847,250), management sections (users/quotes/payments with statuses), export button—integrate profit split tracking, notifications (email/SMS for visits/bookings).
+
+
+Step 6: Add Signup/Join
+
+Create /join popup form with name/email/password/phone/role dropdown, cancel option—blend with account setup (email verification/reset, patient details on /confirm).
+
+
+Step 7: Incorporate Remaining Features
+
+Add subscriptions ($49/month or $499/year, 12-month min, 30-day notice cancel/full pay early) with perks (unmasked quotes, priority bookings), track in dashboard.
+Update /intake for type selector, validation (US/international with Google Places free/manual fallback), equipment pricing/notes, same-day checkbox (+20% warning/risks).
+Enhance /results with blurred names, horizontal row quotes, modify search dialog (pancake stack preselected editable options).
+Add map in /tracking (basic US FL-NY repeat animation) and /intake (preview path on From/To select).
+Add delay tool in /tracking (OpenWeatherMap free, manual traffic, alerts).
+Add compassionate no-availability messaging in /results.
+
+
+Step 8: Debug and Redeploy
+
+Check deployment (re-run, clear cache), verify code commits, reapply features, test Orlando coma/NYC VIP.
+Fix login issues (credential hashing, "Forgot Password" flow).
+
+
+Security/Compliance: Transient session, HTTPS, parameterized queries, WAF stub, no PHI/credit storage.
+Testing: Family/hospital scenarios, verify features, no PHI.
+Deliverables: Updated code, URL, test summary.

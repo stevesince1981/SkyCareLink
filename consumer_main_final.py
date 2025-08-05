@@ -124,8 +124,8 @@ def send_urgency_alert(user_contact, hours_remaining, quote_data):
 # Routes
 @consumer_app.route('/')
 def consumer_index():
-    """Landing page with Critical/Non-Critical/MVP toggle"""
-    return render_template('consumer_index.html')
+    """Bubble-inspired landing page with popup forms and enhanced UI"""
+    return render_template('consumer_index_bubble.html')
 
 @consumer_app.route('/login')
 def login():
@@ -155,6 +155,51 @@ def logout():
     session.clear()
     flash('Logged out successfully.', 'info')
     return redirect(url_for('consumer_index'))
+
+@consumer_app.route('/signup', methods=['POST'])
+def signup_post():
+    """Process signup form with email verification"""
+    name = request.form.get('name')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    phone = request.form.get('phone')
+    role = request.form.get('role')
+    
+    # In production, this would:
+    # 1. Hash password
+    # 2. Store in database
+    # 3. Send verification email
+    # 4. Generate activation token
+    
+    # For demo, simulate email verification
+    verification_code = "DEMO123"
+    logging.info(f"EMAIL VERIFICATION STUB - To: {email}, Activation code: {verification_code}")
+    
+    session['pending_signup'] = {
+        'name': name,
+        'email': email,
+        'role': role,
+        'phone': phone,
+        'verification_code': verification_code
+    }
+    
+    flash(f'Account created! Check your email ({email}) for verification code: {verification_code}', 'success')
+    return redirect(url_for('consumer_index'))
+
+@consumer_app.route('/referrals')
+def consumer_referrals():
+    """Referral program page"""
+    return render_template('consumer_referrals.html')
+
+@consumer_app.route('/confirm')
+def confirm_account():
+    """Account confirmation page with email verification"""
+    pending = session.get('pending_signup', {})
+    if not pending:
+        flash('No pending account found.', 'warning')
+        return redirect(url_for('consumer_index'))
+    
+    return render_template('consumer_confirm.html', pending_signup=pending)
 
 @consumer_app.route('/intake')
 def consumer_intake():
