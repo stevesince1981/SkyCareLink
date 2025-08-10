@@ -1046,11 +1046,11 @@ def admin_security():
     
     stats = {
         'total_events_24h': len(recent_events),
-        'failed_logins_24h': len([e for e in recent_events if e['type'] == 'login_failed']),
-        'mfa_challenges_24h': len([e for e in recent_events if e['type'] == 'mfa_challenge_sent']),
-        'rate_limited_24h': len([e for e in recent_events if 'rate_limited' in e['type']]),
+        'failed_logins_24h': len([e for e in recent_events if e.get('type') == 'login_failed']),
+        'mfa_challenges_24h': len([e for e in recent_events if e.get('type') == 'mfa_challenge_sent']),
+        'rate_limited_24h': len([e for e in recent_events if 'rate_limited' in e.get('type', '')]),
         'total_locked_accounts': len(locked_accounts),
-        'unique_users_24h': len(set(e['user'] for e in recent_events if e['user'] != 'unknown'))
+        'unique_users_24h': len(set(e.get('user', 'unknown') for e in recent_events if e.get('user') != 'unknown'))
     }
     
     # Get unique event types for filter dropdown
@@ -3293,24 +3293,25 @@ def admin_dummy_toggle():
         return redirect(url_for('admin_dashboard'))
     
     try:
-        current_status = get_dummy_data_status()
-        has_dummy_data = current_status['bookings'] > 0
+        with consumer_app.app_context():
+            current_status = get_dummy_data_status()
+            has_dummy_data = current_status['bookings'] > 0
         
-        if has_dummy_data:
-            # Remove dummy data
-            remove_dummy_data()
-            flash('Dummy data removed from database', 'success')
-            logger.info(f"Admin {session.get('username')} removed database dummy data")
-        else:
-            # Add dummy data
-            seed_dummy_data()
-            flash('Dummy data loaded into database', 'success')
-            logger.info(f"Admin {session.get('username')} added database dummy data")
+            if has_dummy_data:
+                # Remove dummy data
+                remove_dummy_data()
+                flash('Dummy data removed from database', 'success')
+                logging.info(f"Admin {session.get('username')} removed database dummy data")
+            else:
+                # Add dummy data
+                seed_dummy_data()
+                flash('Dummy data loaded into database', 'success')
+                logging.info(f"Admin {session.get('username')} added database dummy data")
         
         return redirect(url_for('admin_dashboard'))
         
     except Exception as e:
-        logger.error(f"Error toggling dummy data: {e}")
+        logging.error(f"Error toggling dummy data: {e}")
         flash(f'Error toggling dummy data: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
 
@@ -3327,8 +3328,9 @@ def admin_db_status():
         })
     
     try:
-        status = get_dummy_data_status()
-        niches_count = Niche.query.count() if DB_AVAILABLE else 0
+        with consumer_app.app_context():
+            status = get_dummy_data_status()
+            niches_count = Niche.query.count() if DB_AVAILABLE else 0
         
         return jsonify({
             'database_available': True,
