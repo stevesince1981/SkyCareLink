@@ -1,0 +1,255 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Demo Tools - MediFly Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-tools text-primary me-2"></i>
+                        Demo Tools Management
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Current Demo Status -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-muted mb-3">Current Demo Data Status</h5>
+                            <div class="row">
+                                <div class="col-md-2 col-sm-4 col-6">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body py-3">
+                                            <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                                            <h6 class="card-title">Bookings</h6>
+                                            <span class="badge bg-primary fs-6">{{ demo_status.get('bookings', 0) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-6">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body py-3">
+                                            <i class="fas fa-file-invoice fa-2x text-success mb-2"></i>
+                                            <h6 class="card-title">Quotes</h6>
+                                            <span class="badge bg-success fs-6">{{ demo_status.get('quotes', 0) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-6">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body py-3">
+                                            <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+                                            <h6 class="card-title">Commissions</h6>
+                                            <span class="badge bg-warning fs-6">{{ demo_status.get('commissions', 0) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-6">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body py-3">
+                                            <i class="fas fa-bullhorn fa-2x text-info mb-2"></i>
+                                            <h6 class="card-title">Announcements</h6>
+                                            <span class="badge bg-info fs-6">{{ demo_status.get('announcements', 0) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-6">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body py-3">
+                                            <i class="fas fa-building fa-2x text-secondary mb-2"></i>
+                                            <h6 class="card-title">Affiliates</h6>
+                                            <span class="badge bg-secondary fs-6">{{ demo_status.get('affiliates', 0) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Demo Actions -->
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-plus-circle me-2"></i>
+                                        Create Demo Data
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Generate realistic demo cases for training and testing purposes.</p>
+                                    <form method="post" action="{{ url_for('admin_guided_demo_create') }}" 
+                                          onsubmit="return confirm('Create new guided demo data?')">
+                                        <div class="mb-3">
+                                            <label for="demoCount" class="form-label">Number of demo cases</label>
+                                            <select name="demo_count" id="demoCount" class="form-select">
+                                                <option value="5">5 cases (Quick demo)</option>
+                                                <option value="10" selected>10 cases (Standard)</option>
+                                                <option value="20">20 cases (Comprehensive)</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-magic me-2"></i>Create Guided Demo
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card border-danger">
+                                <div class="card-header bg-danger text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-trash-alt me-2"></i>
+                                        Reset Demo Data
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Selectively remove demo data from the system.</p>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetModal">
+                                        <i class="fas fa-broom me-2"></i>Reset Demo Data...
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Demo Data Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{{ url_for('admin_demo_reset') }}" 
+                  onsubmit="return confirm('Are you sure you want to reset the selected demo data? This action cannot be undone.')">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Reset Demo Data
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-warning me-2"></i>
+                        <strong>Warning:</strong> This action will permanently delete the selected demo data.
+                    </div>
+                    
+                    <p class="mb-3">Select the types of demo data to reset:</p>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="reset_types" value="bookings" id="resetBookings">
+                        <label class="form-check-label" for="resetBookings">
+                            <i class="fas fa-calendar-check text-primary me-2"></i>
+                            Bookings <span class="badge bg-primary ms-2">{{ demo_status.get('bookings', 0) }}</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="reset_types" value="quotes" id="resetQuotes">
+                        <label class="form-check-label" for="resetQuotes">
+                            <i class="fas fa-file-invoice text-success me-2"></i>
+                            Quotes <span class="badge bg-success ms-2">{{ demo_status.get('quotes', 0) }}</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="reset_types" value="commissions" id="resetCommissions">
+                        <label class="form-check-label" for="resetCommissions">
+                            <i class="fas fa-dollar-sign text-warning me-2"></i>
+                            Commissions <span class="badge bg-warning ms-2">{{ demo_status.get('commissions', 0) }}</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="reset_types" value="announcements" id="resetAnnouncements">
+                        <label class="form-check-label" for="resetAnnouncements">
+                            <i class="fas fa-bullhorn text-info me-2"></i>
+                            Active Announcements <span class="badge bg-info ms-2">{{ demo_status.get('announcements', 0) }}</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label class="form-check-label" for="selectAll">
+                            <strong>Select All</strong>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-2"></i>Reset Selected Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Select all checkbox functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('input[name="reset_types"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+
+// Update select all if individual checkboxes change
+document.querySelectorAll('input[name="reset_types"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const allCheckboxes = document.querySelectorAll('input[name="reset_types"]');
+        const checkedBoxes = document.querySelectorAll('input[name="reset_types"]:checked');
+        const selectAllCheckbox = document.getElementById('selectAll');
+        
+        if (checkedBoxes.length === allCheckboxes.length) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else if (checkedBoxes.length === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+        }
+    });
+});
+</script>
+
+<style>
+.card-body .card {
+    transition: transform 0.2s;
+}
+
+.card-body .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.form-check-label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.badge {
+    min-width: 24px;
+}
+
+@media (max-width: 768px) {
+    .col-md-2 {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem 0.5rem;
+    }
+}
+</style>
+{% endblock %}

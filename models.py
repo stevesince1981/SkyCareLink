@@ -49,8 +49,11 @@ class Affiliate(db.Model):
     company_name = Column(String(200), nullable=False)
     contact_email = Column(String(120), nullable=False)
     recouped_amount_usd = Column(Float, default=0.0)
-    commission_percent_default = Column(Float, default=0.04)  # Start at 4%, upgrade to 5%
+    commission_percent_default = Column(Float, default=0.05)  # 3-7% range, adjustable by admin
     total_bookings = Column(Integer, default=0)
+    avg_response_time_minutes = Column(Integer, default=0)
+    response_rate_30day = Column(Float, default=0.0)  # 0.0-1.0
+    is_spotlight = Column(Boolean, default=False)  # <50 bookings or <90 days
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     is_demo_data = Column(Boolean, default=False)
     
@@ -119,6 +122,9 @@ class Booking(db.Model):
     requested_pickup_time = Column(DateTime)
     actual_pickup_time = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
+    
+    # Concierge add-on option
+    concierge_selected = Column(Boolean, default=False)
     
     # Demo/testing flags
     is_demo_data = Column(Boolean, default=False)

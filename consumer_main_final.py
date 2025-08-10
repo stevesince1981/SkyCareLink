@@ -3710,5 +3710,277 @@ def submit_feedback():
 
 
 
+# Phase 11.F: Complete Implementation - Admin Analytics, Demo Tools, Concierge UI
+
+# 1) Admin Analytics - Flights per Provider
+@consumer_app.route('/admin/analytics/affiliates')
+def admin_analytics_affiliates():
+    """Flights per Provider analytics table with sortable columns"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('home'))
+    
+    affiliates_data = []
+    
+    if DB_AVAILABLE:
+        try:
+            with consumer_app.app_context():
+                affiliates = Affiliate.query.all()
+                
+                for affiliate in affiliates:
+                    # Calculate recoup remaining
+                    recoup_remaining = max(25000 - affiliate.recouped_amount_usd, 0)
+                    
+                    # Get commission count (flights)
+                    completed_bookings = Commission.query.filter_by(affiliate_id=affiliate.id).count()
+                    
+                    affiliates_data.append({
+                        'id': affiliate.id,
+                        'company_name': affiliate.company_name,
+                        'fee_percent': affiliate.commission_percent_default * 100,
+                        'recoup_remaining': recoup_remaining,
+                        'total_flights': completed_bookings,
+                        'avg_response_time': affiliate.avg_response_time_minutes,
+                        'response_rate_30day': affiliate.response_rate_30day * 100,
+                        'is_spotlight': affiliate.is_spotlight,
+                        'recouped_amount': affiliate.recouped_amount_usd
+                    })
+        except Exception as e:
+            logging.error(f"Error loading affiliate analytics: {e}")
+            flash('Error loading analytics data', 'error')
+    
+    return render_template('admin_analytics_affiliates.html',
+                         affiliates_data=affiliates_data)
+
+# 2) Adjustable Commission Rate
+@consumer_app.route('/admin/affiliates/<int:affiliate_id>/edit-commission', methods=['POST'])
+def admin_edit_affiliate_commission(affiliate_id):
+    """Edit affiliate commission percentage (3-7% range)"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('home'))
+    
+    try:
+        new_percent = float(request.form.get('commission_percent', 5.0))
+        
+        # Validate 3-7% range
+        if not (3.0 <= new_percent <= 7.0):
+            flash('Commission percentage must be between 3.0% and 7.0%', 'error')
+            return redirect(url_for('admin_analytics_affiliates'))
+        
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                affiliate = Affiliate.query.get_or_404(affiliate_id)
+                affiliate.commission_percent_default = new_percent / 100
+                db.session.commit()
+                
+                flash(f'Commission rate updated to {new_percent}% for {affiliate.company_name}', 'success')
+        else:
+            flash('Database not available for commission updates', 'error')
+            
+    except Exception as e:
+        logging.error(f"Error updating commission rate: {e}")
+        flash('Error updating commission rate', 'error')
+    
+    return redirect(url_for('admin_analytics_affiliates'))
+
+# 3) Demo Tools UI
+@consumer_app.route('/admin/demo')
+def admin_demo_tools():
+    """Demo tools management interface"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('home'))
+    
+    demo_status = {}
+    if DB_AVAILABLE:
+        try:
+            with consumer_app.app_context():
+                demo_status = {
+                    'bookings': Booking.query.filter_by(is_demo_data=True).count(),
+                    'quotes': Quote.query.filter_by(is_demo_data=True).count(),
+                    'commissions': Commission.query.filter_by(is_demo_data=True).count(),
+                    'announcements': Announcement.query.filter_by(is_active=True).count(),
+                    'affiliates': Affiliate.query.filter_by(is_demo_data=True).count()
+                }
+        except Exception as e:
+            logging.error(f"Error getting demo status: {e}")
+    
+    return render_template('admin_demo_tools.html', demo_status=demo_status)
+
+@consumer_app.route('/admin/demo/reset-granular', methods=['POST'])
+def admin_demo_reset_granular():
+    """Granular demo data reset with checkboxes"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('home'))
+    
+    try:
+        reset_types = request.form.getlist('reset_types')
+        reset_counts = {}
+        
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                if 'bookings' in reset_types:
+                    count = Booking.query.filter_by(is_demo_data=True).count()
+                    Booking.query.filter_by(is_demo_data=True).delete()
+                    reset_counts['bookings'] = count
+                
+                if 'quotes' in reset_types:
+                    count = Quote.query.filter_by(is_demo_data=True).count()
+                    Quote.query.filter_by(is_demo_data=True).delete()
+                    reset_counts['quotes'] = count
+                
+                if 'commissions' in reset_types:
+                    count = Commission.query.filter_by(is_demo_data=True).count()
+                    Commission.query.filter_by(is_demo_data=True).delete()
+                    reset_counts['commissions'] = count
+                
+                if 'announcements' in reset_types:
+                    count = Announcement.query.filter_by(is_active=True).count()
+                    Announcement.query.filter_by(is_active=True).update({'is_active': False})
+                    reset_counts['announcements'] = count
+                
+                db.session.commit()
+                
+                total_reset = sum(reset_counts.values())
+                flash(f'Demo data reset completed: {total_reset} items removed', 'success')
+        else:
+            flash('Database not available for demo reset', 'error')
+            
+    except Exception as e:
+        logging.error(f"Error resetting demo data: {e}")
+        flash('Error resetting demo data', 'error')
+    
+    return redirect(url_for('admin_demo_tools'))
+
+# 5) Update Commission Engine for Adjustable Fee %
+def calculate_commission_with_adjustable_rate(affiliate_id, base_amount_usd, booking_id=None):
+    """Calculate commission using adjustable rate after $25k recoup"""
+    if not DB_AVAILABLE:
+        return 0.04, base_amount_usd * 0.04  # Fallback to 4%
+    
+    try:
+        with consumer_app.app_context():
+            affiliate = Affiliate.query.get(affiliate_id)
+            if not affiliate:
+                return 0.04, base_amount_usd * 0.04
+            
+            # Pre-recoup: 4% + 1% credit
+            if affiliate.recouped_amount_usd < 25000:
+                effective_rate = 0.04
+            else:
+                # Post-recoup: use adjustable rate
+                effective_rate = affiliate.commission_percent_default
+            
+            commission_amount = base_amount_usd * effective_rate
+            
+            # Store rate info if booking provided
+            if booking_id and DB_AVAILABLE:
+                Commission.query.filter_by(booking_id=booking_id).update({
+                    'effective_percent': effective_rate,
+                    'affiliate_percent_config': affiliate.commission_percent_default
+                })
+                db.session.commit()
+            
+            return effective_rate, commission_amount
+            
+    except Exception as e:
+        logging.error(f"Error calculating adjustable commission: {e}")
+        return 0.04, base_amount_usd * 0.04
+
+# 6) Concierge UI Integration - Update quotes display
+@consumer_app.route('/quotes-with-concierge/<booking_id>')
+def quotes_with_concierge(booking_id):
+    """Display quotes with concierge add-on option"""
+    quotes_data = session.get('quotes_data', {}).get(booking_id, [])
+    
+    # Mark eligible quotes for concierge
+    for quote in quotes_data:
+        # Concierge eligibility (for demo, all quotes are eligible)
+        quote['concierge_eligible'] = True
+        quote['concierge_cost'] = 15000
+        quote['concierge_split'] = 7500  # Split between parties
+    
+    return render_template('quotes_with_concierge.html', 
+                         quotes=quotes_data,
+                         booking_id=booking_id)
+
+@consumer_app.route('/confirm-booking-concierge', methods=['POST'])
+def confirm_booking_with_concierge():
+    """Confirm booking with optional concierge add-on"""
+    try:
+        booking_id = request.form.get('booking_id')
+        quote_id = request.form.get('quote_id')
+        add_concierge = bool(request.form.get('add_concierge'))
+        
+        # Update booking with concierge selection
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                booking = Booking.query.get(booking_id)
+                if booking:
+                    booking.concierge_selected = add_concierge
+                    db.session.commit()
+        
+        # Store in session for demo
+        session['concierge_selected'] = add_concierge
+        
+        if add_concierge:
+            flash('Booking confirmed with Concierge add-on ($15,000)', 'success')
+        else:
+            flash('Booking confirmed', 'success')
+        
+        return redirect(url_for('booking_confirmation', booking_id=booking_id))
+        
+    except Exception as e:
+        logging.error(f"Error confirming booking with concierge: {e}")
+        flash('Error confirming booking', 'error')
+        return redirect(url_for('home'))
+
+# 4) Portal-specific demo reset
+@consumer_app.route('/portal/reset-demo', methods=['POST'])
+def portal_reset_demo():
+    """Reset demo data for specific portal/org"""
+    if not session.get('logged_in'):
+        flash('Login required.', 'error')
+        return redirect(url_for('login'))
+    
+    try:
+        user_role = session.get('user_role')
+        user_id = session.get('user_id')
+        reset_count = 0
+        
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                if user_role == 'affiliate':
+                    affiliate = Affiliate.query.filter_by(user_id=user_id).first()
+                    if affiliate:
+                        reset_count += Commission.query.filter_by(
+                            affiliate_id=affiliate.id, 
+                            is_demo_data=True
+                        ).delete()
+                        
+                elif user_role == 'hospital':
+                    hospital = Hospital.query.filter_by(user_id=user_id).first()
+                    if hospital:
+                        reset_count += Booking.query.filter_by(
+                            hospital_id=hospital.id, 
+                            is_demo_data=True
+                        ).delete()
+                
+                db.session.commit()
+                flash(f'Your demo data has been reset ({reset_count} items removed)', 'success')
+        else:
+            flash('Database not available for demo reset', 'error')
+            
+    except Exception as e:
+        logging.error(f"Error resetting portal demo data: {e}")
+        flash('Error resetting your demo data', 'error')
+    
+    if session.get('user_role') == 'affiliate':
+        return redirect(url_for('affiliate_commissions'))
+    else:
+        return redirect(url_for('hospital_dashboard'))
+
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

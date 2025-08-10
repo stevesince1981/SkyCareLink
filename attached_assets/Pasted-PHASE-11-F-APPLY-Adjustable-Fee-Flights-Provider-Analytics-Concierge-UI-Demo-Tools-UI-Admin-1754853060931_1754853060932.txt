@@ -1,0 +1,169 @@
+PHASE 11.F — APPLY: Adjustable Fee %, Flights/Provider Analytics, Concierge UI, Demo Tools UI, Admin Panels harden, Portal Scoping
+ROLE: Senior engineer. Use the existing PostgreSQL models. Archive before edits.
+
+1) Adjustable Affiliate default commission %
+Goal: Admin can set 3–7% default on each Affiliate; engine uses it after $25k recoup.
+Tasks
+
+Add field to Affiliates (if missing): commission_percent_default (Decimal(3,2), default 0.05, validator 0.03–0.07).
+
+Admin UI: Affiliate edit form → slider or numeric 3.00–7.00 (%) with help text.
+
+Commission engine: on booking completion:
+
+If recouped_amount_usd < 25,000 → effective 0.04 (+ 1% credit).
+
+Else → use commission_percent_default for effective_percent.
+
+Ledger note: store effective_percent and affiliate_percent_config used.
+
+Output: “ADJUSTABLE FEE %: enabled; engine respects setting post‑recoup.”
+
+2) Flights per Provider (Admin analytics table)
+Goal: A sortable table with fee %, recoup remaining, flights, response rate, spotlight.
+Tasks
+
+New admin page/section: /admin/analytics/affiliates (link from Admin dashboard).
+
+Columns: Affiliate | Fee % | Recoup remaining ($25k – recouped) | Flights (count of completed Bookings) | Avg response time | 30‑day response rate | Spotlight (yes/no).
+
+Sorting on all columns; text filter by Affiliate name.
+
+Clicking an Affiliate opens detail (existing or lightweight modal).
+
+Output: “FLIGHTS/PROVIDER ANALYTICS: live table added & sortable.”
+
+3) Concierge UI (quote row + confirm page)
+Goal: Finish the UI for the already‑wired backend option.
+Tasks
+
+Quotes list: show Concierge pill on eligible quotes with tooltip (“$15,000 add‑on; split $7,500 each; base 5% still applies.”).
+
+Selection flow: add a toggle “Add Concierge” on the confirm step.
+
+Confirm page: show a line item under totals:
+
+Base fare
+
+Concierge add‑on: $15,000 (optional)
+
+Commission calculation remains on base fare only (no change to ledger).
+
+Persist choice to booking record (concierge_selected: bool).
+
+Output: “CONCIERGE UI: selectable & surfaced on confirmation.”
+
+4) Demo Tools UI (granular + per‑portal resets)
+Goal: Expose the already‑working backend in the UI.
+Tasks
+
+Admin → Demo Tools page:
+
+Buttons: “Create Guided Demo”, “Reset Demo Data…”.
+
+Reset modal with checkboxes: Bookings, Quotes, Commissions, Announcements, Dashboards.
+
+Success toasts with counts removed/created.
+
+Affiliate portal + Hospital portal:
+
+A ‘Reset My Demo Data’ button (only affects rows tied to that org with is_demo_data=True).
+
+Confirmation prompt; success toast.
+
+All actions log to SecurityEvents.
+
+Output: “DEMO TOOLS UI: admin + per‑portal available.”
+
+5) Admin panels hardening (Quote & Payment Management)
+Goal: Eliminate remaining 500s; finish wiring.
+Tasks
+
+Quote Management panel:
+
+Date/status filters.
+
+Open request → view quotes; enforce selection/reveal lock rules; show ground‑included badge tooltips.
+
+Payment Management panel:
+
+List invoices by week; mark paid (ACH) with remittance ref; filter by status.
+
+Error handling: guard missing keys; null‑safe currency formatting everywhere.
+
+Output: “ADMIN PANELS: no 500s; quote & payment fully usable.”
+
+6) Portal scoping of dummy/sample data
+Goal: When Dummy ON, each org sees only their data; not global.
+Tasks
+
+Ensure all portal queries include org scope + is_demo_data where appropriate.
+
+Add a small banner in portals when viewing demo rows: “Showing demo data for this organization.”
+
+Output: “PORTAL SCOPING: demo data scoped per‑org & labeled.”
+
+Deliverables (print after apply)
+Adjustable fee %: routes/templates touched; example affiliate updated to 6.00%.
+
+New admin route /admin/analytics/affiliates created.
+
+Concierge UI added (quotes + confirm); booking flag stored.
+
+Demo Tools UI routes: /admin/demo, portal buttons added.
+
+Admin panels: Quote & Payment panels pass quick route ping (200) and list sample data.
+
+Portal scoping banner visible when Dummy ON.
+
+End with: READY FOR 11.G RUNTIME TEST.
+
+PHASE 11.G — RUNTIME TEST (read‑only)
+CHECKS
+
+Adjustable fee %
+
+Edit an Affiliate to 6.00%.
+
+Complete a post‑recoup booking → ledger shows effective_percent = 0.06.
+
+Flights/Provider analytics
+
+Open /admin/analytics/affiliates → table renders; sort by “Recoup remaining” and “Response rate”; click an Affiliate to drill in.
+
+Concierge UI
+
+On quotes: see Concierge badge on eligible rows.
+
+On Confirm: toggle Add Concierge → line item appears; commission still computed on base fare only.
+
+Demo tools UI
+
+Admin: “Create Guided Demo” then “Reset Demo Data…” with specific checkboxes.
+
+Affiliate portal: “Reset My Demo Data” clears only that org’s demo rows.
+
+Admin panels
+
+Quote Management: filter by last 7 days; open a request; view quotes; reveal/lock works.
+
+Payment Management: list invoices; Mark Paid adds remittance ref; filters function.
+
+Portal scoping
+
+With Dummy ON, Affiliate/Hospital portals show only their seeded demo data and the “demo” banner.
+
+OUTPUT FORMAT
+
+objectivec
+Copy
+Edit
+=== 11.G RUNTIME REPORT ===
+1) Adjustable fee % — PASS/FAIL — note
+2) Flights/Provider analytics — PASS/FAIL — note
+3) Concierge UI — PASS/FAIL — note
+4) Demo tools UI — PASS/FAIL — note
+5) Admin panels — PASS/FAIL — note
+6) Portal scoping — PASS/FAIL — note
+READY FOR WRAP? (YES/NO)
+Minor issues:
