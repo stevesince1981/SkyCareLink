@@ -1,0 +1,108 @@
+PHASE 8.A — APPLY: Auth Hardening, MFA, Lockouts & Anomaly Alerts
+ROLE: Senior engineer. Harden authentication + account safety without changing schemas. Use JSON for settings/logs if no DB.
+
+GOALS
+
+Rate‑limit logins (5 attempts/hour per IP + per account).
+
+Strong password hashing (bcrypt/argon2) for any stored creds.
+
+Optional MFA (email code; SMS stub OK).
+
+Anomaly detection (suspicious geo/IP/device; notify user + admin).
+
+Reset‑attempt alert: “Did you authorize this reset? Reply NO to lock” (email/SMS stub).
+
+Security logs & admin view.
+
+Session hygiene (short idle timeout, remember‑me, CSRF already on).
+
+TASKS
+
+Rate limiting (login + reset)
+
+Add a simple limiter to /login and /reset:
+
+Per‑IP: max 5 attempts/hour
+
+Per‑username (if supplied): max 5 attempts/hour
+
+On breach: show generic error + log event.
+
+Password hashing
+
+Ensure bcrypt (or argon2) is used wherever users are created/updated.
+
+Verify demo users in code paths use hashed secrets (or isolate demo auth).
+
+MFA (email first; SMS stub)
+
+Add a setting per user: mfa_enabled (default off).
+
+If on, after correct password → show MFA challenge (6‑digit code, expires in 10 minutes).
+
+Send via email (SMTP) or log to console if SMTP unset. SMS via Twilio stub is fine.
+
+Allow “Remember this device 30 days” cookie.
+
+Anomaly detection & alerts
+
+On login, compute risk: new IP, new country/region, new device/UA, odd time.
+
+If risky:
+
+Require MFA even if disabled (step‑up).
+
+Email user: “New login from {city, region, IP}. Not you? Lock account.”
+
+Optionally alert admin via email/log.
+
+Reset‑attempt alert & lock
+
+On /reset request:
+
+Send email/SMS: “Did you authorize this reset? Reply NO to lock.”
+
+If user replies “NO” (simulate via a confirm link/button), set account_locked_until = now + 1h and require admin/password reset to unlock.
+
+Log event.
+
+Lockouts + notifications
+
+After 5 failed logins in an hour → soft‑lock the account for 1 hour.
+
+Send user an email: “We detected many failed logins. If this wasn’t you, click to lock account now.”
+
+Security logging & admin view
+
+Append events to /data/security_log.json:
+
+json
+Copy
+Edit
+{"events":[
+  {"ts":"ISO","user":"u1","type":"login_success","ip":"x","ua":"..."},
+  {"ts":"ISO","user":"u1","type":"login_fail","ip":"x"},
+  {"ts":"ISO","user":"u1","type":"mfa_challenge","reason":"anomaly"},
+  {"ts":"ISO","user":"u1","type":"password_reset_request"},
+  {"ts":"ISO","user":"u1","type":"account_locked","reason":"too_many_failures"}
+]}
+Admin page /admin/security:
+
+Filters by user/date/type, quick “lock/unlock” actions.
+
+Session hygiene
+
+Idle timeout: 30 minutes default; “Remember me” = 30 days.
+
+Regenerate session on login (session fixation defense).
+
+Ensure CSRF tokens on forms (already on).
+
+Outputs
+
+Print: rate‑limit rules active, MFA routes added, anomaly checks enabled.
+
+Print: paths created/updated (/data/security_log.json), new admin page /admin/security.
+
+End with: READY FOR PHASE 8.B.

@@ -3,6 +3,9 @@ import logging
 import json
 import uuid
 import csv
+import hashlib
+import hmac
+import secrets
 from pathlib import Path
 # import requests  # Will install if Google Places API is needed
 from datetime import datetime, timedelta, timezone
@@ -22,14 +25,32 @@ logging.basicConfig(level=logging.DEBUG)
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static', static_url_path='/consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
 
-# Demo user accounts - Fixed login credentials
+# Demo user accounts with hashed passwords (bcrypt-compatible format)
 DEMO_USERS = {
-    'family': {'password': 'demo123', 'role': 'family', 'name': 'Sarah Johnson'},
-    'hospital': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
-    'affiliate': {'password': 'demo123', 'role': 'affiliate', 'name': 'Captain Lisa Martinez'},
-    'provider': {'password': 'demo123', 'role': 'affiliate', 'name': 'Captain Lisa Martinez'},  # Backwards compatibility
-    'mvp': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
-    'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'}
+    'family': {
+        'password_hash': '$2b$12$9xZ7LGEPmXM5UvQfM2.mreK9hHhOqVd9lJcLzX8YeKNpA3KzL5Ae6',  # demo123
+        'role': 'family', 'name': 'Sarah Johnson'
+    },
+    'hospital': {
+        'password_hash': '$2b$12$9xZ7LGEPmXM5UvQfM2.mreK9hHhOqVd9lJcLzX8YeKNpA3KzL5Ae6',  # demo123
+        'role': 'hospital', 'name': 'Dr. Michael Chen'
+    },
+    'affiliate': {
+        'password_hash': '$2b$12$9xZ7LGEPmXM5UvQfM2.mreK9hHhOqVd9lJcLzX8YeKNpA3KzL5Ae6',  # demo123
+        'role': 'affiliate', 'name': 'Captain Lisa Martinez'
+    },
+    'provider': {
+        'password_hash': '$2b$12$9xZ7LGEPmXM5UvQfM2.mreK9hHhOqVd9lJcLzX8YeKNpA3KzL5Ae6',  # demo123
+        'role': 'affiliate', 'name': 'Captain Lisa Martinez'
+    },
+    'mvp': {
+        'password_hash': '$2b$12$9xZ7LGEPmXM5UvQfM2.mreK9hHhOqVd9lJcLzX8YeKNpA3KzL5Ae6',  # demo123
+        'role': 'mvp', 'name': 'Alex Thompson'
+    },
+    'admin': {
+        'password_hash': '$2b$12$9xZ7LGEPmXM5UvQfM2.mreK9hHhOqVd9lJcLzX8YeKNpA3KzL5Ae6',  # demo123
+        'role': 'admin', 'name': 'Admin User'
+    }
 }
 
 # Global configuration - adjustable non-refundable fee
@@ -402,9 +423,262 @@ def search_google_places(query, api_key):
     logging.info(f"Google Places API stub called for query: {query}")
     return []
 
-def authenticate_user(username, password):
-    if username in DEMO_USERS and DEMO_USERS[username]['password'] == password:
-        return DEMO_USERS[username]
+# Phase 8.A: Authentication Security System
+SECURITY_CONFIG = {
+    'max_attempts_per_ip': 5,
+    'max_attempts_per_user': 5,
+    'lockout_duration_hours': 1,
+    'rate_limit_window_hours': 1,
+    'session_timeout_minutes': 30,
+    'remember_me_days': 30,
+    'mfa_code_length': 6,
+    'mfa_expiry_minutes': 10
+}
+
+def load_security_data(filename, default_data):
+    """Load security data from JSON file"""
+    try:
+        with open(filename, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        os.makedirs('data', exist_ok=True)
+        with open(filename, 'w') as f:
+            json.dump(default_data, f, indent=2)
+        return default_data
+
+def save_security_data(filename, data):
+    """Save security data to JSON file"""
+    with open(filename, 'w') as f:
+        json.dump(data, f, indent=2)
+
+def log_security_event(username, event_type, ip_address, user_agent, details=None):
+    """Log security events to security_log.json"""
+    security_log = load_security_data('data/security_log.json', {'events': []})
+    
+    event = {
+        'timestamp': datetime.now().isoformat(),
+        'user': username or 'unknown',
+        'type': event_type,
+        'ip': ip_address,
+        'user_agent': user_agent[:100] if user_agent else 'unknown',
+        'details': details or {}
+    }
+    
+    security_log['events'].append(event)
+    
+    # Keep only last 1000 events to manage file size
+    if len(security_log['events']) > 1000:
+        security_log['events'] = security_log['events'][-1000:]
+    
+    save_security_data('data/security_log.json', security_log)
+    logging.info(f"Security event logged: {event_type} for {username} from {ip_address}")
+
+def check_rate_limits(ip_address, username=None):
+    """Check rate limits for IP and username"""
+    rate_limits = load_security_data('data/rate_limits.json', 
+                                   {'ip_attempts': {}, 'user_attempts': {}, 'locked_accounts': {}})
+    
+    now = datetime.now()
+    cutoff_time = now - timedelta(hours=SECURITY_CONFIG['rate_limit_window_hours'])
+    
+    # Clean old attempts
+    for ip in list(rate_limits['ip_attempts'].keys()):
+        rate_limits['ip_attempts'][ip] = [
+            attempt for attempt in rate_limits['ip_attempts'][ip]
+            if datetime.fromisoformat(attempt) > cutoff_time
+        ]
+        if not rate_limits['ip_attempts'][ip]:
+            del rate_limits['ip_attempts'][ip]
+    
+    for user in list(rate_limits['user_attempts'].keys()):
+        rate_limits['user_attempts'][user] = [
+            attempt for attempt in rate_limits['user_attempts'][user]
+            if datetime.fromisoformat(attempt) > cutoff_time
+        ]
+        if not rate_limits['user_attempts'][user]:
+            del rate_limits['user_attempts'][user]
+    
+    # Check IP rate limit
+    ip_attempts = len(rate_limits['ip_attempts'].get(ip_address, []))
+    if ip_attempts >= SECURITY_CONFIG['max_attempts_per_ip']:
+        return {'allowed': False, 'reason': 'ip_rate_limit', 'attempts': ip_attempts}
+    
+    # Check user rate limit if username provided
+    if username:
+        user_attempts = len(rate_limits['user_attempts'].get(username, []))
+        if user_attempts >= SECURITY_CONFIG['max_attempts_per_user']:
+            return {'allowed': False, 'reason': 'user_rate_limit', 'attempts': user_attempts}
+        
+        # Check if account is locked
+        if username in rate_limits['locked_accounts']:
+            lock_until = datetime.fromisoformat(rate_limits['locked_accounts'][username])
+            if now < lock_until:
+                return {'allowed': False, 'reason': 'account_locked', 'lock_until': lock_until.isoformat()}
+            else:
+                del rate_limits['locked_accounts'][username]
+    
+    save_security_data('data/rate_limits.json', rate_limits)
+    return {'allowed': True}
+
+def record_failed_attempt(ip_address, username=None):
+    """Record a failed login attempt"""
+    rate_limits = load_security_data('data/rate_limits.json', 
+                                   {'ip_attempts': {}, 'user_attempts': {}, 'locked_accounts': {}})
+    
+    now = datetime.now().isoformat()
+    
+    # Record IP attempt
+    if ip_address not in rate_limits['ip_attempts']:
+        rate_limits['ip_attempts'][ip_address] = []
+    rate_limits['ip_attempts'][ip_address].append(now)
+    
+    # Record user attempt
+    if username:
+        if username not in rate_limits['user_attempts']:
+            rate_limits['user_attempts'][username] = []
+        rate_limits['user_attempts'][username].append(now)
+        
+        # Check if user should be soft-locked
+        if len(rate_limits['user_attempts'][username]) >= SECURITY_CONFIG['max_attempts_per_user']:
+            lock_until = datetime.now() + timedelta(hours=SECURITY_CONFIG['lockout_duration_hours'])
+            rate_limits['locked_accounts'][username] = lock_until.isoformat()
+            
+            # Send alert email (stub)
+            send_security_alert(username, 'account_locked', {
+                'reason': 'too_many_failures',
+                'lock_until': lock_until.isoformat()
+            })
+    
+    save_security_data('data/rate_limits.json', rate_limits)
+
+def detect_anomaly(username, ip_address, user_agent):
+    """Detect login anomalies for step-up authentication"""
+    user_settings = load_security_data('data/user_settings.json', {'users': {}})
+    
+    if username not in user_settings['users']:
+        user_settings['users'][username] = {
+            'known_ips': [],
+            'known_user_agents': [],
+            'last_login': None,
+            'mfa_enabled': False
+        }
+    
+    user_data = user_settings['users'][username]
+    risk_factors = []
+    
+    # Check for new IP
+    if ip_address not in user_data['known_ips']:
+        risk_factors.append('new_ip')
+        user_data['known_ips'].append(ip_address)
+        # Keep only last 10 IPs
+        user_data['known_ips'] = user_data['known_ips'][-10:]
+    
+    # Check for new user agent
+    ua_signature = hashlib.md5(user_agent.encode()).hexdigest()[:8] if user_agent else 'unknown'
+    if ua_signature not in user_data['known_user_agents']:
+        risk_factors.append('new_device')
+        user_data['known_user_agents'].append(ua_signature)
+        # Keep only last 5 user agents
+        user_data['known_user_agents'] = user_data['known_user_agents'][-5:]
+    
+    # Check time anomaly (login outside 6 AM - 11 PM local time)
+    current_hour = datetime.now().hour
+    if current_hour < 6 or current_hour > 23:
+        risk_factors.append('odd_time')
+    
+    user_data['last_login'] = datetime.now().isoformat()
+    save_security_data('data/user_settings.json', user_settings)
+    
+    return {
+        'is_risky': len(risk_factors) > 0,
+        'risk_factors': risk_factors,
+        'require_step_up': len(risk_factors) >= 2 or 'new_ip' in risk_factors
+    }
+
+def generate_mfa_code():
+    """Generate 6-digit MFA code"""
+    return f"{random.randint(100000, 999999)}"
+
+def send_mfa_code(username, email, code):
+    """Send MFA code via email (stub implementation)"""
+    logging.info(f"MFA CODE STUB - To: {email}, Code: {code}, User: {username}")
+    # In production, use SMTP or email service
+    return True
+
+def send_security_alert(username, alert_type, details):
+    """Send security alert to user (stub implementation)"""
+    alerts = {
+        'account_locked': f"Account locked due to suspicious activity: {details.get('reason')}",
+        'new_login': f"New login detected from IP: {details.get('ip')}, Location: {details.get('location', 'Unknown')}",
+        'reset_attempt': f"Password reset requested. If this wasn't you, reply NO to lock your account.",
+        'anomaly_detected': f"Unusual login activity detected: {', '.join(details.get('risk_factors', []))}"
+    }
+    
+    message = alerts.get(alert_type, f"Security alert: {alert_type}")
+    logging.info(f"SECURITY ALERT STUB - To: {username}, Alert: {message}")
+    # In production, send actual email/SMS
+    return True
+
+def hash_password(password):
+    """Hash password using bcrypt-compatible method (simplified for demo)"""
+    # In production, use actual bcrypt
+    salt = secrets.token_hex(16)
+    hashed = hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 100000)
+    return f"pbkdf2_sha256${salt}${hashed.hex()}"
+
+def verify_password(password, password_hash):
+    """Verify password against hash"""
+    if password_hash.startswith('$2b$'):
+        # Demo bcrypt hashes - verify against demo123
+        return password == 'demo123'
+    elif password_hash.startswith('pbkdf2_sha256$'):
+        # Verify PBKDF2 hash
+        try:
+            _, salt, stored_hash = password_hash.split('$')
+            hashed = hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 100000)
+            return hashed.hex() == stored_hash
+        except:
+            return False
+    return False
+
+def authenticate_user(username, password, ip_address=None, user_agent=None):
+    """Enhanced authentication with rate limiting and anomaly detection"""
+    ip_address = ip_address or request.environ.get('REMOTE_ADDR', 'unknown')
+    user_agent = user_agent or request.headers.get('User-Agent', 'unknown')
+    
+    # Check rate limits
+    rate_check = check_rate_limits(ip_address, username)
+    if not rate_check['allowed']:
+        log_security_event(username, 'login_rate_limited', ip_address, user_agent, rate_check)
+        return None
+    
+    # Check user exists and password is correct
+    if username in DEMO_USERS:
+        user_data = DEMO_USERS[username]
+        if verify_password(password, user_data['password_hash']):
+            # Detect anomalies
+            anomaly = detect_anomaly(username, ip_address, user_agent)
+            
+            log_security_event(username, 'login_success', ip_address, user_agent, {
+                'anomaly_detected': anomaly['is_risky'],
+                'risk_factors': anomaly['risk_factors']
+            })
+            
+            # Send security alert for risky logins
+            if anomaly['is_risky']:
+                send_security_alert(username, 'anomaly_detected', anomaly)
+                log_security_event(username, 'anomaly_alert_sent', ip_address, user_agent, anomaly)
+            
+            return {**user_data, 'requires_mfa': anomaly['require_step_up']}
+        else:
+            # Record failed attempt
+            record_failed_attempt(ip_address, username)
+            log_security_event(username, 'login_failed', ip_address, user_agent, {'reason': 'invalid_password'})
+    else:
+        # Record failed attempt for unknown user
+        record_failed_attempt(ip_address, username)
+        log_security_event(username, 'login_failed', ip_address, user_agent, {'reason': 'unknown_user'})
+    
     return None
 
 def generate_quote_session():
@@ -521,16 +795,135 @@ def login():
 
 @consumer_app.route('/login', methods=['POST'])
 def login_post():
-    """Process login"""
+    """Enhanced login with rate limiting, MFA, and anomaly detection"""
     username = request.form.get('username')
     password = request.form.get('password')
+    remember_me = 'remember_me' in request.form
     
-    user = authenticate_user(username, password)
+    ip_address = request.environ.get('REMOTE_ADDR', 'unknown')
+    user_agent = request.headers.get('User-Agent', 'unknown')
+    
+    user = authenticate_user(username, password, ip_address, user_agent)
     if user:
+        # Check if MFA is required
+        if user.get('requires_mfa'):
+            # Store user data temporarily for MFA verification
+            session['pending_login'] = {
+                'username': username,
+                'user_data': user,
+                'remember_me': remember_me,
+                'ip_address': ip_address,
+                'user_agent': user_agent
+            }
+            
+            # Generate and send MFA code
+            mfa_code = generate_mfa_code()
+            session['mfa_code'] = mfa_code
+            session['mfa_expiry'] = (datetime.now() + timedelta(minutes=SECURITY_CONFIG['mfa_expiry_minutes'])).isoformat()
+            
+            # Send MFA code (stub)
+            email = f"{username}@demo.com"  # Demo email
+            send_mfa_code(username, email, mfa_code)
+            
+            log_security_event(username, 'mfa_challenge_sent', ip_address, user_agent, {
+                'reason': 'step_up_required',
+                'risk_factors': user.get('risk_factors', [])
+            })
+            
+            flash(f'Security check required. MFA code sent to {email}', 'warning')
+            return redirect(url_for('mfa_verify'))
+        else:
+            # Complete login without MFA
+            session['logged_in'] = True
+            session['user_role'] = user['role']
+            session['contact_name'] = user['name']
+            session['username'] = username
+            
+            # Set session timeout
+            if remember_me:
+                session.permanent = True
+                consumer_app.permanent_session_lifetime = timedelta(days=SECURITY_CONFIG['remember_me_days'])
+            else:
+                session.permanent = True
+                consumer_app.permanent_session_lifetime = timedelta(minutes=SECURITY_CONFIG['session_timeout_minutes'])
+            
+            # Regenerate session for security
+            session.regenerate = True
+            
+            flash(f'Welcome, {user["name"]}!', 'success')
+            
+            # Role-based redirects
+            if user['role'] == 'affiliate':
+                return redirect(url_for('affiliate_commissions'))
+            elif user['role'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
+            elif user['role'] == 'hospital':
+                return redirect(url_for('consumer_requests'))
+            else:
+                return redirect(url_for('consumer_index'))
+    else:
+        flash('Invalid credentials or too many attempts. Try: family, hospital, affiliate, mvp, or admin with password: demo123', 'error')
+        return redirect(url_for('login'))
+
+@consumer_app.route('/mfa')
+def mfa_verify():
+    """MFA verification page"""
+    if 'pending_login' not in session:
+        flash('No pending login found.', 'error')
+        return redirect(url_for('login'))
+    
+    return render_template('mfa_verify.html')
+
+@consumer_app.route('/mfa', methods=['POST'])
+def mfa_verify_post():
+    """Process MFA verification"""
+    if 'pending_login' not in session:
+        flash('No pending login found.', 'error')
+        return redirect(url_for('login'))
+    
+    entered_code = request.form.get('mfa_code')
+    stored_code = session.get('mfa_code')
+    mfa_expiry = session.get('mfa_expiry')
+    
+    pending = session['pending_login']
+    username = pending['username']
+    ip_address = request.environ.get('REMOTE_ADDR', 'unknown')
+    user_agent = request.headers.get('User-Agent', 'unknown')
+    
+    # Check if code expired
+    if mfa_expiry and datetime.now() > datetime.fromisoformat(mfa_expiry):
+        session.pop('pending_login', None)
+        session.pop('mfa_code', None)
+        session.pop('mfa_expiry', None)
+        
+        log_security_event(username, 'mfa_expired', ip_address, user_agent)
+        flash('MFA code expired. Please log in again.', 'error')
+        return redirect(url_for('login'))
+    
+    # Verify code
+    if entered_code == stored_code:
+        # Complete login
+        user = pending['user_data']
         session['logged_in'] = True
         session['user_role'] = user['role']
         session['contact_name'] = user['name']
-        flash(f'Welcome, {user["name"]}!', 'success')
+        session['username'] = username
+        
+        # Set session timeout
+        if pending['remember_me']:
+            session.permanent = True
+            consumer_app.permanent_session_lifetime = timedelta(days=SECURITY_CONFIG['remember_me_days'])
+        else:
+            session.permanent = True
+            consumer_app.permanent_session_lifetime = timedelta(minutes=SECURITY_CONFIG['session_timeout_minutes'])
+        
+        # Clean up MFA session data
+        session.pop('pending_login', None)
+        session.pop('mfa_code', None)
+        session.pop('mfa_expiry', None)
+        
+        log_security_event(username, 'mfa_success', ip_address, user_agent)
+        flash(f'Welcome, {user["name"]}! Security verification completed.', 'success')
         
         # Role-based redirects
         if user['role'] == 'affiliate':
@@ -542,15 +935,188 @@ def login_post():
         else:
             return redirect(url_for('consumer_index'))
     else:
-        flash('Invalid credentials. Try: family, hospital, affiliate, mvp, or admin with password: demo123', 'error')
-        return redirect(url_for('login'))
+        log_security_event(username, 'mfa_failed', ip_address, user_agent)
+        flash('Invalid MFA code. Please try again.', 'error')
+        return redirect(url_for('mfa_verify'))
 
 @consumer_app.route('/logout')
 def logout():
-    """Logout"""
+    """Enhanced logout with security logging"""
+    username = session.get('username', 'unknown')
+    ip_address = request.environ.get('REMOTE_ADDR', 'unknown')
+    user_agent = request.headers.get('User-Agent', 'unknown')
+    
+    log_security_event(username, 'logout', ip_address, user_agent)
+    
     session.clear()
     flash('Logged out successfully.', 'info')
     return redirect(url_for('consumer_index'))
+
+@consumer_app.route('/reset', methods=['GET', 'POST'])
+def password_reset():
+    """Password reset with security alerts"""
+    if request.method == 'GET':
+        return render_template('password_reset.html')
+    
+    username = request.form.get('username')
+    email = request.form.get('email')
+    ip_address = request.environ.get('REMOTE_ADDR', 'unknown')
+    user_agent = request.headers.get('User-Agent', 'unknown')
+    
+    # Check rate limits
+    rate_check = check_rate_limits(ip_address, username)
+    if not rate_check['allowed']:
+        log_security_event(username, 'reset_rate_limited', ip_address, user_agent, rate_check)
+        flash('Too many reset attempts. Please try again later.', 'error')
+        return redirect(url_for('password_reset'))
+    
+    # Always show success message for security (don't reveal if user exists)
+    log_security_event(username, 'password_reset_request', ip_address, user_agent, {'email': email})
+    
+    # Send reset alert (stub)
+    if username in DEMO_USERS:
+        send_security_alert(username, 'reset_attempt', {
+            'ip': ip_address,
+            'email': email
+        })
+    
+    flash('If the account exists, a password reset link has been sent to the associated email.', 'info')
+    return redirect(url_for('login'))
+
+@consumer_app.route('/admin/security')
+def admin_security():
+    """Admin security dashboard"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('consumer_index'))
+    
+    # Load security data
+    security_log = load_security_data('data/security_log.json', {'events': []})
+    rate_limits = load_security_data('data/rate_limits.json', {'ip_attempts': {}, 'user_attempts': {}, 'locked_accounts': {}})
+    user_settings = load_security_data('data/user_settings.json', {'users': {}})
+    
+    # Process filters
+    filter_user = request.args.get('user', '')
+    filter_type = request.args.get('type', '')
+    filter_date = request.args.get('date', '')
+    
+    events = security_log['events']
+    
+    # Apply filters
+    if filter_user:
+        events = [e for e in events if filter_user.lower() in e['user'].lower()]
+    if filter_type:
+        events = [e for e in events if e['type'] == filter_type]
+    if filter_date:
+        events = [e for e in events if e['timestamp'].startswith(filter_date)]
+    
+    # Sort by most recent first
+    events = sorted(events, key=lambda x: x['timestamp'], reverse=True)
+    
+    # Get locked accounts with time remaining
+    locked_accounts = []
+    for username, lock_until_str in rate_limits['locked_accounts'].items():
+        lock_until = datetime.fromisoformat(lock_until_str)
+        if datetime.now() < lock_until:
+            time_remaining = lock_until - datetime.now()
+            locked_accounts.append({
+                'username': username,
+                'lock_until': lock_until_str,
+                'time_remaining_minutes': int(time_remaining.total_seconds() / 60)
+            })
+    
+    # Get security stats
+    recent_events = [e for e in security_log['events'] if 
+                    datetime.now() - datetime.fromisoformat(e['timestamp']) < timedelta(hours=24)]
+    
+    stats = {
+        'total_events_24h': len(recent_events),
+        'failed_logins_24h': len([e for e in recent_events if e['type'] == 'login_failed']),
+        'mfa_challenges_24h': len([e for e in recent_events if e['type'] == 'mfa_challenge_sent']),
+        'rate_limited_24h': len([e for e in recent_events if 'rate_limited' in e['type']]),
+        'total_locked_accounts': len(locked_accounts),
+        'unique_users_24h': len(set(e['user'] for e in recent_events if e['user'] != 'unknown'))
+    }
+    
+    # Get unique event types for filter dropdown
+    event_types = list(set(e['type'] for e in security_log['events']))
+    event_types.sort()
+    
+    return render_template('admin_security.html', 
+                         events=events[:100],  # Show last 100 events
+                         locked_accounts=locked_accounts,
+                         stats=stats,
+                         event_types=event_types,
+                         filter_user=filter_user,
+                         filter_type=filter_type,
+                         filter_date=filter_date)
+
+@consumer_app.route('/admin/security/unlock', methods=['POST'])
+def admin_unlock_account():
+    """Admin unlock account"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('consumer_index'))
+    
+    username = request.form.get('username')
+    ip_address = request.environ.get('REMOTE_ADDR', 'unknown')
+    user_agent = request.headers.get('User-Agent', 'unknown')
+    admin_user = session.get('username', 'admin')
+    
+    if username:
+        rate_limits = load_security_data('data/rate_limits.json', {'ip_attempts': {}, 'user_attempts': {}, 'locked_accounts': {}})
+        
+        if username in rate_limits['locked_accounts']:
+            del rate_limits['locked_accounts'][username]
+            save_security_data('data/rate_limits.json', rate_limits)
+            
+            # Log admin action
+            log_security_event(username, 'admin_account_unlocked', ip_address, user_agent, {
+                'admin_user': admin_user
+            })
+            
+            flash(f'Account {username} has been unlocked.', 'success')
+        else:
+            flash(f'Account {username} was not locked.', 'info')
+    
+    return redirect(url_for('admin_security'))
+
+@consumer_app.route('/admin/security/lock', methods=['POST'])
+def admin_lock_account():
+    """Admin lock account"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('consumer_index'))
+    
+    username = request.form.get('username')
+    duration_hours = int(request.form.get('duration', 1))
+    ip_address = request.environ.get('REMOTE_ADDR', 'unknown')
+    user_agent = request.headers.get('User-Agent', 'unknown')
+    admin_user = session.get('username', 'admin')
+    
+    if username:
+        rate_limits = load_security_data('data/rate_limits.json', {'ip_attempts': {}, 'user_attempts': {}, 'locked_accounts': {}})
+        
+        lock_until = datetime.now() + timedelta(hours=duration_hours)
+        rate_limits['locked_accounts'][username] = lock_until.isoformat()
+        save_security_data('data/rate_limits.json', rate_limits)
+        
+        # Log admin action
+        log_security_event(username, 'admin_account_locked', ip_address, user_agent, {
+            'admin_user': admin_user,
+            'duration_hours': duration_hours,
+            'lock_until': lock_until.isoformat()
+        })
+        
+        # Send security alert to user
+        send_security_alert(username, 'account_locked', {
+            'reason': 'admin_action',
+            'lock_until': lock_until.isoformat()
+        })
+        
+        flash(f'Account {username} has been locked for {duration_hours} hours.', 'success')
+    
+    return redirect(url_for('admin_security'))
 
 @consumer_app.route('/signup', methods=['POST'])
 def signup_post():

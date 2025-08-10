@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Dashboard - MediFly Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        .security-header {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #dc3545;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .security-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .event-row {
+            border-bottom: 1px solid #f8f9fa;
+        }
+        .event-type {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .event-success { color: #198754; }
+        .event-failed { color: #dc3545; }
+        .event-warning { color: #fd7e14; }
+        .event-info { color: #0dcaf0; }
+        .locked-account {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+        .filter-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .admin-action-btn {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+        .timestamp {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="security-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-shield-alt"></i> Security Dashboard</h1>
+                    <p class="mb-0">Monitor authentication events and manage account security</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="/admin/dashboard" class="btn btn-light">
+                        <i class="fas fa-arrow-left"></i> Back to Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Security Stats -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="stat-card text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                    <h3 class="fw-bold">{{ stats.total_events_24h }}</h3>
+                    <small class="text-muted">Total Events (24h)</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stat-card text-center">
+                    <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                    <h3 class="fw-bold">{{ stats.failed_logins_24h }}</h3>
+                    <small class="text-muted">Failed Logins (24h)</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stat-card text-center">
+                    <i class="fas fa-mobile-alt fa-2x text-info mb-2"></i>
+                    <h3 class="fw-bold">{{ stats.mfa_challenges_24h }}</h3>
+                    <small class="text-muted">MFA Challenges (24h)</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stat-card text-center">
+                    <i class="fas fa-ban fa-2x text-warning mb-2"></i>
+                    <h3 class="fw-bold">{{ stats.rate_limited_24h }}</h3>
+                    <small class="text-muted">Rate Limited (24h)</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stat-card text-center">
+                    <i class="fas fa-lock fa-2x text-danger mb-2"></i>
+                    <h3 class="fw-bold">{{ stats.total_locked_accounts }}</h3>
+                    <small class="text-muted">Locked Accounts</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stat-card text-center">
+                    <i class="fas fa-users fa-2x text-success mb-2"></i>
+                    <h3 class="fw-bold">{{ stats.unique_users_24h }}</h3>
+                    <small class="text-muted">Active Users (24h)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locked Accounts -->
+        {% if locked_accounts %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="security-table">
+                    <div class="p-3 bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-lock"></i> Currently Locked Accounts</h5>
+                    </div>
+                    <div class="p-3">
+                        {% for account in locked_accounts %}
+                        <div class="locked-account">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <strong><i class="fas fa-user"></i> {{ account.username }}</strong>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock"></i> 
+                                        {{ account.time_remaining_minutes }} minutes remaining
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="timestamp">{{ account.lock_until }}</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <form method="POST" action="/admin/security/unlock" style="display: inline;">
+                                        <input type="hidden" name="username" value="{{ account.username }}">
+                                        <button type="submit" class="btn btn-success admin-action-btn" 
+                                                onclick="return confirm('Unlock account {{ account.username }}?')">
+                                            <i class="fas fa-unlock"></i> Unlock
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Filters -->
+        <div class="filter-card">
+            <h5><i class="fas fa-filter"></i> Filters</h5>
+            <form method="GET" action="/admin/security">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">User</label>
+                        <input type="text" class="form-control" name="user" value="{{ filter_user }}" placeholder="Username">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Event Type</label>
+                        <select class="form-select" name="type">
+                            <option value="">All Events</option>
+                            {% for event_type in event_types %}
+                            <option value="{{ event_type }}" {% if event_type == filter_type %}selected{% endif %}>
+                                {{ event_type.replace('_', ' ').title() }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" name="date" value="{{ filter_date }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Filter
+                            </button>
+                            <a href="/admin/security" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Manual Account Lock -->
+        <div class="filter-card">
+            <h5><i class="fas fa-user-lock"></i> Manual Account Lock</h5>
+            <form method="POST" action="/admin/security/lock">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" name="username" placeholder="Enter username" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Lock Duration (hours)</label>
+                        <select class="form-select" name="duration">
+                            <option value="1">1 Hour</option>
+                            <option value="6">6 Hours</option>
+                            <option value="24">24 Hours</option>
+                            <option value="72">3 Days</option>
+                            <option value="168">1 Week</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-warning" 
+                                onclick="return confirm('Lock this account? This will prevent login and send security alerts.')">
+                            <i class="fas fa-lock"></i> Lock Account
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Security Events Log -->
+        <div class="security-table">
+            <div class="p-3 bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Recent Security Events</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Event</th>
+                            <th>IP Address</th>
+                            <th>User Agent</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr class="event-row">
+                            <td class="timestamp">{{ event.timestamp[:19] }}</td>
+                            <td>
+                                <strong>{{ event.user }}</strong>
+                                {% if event.user in ['admin', 'system'] %}
+                                <i class="fas fa-star text-warning" title="System User"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="event-type 
+                                    {% if 'success' in event.type %}event-success
+                                    {% elif 'failed' in event.type or 'locked' in event.type %}event-failed
+                                    {% elif 'mfa' in event.type or 'anomaly' in event.type %}event-warning
+                                    {% else %}event-info{% endif %}">
+                                    {{ event.type.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <code>{{ event.ip }}</code>
+                                {% if event.ip.startswith('192.168.') or event.ip.startswith('10.') %}
+                                <i class="fas fa-home text-success" title="Internal IP"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ event.user_agent[:50] }}...</small>
+                            </td>
+                            <td>
+                                {% if event.details %}
+                                <button class="btn btn-outline-info btn-sm" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#details-{{ loop.index }}"
+                                        title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="collapse mt-2" id="details-{{ loop.index }}">
+                                    <div class="card card-body">
+                                        <pre><code>{{ event.details | tojsonpretty }}</code></pre>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% if not events %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                                No security events found with the current filters.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-refresh page every 30 seconds
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+        
+        // Add confirmation to sensitive actions
+        document.querySelectorAll('form[action*="unlock"], form[action*="lock"]').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                const username = form.querySelector('input[name="username"]').value;
+                const action = form.action.includes('unlock') ? 'unlock' : 'lock';
+                
+                if (!confirm(`Are you sure you want to ${action} account: ${username}?`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
