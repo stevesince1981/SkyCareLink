@@ -1,0 +1,301 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}My Transport Requests - MediFly{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-clipboard-list me-2"></i>My Transport Requests</h2>
+                <a href="{{ url_for('intake') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>New Request
+                </a>
+            </div>
+
+            {% if bookings %}
+                <div class="row">
+                    {% for booking in bookings %}
+                    <div class="col-12 mb-4">
+                        <div class="card {% if booking.has_new_quote %}border-warning{% endif %} position-relative">
+                            <!-- New Quote Badge -->
+                            {% if booking.has_new_quote %}
+                            <div class="position-absolute top-0 start-100 translate-middle">
+                                <span class="badge bg-warning text-dark new-quote-badge">
+                                    <i class="fas fa-bell me-1"></i>New Quote Available
+                                </span>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="card-header {% if booking.status == 'pending' %}bg-primary text-white{% elif booking.status == 'completed' %}bg-success text-white{% else %}bg-secondary text-white{% endif %}">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-{% if booking.status == 'pending' %}clock{% elif booking.status == 'completed' %}check-circle{% else %}times-circle{% endif %} me-2"></i>
+                                            {{ booking.id }}
+                                        </h5>
+                                        <small>{{ booking.status.title() }}</small>
+                                    </div>
+                                    <div class="col-md-6 text-md-end">
+                                        {% if booking.status == 'pending' %}
+                                        <div class="elapsed-timer">
+                                            <i class="fas fa-stopwatch me-1"></i>
+                                            <span class="timer-text">{{ booking.elapsed_hours }}h elapsed</span>
+                                        </div>
+                                        {% endif %}
+                                        <small class="d-block">{{ booking.date }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="transport-route mb-3">
+                                            <div class="route-item">
+                                                <i class="fas fa-map-marker-alt text-success me-2"></i>
+                                                <strong>From:</strong> {{ booking.from }}
+                                            </div>
+                                            <div class="route-arrow">
+                                                <i class="fas fa-arrow-down text-muted"></i>
+                                            </div>
+                                            <div class="route-item">
+                                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                                <strong>To:</strong> {{ booking.to }}
+                                            </div>
+                                        </div>
+                                        
+                                        {% if booking.status == 'pending' and booking.quote_target_time %}
+                                        <div class="alert alert-info mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>Expected quotes by:</strong> 
+                                            {{ booking.quote_target_time.strftime('%I:%M %p') }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="quotes-summary text-center">
+                                            <div class="quote-count-circle {% if booking.has_new_quote %}pulse-warning{% endif %}">
+                                                <span class="quote-number">{{ booking.quotes }}</span>
+                                                <small class="d-block">Quotes</small>
+                                            </div>
+                                            
+                                            {% if booking.status == 'pending' %}
+                                            <div class="mt-3">
+                                                <a href="{{ url_for('compare_providers', request_id=booking.id) }}" 
+                                                   class="btn {% if booking.has_new_quote %}btn-warning{% else %}btn-outline-primary{% endif %} btn-sm">
+                                                    <i class="fas fa-eye me-1"></i>
+                                                    {% if booking.has_new_quote %}Check New Quote{% else %}View Quotes{% endif %}
+                                                </a>
+                                            </div>
+                                            {% elif booking.status == 'completed' %}
+                                            <div class="mt-3">
+                                                <a href="#" class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-file-download me-1"></i>Download Report
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No transport requests yet</h4>
+                    <p class="text-muted">Create your first transport request to get started</p>
+                    <a href="{{ url_for('intake') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Create New Request
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.new-quote-badge {
+    animation: pulse-glow 2s infinite;
+    border: 2px solid #ffc107;
+}
+
+@keyframes pulse-glow {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.quote-count-circle {
+    width: 80px;
+    height: 80px;
+    border: 3px solid #007bff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    background: #f8f9fa;
+}
+
+.quote-count-circle.pulse-warning {
+    border-color: #ffc107;
+    background: #fff3cd;
+    animation: quote-pulse 2s infinite;
+}
+
+@keyframes quote-pulse {
+    0% { border-color: #ffc107; }
+    50% { border-color: #ff6b1a; }
+    100% { border-color: #ffc107; }
+}
+
+.quote-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.pulse-warning .quote-number {
+    color: #856404;
+}
+
+.transport-route {
+    padding-left: 1rem;
+}
+
+.route-item {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.route-arrow {
+    text-align: center;
+    margin: 0.25rem 0;
+}
+
+.elapsed-timer {
+    font-size: 0.9rem;
+}
+
+.timer-text {
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .quote-count-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .quote-number {
+        font-size: 1.2rem;
+    }
+    
+    .new-quote-badge {
+        font-size: 0.7rem;
+    }
+}
+
+/* Real-time polling indicator */
+.polling-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 123, 255, 0.1);
+    border: 1px solid #007bff;
+    border-radius: 50px;
+    padding: 5px 15px;
+    font-size: 0.8rem;
+    color: #007bff;
+}
+</style>
+
+<!-- Real-time polling for new quotes -->
+<div class="polling-indicator" style="display: none;">
+    <i class="fas fa-sync-alt fa-spin me-1"></i>Checking for updates...
+</div>
+
+<script>
+// Phase 11.C2: Real-time quote polling (15 second intervals)
+let pollingInterval;
+const POLLING_INTERVAL = 15000; // 15 seconds
+
+function checkForNewQuotes() {
+    const indicator = document.querySelector('.polling-indicator');
+    indicator.style.display = 'block';
+    
+    // Simulate API call to check for new quotes
+    setTimeout(() => {
+        // In production, this would be a real API call
+        // For demo, randomly show new quote badges
+        const cards = document.querySelectorAll('.card:not(.border-warning)');
+        if (cards.length > 0 && Math.random() < 0.2) { // 20% chance
+            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+            randomCard.classList.add('border-warning');
+            
+            // Add new quote badge
+            const badge = document.createElement('div');
+            badge.className = 'position-absolute top-0 start-100 translate-middle';
+            badge.innerHTML = `
+                <span class="badge bg-warning text-dark new-quote-badge">
+                    <i class="fas fa-bell me-1"></i>New Quote Available
+                </span>
+            `;
+            randomCard.appendChild(badge);
+            
+            // Update quote count circle
+            const quoteCircle = randomCard.querySelector('.quote-count-circle');
+            if (quoteCircle) {
+                quoteCircle.classList.add('pulse-warning');
+                const quoteNumber = quoteCircle.querySelector('.quote-number');
+                if (quoteNumber) {
+                    quoteNumber.textContent = parseInt(quoteNumber.textContent) + 1;
+                }
+            }
+            
+            // Update button text
+            const viewBtn = randomCard.querySelector('.btn-outline-primary');
+            if (viewBtn) {
+                viewBtn.className = 'btn btn-warning btn-sm';
+                viewBtn.innerHTML = '<i class="fas fa-eye me-1"></i>Check New Quote';
+            }
+        }
+        
+        indicator.style.display = 'none';
+    }, 1000);
+}
+
+// Start polling when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial check after 5 seconds
+    setTimeout(checkForNewQuotes, 5000);
+    
+    // Then every 15 seconds
+    pollingInterval = setInterval(checkForNewQuotes, POLLING_INTERVAL);
+});
+
+// Stop polling when page unloads
+window.addEventListener('beforeunload', function() {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
+
+// Update elapsed timers every minute
+function updateElapsedTimers() {
+    document.querySelectorAll('.timer-text').forEach(timer => {
+        const currentText = timer.textContent;
+        const hours = parseInt(currentText.match(/(\d+)h/)?.[1] || 0);
+        timer.textContent = `${hours}h elapsed`;
+    });
+}
+
+setInterval(updateElapsedTimers, 60000); // Update every minute
+</script>
+{% endblock %}

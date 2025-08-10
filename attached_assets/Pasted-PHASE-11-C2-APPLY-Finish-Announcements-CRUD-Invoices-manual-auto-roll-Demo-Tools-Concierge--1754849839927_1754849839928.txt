@@ -1,0 +1,107 @@
+PHASE 11.C2 — APPLY: Finish Announcements CRUD, Invoices (manual/auto/roll), Demo Tools, Concierge, Stepper Intake, Live “New Quote”, Admin Panels, Portals Sample, Commissions Filters, Adjustable % Fee, Flights/Provider Analytics
+ROLE: Senior engineer. Implement the items flagged as FAIL/PARTIAL in 11.D. Archive before edits. DB: use your new SQLAlchemy models and PostgreSQL. No schema changes beyond small safe columns/indexes.
+
+SCOPE & TASKS
+
+A) Announcements — full CRUD + multi‑active
+/admin/announcements:
+
+Add Edit (inline or modal) and Delete (with confirm).
+
+Support multiple active banners; list separates Active vs Scheduled/Inactive.
+
+Ensure save → immediate render site‑wide (we already inject via context processor).
+
+Keep top fixed, semi‑transparent, click‑through banners as before.
+
+DB: Use existing Announcements table. Add updated_at if missing.
+
+B) Invoices — manual generate, auto weekly, 30‑day roll
+Manual: Fix Generate Invoices (no 500). Group Commissions by affiliate_id + invoice_week; create CSV + HTML (already stubbed); set status issued.
+
+Auto weekly (cron/APS scheduler): Every Monday 02:00 local, issue invoices for bookings completed in prior Sun–Sat and not already invoiced.
+
+Auto roll @ 30 days: nightly job checks issued but unpaid for ≥30 days → create a roll‑up invoice (same week code + “R1/R2”), mark previous as rolled.
+
+Admin toggles: auto_generate_weekly, auto_roll_30d (store in /data/config.json or DB settings).
+
+C) Demo Tools — granular + per‑portal reset
+Fix /admin/demo/create (no 500).
+
+Admin → Demo Tools modal with checkboxes to reset: Bookings, Quotes, Commissions, Announcements, Dashboards.
+
+Portal‑level “Reset Demo Data” for Affiliate and Hospital → clears demo rows for that org only.
+
+All demo rows carry is_demo_data=True; audit to SecurityEvents.
+
+D) Quotes — Spotlight + Concierge
+Spotlight badge (tooltip): “New Affiliate Spotlight — fewer than 50 bookings or joined < 90 days ago.” (already partial—finalize).
+
+Add Concierge add‑on:
+
+Quote row shows a Concierge badge (when affiliate offers it). Tooltip: “$15,000 add-on; split $7,500 each; base 5% still applies.”
+
+On selection → Confirm page shows concierge line item; commission ledger unaffected (still on base fare only).
+
+E) Intake — complete the 4‑step stepper you requested
+Route /intake displays the stepper with state persistence (DB or session) and quiet autosave:
+
+Service (Air | Ground | Air + Ground) → Next shrinks the panel and moves to next.
+
+From / To with internal‑first autocomplete + Places fallback + “+ Can’t find it?” modal (manual add).
+
+Date/Time with dropdown picker; same‑day (<4h) shows +20% warning/confirm checkbox.
+
+Patient & Requirements:
+
+Age band (no DOB), Severity 1–3 (green/yellow/red with tooltips), Niches (seeded), International regions (multi‑select), Ground ambulance included checkbox.
+
+Back button and clickable previous panels to jump; preserve inputs; suppress repeat “Draft saved” toasts.
+
+Home “New Request” → /intake stepper.
+
+F) “My Transport Requests” — live “New quote” indicator
+Requests list shows Pending with elapsed timer.
+
+Poll every 15s (or websocket stub) → when new quote arrives, show “New quote available” badge; clears once user opens the quotes page.
+
+Don’t count demo/training in prod metrics.
+
+G) Admin Dashboard — Quote & Payment panels
+Fix 500s and wire:
+
+Quotes Management: filter by date/status, open a request, see quotes, reveal/lock selection if needed.
+
+Payment Management: view invoices by week, mark paid (ACH), view remittance ref.
+
+H) Portals — sample data visibility
+When Dummy ON: Affiliate and Hospital portals list seeded bookings/quotes/commissions for that org (respect is_demo_data flag and role scoping).
+
+I) Affiliate Commissions — filters + summaries
+Add date range filter and Status chips (Issued/Paid/Rolled).
+
+Outstanding Fees badge showing unpaid total for the range.
+
+Weekly Commission Summary rows expandable (±) to list bookings with amounts.
+
+Copy: “Amount credited toward your $25,000” (replaces confusing “commission earned”).
+
+Button: “Mark Paid (ACH)” visible to Admin or Affiliate if self‑reporting is allowed (config).
+
+J) Adjustable Affiliate default commission %
+Add field commission_percent_default (3–7%, default 5%) on Affiliate profile (Admin editable; optional Affiliate‑visible).
+
+Commission engine: After recoup (≥ $25k) is reached, use this default % for new bookings (still 4% + 1% credit before threshold).
+
+K) Flights per Provider (Admin analytics)
+Table: Affiliate, Fee %, Recoup remaining to $25k, Total flights, Response rate, Spotlight (yes/no).
+
+Sortable headers; link to Affiliate detail.
+
+OUTPUTS
+
+Print a checklist with PASS/FAIL for each subsection A–K after apply (static analysis + quick route pings).
+
+Print new/changed routes (admin demo tools, invoice jobs/toggles).
+
+End with: READY FOR 11.E RUNTIME TEST.

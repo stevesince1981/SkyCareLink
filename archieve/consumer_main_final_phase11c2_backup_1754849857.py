@@ -1237,33 +1237,15 @@ def admin_relist_affiliate():
 
 @consumer_app.route('/admin/announcements')
 def admin_announcements():
-    """Admin announcements management with full CRUD"""
+    """Admin page for announcement management with EST timezone"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
         return redirect(url_for('home'))
     
-    if not DB_AVAILABLE:
-        # Fallback to JSON for backwards compatibility
-        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-        return render_template('admin_announcements.html', announcements_data=announcements_data)
-    
-    try:
-        with consumer_app.app_context():
-            # Get all announcements, split by active/inactive
-            active_announcements = Announcement.query.filter_by(is_active=True).order_by(Announcement.created_at.desc()).all()
-            inactive_announcements = Announcement.query.filter_by(is_active=False).order_by(Announcement.created_at.desc()).all()
-            
-            return render_template('admin_announcements_crud.html', 
-                                 active_announcements=active_announcements,
-                                 inactive_announcements=inactive_announcements)
-    except Exception as e:
-        logging.error(f"Error loading announcements: {e}")
-        flash(f'Error loading announcements: {str(e)}', 'error')
-        # Fallback to JSON
-        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-        return render_template('admin_announcements.html', announcements_data=announcements_data)
+    announcements_data = load_json_data('data/announcements.json', {'announcements': []})
+    return render_template('admin_announcements.html', announcements_data=announcements_data)
 
-@consumer_app.route('/admin/announcements/create', methods=['POST'])
+@consumer_app.route('/admin/announcements', methods=['POST'])
 def admin_announcements_create():
     """Create new announcement - CRUD CREATE"""
     if session.get('user_role') != 'admin':
@@ -1288,28 +1270,7 @@ def admin_announcements_create():
         }
         announcements_data['announcements'].append(new_announcement)
         
-        if DB_AVAILABLE:
-            # Save to database
-            try:
-                with consumer_app.app_context():
-                    announcement = Announcement(
-                        message=new_announcement['message'],
-                        style=new_announcement['style'],
-                        is_active=new_announcement['is_active'],
-                        start_at=datetime.fromisoformat(new_announcement['start_at']) if new_announcement['start_at'] else None,
-                        end_at=datetime.fromisoformat(new_announcement['end_at']) if new_announcement['end_at'] else None,
-                        countdown_target=new_announcement['countdown_target']
-                    )
-                    db.session.add(announcement)
-                    db.session.commit()
-            except Exception as e:
-                logging.error(f"Database save failed, falling back to JSON: {e}")
-                # Fallback to JSON
-                save_json_data('data/announcements.json', announcements_data)
-        else:
-            # Save to JSON
-            save_json_data('data/announcements.json', announcements_data)
-        
+        save_json_data('data/announcements.json', announcements_data)
         flash('Announcement created successfully.', 'success')
         return redirect(url_for('admin_announcements'))
         
@@ -2741,67 +2702,20 @@ def admin_invoices():
 
 @consumer_app.route('/admin/generate-invoices', methods=['POST'])
 def admin_generate_invoices():
-    """Phase 11.C2: Fixed invoice generation with PostgreSQL support"""
+    """Generate weekly invoices for all affiliates"""
     if not session.get('logged_in') or session.get('user_role') != 'admin':
         return jsonify({'success': False, 'error': 'Admin access required'}), 403
     
-    try:
-        if DB_AVAILABLE:
-            with consumer_app.app_context():
-                # Get commissions that need invoicing
-                commissions_to_invoice = Commission.query.filter(
-                    Commission.invoice_status == 'pending'
-                ).all()
-                
-                if not commissions_to_invoice:
-                    flash('No commissions ready for invoicing', 'info')
-                    return redirect(url_for('admin_invoices'))
-                
-                # Group by affiliate and generate invoices
-                invoices_by_affiliate = {}
-                for commission in commissions_to_invoice:
-                    affiliate_id = commission.affiliate_id or 'default'
-                    if affiliate_id not in invoices_by_affiliate:
-                        invoices_by_affiliate[affiliate_id] = []
-                    invoices_by_affiliate[affiliate_id].append(commission)
-                
-                invoice_count = 0
-                total_amount = 0.0
-                
-                for affiliate_id, affiliate_commissions in invoices_by_affiliate.items():
-                    affiliate_total = sum(c.commission_amount_usd for c in affiliate_commissions)
-                    total_amount += affiliate_total
-                    
-                    # Mark commissions as invoiced
-                    for commission in affiliate_commissions:
-                        commission.invoice_status = 'issued'
-                        commission.invoice_generated_at = datetime.now()
-                    
-                    invoice_count += 1
-                
-                db.session.commit()
-                
-                message = f"Generated {invoice_count} invoices totaling ${total_amount:,.2f}"
-                flash(message, 'success')
-                logging.info(f"ADMIN: {message}")
-                return redirect(url_for('admin_invoices'))
-        else:
-            # Fallback to JSON system
-            generated = generate_weekly_invoices()
-            
-            if generated:
-                message = f"Generated {len(generated)} new invoice(s)"
-                flash(message, 'success')
-                logging.info(f"ADMIN: {message} by {session.get('contact_name', 'admin')}")
-            else:
-                flash('No new invoices to generate', 'info')
-            
-            return redirect(url_for('admin_invoices'))
-            
-    except Exception as e:
-        logging.error(f"Invoice generation error: {e}")
-        flash('Error generating invoices', 'error')
-        return redirect(url_for('admin_invoices'))
+    generated = generate_weekly_invoices()
+    
+    if generated:
+        message = f"Generated {len(generated)} new invoice(s)"
+        flash(message, 'success')
+        logging.info(f"ADMIN: {message} by {session.get('contact_name', 'admin')}")
+    else:
+        flash('No new invoices to generate', 'info')
+    
+    return redirect(url_for('admin_invoices'))
 
 @consumer_app.route('/admin/mark-invoice-paid', methods=['POST'])
 def admin_mark_invoice_paid():
@@ -3320,123 +3234,6 @@ def send_email_template(template_name, recipient_email, **template_vars):
         return False
 
 # Demo toolkit guided demo cards
-# Phase 11.C2: Stepper intake implementation
-@consumer_app.route('/intake')
-def intake():
-    """Phase 11.C2: Complete 4-step stepper intake with state persistence"""
-    # Get or create intake session data
-    if 'intake_data' not in session:
-        session['intake_data'] = {
-            'step': 1,
-            'service_type': None,
-            'from_location': None,
-            'to_location': None,
-            'date_time': None,
-            'patient_info': {},
-            'requirements': {}
-        }
-    
-    current_step = session.get('intake_data', {}).get('step', 1)
-    
-    # Load available niches from database
-    niches_list = []
-    if DB_AVAILABLE:
-        try:
-            with consumer_app.app_context():
-                niches = Niche.query.all()
-                niches_list = [{'id': n.id, 'name': n.name, 'description': n.description} for n in niches]
-        except Exception as e:
-            logging.error(f"Error loading niches: {e}")
-    
-    if not niches_list:
-        # Fallback to default niches
-        niches_list = [
-            {'id': 1, 'name': 'Cardiac Emergency', 'description': 'Heart-related critical care'},
-            {'id': 2, 'name': 'Trauma Transport', 'description': 'Emergency trauma cases'},
-            {'id': 3, 'name': 'Neonatal ICU', 'description': 'Newborn intensive care'},
-            {'id': 4, 'name': 'Organ Transport', 'description': 'Time-critical organ delivery'},
-            {'id': 5, 'name': 'Psychiatric Crisis', 'description': 'Mental health emergencies'}
-        ]
-    
-    return render_template('intake_stepper.html', 
-                         current_step=current_step,
-                         intake_data=session.get('intake_data', {}),
-                         niches=niches_list)
-
-@consumer_app.route('/intake/step', methods=['POST'])
-def intake_step():
-    """Handle stepper intake form submissions"""
-    try:
-        step = int(request.form.get('step', 1))
-        
-        if 'intake_data' not in session:
-            session['intake_data'] = {'step': 1}
-        
-        intake_data = session['intake_data']
-        
-        if step == 1:
-            # Service Type Step
-            intake_data['service_type'] = request.form.get('service_type')
-            intake_data['step'] = 2
-            
-        elif step == 2:
-            # Location Step
-            intake_data['from_location'] = request.form.get('from_location')
-            intake_data['to_location'] = request.form.get('to_location')
-            intake_data['step'] = 3
-            
-        elif step == 3:
-            # Date/Time Step
-            intake_data['date_time'] = request.form.get('date_time')
-            intake_data['same_day_confirmed'] = bool(request.form.get('same_day_confirmed'))
-            intake_data['step'] = 4
-            
-        elif step == 4:
-            # Patient & Requirements Step
-            intake_data['patient_info'] = {
-                'age_band': request.form.get('age_band'),
-                'severity': int(request.form.get('severity', 2))
-            }
-            intake_data['requirements'] = {
-                'niches': request.form.getlist('niches'),
-                'international_regions': request.form.getlist('international_regions'),
-                'ground_ambulance': bool(request.form.get('ground_ambulance'))
-            }
-            
-            # Complete intake - redirect to comparison
-            session['booking_data'] = intake_data
-            session.pop('intake_data', None)  # Clear intake session
-            
-            flash('Transport request created successfully!', 'success')
-            return redirect(url_for('compare_providers'))
-        
-        session['intake_data'] = intake_data
-        session.modified = True
-        
-        return redirect(url_for('intake'))
-        
-    except Exception as e:
-        logging.error(f"Intake step error: {e}")
-        flash('Error processing form', 'error')
-        return redirect(url_for('intake'))
-
-@consumer_app.route('/intake/back', methods=['POST'])
-def intake_back():
-    """Handle back navigation in stepper"""
-    try:
-        current_step = int(request.form.get('current_step', 2))
-        new_step = max(1, current_step - 1)
-        
-        if 'intake_data' in session:
-            session['intake_data']['step'] = new_step
-            session.modified = True
-            
-        return redirect(url_for('intake'))
-        
-    except Exception as e:
-        logging.error(f"Intake back error: {e}")
-        return redirect(url_for('intake'))
-
 @consumer_app.route('/demo/guided')
 def demo_guided():
     """Show guided demo cards for affiliates and hospitals"""
