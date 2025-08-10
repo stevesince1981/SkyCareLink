@@ -1,0 +1,46 @@
+PHASE 11.E — RUNTIME TEST (READ‑ONLY)
+ROLE: QA navigator. Verify that each item now works live.
+
+CHECKS
+
+Announcements CRUD — Create two active banners; edit text/style; delete one; both update instantly site‑wide.
+
+Invoices — Manual generate works; flip auto on; create booking completed >7d; confirm inclusion; roll unpaid @30d creates roll‑up invoice.
+
+Demo Tools — Admin demo create works; granular reset dialog visible; Affiliate & Hospital portal reset clears only their demo items.
+
+Quotes — Spotlight badge & tooltip; select a quote with Concierge → Confirm shows concierge line item; ledger remains base‑fare only.
+
+Intake stepper — Exactly the 4 steps; Next/Back + click steps; state persists; same‑day warning confirm; hybrid search + “+ Can’t find it?”; ground checkbox present.
+
+My Transport Requests — Pending shows elapsed; when a new quote appears, badge “New quote available” shows and clears on visit.
+
+Admin dashboard — Quote & Payment panels load and function (no 500).
+
+Portals — With Dummy ON, both portals show sample items scoped to org.
+
+Affiliate commissions — Date/status filters; Outstanding Fees badge; weekly rows expandable; copy reads “credited toward $25,000”; Mark Paid (ACH) present.
+
+Adjustable fee % — Change an Affiliate’s default % to 6%; complete a post‑recoup booking; ledger uses 6%.
+
+Flights per Provider — Table shows fee %, recoup remaining, flights, response rate; sorting works.
+
+OUTPUT FORMAT
+
+mathematica
+Copy
+Edit
+=== 11.E RUNTIME REPORT ===
+A) Announcements CRUD — PASS/FAIL — note
+B) Invoices (manual/auto/roll) — PASS/FAIL — note
+C) Demo Tools — PASS/FAIL — note
+D) Quotes (Spotlight + Concierge) — PASS/FAIL — note
+E) Intake stepper — PASS/FAIL — note
+F) My Requests (new quote) — PASS/FAIL — note
+G) Admin dashboard panels — PASS/FAIL — note
+H) Portals sample data — PASS/FAIL — note
+I) Affiliate commissions — PASS/FAIL — note
+J) Adjustable fee % — PASS/FAIL — note
+K) Flights per Provider — PASS/FAIL — note
+READY FOR WRAP? (YES/NO)
+Minor issues:
