@@ -213,6 +213,93 @@
         "Cleared session data",
         "Reset training mode flag"
       ]
+    },
+    {
+      "timestamp": "2025-08-10T16:22:16.668043",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": false,
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-10T16:47:02.180676",
+      "user": "admin",
+      "type": "logout",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T16:47:22.893053",
+      "user": "affiliate",
+      "type": "login_success",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": true,
+        "risk_factors": [
+          "new_ip"
+        ]
+      }
+    },
+    {
+      "timestamp": "2025-08-10T16:47:22.894339",
+      "user": "affiliate",
+      "type": "anomaly_alert_sent",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "is_risky": true,
+        "risk_factors": [
+          "new_ip"
+        ],
+        "require_step_up": true
+      }
+    },
+    {
+      "timestamp": "2025-08-10T16:47:22.903489",
+      "user": "affiliate",
+      "type": "mfa_challenge_sent",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "reason": "step_up_required",
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-10T16:48:08.976533",
+      "user": "affiliate",
+      "type": "login_success",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": false,
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-10T16:51:12.931019",
+      "user": "affiliate",
+      "type": "logout",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T16:51:26.062138",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": false,
+        "risk_factors": []
+      }
     }
   ]
 }

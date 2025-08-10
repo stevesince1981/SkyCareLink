@@ -6,6 +6,14 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (Phase 10.A Completed - Aug 10, 2025)
+- **Post-Launch Housekeeping**: Implemented demo toolkit with guided demo creation (5 realistic cases) and reset functionality
+- **Analytics Roll-up**: Added monthly analytics dashboard with CSV export capability
+- **Email Templates**: Created HTML email templates for affiliate welcome, hospital welcome, invoices, and security alerts
+- **Error Pages**: Custom 404/500 pages with friendly messaging and navigation
+- **Admin Tools**: Quick actions bar with Generate Invoices, Reset Demo, Monthly Roll-up, Security Log, and Announcements
+- **Accessibility**: Added aria-labels, viewport meta tag, and performance optimizations with deferred JS loading
+
 ## System Architecture
 
 ### UI/UX Decisions
