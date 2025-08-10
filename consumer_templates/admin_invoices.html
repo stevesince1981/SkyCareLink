@@ -1,0 +1,329 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Invoice Management - Admin Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Phase 6.A: Admin Invoice Management Styling */
+.admin-header {
+    background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.invoice-summary {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 2px solid #e9ecef;
+}
+
+.summary-card {
+    text-align: center;
+    padding: 1rem;
+}
+
+.summary-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.invoice-filters {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    background: #1976d2;
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-issued {
+    background: #ffc107;
+    color: #000;
+}
+
+.status-paid {
+    background: #28a745;
+    color: white;
+}
+
+.btn-generate {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+.btn-generate:hover {
+    background: #218838;
+    color: white;
+}
+
+.btn-mark-paid {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.btn-download {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    margin: 0 0.25rem;
+}
+
+.no-invoices {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header text-center">
+    <div class="container">
+        <h1><i class="fas fa-file-invoice-dollar"></i> Invoice Management</h1>
+        <p class="lead">Weekly ACH commission invoicing for affiliates</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Invoice Summary -->
+    <div class="invoice-summary">
+        <div class="row">
+            <div class="col-md-3 summary-card">
+                <div class="summary-amount">${{ "{:,}".format(total_issued) }}</div>
+                <div class="text-muted">Total Issued</div>
+            </div>
+            <div class="col-md-3 summary-card">
+                <div class="summary-amount">${{ "{:,}".format(total_paid) }}</div>
+                <div class="text-muted">Total Paid</div>
+            </div>
+            <div class="col-md-3 summary-card">
+                <div class="summary-amount">${{ "{:,}".format(total_issued - total_paid) }}</div>
+                <div class="text-muted">Outstanding</div>
+            </div>
+            <div class="col-md-3 summary-card">
+                <div class="summary-amount">{{ invoices|length }}</div>
+                <div class="text-muted">Active Invoices</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Invoices Action -->
+    <div class="text-center">
+        <form method="POST" action="{{ url_for('admin_generate_invoices') }}" style="display: inline;">
+            <button type="submit" class="btn btn-generate">
+                <i class="fas fa-plus-circle"></i> Generate Weekly Invoices
+            </button>
+        </form>
+    </div>
+
+    <!-- Filters -->
+    <div class="invoice-filters">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="week" class="form-label">Filter by Week</label>
+                <select name="week" id="week" class="form-select">
+                    <option value="">All Weeks</option>
+                    {% for week in all_weeks %}
+                    <option value="{{ week }}" {% if week == week_filter %}selected{% endif %}>{{ week }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="affiliate" class="form-label">Filter by Affiliate</label>
+                <select name="affiliate" id="affiliate" class="form-select">
+                    <option value="">All Affiliates</option>
+                    {% for affiliate in all_affiliates %}
+                    <option value="{{ affiliate }}" {% if affiliate == affiliate_filter %}selected{% endif %}>{{ affiliate }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&nbsp;</label>
+                <div>
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{{ url_for('admin_invoices') }}" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Invoices Table -->
+    <div class="invoice-table">
+        {% if invoices %}
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Affiliate</th>
+                    <th>Invoice Week</th>
+                    <th>Total Due</th>
+                    <th>Status</th>
+                    <th>Issued Date</th>
+                    <th>Paid Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td><strong>{{ invoice.affiliate_id }}</strong></td>
+                    <td>{{ invoice.invoice_week }}</td>
+                    <td><strong>${{ "{:,}".format(invoice.total_usd) }}</strong></td>
+                    <td>
+                        <span class="status-badge status-{{ invoice.status }}">
+                            {% if invoice.status == 'issued' %}
+                            <i class="fas fa-clock"></i> Issued
+                            {% else %}
+                            <i class="fas fa-check"></i> Paid
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>{{ invoice.issued_at[:10] if invoice.issued_at else 'N/A' }}</td>
+                    <td>{{ invoice.paid_at[:10] if invoice.get('paid_at') else 'N/A' }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_download_invoice', affiliate_id=invoice.affiliate_id, invoice_week=invoice.invoice_week, file_type='csv') }}" 
+                           class="btn btn-download" title="Download CSV">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </a>
+                        <a href="{{ url_for('admin_download_invoice', affiliate_id=invoice.affiliate_id, invoice_week=invoice.invoice_week, file_type='html') }}" 
+                           class="btn btn-download" title="View HTML Invoice" target="_blank">
+                            <i class="fas fa-file-alt"></i> HTML
+                        </a>
+                        {% if invoice.status == 'issued' %}
+                        <button class="btn btn-mark-paid" 
+                                onclick="markPaid('{{ invoice.affiliate_id }}', '{{ invoice.invoice_week }}')"
+                                title="Mark as Paid">
+                            <i class="fas fa-check"></i> Mark Paid
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-invoices">
+            <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+            <h4>No Invoices Found</h4>
+            <p>{% if week_filter or affiliate_filter %}Try adjusting your filters or{% endif %} generate new weekly invoices to get started.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ACH Configuration Info -->
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-university"></i> ACH Remit Configuration</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Bank:</strong> MediFly Business Bank</p>
+                        <p><strong>Routing Number:</strong> 021000021</p>
+                        <p><strong>Account Number:</strong> 123456789</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Invoice Schedule:</strong> Sunday-Saturday</p>
+                        <p><strong>Payment Terms:</strong> NET 7 days</p>
+                        <p><strong>From Email:</strong> invoices@medifly.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mark Paid Modal -->
+<div class="modal fade" id="markPaidModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mark Invoice as Paid</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Mark this invoice as paid?</p>
+                <div class="mb-3">
+                    <label for="remittanceRef" class="form-label">Remittance Reference (Optional)</label>
+                    <input type="text" class="form-control" id="remittanceRef" placeholder="ACH confirmation number">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="confirmMarkPaid()">Mark as Paid</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentInvoice = {};
+
+function markPaid(affiliateId, invoiceWeek) {
+    currentInvoice = {affiliateId, invoiceWeek};
+    const modal = new bootstrap.Modal(document.getElementById('markPaidModal'));
+    modal.show();
+}
+
+function confirmMarkPaid() {
+    const remittanceRef = document.getElementById('remittanceRef').value;
+    
+    fetch('/admin/mark-invoice-paid', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            affiliate_id: currentInvoice.affiliateId,
+            invoice_week: currentInvoice.invoiceWeek,
+            remittance_ref: remittanceRef
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error marking invoice as paid: ' + error);
+    });
+}
+</script>
+{% endblock %}

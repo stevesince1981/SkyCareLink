@@ -1,0 +1,51 @@
+{
+  "entries": [
+    {
+      "id": "5391caf6-55ad-48d5-8041-8a20bb951d34",
+      "booking_id": "phase6-test-001",
+      "affiliate_id": "affiliate_1",
+      "is_dummy": false,
+      "base_amount_usd": 125000,
+      "gross_percent": 0.05,
+      "effective_percent": 0.04,
+      "commission_amount_usd": 5000,
+      "recoup_applied_usd": 1250,
+      "affiliate_recoup_total_usd": 17000,
+      "completed_at": "2025-08-10T03:06:30.909268",
+      "invoice_week": "2025-W32"
+    },
+    {
+      "id": "c98a673b-1af5-4319-807f-6397e8003edb",
+      "booking_id": "phase6-test-002",
+      "affiliate_id": "affiliate_2",
+      "is_dummy": false,
+      "base_amount_usd": 98000,
+      "gross_percent": 0.05,
+      "effective_percent": 0.05,
+      "commission_amount_usd": 4900,
+      "recoup_applied_usd": 0,
+      "affiliate_recoup_total_usd": 28500,
+      "completed_at": "2025-08-10T03:06:31.946353",
+      "invoice_week": "2025-W32"
+    },
+    {
+      "id": "c90d7361-9ad7-4572-9b0a-44f7e99514a8",
+      "booking_id": "phase6-test-003",
+      "affiliate_id": "affiliate_3",
+      "is_dummy": false,
+      "base_amount_usd": 156000,
+      "gross_percent": 0.05,
+      "effective_percent": 0.04,
+      "commission_amount_usd": 6240,
+      "recoup_applied_usd": 1560,
+      "affiliate_recoup_total_usd": 9760,
+      "completed_at": "2025-08-10T03:06:33.114059",
+      "invoice_week": "2025-W32"
+    }
+  ],
+  "meta": {
+    "version": 1,
+    "created_at": "2025-08-10T02:44:00Z",
+    "last_updated": "2025-08-10T03:06:33.114148"
+  }
+}

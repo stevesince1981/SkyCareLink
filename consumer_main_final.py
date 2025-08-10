@@ -2,10 +2,12 @@ import os
 import logging
 import json
 import uuid
+import csv
+from pathlib import Path
 # import requests  # Will install if Google Places API is needed
 from datetime import datetime, timedelta
 import random
-from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify, send_file
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -31,6 +33,15 @@ MEDFLY_CONFIG = {
     'twilio_account_sid': os.environ.get("TWILIO_ACCOUNT_SID", "demo-sid"),
     'twilio_auth_token': os.environ.get("TWILIO_AUTH_TOKEN", "demo-token"),
     'sendgrid_api_key': os.environ.get("SENDGRID_API_KEY", "demo-key")
+}
+
+# Phase 6.A: Commission Configuration
+COMMISSION_CONFIG = {
+    'base_rate': 0.04,  # 4% until $25k recoup threshold
+    'tier_2_rate': 0.05,  # 5% after $25k recoup threshold
+    'recoup_threshold_usd': 25000,
+    'recoup_rate': 0.01,  # 1% added to recoup when under threshold
+    'invoice_net_days': 7  # NET 7 payment terms
 }
 
 # Equipment pricing (dynamic)
@@ -666,6 +677,115 @@ def api_opt_in_assistance():
         logging.error(f"Opt-in assistance error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# Phase 6.A: Commission Ledger Functions
+def load_json_data(file_path, default_data=None):
+    """Safely load JSON data with fallback"""
+    try:
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as f:
+                return json.load(f)
+        else:
+            if default_data:
+                save_json_data(file_path, default_data)
+                return default_data
+            return {}
+    except Exception as e:
+        logging.error(f"Error loading {file_path}: {e}")
+        return default_data or {}
+
+def save_json_data(file_path, data):
+    """Safely save JSON data"""
+    try:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=2)
+        return True
+    except Exception as e:
+        logging.error(f"Error saving {file_path}: {e}")
+        return False
+
+def get_invoice_week(date_obj):
+    """Get invoice week in format YYYY-Www (Sunday-Saturday)"""
+    # Find the Sunday of the week containing the date
+    days_since_sunday = date_obj.weekday() % 7  # Sunday = 0, Monday = 1, etc.
+    sunday = date_obj - timedelta(days=days_since_sunday)
+    year, week, _ = sunday.isocalendar()
+    return f"{year}-W{week:02d}"
+
+def get_affiliate_recoup_amount(affiliate_id):
+    """Get current recoup amount for affiliate"""
+    recoup_data = load_json_data('data/affiliates_recoup.json', {})
+    return recoup_data.get(affiliate_id, {}).get('recouped_amount_usd', 0)
+
+def update_affiliate_recoup_amount(affiliate_id, new_amount):
+    """Update affiliate's recoup amount"""
+    recoup_data = load_json_data('data/affiliates_recoup.json', {})
+    recoup_data[affiliate_id] = {
+        'recouped_amount_usd': new_amount,
+        'updated_at': datetime.now().isoformat()
+    }
+    return save_json_data('data/affiliates_recoup.json', recoup_data)
+
+def record_commission_entry(booking_id, affiliate_id, base_amount_usd, is_dummy=False):
+    """Record commission entry when booking completes"""
+    try:
+        if is_dummy:
+            logging.info(f"Skipping commission for dummy booking {booking_id}")
+            return True
+            
+        # Get current recoup amount
+        current_recoup = get_affiliate_recoup_amount(affiliate_id)
+        
+        # Determine commission rates
+        gross_percent = COMMISSION_CONFIG['tier_2_rate']  # Always 5% gross
+        effective_percent = COMMISSION_CONFIG['base_rate'] if current_recoup < COMMISSION_CONFIG['recoup_threshold_usd'] else COMMISSION_CONFIG['tier_2_rate']
+        
+        # Calculate commission
+        commission_amount = round(base_amount_usd * effective_percent)
+        
+        # Calculate recoup if under threshold
+        recoup_applied = 0
+        if effective_percent == COMMISSION_CONFIG['base_rate']:
+            recoup_applied = round(base_amount_usd * COMMISSION_CONFIG['recoup_rate'])
+            new_recoup = current_recoup + recoup_applied
+            update_affiliate_recoup_amount(affiliate_id, new_recoup)
+        else:
+            new_recoup = current_recoup
+        
+        # Create ledger entry
+        entry = {
+            'id': str(uuid.uuid4()),
+            'booking_id': str(booking_id),
+            'affiliate_id': affiliate_id,
+            'is_dummy': is_dummy,
+            'base_amount_usd': base_amount_usd,
+            'gross_percent': gross_percent,
+            'effective_percent': effective_percent,
+            'commission_amount_usd': commission_amount,
+            'recoup_applied_usd': recoup_applied,
+            'affiliate_recoup_total_usd': new_recoup,
+            'completed_at': datetime.now().isoformat(),
+            'invoice_week': get_invoice_week(datetime.now())
+        }
+        
+        # Add to ledger
+        ledger_data = load_json_data('data/ledger.json', {'entries': [], 'meta': {'version': 1}})
+        ledger_data['entries'].append(entry)
+        ledger_data['meta']['last_updated'] = datetime.now().isoformat()
+        
+        if save_json_data('data/ledger.json', ledger_data):
+            rate_display = f"{int(effective_percent * 100)}%"
+            recoup_display = f"${new_recoup:,}/{COMMISSION_CONFIG['recoup_threshold_usd']:,}"
+            logging.info(f"Commission recorded ({rate_display}, recoup {recoup_display})")
+            return True
+        
+        return False
+        
+    except Exception as e:
+        logging.error(f"Error recording commission: {e}")
+        return False
+
 @consumer_app.route('/api/cancel-request/<request_id>', methods=['POST'])
 def api_cancel_request(request_id):
     """Cancel active request endpoint (cannot delete, only cancel)"""
@@ -981,6 +1101,217 @@ def consumer_tracking():
                          weather_data=weather_data,
                          delay_prediction=delay_prediction)
 
+@consumer_app.route('/api/complete-booking', methods=['POST'])
+def api_complete_booking():
+    """Phase 6.A: Complete booking and record commission"""
+    try:
+        data = request.get_json()
+        booking_id = data.get('booking_id')
+        affiliate_id = data.get('affiliate_id')
+        base_amount = data.get('base_amount_usd', 0)
+        is_dummy = data.get('is_dummy', False)
+        
+        # Record commission entry
+        success = record_commission_entry(booking_id, affiliate_id, base_amount, is_dummy)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Booking completed and commission recorded'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to record commission'
+            }), 500
+            
+    except Exception as e:
+        logging.error(f"Booking completion error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# Phase 6.A: Invoice Generation Functions
+def generate_weekly_invoices():
+    """Generate weekly invoices for all affiliates"""
+    try:
+        ledger_data = load_json_data('data/ledger.json', {'entries': []})
+        invoices_index = load_json_data('data/invoices/index.json', {'invoices': []})
+        
+        # Group entries by affiliate and week
+        invoice_groups = {}
+        for entry in ledger_data['entries']:
+            if entry.get('is_dummy', False):
+                continue  # Skip dummy bookings
+                
+            key = f"{entry['affiliate_id']}_{entry['invoice_week']}"
+            if key not in invoice_groups:
+                invoice_groups[key] = []
+            invoice_groups[key].append(entry)
+        
+        generated_invoices = []
+        
+        for group_key, entries in invoice_groups.items():
+            affiliate_id, invoice_week = group_key.split('_', 1)
+            
+            # Check if invoice already exists
+            existing = any(inv['affiliate_id'] == affiliate_id and inv['invoice_week'] == invoice_week 
+                          for inv in invoices_index['invoices'])
+            if existing:
+                continue
+                
+            # Calculate totals
+            total_commission = sum(entry['commission_amount_usd'] for entry in entries)
+            
+            # Generate CSV
+            csv_filename = f"data/invoices/{affiliate_id}_{invoice_week}.csv"
+            generate_invoice_csv(csv_filename, entries)
+            
+            # Generate HTML invoice
+            html_filename = f"data/invoices/{affiliate_id}_{invoice_week}.html"
+            generate_invoice_html(html_filename, affiliate_id, invoice_week, entries, total_commission)
+            
+            # Add to invoices index
+            invoice_record = {
+                'affiliate_id': affiliate_id,
+                'invoice_week': invoice_week,
+                'status': 'issued',
+                'issued_at': datetime.now().isoformat(),
+                'total_usd': total_commission,
+                'csv_file': csv_filename,
+                'html_file': html_filename
+            }
+            
+            invoices_index['invoices'].append(invoice_record)
+            generated_invoices.append(invoice_record)
+        
+        # Save updated invoices index
+        save_json_data('data/invoices/index.json', invoices_index)
+        
+        return generated_invoices
+        
+    except Exception as e:
+        logging.error(f"Error generating invoices: {e}")
+        return []
+
+def generate_invoice_csv(filename, entries):
+    """Generate CSV file for invoice"""
+    try:
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['booking_id', 'completed_at', 'base_amount_usd', 'effective_percent', 'commission_amount_usd'])
+            
+            for entry in entries:
+                writer.writerow([
+                    entry['booking_id'],
+                    entry['completed_at'],
+                    entry['base_amount_usd'],
+                    f"{entry['effective_percent']:.1%}",
+                    entry['commission_amount_usd']
+                ])
+        return True
+    except Exception as e:
+        logging.error(f"Error generating CSV {filename}: {e}")
+        return False
+
+def generate_invoice_html(filename, affiliate_id, invoice_week, entries, total_commission):
+    """Generate HTML invoice"""
+    try:
+        # Get week date range
+        year, week_num = invoice_week.split('-W')
+        week_start = datetime.strptime(f"{year}-W{week_num}-0", "%Y-W%W-%w")
+        week_end = week_start + timedelta(days=6)
+        
+        due_date = datetime.now() + timedelta(days=COMMISSION_CONFIG['invoice_net_days'])
+        
+        html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MediFly Commission Invoice - {invoice_week}</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 40px; }}
+        .header {{ text-align: center; margin-bottom: 30px; }}
+        .invoice-details {{ margin-bottom: 30px; }}
+        .table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+        .table th, .table td {{ border: 1px solid #ddd; padding: 12px; text-align: left; }}
+        .table th {{ background-color: #f2f2f2; }}
+        .total {{ font-size: 1.2em; font-weight: bold; }}
+        .remit-info {{ background-color: #f9f9f9; padding: 20px; margin-top: 30px; }}
+        .footer {{ margin-top: 40px; font-size: 0.9em; color: #666; }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚁 MediFly Commission Invoice</h1>
+        <p>Professional Air Medical Transport Network</p>
+    </div>
+    
+    <div class="invoice-details">
+        <p><strong>Affiliate:</strong> {affiliate_id}</p>
+        <p><strong>Invoice Week:</strong> {invoice_week} ({week_start.strftime('%Y-%m-%d')} to {week_end.strftime('%Y-%m-%d')})</p>
+        <p><strong>Invoice Date:</strong> {datetime.now().strftime('%Y-%m-%d')}</p>
+        <p><strong>Due Date:</strong> {due_date.strftime('%Y-%m-%d')} (NET {COMMISSION_CONFIG['invoice_net_days']} days)</p>
+    </div>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Completed Date</th>
+                <th>Base Amount</th>
+                <th>Commission Rate</th>
+                <th>Commission Due</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+        
+        for entry in entries:
+            completion_date = datetime.fromisoformat(entry['completed_at']).strftime('%Y-%m-%d')
+            html_content += f"""
+            <tr>
+                <td>{entry['booking_id'][:8]}...</td>
+                <td>{completion_date}</td>
+                <td>${entry['base_amount_usd']:,}</td>
+                <td>{entry['effective_percent']:.1%}</td>
+                <td>${entry['commission_amount_usd']:,}</td>
+            </tr>
+"""
+        
+        html_content += f"""
+        </tbody>
+    </table>
+    
+    <p class="total">Total Commission Due: ${total_commission:,}</p>
+    
+    <div class="remit-info">
+        <h3>Payment Instructions</h3>
+        <p><strong>Bank:</strong> MediFly Business Bank</p>
+        <p><strong>Routing Number:</strong> 021000021</p>
+        <p><strong>Account Number:</strong> 123456789</p>
+        <p><strong>Reference:</strong> MEDFLY-{affiliate_id}-{invoice_week}</p>
+        <p><strong>Payment Method:</strong> ACH Transfer</p>
+    </div>
+    
+    <div class="footer">
+        <p>MediFly facilitates connections between patients and air medical transport providers. You collect full booking payments. ACH commission due weekly on issued invoices.</p>
+        <p><strong>Payment acknowledges acceptance of services invoiced.</strong></p>
+        <p>All medical decisions and transport services are provided by independent, licensed operators.</p>
+    </div>
+</body>
+</html>
+"""
+        
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        with open(filename, 'w') as f:
+            f.write(html_content)
+        return True
+        
+    except Exception as e:
+        logging.error(f"Error generating HTML {filename}: {e}")
+        return False
+
 @consumer_app.route('/referrals')
 def referrals_page():
     """Referral member page with engaging visuals"""
@@ -1018,6 +1349,81 @@ def partners_page():
     
     return render_template('consumer_partners.html', benefits=partner_benefits, stats=partner_stats)
 
+# Phase 6.A: Affiliate Commission Dashboard
+@consumer_app.route('/affiliate/commissions')
+def affiliate_commissions():
+    """Affiliate commission dashboard"""
+    if not session.get('logged_in') or session.get('user_role') != 'affiliate':
+        flash('Affiliate access required.', 'error')
+        return redirect(url_for('login'))
+    
+    # In a real system, this would be based on the logged-in affiliate
+    # For demo, we'll use affiliate_1 as example
+    affiliate_id = 'affiliate_1'  # session.get('affiliate_id', 'affiliate_1')
+    
+    # Load ledger and invoice data
+    ledger_data = load_json_data('data/ledger.json', {'entries': []})
+    invoices_data = load_json_data('data/invoices/index.json', {'invoices': []})
+    
+    # Filter data for this affiliate
+    affiliate_entries = [entry for entry in ledger_data['entries'] 
+                        if entry['affiliate_id'] == affiliate_id and not entry.get('is_dummy', False)]
+    affiliate_invoices = [inv for inv in invoices_data['invoices'] 
+                         if inv['affiliate_id'] == affiliate_id]
+    
+    # Get recoup progress
+    current_recoup = get_affiliate_recoup_amount(affiliate_id)
+    recoup_threshold = COMMISSION_CONFIG['recoup_threshold_usd']
+    recoup_percentage = min((current_recoup / recoup_threshold) * 100, 100)
+    
+    # Calculate totals by week
+    weekly_totals = {}
+    for entry in affiliate_entries:
+        week = entry['invoice_week']
+        if week not in weekly_totals:
+            weekly_totals[week] = {
+                'week': week,
+                'bookings': 0,
+                'total_base': 0,
+                'total_commission': 0,
+                'status': 'pending'
+            }
+        weekly_totals[week]['bookings'] += 1
+        weekly_totals[week]['total_base'] += entry['base_amount_usd']
+        weekly_totals[week]['total_commission'] += entry['commission_amount_usd']
+    
+    # Update status from invoices
+    for invoice in affiliate_invoices:
+        week = invoice['invoice_week']
+        if week in weekly_totals:
+            weekly_totals[week]['status'] = invoice['status']
+            weekly_totals[week]['issued_at'] = invoice.get('issued_at')
+            weekly_totals[week]['paid_at'] = invoice.get('paid_at')
+    
+    # Sort by week (newest first)
+    weekly_summary = sorted(weekly_totals.values(), key=lambda x: x['week'], reverse=True)
+    
+    # Overall stats
+    total_bookings = len(affiliate_entries)
+    total_commission_earned = sum(entry['commission_amount_usd'] for entry in affiliate_entries)
+    total_base_volume = sum(entry['base_amount_usd'] for entry in affiliate_entries)
+    
+    return render_template('affiliate_commissions.html',
+                         affiliate_id=affiliate_id,
+                         weekly_summary=weekly_summary,
+                         recoup_progress={
+                             'current': current_recoup,
+                             'threshold': recoup_threshold,
+                             'percentage': recoup_percentage,
+                             'tier': 'Tier 2 (5%)' if current_recoup >= recoup_threshold else 'Tier 1 (4%)'
+                         },
+                         stats={
+                             'total_bookings': total_bookings,
+                             'total_commission': total_commission_earned,
+                             'total_volume': total_base_volume,
+                             'avg_commission_rate': (total_commission_earned / total_base_volume * 100) if total_base_volume > 0 else 0
+                         })
+
 @consumer_app.route('/admin/fee_adjustment')
 def admin_fee_adjustment():
     """Admin dashboard for adjusting non-refundable fee"""
@@ -1028,6 +1434,122 @@ def admin_fee_adjustment():
     current_fee = MEDFLY_CONFIG['non_refundable_fee']
     
     return render_template('admin_fee_adjustment.html', current_fee=current_fee)
+
+# Phase 6.A: Admin Invoice Management Routes
+@consumer_app.route('/admin/invoices')
+def admin_invoices():
+    """Admin dashboard for invoice management"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    # Load invoices and ledger data
+    invoices_data = load_json_data('data/invoices/index.json', {'invoices': []})
+    ledger_data = load_json_data('data/ledger.json', {'entries': []})
+    
+    # Group invoices by week for summary
+    week_filter = request.args.get('week', '')
+    affiliate_filter = request.args.get('affiliate', '')
+    
+    invoices = invoices_data['invoices']
+    
+    # Apply filters
+    if week_filter:
+        invoices = [inv for inv in invoices if inv['invoice_week'] == week_filter]
+    if affiliate_filter:
+        invoices = [inv for inv in invoices if inv['affiliate_id'] == affiliate_filter]
+    
+    # Get unique weeks and affiliates for filters
+    all_weeks = sorted(set(inv['invoice_week'] for inv in invoices_data['invoices']), reverse=True)
+    all_affiliates = sorted(set(inv['affiliate_id'] for inv in invoices_data['invoices']))
+    
+    # Calculate summary stats
+    total_issued = sum(inv['total_usd'] for inv in invoices if inv['status'] == 'issued')
+    total_paid = sum(inv['total_usd'] for inv in invoices if inv['status'] == 'paid')
+    
+    return render_template('admin_invoices.html',
+                         invoices=invoices,
+                         all_weeks=all_weeks,
+                         all_affiliates=all_affiliates,
+                         week_filter=week_filter,
+                         affiliate_filter=affiliate_filter,
+                         total_issued=total_issued,
+                         total_paid=total_paid)
+
+@consumer_app.route('/admin/generate-invoices', methods=['POST'])
+def admin_generate_invoices():
+    """Generate weekly invoices for all affiliates"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+    
+    generated = generate_weekly_invoices()
+    
+    if generated:
+        message = f"Generated {len(generated)} new invoice(s)"
+        flash(message, 'success')
+        logging.info(f"ADMIN: {message} by {session.get('contact_name', 'admin')}")
+    else:
+        flash('No new invoices to generate', 'info')
+    
+    return redirect(url_for('admin_invoices'))
+
+@consumer_app.route('/admin/mark-invoice-paid', methods=['POST'])
+def admin_mark_invoice_paid():
+    """Mark an invoice as paid"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+    
+    try:
+        data = request.get_json()
+        affiliate_id = data.get('affiliate_id')
+        invoice_week = data.get('invoice_week')
+        remittance_ref = data.get('remittance_ref', '')
+        
+        # Update invoice status
+        invoices_data = load_json_data('data/invoices/index.json', {'invoices': []})
+        
+        for invoice in invoices_data['invoices']:
+            if invoice['affiliate_id'] == affiliate_id and invoice['invoice_week'] == invoice_week:
+                invoice['status'] = 'paid'
+                invoice['paid_at'] = datetime.now().isoformat()
+                if remittance_ref:
+                    invoice['remittance_ref'] = remittance_ref
+                break
+        
+        if save_json_data('data/invoices/index.json', invoices_data):
+            logging.info(f"ADMIN: Invoice {affiliate_id}_{invoice_week} marked as paid")
+            return jsonify({'success': True, 'message': 'Invoice marked as paid'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to update invoice'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error marking invoice as paid: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@consumer_app.route('/admin/download-invoice/<affiliate_id>/<invoice_week>/<file_type>')
+def admin_download_invoice(affiliate_id, invoice_week, file_type):
+    """Download invoice CSV or HTML"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    try:
+        if file_type == 'csv':
+            filename = f"data/invoices/{affiliate_id}_{invoice_week}.csv"
+            if os.path.exists(filename):
+                return send_file(filename, as_attachment=True, download_name=f"{affiliate_id}_{invoice_week}.csv")
+        elif file_type == 'html':
+            filename = f"data/invoices/{affiliate_id}_{invoice_week}.html"
+            if os.path.exists(filename):
+                return send_file(filename, as_attachment=False)
+        
+        flash('Invoice file not found', 'error')
+        return redirect(url_for('admin_invoices'))
+        
+    except Exception as e:
+        logging.error(f"Error downloading invoice: {e}")
+        flash('Error downloading invoice', 'error')
+        return redirect(url_for('admin_invoices'))
 
 @consumer_app.route('/admin/fee_adjustment', methods=['POST'])
 def admin_fee_adjustment_post():
@@ -1295,6 +1817,36 @@ def admin_reject_provider(provider_id):
 def join_hospital():
     """Join as Hospital/Clinic"""
     return render_template('join_hospital.html')
+
+# Phase 6.A: Test Commission Recording (for demonstration)
+@consumer_app.route('/test-commission')
+def test_commission():
+    """Test endpoint to create sample commission entries"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required for testing.', 'error')
+        return redirect(url_for('login'))
+    
+    # Create some test commission entries
+    test_bookings = [
+        {'booking_id': 'test-001', 'affiliate_id': 'affiliate_1', 'base_amount': 125000, 'is_dummy': False},
+        {'booking_id': 'test-002', 'affiliate_id': 'affiliate_2', 'base_amount': 98000, 'is_dummy': False},
+        {'booking_id': 'test-003', 'affiliate_id': 'affiliate_1', 'base_amount': 156000, 'is_dummy': False},
+        {'booking_id': 'dummy-001', 'affiliate_id': 'affiliate_1', 'base_amount': 75000, 'is_dummy': True}
+    ]
+    
+    created = 0
+    for booking in test_bookings:
+        success = record_commission_entry(
+            booking['booking_id'], 
+            booking['affiliate_id'], 
+            booking['base_amount'], 
+            booking['is_dummy']
+        )
+        if success:
+            created += 1
+    
+    flash(f'Created {created} test commission entries', 'success')
+    return redirect(url_for('admin_invoices'))
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

@@ -6,7 +6,28 @@ MediFly is a Flask-based web application that simulates a hospital interface for
 
 ## Recent Enhancements (August 2025)
 
-### Phase 4.A: Hybrid Provider Search Implementation (Latest - August 10, 2025)
+### Phase 6.A: Commission Ledger & Weekly ACH Exports (Latest - August 10, 2025)
+- Implemented comprehensive commission accounting system with 4%/5% tier structure and $25,000 recoup threshold
+- Created JSON-based ledger system (`data/ledger.json`) with complete booking commission tracking
+- Developed affiliate recoup tracking (`data/affiliates_recoup.json`) with automatic tier progression
+- Built weekly invoice generation with CSV and HTML export capabilities
+- Implemented admin invoice management dashboard with filtering, status tracking, and payment marking
+- Created affiliate commission portal showing recoup progress, weekly summaries, and earnings history
+- Added automatic commission recording hooks for booking completion (excluding training/dummy bookings)
+- Integrated Sunday-Saturday invoice week calculation and NET 7 payment terms
+- All ACH remit details and payment flow clearly documented in invoice templates
+- Commission system fully tested with 4% (Tier 1) and 5% (Tier 2) rate calculations working correctly
+
+### Phase 5.A: Quote Distribution Fairness & Compact UX (August 10, 2025)
+- Implemented fairness system with 30-day response rate tracking and spotlight badges for new/low-volume affiliates
+- Created compact quotes layout showing 5 quotes initially with "View 5 More" expansion functionality
+- Added compassionate zero-result handling with third-party assistance opt-in capability
+- Developed quote selection locking mechanism that reveals affiliate names and prevents intake modifications
+- Enhanced timing display with fan-out response windows and saturated market delay warnings
+- All fairness deprioritization logic working for affiliates with <50% response rates
+- Ground transfer badges and tooltips preserved with proper accessibility features
+
+### Phase 4.A: Hybrid Provider Search Implementation (August 10, 2025)
 - Implemented comprehensive hybrid provider search system with internal cache, Google Places integration, and manual fallback
 - Created JSON-based data structure (`data/providers_index.json`) with 10 pre-populated providers across major medical centers and airports
 - Added search metrics tracking (`data/search_metrics.json`) for Year 3 cost control KPIs

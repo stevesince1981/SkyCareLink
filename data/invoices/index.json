@@ -1,0 +1,11 @@
+{
+  "invoices": [
+    {
+      "affiliate_id": "affiliate_1",
+      "invoice_week": "2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:07:07.099026",
+      "total_usd": 11240
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+PHASE 6.A — APPLY: Commission Ledger, Recoup, Weekly ACH Exports
+ROLE: Senior engineer. Implement commission accounting with post‑flight ACH invoicing. No escrow. Keep HIPAA‑minimal.
+
+BUSINESS RULES
+
+Flat affiliate fee remains separate.
+
+For each completed flight/booking:
+
+Commission = 4% until the affiliate’s cumulative recouped_amount hits $25,000, then 5% thereafter.
+
+When effective commission is 4%, also add 1% of base to affiliate’s recouped_amount (progress toward the $25k).
+
+Invoices are weekly (Mon–Sun or Sun–Sat—choose one and display it).
+
+Payment flow: Affiliate collects full amount from Hospital/Clinic; Affiliate pays us via ACH after flight completion when invoiced. No escrow.
+
+Training/Dummy bookings never appear in invoices or revenue totals.
+
+RULES
+
+Archive before edits.
+
+If no DB yet, persist safely (e.g., /data/ledger.json, /data/invoices/…).
+
+Don’t block existing flows; hook into “booking completed” point already present.
+
+Keep terminology: Affiliate (air operator), Hospital/Clinic (requester).
+
+TASKS
+
+Ledger storage
+
+Create /data/ledger.json if missing:
+
+json
+Copy
+Edit
+{
+  "entries": [
+    {
+      "id": "<uuid>",
+      "booking_id": "<uuid|int>",
+      "affiliate_id": "affiliate_123",
+      "is_dummy": false,
+      "base_amount_usd": 25000,
+      "gross_percent": 0.05,
+      "effective_percent": 0.04,
+      "commission_amount_usd": 1000,
+      "recoup_applied_usd": 250,        // 1% if under threshold
+      "affiliate_recoup_total_usd": 7500,
+      "completed_at": "ISO8601",
+      "invoice_week": "YYYY-Www"        // e.g., 2025-W33
+    }
+  ],
+  "meta": { "version": 1 }
+}
+Create /data/affiliates_recoup.json to track cumulative recouped_amount per affiliate:
+
+json
+Copy
+Edit
+{
+  "affiliate_123": { "recouped_amount_usd": 12345, "updated_at": "ISO8601" }
+}
+Hook: on booking completion
+
+When a booking flips to Completed (not dummy):
+
+Read affiliate’s recouped_amount.
+
+Set gross_percent = 0.05.
+
+Set effective_percent = 0.04 if recouped_amount < 25000, else 0.05.
+
+commission_amount = round(base_amount * effective_percent).
+
+If effective_percent == 0.04, add round(base_amount * 0.01) to recouped_amount and persist.
+
+Append ledger entry with ISO timestamp and invoice_week.
+
+Show a small toast or log: “Commission recorded (4%/5%, recoup X/Y).”
+
+Weekly invoice generation
+
+New Admin action: “Generate Weekly Invoices”:
+
+Groups ledger entries by affiliate_id and invoice_week.
+
+Sums commission_amount_usd.
+
+Creates CSV at /data/invoices/<affiliate_id>_<invoice_week>.csv with rows:
+
+booking_id, completed_at, base_amount_usd, effective_percent, commission_amount_usd
+
+Creates simple PDF stub (or HTML-to-PDF-ready HTML) with totals, remit‑to instructions, ACH instructions, and due date (e.g., NET 7).
+
+Mark invoice as Issued with timestamp in a simple /data/invoices/index.json:
+
+json
+Copy
+Edit
+{
+  "invoices":[
+    {"affiliate_id":"affiliate_123","invoice_week":"2025-W33","status":"issued","issued_at":"ISO","total_usd":12345}
+  ]
+}
+New Admin action per invoice: Mark as Paid (stores paid_at, optional remittance_ref).
+
+Dashboards
+
+Admin > Invoices:
+
+Table grouped by week: Affiliate, Total Due, Status (Issued/Paid), issued_at, paid_at, download links (CSV, PDF/HTML).
+
+Filter by week or affiliate.
+
+Affiliate portal > Commissions:
+
+Totals by week, status, recoup progress bar (e.g., $17,500 / $25,000), list of bookings included.
+
+Note: “You collect full booking payments. ACH commission due weekly on issued invoices.”
+
+Hospital/Clinic portal: no commission views.
+
+Training/Dummy exclusions
+
+Ensure any booking marked dummy/training never enters the ledger or invoice groups.
+
+If training mode is on, show a subtle note on the portal commissions tab: “Hidden in training mode.”
+
+CSV/PDF/HTML templates
+
+Add tasteful header:
+
+MediFly logo/text (placeholder)
+
+Affiliate name + invoice week (e.g., “2025‑W33” with date range)
+
+Remit‑to (ACH) details placeholder text
+
+Footer: the standard liability note and “Payment acknowledges acceptance of services invoiced.”
+
+Settings & ACH note
+
+Add Admin config fields (even if just stored in JSON):
+
+Invoice week definition (Sun–Sat vs Mon–Sun)
+
+ACH remit info (bank name, routing, account, reference format)
+
+From email for sending invoice notices (actual email‑send can remain stubbed)
+
+Outputs
+
+Print paths created/updated:
+
+/data/ledger.json, /data/affiliates_recoup.json
+
+/data/invoices/index.json, per‑invoice CSV/PDF/HTML files
+
+List new UI entry points:
+
+Admin > Invoices
+
+Affiliate > Commissions
+
+End with: READY FOR PHASE 6.B if successful.
