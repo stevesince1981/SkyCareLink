@@ -785,13 +785,9 @@ def send_urgency_alert(user_contact, hours_remaining, quote_data):
 
 # Routes
 @consumer_app.route('/')
-def consumer_index():
-    """Consumer homepage - pancake stack intake form"""
-    transport_type = request.args.get('type', 'critical')
-    return render_template('index.html', 
-                         transport_type=transport_type,
-                         equipment_pricing=EQUIPMENT_PRICING,
-                         datetime=datetime)
+def home():
+    """Home landing page with hero and CTAs"""
+    return render_template('home.html')
 
 @consumer_app.route('/login')
 def login():
@@ -865,7 +861,7 @@ def login_post():
             elif user['role'] == 'hospital':
                 return redirect(url_for('consumer_requests'))
             else:
-                return redirect(url_for('consumer_index'))
+                return redirect(url_for('home'))
     else:
         flash('Invalid credentials or too many attempts. Try: family, hospital, affiliate, mvp, or admin with password: demo123', 'error')
         return redirect(url_for('login'))
@@ -938,7 +934,7 @@ def mfa_verify_post():
         elif user['role'] == 'hospital':
             return redirect(url_for('consumer_requests'))
         else:
-            return redirect(url_for('consumer_index'))
+            return redirect(url_for('home'))
     else:
         log_security_event(username, 'mfa_failed', ip_address, user_agent)
         flash('Invalid MFA code. Please try again.', 'error')
@@ -955,7 +951,7 @@ def logout():
     
     session.clear()
     flash('Logged out successfully.', 'info')
-    return redirect(url_for('consumer_index'))
+    return redirect(url_for('home'))
 
 @consumer_app.route('/reset', methods=['GET', 'POST'])
 def password_reset():
@@ -993,7 +989,7 @@ def admin_security():
     """Admin security dashboard"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     # Load security data
     security_log = load_security_data('data/security_log.json', {'events': []})
@@ -1061,7 +1057,7 @@ def admin_unlock_account():
     """Admin unlock account"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     username = request.form.get('username')
     ip_address = request.environ.get('REMOTE_ADDR', 'unknown')
@@ -1091,7 +1087,7 @@ def admin_lock_account():
     """Admin lock account"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     username = request.form.get('username')
     duration_hours = int(request.form.get('duration', 1))
@@ -1151,7 +1147,7 @@ def signup_post():
     }
     
     flash(f'Account created! Check your email ({email}) for verification code: {verification_code}', 'success')
-    return redirect(url_for('consumer_index'))
+    return redirect(url_for('home'))
 
 @consumer_app.route('/referrals')
 def consumer_referrals():
@@ -1173,7 +1169,7 @@ def admin_delisted():
     """Admin page for delisted affiliate management"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     delisted_data = load_json_data('data/delisted_affiliates.json', {'delisted': [], 'meta': {}})
     active_affiliates = get_active_affiliates()
@@ -1230,7 +1226,7 @@ def admin_announcements():
     """Admin page for announcement management with EST timezone"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     announcements_data = load_json_data('data/announcements.json', {'announcements': []})
     return render_template('admin_announcements.html', announcements_data=announcements_data)
@@ -1240,7 +1236,7 @@ def admin_announcements_create():
     """Create new announcement - CRUD CREATE"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     try:
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
@@ -1274,7 +1270,7 @@ def admin_announcements_update(announcement_id):
     """Update existing announcement - CRUD UPDATE"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     try:
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
@@ -1309,7 +1305,7 @@ def admin_announcements_delete(announcement_id):
     """Delete announcement permanently - CRUD DELETE"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     try:
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
@@ -1347,7 +1343,7 @@ def admin_delist_affiliate():
     """Delist affiliate with strike tracking"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     try:
         affiliate_id = request.form.get('affiliate_id')
@@ -1385,7 +1381,7 @@ def admin_dashboard():
     """Enhanced admin dashboard with comprehensive controls"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     # Admin dashboard data with proper currency formatting
     admin_data = {
@@ -1841,12 +1837,12 @@ def toggle_training_mode():
     """Toggle training/dummy mode for organization"""
     if session.get('user_role') not in ['admin', 'hospital']:
         flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     session['training_mode'] = not session.get('training_mode', False)
     mode_status = "enabled" if session['training_mode'] else "disabled"
     flash(f'Training mode {mode_status}. All data will be clearly labeled as DUMMY DATA.', 'info')
-    return redirect(request.referrer or url_for('consumer_index'))
+    return redirect(request.referrer or url_for('home'))
 
 @consumer_app.route('/confirm')
 def confirm_account():
@@ -1854,7 +1850,7 @@ def confirm_account():
     pending = session.get('pending_signup', {})
     if not pending:
         flash('No pending account found. Your quotes will be available within 24-48 hours after account creation.', 'warning')
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
     
     return render_template('consumer_confirm.html', pending_signup=pending)
 
@@ -1874,26 +1870,14 @@ def consumer_booking():
 
 @consumer_app.route('/intake')
 def consumer_intake():
-    """Enhanced intake form with type selector and dynamic pricing - same as homepage"""
-    transport_type = request.args.get('type', 'critical')
-    return render_template('index.html', 
-                         transport_type=transport_type,
-                         equipment_pricing=EQUIPMENT_PRICING,
-                         datetime=datetime)
-
-@consumer_app.route('/new-request')
-def consumer_new_request():
-    """New request form - opens the updated intake template"""
+    """Enhanced intake form - last-night pancake template"""
     transport_type = request.args.get('type', 'critical')
     return render_template('consumer_intake_updated.html', 
                          transport_type=transport_type,
                          equipment_pricing=EQUIPMENT_PRICING,
                          datetime=datetime)
 
-@consumer_app.route('/new-request', methods=['POST'])
-def consumer_new_request_post():
-    """Process new request form - same as intake post"""
-    return consumer_intake_post()
+
 
 @consumer_app.route('/intake', methods=['POST'])
 def consumer_intake_post():
@@ -1925,12 +1909,12 @@ def consumer_intake_post():
 
 # Legacy route redirects (301 permanent redirects)
 @consumer_app.route('/request')
-@consumer_app.route('/consumer_index')
+@consumer_app.route('/home')
 @consumer_app.route('/request_transport')
 @consumer_app.route('/transport_request')
 def legacy_redirects():
-    """301 redirects from legacy routes to homepage"""
-    return redirect(url_for('consumer_index'), code=301)
+    """301 redirects from legacy routes to intake"""
+    return redirect(url_for('consumer_intake'), code=301)
 
 # System utilities and health checks
 def load_config():
@@ -2859,7 +2843,7 @@ def partner_dashboard():
 @consumer_app.route('/join_affiliate')
 def join_affiliate():
     """Join as Affiliate (Air Operator)"""
-    return render_template('join_affiliate.html')
+    return render_template('join_affiliate_page.html')
 
 # Provider Search API Endpoints
 @consumer_app.route('/api/providers/search')
@@ -3042,7 +3026,7 @@ def admin_reject_provider(provider_id):
 @consumer_app.route('/join_hospital')
 def join_hospital():
     """Join as Hospital/Clinic"""
-    return render_template('join_hospital.html')
+    return render_template('join_hospital_page.html')
 
 # Phase 6.A: Test Commission Recording (for demonstration)
 @consumer_app.route('/test-commission')
@@ -3175,7 +3159,7 @@ def update_preferences():
     time_format = request.form.get('time_format', '12h')
     session['time_format'] = time_format
     flash('Preferences updated successfully.', 'success')
-    return redirect(request.referrer or url_for('consumer_index'))
+    return redirect(request.referrer or url_for('home'))
 
 # Phase 7.C: Post-Flight Feedback Route
 @consumer_app.route('/submit_feedback', methods=['POST'])
@@ -3196,12 +3180,14 @@ def submit_feedback():
         logging.info(f"Post-flight feedback submitted: {feedback_data}")
         flash('Thank you for your feedback. Your input helps us improve our services.', 'success')
         
-        return redirect(url_for('consumer_index'))
+        return redirect(url_for('home'))
         
     except Exception as e:
         logging.error(f"Feedback submission error: {e}")
         flash('Error submitting feedback. Please try again.', 'error')
-        return redirect(request.referrer or url_for('consumer_index'))
+        return redirect(request.referrer or url_for('home'))
+
+
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

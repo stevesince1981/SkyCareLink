@@ -1,0 +1,68 @@
+PHASE 9.C — APPLY: Home vs Intake Routing (brand link → Home, intake → last‑night pancake)
+Paste this into Replit AI
+
+ROLE: Senior engineer. Restore real Home at /, point all “New Request” to /intake, and ensure /intake renders the last‑night pancake template. Archive before edits.
+
+TASKS
+
+Restore a real Home page at “/”
+
+If we previously archived the old home:
+
+Move /archive/templates/index_old.html back to templates/index.html
+
+If no home exists, create templates/index.html (landing) with hero + CTAs:
+
+Buttons: “New Request” → /intake, “Join as Affiliate” → /join_affiliate, “Join as Hospital/Clinic” → /join_hospital.
+
+Make the last‑night pancake the ONLY intake
+
+Ensure the actual pancake file is present (the one you restored last night):
+consumer_templates/consumer_intake_updated.html
+
+Route /intake to render that file exactly (no redirects to / anymore).
+
+Add a temporary admin‑only debug label at the top of the intake template:
+Template: consumer_intake_updated.html (last-night)
+
+Fix the navbar brand link everywhere
+
+In your active base layout(s) (e.g., consumer_templates/consumer_base.html):
+
+Set the brand link to: href="{{ url_for('home') }}" or href="/" (whichever your app uses)
+
+Ensure it does not point to /intake or a legacy route.
+
+Route cleanup
+
+Keep legacy request routes (e.g., /request, /consumer_index, /request_transport, /transport_request) as 301 → /intake (not to /).
+
+Remove any redirect that sends /intake → /.
+
+Link sweep
+
+Update all “New Request” / “+ New Request” / “Start a request” links and JS redirects to point to /intake.
+
+Leave the brand “MediFly” link pointing to /.
+
+Archive leftovers
+
+If a duplicate intake template exists (e.g., consumer_templates/index.html that was the pancake), move it to /archive/templates/intake/.
+
+OUTPUT
+
+Print:
+
+HOME: "/" → templates/index.html
+
+INTAKE: "/intake" → consumer_templates/consumer_intake_updated.html
+
+NAV: brand link → "/" (home)
+
+REDIRECTS: [/request, /consumer_index, /request_transport, /transport_request] → "/intake"
+
+ARCHIVED: any duplicate intake templates
+
+DEBUG: intake page shows "Template: consumer_intake_updated.html (last-night)" for admins
+
+End with: READY FOR 9.D

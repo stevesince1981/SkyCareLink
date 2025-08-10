@@ -112,13 +112,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Admin Debug Label -->
-{% if session.get('user_role') == 'admin' %}
-<div class="alert alert-info text-center mb-2" style="padding: 0.5rem; font-size: 0.9rem;">
-    <strong>Admin Debug:</strong> Template: consumer_intake_updated.html (last-night)
-</div>
-{% endif %}
-
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -132,7 +125,7 @@
             </div>
             
             <div class="intake-form">
-                <form id="intakeForm" action="{{ url_for('consumer_intake') }}" method="post">
+                <form id="intakeForm" action="{{ url_for('consumer_new_request_post') }}" method="post">
                     <!-- Step 1: Transport Type -->
                     <div class="form-step" id="formStep1">
                         <h3 class="mb-4">
@@ -185,7 +178,7 @@
                                 <li>Early access to beta features</li>
                                 <li>Dedicated family advocate</li>
                             </ul>
-                            <a href="{{ url_for('mvp_incentive') }}" class="btn btn-warning">Learn More About MVP</a>
+                            <a href="{{ url_for('subscribe', plan='monthly') }}" class="btn btn-warning">Learn More About MVP</a>
                         </div>
                     </div>
                     
