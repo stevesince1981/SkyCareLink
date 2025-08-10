@@ -1,0 +1,301 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}MVP Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.mvp-dashboard {
+    background: linear-gradient(135deg, #fff3e0, #e8f5e8);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.mvp-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #ff9800;
+}
+
+.beta-feature {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 0.5rem 0;
+    position: relative;
+}
+
+.beta-badge {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: #e91e63;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.feedback-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-left: 3px solid #ff9800;
+}
+
+.mvp-metric {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    margin: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mvp-dashboard">
+    <div class="container">
+        <!-- Header -->
+        <div class="mvp-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-star me-3"></i>MVP Early Adopter Dashboard</h1>
+                    <p class="lead">Welcome, {{ user.name }}</p>
+                    <p class="text-muted">Exclusive access to cutting-edge features and beta testing</p>
+                    <span class="badge bg-warning text-dark">
+                        <i class="fas fa-rocket me-1"></i>Beta Access Granted
+                    </span>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="mvp-metric">
+                        <i class="fas fa-flask fs-3"></i>
+                        <div>{{ early_features|length }}</div>
+                        <small>Beta Features</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beta Features -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mvp-card">
+                    <h4><i class="fas fa-rocket me-2"></i>Exclusive Beta Features</h4>
+                    {% for feature in early_features %}
+                    <div class="beta-feature">
+                        <div class="beta-badge">BETA</div>
+                        <h6><i class="fas fa-star me-2"></i>{{ feature }}</h6>
+                        {% if feature == 'AI Cost Estimator' %}
+                        <p>Advanced machine learning algorithms provide real-time cost predictions based on distance, severity, equipment needs, and market conditions.</p>
+                        <button class="btn btn-light btn-sm" onclick="testAIEstimator()">
+                            <i class="fas fa-play me-1"></i>Test Feature
+                        </button>
+                        {% elif feature == 'Route Optimizer' %}
+                        <p>Intelligent route planning that considers weather, airspace restrictions, and fuel efficiency to optimize transport paths.</p>
+                        <button class="btn btn-light btn-sm" onclick="testRouteOptimizer()">
+                            <i class="fas fa-play me-1"></i>Test Feature
+                        </button>
+                        {% elif feature == 'Family Communication Hub' %}
+                        <p>Real-time family notification system with automated updates, location sharing, and direct communication channels.</p>
+                        <button class="btn btn-light btn-sm" onclick="testCommunicationHub()">
+                            <i class="fas fa-play me-1"></i>Test Feature
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Feedback Requests -->
+                <div class="mvp-card">
+                    <h4><i class="fas fa-comment-dots me-2"></i>Feedback Requests ({{ feedback_requests }})</h4>
+                    <div class="feedback-item">
+                        <strong>AI Cost Estimator Accuracy</strong>
+                        <p>How accurate did you find the AI cost estimates compared to actual provider quotes?</p>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-success" onclick="submitFeedback('ai_estimator', 'excellent')">Excellent</button>
+                            <button class="btn btn-outline-primary" onclick="submitFeedback('ai_estimator', 'good')">Good</button>
+                            <button class="btn btn-outline-warning" onclick="submitFeedback('ai_estimator', 'needs_work')">Needs Work</button>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-item">
+                        <strong>Route Optimizer Performance</strong>
+                        <p>Did the route optimization suggestions save time or reduce costs?</p>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-success" onclick="submitFeedback('route_optimizer', 'very_helpful')">Very Helpful</button>
+                            <button class="btn btn-outline-primary" onclick="submitFeedback('route_optimizer', 'somewhat_helpful')">Somewhat Helpful</button>
+                            <button class="btn btn-outline-warning" onclick="submitFeedback('route_optimizer', 'not_helpful')">Not Helpful</button>
+                        </div>
+                    </div>
+
+                    <div class="feedback-item">
+                        <strong>Communication Hub Usability</strong>
+                        <p>How intuitive was the family communication interface?</p>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-success" onclick="submitFeedback('communication_hub', 'very_intuitive')">Very Intuitive</button>
+                            <button class="btn btn-outline-primary" onclick="submitFeedback('communication_hub', 'intuitive')">Intuitive</button>
+                            <button class="btn btn-outline-warning" onclick="submitFeedback('communication_hub', 'confusing')">Confusing</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MVP Tools -->
+            <div class="col-md-4">
+                <div class="mvp-card">
+                    <h5><i class="fas fa-tools me-2"></i>MVP Tools</h5>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="accessAITools()">
+                            <i class="fas fa-brain me-2"></i>AI Development Tools
+                        </button>
+                        <button class="btn btn-outline-success" onclick="viewAnalytics()">
+                            <i class="fas fa-chart-line me-2"></i>Usage Analytics
+                        </button>
+                        <button class="btn btn-outline-info" onclick="accessAPIDemo()">
+                            <i class="fas fa-code me-2"></i>API Demo Access
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="reportBug()">
+                            <i class="fas fa-bug me-2"></i>Report Bug
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Beta Statistics -->
+                <div class="mvp-card">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Beta Statistics</h5>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="mvp-metric">
+                                <div>127</div>
+                                <small>Tests Run</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mvp-metric">
+                                <div>23</div>
+                                <small>Bugs Found</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Your testing contributions have been invaluable!
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Early Access Perks -->
+                <div class="mvp-card">
+                    <h5><i class="fas fa-gift me-2"></i>MVP Perks</h5>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item border-0">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>50% discount on premium features</small>
+                        </div>
+                        <div class="list-group-item border-0">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>Priority customer support</small>
+                        </div>
+                        <div class="list-group-item border-0">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>Direct line to development team</small>
+                        </div>
+                        <div class="list-group-item border-0">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <small>Exclusive feature previews</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Access -->
+        <div class="row">
+            <div class="col-12">
+                <div class="mvp-card">
+                    <h5><i class="fas fa-cogs me-2"></i>Administrative Access</h5>
+                    <p class="text-muted">As an MVP user, you have access to administrative features for testing</p>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin_storyboard') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-presentation me-2"></i>Admin Storyboard
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin_panel') }}" class="btn btn-info w-100">
+                                <i class="fas fa-cog me-2"></i>Admin Panel
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('security_scan') }}" class="btn btn-warning w-100">
+                                <i class="fas fa-shield-alt me-2"></i>Security Testing
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('migration_status') }}" class="btn btn-success w-100">
+                                <i class="fas fa-rocket me-2"></i>Platform Status
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="mt-4">
+                    <a href="{{ url_for('secure_logout') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-out-alt me-2"></i>Secure Logout
+                    </a>
+                    <a href="{{ url_for('landing') }}" class="btn btn-outline-primary ms-3">
+                        <i class="fas fa-home me-2"></i>Back to Main Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function testAIEstimator() {
+    alert('AI Cost Estimator BETA:\n\nSample Estimate:\n• Orlando → Minneapolis\n• Severity Level 4\n• ICU Equipment Required\n\nAI Prediction: $127,500\nActual Provider Quotes: $125,000 - $130,000\nAccuracy: 98.4%\n\nBased on 500+ historical transports with machine learning optimization.');
+}
+
+function testRouteOptimizer() {
+    alert('Route Optimizer BETA:\n\nOptimized Route Analysis:\n• Direct route: 1,847 miles\n• Weather-optimized: 1,923 miles\n• Fuel efficiency: +12%\n• Time savings: 23 minutes\n• Cost reduction: $3,200\n\nRecommendation: Take optimized route for significant savings.');
+}
+
+function testCommunicationHub() {
+    alert('Family Communication Hub BETA:\n\nFeatures:\n• Real-time GPS tracking\n• Automated status updates\n• Direct family messaging\n• Emergency contact alerts\n• Medical team communication\n\n"Your loved one is now boarding the aircraft. Estimated arrival: 3:47 PM. Medical team is fully prepared."');
+}
+
+function submitFeedback(feature, rating) {
+    alert(`Feedback Submitted!\n\nFeature: ${feature}\nRating: ${rating}\n\nThank you for your valuable feedback! Our development team will review your input to improve the ${feature} feature.`);
+}
+
+function accessAITools() {
+    alert('AI Development Tools:\n\n• Model training interface\n• Data analysis dashboards\n• Algorithm performance metrics\n• Custom parameter tuning\n• Real-time testing environment\n\nAdvanced tools for MVP testers to help refine our AI systems.');
+}
+
+function viewAnalytics() {
+    alert('Usage Analytics:\n\n• Feature usage frequency\n• Performance benchmarks\n• User interaction patterns\n• Error rate tracking\n• Improvement suggestions\n\nDetailed analytics help us understand how features perform in real-world scenarios.');
+}
+
+function accessAPIDemo() {
+    alert('API Demo Access:\n\n• RESTful endpoint testing\n• Real-time data integration\n• Webhook demonstrations\n• Authentication testing\n• Rate limiting examples\n\nFull API access for integration testing and development feedback.');
+}
+
+function reportBug() {
+    alert('Bug Report System:\n\n• Detailed issue tracking\n• Screenshot capture\n• Steps to reproduce\n• System information\n• Priority classification\n\nBug report submitted! Our team will investigate and provide updates within 24 hours.');
+}
+</script>
+{% endblock %}

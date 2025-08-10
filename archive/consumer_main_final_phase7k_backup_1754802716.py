@@ -676,16 +676,14 @@ def admin_announcements_post():
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
         
         if action == 'create':
-            # Schema normalization on save
             new_announcement = {
                 'id': f"ann_{len(announcements_data['announcements']) + 1:03d}",
-                'message': request.form.get('message', '').strip(),
-                'style': request.form.get('style', 'info'),  # info|warn|success
-                'start_at': request.form.get('start_at'),    # ISO 8601 format
-                'end_at': request.form.get('end_at'),        # ISO 8601 format
-                'countdown_target': request.form.get('countdown_target', '').strip() or None,
+                'message': request.form.get('message', 'MediFly Platform 2.0 launching soon...'),
+                'style': request.form.get('style', 'info'),
+                'start_at': request.form.get('start_at'),
+                'end_at': request.form.get('end_at'),
                 'countdown_target_tz': 'America/New_York',
-                'is_active': True,  # Boolean, not string
+                'is_active': True,
                 'created_at': datetime.now().isoformat(),
                 'created_by': session.get('username', 'admin')
             }
@@ -1114,22 +1112,14 @@ def get_training_limit_status(affiliate_id):
         return {'used': 0, 'limit': 50, 'remaining': 50, 'at_limit': False}
 
 def get_active_announcements():
-    """Get active announcements with normalized schema and EST timezone support"""
+    """Get active announcements with EST timezone support"""
     try:
-        # Single source of truth: /data/announcements.json
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
         now = datetime.now(EST)
         
         active_announcements = []
         for announcement in announcements_data.get('announcements', []):
-            # Schema normalization: handle both is_active and active fields
-            is_active = announcement.get('is_active', announcement.get('active', False))
-            
-            # Ensure boolean (not string)
-            if isinstance(is_active, str):
-                is_active = is_active.lower() in ('true', '1', 'yes')
-            
-            if not is_active:
+            if not announcement.get('is_active', False):
                 continue
                 
             try:
@@ -1137,50 +1127,42 @@ def get_active_announcements():
                 start_str = announcement.get('start_at', '2025-01-01T00:00:00')
                 end_str = announcement.get('end_at', '2025-12-31T23:59:59')
                 
-                # Clean ISO strings and parse as naive datetime
-                start_naive = datetime.fromisoformat(start_str.replace('Z', '').split('.')[0])
-                end_naive = datetime.fromisoformat(end_str.replace('Z', '').split('.')[0])
+                # Parse as naive datetime then make timezone-aware
+                start_naive = datetime.fromisoformat(start_str.replace('Z', ''))
+                end_naive = datetime.fromisoformat(end_str.replace('Z', ''))
                 
-                # Make timezone-aware with EST
                 start_at = start_naive.replace(tzinfo=EST)
                 end_at = end_naive.replace(tzinfo=EST)
                 
-                # Active filter: now_est ∈ [start_at_est, end_at_est] && is_active == True
+                # Check if current time is within announcement window
                 if start_at <= now <= end_at:
                     # Calculate countdown if target is set
-                    countdown_target = announcement.get('countdown_target', '').strip()
+                    countdown_target = announcement.get('countdown_target')
                     if countdown_target:
-                        try:
-                            target_naive = datetime.fromisoformat(countdown_target.replace('Z', '').split('.')[0])
-                            target_dt = target_naive.replace(tzinfo=EST)
-                            
-                            time_diff = target_dt - now
-                            
-                            if time_diff.total_seconds() > 0:
-                                days = time_diff.days
-                                hours, remainder = divmod(time_diff.seconds, 3600)
-                                minutes, _ = divmod(remainder, 60)
-                                announcement['countdown_display'] = f"{days:02d}:{hours:02d}:{minutes:02d}"
-                                announcement['countdown_expired'] = False
-                            else:
-                                announcement['countdown_display'] = "We're live!"
-                                announcement['countdown_expired'] = True
-                        except:
-                            # Invalid countdown target, skip countdown
-                            pass
+                        target_naive = datetime.fromisoformat(countdown_target.replace('Z', ''))
+                        target_dt = target_naive.replace(tzinfo=EST)
+                        
+                        time_diff = target_dt - now
+                        
+                        if time_diff.total_seconds() > 0:
+                            days = time_diff.days
+                            hours, remainder = divmod(time_diff.seconds, 3600)
+                            minutes, _ = divmod(remainder, 60)
+                            announcement['countdown_display'] = f"{days:02d}:{hours:02d}:{minutes:02d}"
+                            announcement['countdown_expired'] = False
+                        else:
+                            announcement['countdown_display'] = "We're live!"
+                            announcement['countdown_expired'] = True
                     
-                    # Normalize style field
-                    announcement['style'] = announcement.get('style', 'info')
                     active_announcements.append(announcement)
-                    
             except Exception as date_error:
-                logging.error(f"Error parsing announcement dates for {announcement.get('id', 'unknown')}: {date_error}")
+                logging.error(f"Error parsing announcement dates: {date_error}")
                 continue
         
         return active_announcements
         
     except Exception as e:
-        logging.error(f"Error loading announcements from /data/announcements.json: {e}")
+        logging.error(f"Error getting announcements: {e}")
         return []
 
 # Context processor to inject active announcements into all templates

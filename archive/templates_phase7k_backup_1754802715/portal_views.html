@@ -1,0 +1,353 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Portal Dashboard Views - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Portal View Switcher */
+.view-switcher {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.view-selector {
+    display: inline-flex;
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 0.5rem;
+    margin: 1rem 0;
+}
+
+.view-option {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.view-option.active {
+    background: var(--primary-blue);
+    color: white;
+    box-shadow: 0 2px 10px rgba(25, 118, 210, 0.3);
+}
+
+/* Dashboard Cards */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.metric-change {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.metric-change.positive { color: var(--success-green); }
+.metric-change.negative { color: var(--accent-red); }
+
+.chart-container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+/* Role-specific styling */
+.provider-view .metric-card { border-left: 5px solid #28a745; }
+.hospital-view .metric-card { border-left: 5px solid #dc3545; }
+.individual-view .metric-card { border-left: 5px solid #6f42c1; }
+.admin-view .metric-card { border-left: 5px solid #fd7e14; }
+
+.role-header {
+    text-align: center;
+    padding: 2rem 0;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.provider-header { background: linear-gradient(135deg, #28a745, #20c997); }
+.hospital-header { background: linear-gradient(135deg, #dc3545, #e83e8c); }
+.individual-header { background: linear-gradient(135deg, #6f42c1, #6610f2); }
+.admin-header { background: linear-gradient(135deg, #fd7e14, #e83e8c); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- View Switcher -->
+    <div class="view-switcher">
+        <h2><i class="fas fa-eye me-2"></i>Portal Dashboard Views</h2>
+        <p class="text-muted">Experience different user perspectives of the MediFly platform</p>
+        
+        <div class="view-selector">
+            <button class="view-option active" onclick="switchView('provider')">
+                <i class="fas fa-plane me-1"></i>Affiliate (Air Operator)
+            </button>
+            <button class="view-option" onclick="switchView('hospital')">
+                <i class="fas fa-hospital me-1"></i>Hospital/Clinic
+            </button>
+            <button class="view-option" onclick="switchView('individual')">
+                <i class="fas fa-user me-1"></i>Individual/Family
+            </button>
+            <button class="view-option" onclick="switchView('admin')">
+                <i class="fas fa-crown me-1"></i>Admin
+            </button>
+        </div>
+    </div>
+
+    <!-- Provider View -->
+    <div id="provider-view" class="dashboard-view provider-view">
+        <div class="role-header provider-header">
+            <h1><i class="fas fa-plane me-2"></i>AeroMed Flight Services</h1>
+            <p>Provider Dashboard - Managing Medical Transport Operations</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-value">12</div>
+                <div class="metric-label">Active Requests</div>
+                <div class="metric-change positive">+3 since yesterday</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">8</div>
+                <div class="metric-label">Quotes Provided</div>
+                <div class="metric-change positive">+5 this week</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">3</div>
+                <div class="metric-label">Confirmed Bookings</div>
+                <div class="metric-change positive">+2 pending payment</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">$127,500</div>
+                <div class="metric-label">Monthly Revenue</div>
+                <div class="metric-change positive">+18% vs last month</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h4>Recent Quote Activity</h4>
+            <p class="text-muted">Auto-refreshing every 15 seconds for new transport requests</p>
+            <div class="alert alert-info">
+                <i class="fas fa-bell me-2"></i>New request received: Orlando → Miami Medical Transport
+            </div>
+        </div>
+    </div>
+
+    <!-- Hospital View -->
+    <div id="hospital-view" class="dashboard-view hospital-view" style="display: none;">
+        <div class="role-header hospital-header">
+            <h1><i class="fas fa-hospital me-2"></i>Regional Medical Center</h1>
+            <p>Hospital Dashboard - Coordinating Patient Transfers</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-value">24</div>
+                <div class="metric-label">Patient Transfers</div>
+                <div class="metric-change positive">This month</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">6</div>
+                <div class="metric-label">Critical Transports</div>
+                <div class="metric-change">Last 7 days</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">98%</div>
+                <div class="metric-label">HIPAA Compliance</div>
+                <div class="metric-change positive">All transfers secure</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">4.8/5</div>
+                <div class="metric-label">Provider Rating</div>
+                <div class="metric-change positive">Patient satisfaction</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h4>Transport Volume Trends</h4>
+            <p class="text-muted">Bulk request management and priority scheduling</p>
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>Emergency protocol activated for critical transfer
+            </div>
+        </div>
+    </div>
+
+    <!-- Individual View -->
+    <div id="individual-view" class="dashboard-view individual-view" style="display: none;">
+        <div class="role-header individual-header">
+            <h1><i class="fas fa-user me-2"></i>Sarah Johnson Family</h1>
+            <p>Family Dashboard - Managing Medical Transport Needs</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-value">2</div>
+                <div class="metric-label">Active Requests</div>
+                <div class="metric-change">Awaiting quotes</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">$1,000</div>
+                <div class="metric-label">Deposit Ready</div>
+                <div class="metric-change">Secure payment</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">24/7</div>
+                <div class="metric-label">Family Support</div>
+                <div class="metric-change positive">Dedicated advocate</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">5</div>
+                <div class="metric-label">Provider Options</div>
+                <div class="metric-change">Certified network</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h4>Your Transport History</h4>
+            <p class="text-muted">Family-focused comfort and communication features</p>
+            <div class="alert alert-success">
+                <i class="fas fa-heart me-2"></i>Priority support available - MVP member benefits active
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin View -->
+    <div id="admin-view" class="dashboard-view admin-view" style="display: none;">
+        <div class="role-header admin-header">
+            <h1><i class="fas fa-crown me-2"></i>MediFly Admin Dashboard</h1>
+            <p>System Administration - Revenue Analytics & User Management</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-value">$847,500</div>
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-change positive">+$127K this month</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">1,247</div>
+                <div class="metric-label">Total Users</div>
+                <div class="metric-change positive">+89 new this week</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">342</div>
+                <div class="metric-label">Flight Requests</div>
+                <div class="metric-change positive">156 completed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">67</div>
+                <div class="metric-label">Active Quotes</div>
+                <div class="metric-change">23 paid today</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h4>User Management</h4>
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>Reset Passwords</span>
+                            <button class="btn btn-sm btn-outline-primary">Manage</button>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>Admin Controls</span>
+                            <button class="btn btn-sm btn-outline-danger">Grant Access</button>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>Partner Control</span>
+                            <button class="btn btn-sm btn-outline-success">Configure</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h4>Quote & Payment Management</h4>
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>Quote Management</span>
+                            <button class="btn btn-sm btn-outline-primary">View All</button>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>Payment Transactions</span>
+                            <button class="btn btn-sm btn-outline-success">Review</button>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>Flights per Provider</span>
+                            <button class="btn btn-sm btn-outline-info">Analytics</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function switchView(viewType) {
+    // Hide all views
+    document.querySelectorAll('.dashboard-view').forEach(view => {
+        view.style.display = 'none';
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.view-option').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected view
+    document.getElementById(viewType + '-view').style.display = 'block';
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+    
+    console.log(`Switched to ${viewType} view`);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Portal views loaded - No login required');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,124 @@
+PHASE 7.K — APPLY FIXES: Announcements Persistence/Render + Canonical Intake Routing
+ROLE: Senior engineer. Fix the announcement storage/loader pipeline and force the app to use the pancake‑stack intake template everywhere. Archive before edits. No schema changes.
+
+OBJECTIVES
+
+Announcements: same file path for write and read, correct JSON schema, EST time parsing, context injection, and base layout render.
+
+Intake: /intake must render the pancake‑stack template; all “New Request” buttons link to /intake. Legacy intake template/routes are archived/disabled.
+
+A) Announcements: make storage + loader agree
+Likely causes to fix
+
+Admin page writes to data/announcements.json while context processor reads from a different path or key.
+
+JSON schema mismatch (e.g., is_active stored as string vs boolean).
+
+Naive/aware datetime mismatch; or countdown_target_tz ignored during load.
+
+Actions
+
+Single source of truth
+
+Confirm both admin save and global loader use:
+PATH = /data/announcements.json
+
+If the file/folder doesn’t exist, create it (and parent /data/).
+
+Schema normalization
+
+On save: coerce fields to an expected schema exactly:
+
+json
+Copy
+Edit
+{
+  "announcements": [
+    {
+      "message": "string",
+      "style": "info|warn|success",
+      "is_active": true,
+      "start_at": "ISO 8601",
+      "end_at": "ISO 8601",
+      "countdown_target": "ISO 8601|null",
+      "countdown_target_tz": "America/New_York"
+    }
+  ]
+}
+Ensure is_active is boolean, not "true"/"false" strings.
+
+Time parsing (EST)
+
+Loader uses zoneinfo.ZoneInfo("America/New_York") (fallback to pytz if needed).
+
+Convert start_at, end_at, and countdown_target to timezone‑aware EST datetimes.
+
+Active filter: now_est ∈ [start_at_est, end_at_est] && is_active == True.
+
+Context injection
+
+Add a context_processor (or before_request) that loads and injects active_announcements into all templates.
+
+If JSON missing/empty → inject empty list (don’t error).
+
+Base layout render
+
+In the one base used by your consumer app (e.g., consumer_templates/consumer_base.html) render each active_announcements entry at the top of <body>.
+
+Include countdown JS that ticks DD:HH:MM from EST.
+
+Remove any hardcoded banners.
+
+Debug hook for admins (temporary)
+
+If current_user.is_admin → show a tiny badge in the banner area:
+Announcements loaded: {{ active_announcements|length }}
+
+(We’ll remove this after verification.)
+
+Expected output to print
+
+ANNOUNCEMENTS: saved→loaded path = /data/announcements.json
+
+ANNOUNCEMENTS: schema normalized, EST parsing active
+
+ANNOUNCEMENTS: injected into consumer_base.html (count={{n}})
+
+B) Force canonical intake (pancake‑stack) everywhere
+Likely causes to fix
+
+/intake route still renders a legacy intake.html template.
+
+Some “+ New Request” links/buttons point to an old route or template.
+
+Actions
+
+Route mapping
+
+Ensure the /intake route renders the pancake‑stack template you approved (e.g., consumer_templates/consumer_intake.html).
+
+If there’s a legacy /request or /transport_request template/route, archive that template to /archive/templates/intake/ and disable the route.
+
+Link sweep
+
+Search all templates for href or JS redirects that go to old request URLs.
+
+Update every “New Request”, “+ New Request”, “Start a request”, CTA buttons to point to href="/intake".
+
+Helper text
+
+Keep the trimmed helper under From as:
+Search a hospital, clinic, airport, or address. Use '+ Can’t find it?' to add manually.
+
+Expected output to print
+
+INTAKE: /intake → pancake-stack template
+
+INTAKE: archived legacy request template(s): [...]
+
+INTAKE: all "New Request" links now point to /intake
+
+C) Final printout
+List: files changed (admin save handler, loader/context processor, base layout, intake route, any updated templates).
+
+End with: READY FOR PHASE 7.L

@@ -1,0 +1,324 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Available Medical Transport Options{% endblock %}
+
+{% block head %}
+<style>
+.results-header {
+    background: linear-gradient(135deg, #e6f3ff, #ffe6f3);
+    padding: 2rem 0;
+    text-align: center;
+    color: #333;
+}
+
+.provider-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.provider-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.provider-card.priority-partner {
+    border-color: gold !important;
+    background: linear-gradient(135deg, #fff9e6, #ffffff);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.provider-header {
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 1px solid #dee2e6;
+    position: relative;
+}
+
+.priority-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #ffc107, #ff8c00);
+    color: #333;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); }
+    to { box-shadow: 0 0 20px rgba(255, 193, 7, 0.8); }
+}
+
+.provider-name-blurred {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+.name-reveal-note {
+    font-size: 0.9rem;
+    color: #adb5bd;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.provider-cost {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #28a745;
+    text-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.equipment-cost-breakdown {
+    background: #e8f5e8;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    border-left: 4px solid #28a745;
+}
+
+.same-day-notice {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+    animation: warning-pulse 2s ease-in-out infinite;
+}
+
+@keyframes warning-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.provider-capabilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.capability-badge {
+    background: #007bff;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.modification-alert {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 2rem 0;
+}
+
+.select-provider-btn {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.select-provider-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-header">
+    <div class="container">
+        <h1 class="mb-3">
+            <i class="fas fa-search me-2"></i>
+            Available Medical Transport Options
+        </h1>
+        <p class="lead">We found {{ providers|length }} qualified providers for your transport needs</p>
+        
+        {% if same_day_upcharge %}
+        <div class="same-day-notice">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Same-day transport notice:</strong> 20% urgency fee applied. Subject to availability and weather conditions.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container mt-4">
+    <!-- Equipment Cost Breakdown -->
+    {% if equipment_cost > 0 %}
+    <div class="equipment-cost-breakdown">
+        <h5><i class="fas fa-calculator me-2"></i>Equipment Cost Breakdown</h5>
+        <p>Additional medical equipment selected: <strong>${{ "{:,}".format(equipment_cost) }}</strong></p>
+        <small class="text-muted">
+            Equipment pricing includes setup, monitoring, and specialized medical staff during transport.
+        </small>
+    </div>
+    {% endif %}
+    
+    <!-- Modification Alert -->
+    <div class="modification-alert">
+        <h6><i class="fas fa-info-circle me-2"></i>Equipment Modification Notice</h6>
+        <p class="mb-0">{{ modification_note }}</p>
+    </div>
+    
+    <!-- Provider Results -->
+    <div class="row">
+        {% for provider in providers %}
+        <div class="col-12 mb-4">
+            <div class="provider-card {% if provider.is_priority %}priority-partner{% endif %}">
+                {% if provider.is_priority %}
+                <div class="priority-badge">
+                    <i class="fas fa-crown me-1"></i>Priority Partner
+                </div>
+                {% endif %}
+                
+                <div class="provider-header">
+                    <div class="provider-name-blurred">{{ provider.blurred_name }}</div>
+                    <div class="name-reveal-note">
+                        <i class="fas fa-eye-slash me-1"></i>
+                        Provider name will be revealed after booking to ensure fair pricing competition
+                    </div>
+                    
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="provider-cost">${{ "{:,}".format(provider.cost) }}</div>
+                            <small class="text-muted">Total transport cost</small>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h5>ETA: {{ provider.eta }}</h5>
+                                <p class="mb-0">{{ provider.aircraft }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-end">
+                                <div class="mb-2">
+                                    {% for i in range(5) %}
+                                        {% if i < provider.rating %}
+                                        <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                        <i class="far fa-star text-warning"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <small>{{ provider.rating }}/5.0 rating</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h6>Provider Capabilities:</h6>
+                    <div class="provider-capabilities">
+                        {% for capability in provider.capabilities %}
+                        <span class="capability-badge">{{ capability }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if provider.priority_note %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-star me-2"></i>{{ provider.priority_note }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('consumer_confirm', provider=provider.id) }}" 
+                           class="select-provider-btn">
+                            Select {{ provider.name }} - ${{ "{:,}".format(provider.cost) }}
+                        </a>
+                        <small class="d-block mt-2 text-muted">
+                            Provider details and contact information will be shared after selection
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Address Validation Note -->
+    <div class="alert alert-info">
+        <h6><i class="fas fa-map-marker-alt me-2"></i>Address Validation</h6>
+        <p class="mb-1">
+            <strong>Origin:</strong> {{ patient_data.origin }}<br>
+            <strong>Destination:</strong> {{ patient_data.destination }}
+        </p>
+        <small>Addresses have been validated with our mapping system. International destinations supported.</small>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('consumer_intake') }}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left me-2"></i>Modify Search
+        </a>
+        <a href="{{ url_for('consumer_index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-home me-2"></i>Start Over
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced provider selection tracking
+    document.querySelectorAll('.select-provider-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const providerCard = this.closest('.provider-card');
+            const providerName = providerCard.querySelector('.provider-name-blurred').textContent;
+            const cost = this.textContent.match(/\$[\d,]+/)[0];
+            
+            console.log('Provider selected:', providerName, cost);
+            
+            // Add loading state
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Selection...';
+            this.disabled = true;
+        });
+    });
+    
+    // Priority partner animation enhancement
+    const priorityCards = document.querySelectorAll('.priority-partner');
+    console.log(`Found ${priorityCards.length} priority partners with enhanced animations`);
+    
+    // Equipment cost calculator
+    const equipmentCost = {{ equipment_cost }};
+    const sameDayUpcharge = {{ 'true' if same_day_upcharge else 'false' }};
+    
+    if (equipmentCost > 0) {
+        console.log('Equipment cost included:', equipmentCost);
+    }
+    
+    if (sameDayUpcharge) {
+        console.log('Same-day upcharge applied (20%)');
+    }
+});
+</script>
+{% endblock %}

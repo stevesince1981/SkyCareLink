@@ -1,0 +1,225 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Announcements Management - Admin Portal{% endblock %}
+
+{% block head %}
+<style>
+.admin-header {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.announcement-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.style-preview {
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin: 0.5rem 0;
+}
+
+.style-info { background: #d1ecf1; border-left: 4px solid #17a2b8; }
+.style-warn { background: #fff3cd; border-left: 4px solid #ffc107; }
+.style-success { background: #d4edda; border-left: 4px solid #28a745; }
+
+.countdown-badge {
+    background: #dc3545;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.announcement-banner {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.banner-info { background: #17a2b8; color: white; }
+.banner-warn { background: #ffc107; color: #212529; }
+.banner-success { background: #28a745; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if session.get('user_role') != 'admin' %}
+    <div class="alert alert-danger">
+        <i class="fas fa-lock me-2"></i>Admin access required
+    </div>
+    {% else %}
+    
+    <div class="admin-header">
+        <h1><i class="fas fa-bullhorn me-2"></i>Announcements & Countdown Management</h1>
+        <p>Create site-wide announcements with optional countdown timers</p>
+    </div>
+
+    <!-- Create New Announcement -->
+    <div class="announcement-card">
+        <h3><i class="fas fa-plus me-2"></i>Create New Announcement</h3>
+        
+        <form method="POST" action="{{ url_for('admin_create_announcement') }}">
+            <div class="row">
+                <div class="col-md-8">
+                    <label class="form-label">Message</label>
+                    <input type="text" class="form-control" name="message" required 
+                           placeholder="Enter announcement message..." maxlength="200">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Style</label>
+                    <select class="form-select" name="style" required onchange="previewStyle(this)">
+                        <option value="info">Info (Blue)</option>
+                        <option value="warn">Warning (Yellow)</option>
+                        <option value="success">Success (Green)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label">Start Date/Time</label>
+                    <input type="datetime-local" class="form-control" name="start_at" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">End Date/Time</label>
+                    <input type="datetime-local" class="form-control" name="end_at" required>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="hasCountdown" onchange="toggleCountdown()">
+                    <label class="form-check-label" for="hasCountdown">
+                        Include countdown timer (Go-live countdown)
+                    </label>
+                </div>
+                
+                <div id="countdownField" style="display: none;" class="mt-2">
+                    <label class="form-label">Countdown Target Date/Time</label>
+                    <input type="datetime-local" class="form-control" name="countdown_target">
+                    <small class="text-muted">Shows "Go-live in Xd:Xh:Xm" countdown to users</small>
+                </div>
+            </div>
+            
+            <!-- Preview -->
+            <div class="mt-4">
+                <label class="form-label">Preview</label>
+                <div id="stylePreview" class="style-preview style-info">
+                    <span id="previewText">Your announcement will appear here...</span>
+                    <span id="previewCountdown" class="countdown-badge ms-2" style="display: none;">Go-live in 5d:12h:30m</span>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-2"></i>Create Announcement
+            </button>
+        </form>
+    </div>
+
+    <!-- Active Announcements -->
+    <div class="announcement-card">
+        <h3><i class="fas fa-list me-2"></i>Active Announcements ({{ announcements|length }})</h3>
+        
+        {% if announcements %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                        <th>Style</th>
+                        <th>Duration</th>
+                        <th>Countdown</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for announcement in announcements %}
+                    <tr>
+                        <td><strong>{{ announcement.message }}</strong></td>
+                        <td>
+                            <span class="badge bg-{{ 'info' if announcement.style == 'info' else ('warning' if announcement.style == 'warn' else 'success') }}">
+                                {{ announcement.style }}
+                            </span>
+                        </td>
+                        <td>
+                            <small>{{ announcement.start_at[:10] }} to {{ announcement.end_at[:10] }}</small>
+                        </td>
+                        <td>
+                            {% if announcement.countdown_target %}
+                            <span class="countdown-badge">Has countdown</span>
+                            {% else %}
+                            <span class="text-muted">None</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if announcement.active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin_toggle_announcement') }}" style="display: inline;">
+                                <input type="hidden" name="announcement_id" value="{{ announcement.id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-{{ 'danger' if announcement.active else 'success' }}">
+                                    {{ 'Deactivate' if announcement.active else 'Activate' }}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No announcements created</p>
+        {% endif %}
+    </div>
+
+    {% endif %}
+</div>
+
+<script>
+function toggleCountdown() {
+    const checkbox = document.getElementById('hasCountdown');
+    const field = document.getElementById('countdownField');
+    const preview = document.getElementById('previewCountdown');
+    
+    if (checkbox.checked) {
+        field.style.display = 'block';
+        preview.style.display = 'inline';
+        document.querySelector('input[name="countdown_target"]').required = true;
+    } else {
+        field.style.display = 'none';
+        preview.style.display = 'none';
+        document.querySelector('input[name="countdown_target"]').required = false;
+    }
+}
+
+function previewStyle(select) {
+    const preview = document.getElementById('stylePreview');
+    preview.className = 'style-preview style-' + select.value;
+}
+
+// Update preview text on input
+document.querySelector('input[name="message"]').addEventListener('input', function() {
+    document.getElementById('previewText').textContent = this.value || 'Your announcement will appear here...';
+});
+</script>
+{% endblock %}

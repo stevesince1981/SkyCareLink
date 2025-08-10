@@ -24,7 +24,7 @@
     <!-- Global Announcement Banners -->
     {% if active_announcements %}
         {% for announcement in active_announcements %}
-        <div class="announcement-banner bg-{{ announcement.style or 'info' }} text-white py-2">
+        <div class="announcement-banner bg-{{ announcement.type or 'info' }} text-white py-2">
             <div class="container d-flex justify-content-between align-items-center">
                 <div class="announcement-content">
                     <strong>{{ announcement.title or 'Announcement' }}:</strong>
@@ -37,21 +37,9 @@
                         <span class="ms-3 text-success"><i class="fas fa-check me-1"></i>We're live!</span>
                     {% endif %}
                 </div>
-                {% if session.get('user_role') == 'admin' %}
-                <div class="admin-debug-badge">
-                    <small class="badge bg-secondary">Loaded: {{ active_announcements|length }}</small>
-                </div>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
-    {% elif session.get('user_role') == 'admin' %}
-        <!-- Debug badge for admins when no announcements -->
-        <div class="bg-secondary text-white py-1">
-            <div class="container">
-                <small class="badge bg-dark">Announcements loaded: 0</small>
-            </div>
-        </div>
     {% endif %}
 
     <!-- Bubble-inspired Navigation -->
