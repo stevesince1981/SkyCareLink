@@ -175,8 +175,8 @@
                             {% endif %}
                         </td>
                         <td>
-                            <form method="POST" action="{{ url_for('admin_toggle_announcement') }}" style="display: inline;">
-                                <input type="hidden" name="announcement_id" value="{{ announcement.id }}">
+                            <form method="POST" action="{{ url_for('admin_announcements_update', announcement_id=announcement.id) }}" style="display: inline;">
+                                <input type="hidden" name="is_active" value="{{ 'false' if (announcement.active or announcement.is_active) else 'true' }}">
                                 <button type="submit" class="btn btn-sm btn-outline-{{ 'danger' if (announcement.active or announcement.is_active) else 'success' }}">
                                     {{ 'Deactivate' if (announcement.active or announcement.is_active) else 'Activate' }}
                                 </button>
