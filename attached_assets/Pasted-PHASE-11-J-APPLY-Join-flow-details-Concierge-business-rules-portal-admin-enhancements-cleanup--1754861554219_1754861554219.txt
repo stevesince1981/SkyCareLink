@@ -1,0 +1,165 @@
+PHASE 11.J — APPLY: Join‑flow details, Concierge business rules, portal/admin enhancements, cleanup
+ROLE: Senior product/dev lead. Implement your exact business requirements.
+
+1) Join flows (Affiliate / Hospital / Individual)
+/join_affiliate (enhance)
+Hero copy: call out “Access the largest network of hospitals & clinics.”
+
+Explain fees: “Flat $25,000 annual partner fee due at signup; your commission is 5%, with 1% of each booking credited back to your fee until you’ve recouped $25,000 (so effectively free once you’re flying).”
+
+Company name:
+
+Autocomplete from a curated “Top 50” list with add‑if‑not‑found.
+
+Contact:
+
+Business phone and mobile (mobile required for SMS alerts).
+
+Address:
+
+Google Places autocomplete + fill street/city/state/zip.
+
+Commission %:
+
+Locked to 5% in the UI (Admin can still adjust in Affiliates later; the Affiliate can’t).
+
+Example explainer (callout card):
+
+“Example: 10 flights at $25,000 = $2,500 gross commission. We credit 1% ($250/flight) toward your $25,000. After 100 such bookings, your credits reach $25,000 and your rate remains 5%.”
+
+Delisting policy (short bullet list): unpaid fee, false licensing, service misrepresentation, SLA/quality failures; 2 strikes = lifetime ban.
+
+Primary service areas: multi‑select (states/regions).
+
+Niche markets: multi‑select from seeded Niches.
+
+Available equipment: multi‑select (Ventilator, ECMO, Incubator, Escort, Oxygen, Other).
+
+FAA Part 135 Certified:
+
+Checkbox opens an attestation modal: exact legal text that they confirm Part 135 compliance, agree to immediate delist & forfeiture for misrepresentation, and agree to periodic re‑verification; must click Acknowledge to proceed.
+
+Training: After submit, show “Onboarding & Training (1–2 weeks)” card and a “Load full‑function dummy data” button to practice with 30–50 sample cases.
+
+/join_hospital (enhance)
+Facility name: Google Places autocomplete; auto‑fills address fields.
+
+Role: Supervisor / Team Member (Supervisor can invite/manage; Team Member cannot change org settings).
+
+Referral program code: field at signup and editable later; validates that it belongs to another hospital/clinic.
+
+Membership:
+
+Free 1 year after launch; +1 year for every 5 referred orgs that join; free for life once any referral completes a flight.
+
+After free period: $199.99/year, auto‑renew. 30‑day cancel: create background task to finalize on the right date; add countdown; offer 10% discount to stay.
+
+Specialties (optional multi‑select), bed count (optional) — include but make them optional; they’re useful for future filtering.
+
+/join_individual (new)
+Add to the Join+ dropdown as “Individual”.
+
+No fees initially.
+
+Gate second booking with a paywall:
+
+Choose: $99 one‑time fee or $9.99/mo with 1‑year minimum; 30‑day cancellation window at any time via portal.
+
+Data:
+
+No date of birth.
+
+Phone numbers: allow 2, require one mobile.
+
+Email required.
+
+Marketing prefs:
+
+“Send me updates” checkbox; ensure portal has email/SMS subscription management and unsubscribe works.
+
+2) Concierge rules (finalize and clarify in UI)
+Pre‑designated Concierge affiliate (admin flag).
+
+Build the Concierge synthetic quote as:
+
+Concierge price = best base quote + $15,000 (e.g., A=$25k ⇒ Concierge D=$40k).
+
+Revenue split on add‑on: $7,500 us / $7,500 concierge affiliate.
+
+1% payback: apply 1% credit toward $25k on base commission, and show a separate “Concierge credit” line (non‑commission) so affiliates see you’re helping them recoup faster.
+
+UI:
+
+Show Concierge badge (not Spotlight) with tooltip:
+“Concierge add‑on available: +$15,000 premium support. Split $7,500 each. Base 5% applies to base fare only. 1% credit applies to base commissions; concierge credit applied separately to help you recoup faster.”
+
+Confirm page shows: Base fare, Concierge add‑on, totals; commission shown only on base.
+
+3) Admin: Affiliates list + edit fee %
+Create /admin/affiliates (link in Admin nav) with table:
+
+Name | Default % (read‑only) | Recoup progress ($ remaining to $25k) | Strikes | “Offers Concierge” | Actions: View / Edit
+
+Edit view:
+
+Admin can change commission_percent_default (3–7%) and toggle “Offers Concierge”.
+
+Save triggers a ledger note for traceability.
+
+4) Admin: Flights per Provider analytics (click to expand)
+Page /admin/analytics/affiliates (link active).
+
+Table with sorting + search:
+
+Affiliate | Fee % | Recoup remaining | Flights (completed bookings) | Response rate (last 30 days) | Spotlight (yes/no) | expand (±)
+
+Expand (±) shows flights list with per‑flight revenue, base fare, and (if applicable) concierge add‑on and splits.
+
+Define Success Rate clearly in UI:
+
+“% of quotes that converted to a booked flight in the last 30 days.”
+
+5) Intake stepper polish
+Confirm the pancake shrink animation is active (previous step compresses; click to jump back).
+
+Severity = 1–3 with green/yellow/red chips and your tooltips.
+
+Require login before submit fan‑out (but not to browse steps).
+
+Ensure draft resume works silently; no extra toasts.
+
+6) Home: “Why Choose MediFly?”
+Add concise, confident blocks:
+
+Largest network of hospitals/clinics & certified air operators.
+
+Trust & compliance: Part 135 confirmations; periodic checks; immediate delist on misrepresentation.
+
+Seamless ground (where available): “Ground ambulance to/from both sides included where available to ensure seamless handoffs.”
+
+Fast & fair: Quotes 15–60 minutes; balanced distribution.
+
+Privacy: minimal PHI; HIPAA‑minded.
+
+7) Cleanup pass
+Archive dated/duplicate templates and dead routes you no longer want.
+
+Keep a single home, a single intake, and the new admin pages.
+
+OUTPUT
+
+Print:
+
+Admin nav now includes Affiliates, Analytics→Affiliates, Demo Tools, Invoices, Announcements (with URLs).
+
+/join_affiliate, /join_hospital, /join_individual updated with fields listed above.
+
+Concierge synthetic quote and confirm line item live; commission/credit split in ledger.
+
+Intake stepper is 1–3 severity and requires login at submit.
+
+Home “Why Choose MediFly?” updated with compliance copy and where available language.
+
+All legacy clutter archived.
+
+End: READY FOR 11.K RUNTIME TEST

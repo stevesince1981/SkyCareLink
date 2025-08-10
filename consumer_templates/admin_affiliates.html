@@ -1,104 +1,34 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Affiliate Management - MediFly Admin{% endblock %}
+{% block title %}Admin - Affiliates Management{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 mb-0">
-            <i class="fas fa-building me-3"></i>
-            Affiliate Management
-        </h1>
-        <div class="btn-group">
-            <a href="{{ url_for('admin_analytics_affiliates') }}" class="btn btn-outline-primary">
-                <i class="fas fa-chart-line me-2"></i>Analytics View
+        <h1 class="h3">Affiliates Management</h1>
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
             </a>
-            <a href="{{ url_for('admin_demo_tools') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-tools me-2"></i>Demo Tools
-            </a>
-        </div>
-    </div>
-
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">{{ affiliates|length }}</h4>
-                            <p class="card-text">Total Affiliates</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-building fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">{{ affiliates|selectattr('offers_concierge')|list|length }}</h4>
-                            <p class="card-text">Concierge Providers</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-star fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">{{ "%.1f"|format((affiliates|map(attribute='commission_percent')|sum / affiliates|length) if affiliates else 0) }}%</h4>
-                            <p class="card-text">Avg Commission</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-percent fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">${{ "{:,.0f}".format(affiliates|map(attribute='recouped_amount')|sum) }}</h4>
-                            <p class="card-text">Total Recouped</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-dollar-sign fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
     <!-- Affiliates Table -->
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title mb-0">Affiliate List</h4>
+            <h5 class="mb-0">Active Affiliates</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped table-hover" id="affiliatesTable">
-                    <thead class="table-dark">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <th>Affiliate</th>
-                            <th>Contact</th>
-                            <th>Commission %</th>
-                            <th>Recoup Status</th>
-                            <th>Total Bookings</th>
+                            <th>Name</th>
+                            <th>Default %</th>
+                            <th>Recoup Progress</th>
+                            <th>Strikes</th>
                             <th>Concierge</th>
+                            <th>Bookings</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -106,76 +36,46 @@
                         {% for affiliate in affiliates %}
                         <tr>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar bg-primary text-white rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                        {{ affiliate.company_name[0] if affiliate.company_name else 'A' }}
-                                    </div>
-                                    <div>
-                                        <strong>{{ affiliate.company_name }}</strong>
-                                    </div>
-                                </div>
+                                <strong>{{ affiliate.name }}</strong>
                             </td>
                             <td>
-                                <div>
-                                    <div>{{ affiliate.contact_email }}</div>
-                                    <small class="text-muted">ID: {{ affiliate.id }}</small>
-                                </div>
+                                <span class="badge bg-primary">{{ affiliate.default_commission }}%</span>
                             </td>
                             <td>
-                                <span class="badge bg-info">{{ "%.1f"|format(affiliate.commission_percent) }}%</span>
-                                <div class="mt-1">
-                                    <small class="text-muted">Range: 3.0-7.0%</small>
+                                <div class="progress" style="width: 120px;">
+                                    {% set progress = ((25000 - affiliate.recoup_remaining) / 25000 * 100) | round %}
+                                    <div class="progress-bar" style="width: {{ progress }}%"></div>
                                 </div>
+                                <small class="text-muted">${{ "{:,}".format(affiliate.recoup_remaining) }} remaining</small>
                             </td>
                             <td>
-                                {% set recoup_remaining = 25000 - affiliate.recouped_amount %}
-                                {% if recoup_remaining <= 0 %}
-                                    <span class="badge bg-success">Fully Recouped</span>
+                                {% if affiliate.strikes == 0 %}
+                                    <span class="badge bg-success">{{ affiliate.strikes }}</span>
+                                {% elif affiliate.strikes == 1 %}
+                                    <span class="badge bg-warning">{{ affiliate.strikes }}</span>
                                 {% else %}
-                                    <div class="progress" style="height: 20px;">
-                                        <div class="progress-bar" role="progressbar" 
-                                             style="width: {{ (affiliate.recouped_amount / 25000 * 100)|round(1) }}%">
-                                            {{ (affiliate.recouped_amount / 25000 * 100)|round(1) }}%
-                                        </div>
-                                    </div>
-                                    <small class="text-muted">${{ "{:,}".format(recoup_remaining) }} remaining</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <strong>{{ affiliate.total_bookings }}</strong>
-                                {% if affiliate.total_bookings < 50 %}
-                                    <span class="badge bg-warning ms-2">Spotlight</span>
+                                    <span class="badge bg-danger">{{ affiliate.strikes }}</span>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if affiliate.offers_concierge %}
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-star me-1"></i>Yes
-                                    </span>
+                                    <span class="badge bg-info">Yes</span>
                                 {% else %}
                                     <span class="badge bg-secondary">No</span>
                                 {% endif %}
                             </td>
                             <td>
+                                <strong>{{ affiliate.total_bookings }}</strong>
+                            </td>
+                            <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ url_for('admin_edit_affiliate_commission', affiliate_id=affiliate.id) }}" 
-                                       class="btn btn-outline-primary" title="Edit Commission">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button class="btn btn-outline-info" onclick="viewDetails({{ affiliate.id }})" title="View Details">
-                                        <i class="fas fa-eye"></i>
+                                    <button class="btn btn-outline-primary" onclick="viewAffiliate({{ affiliate.id }})">
+                                        <i class="fas fa-eye"></i> View
                                     </button>
-                                    <button class="btn btn-outline-warning" onclick="toggleConcierge({{ affiliate.id }})" title="Toggle Concierge">
-                                        <i class="fas fa-star"></i>
+                                    <button class="btn btn-outline-warning" onclick="editAffiliate({{ affiliate.id }})">
+                                        <i class="fas fa-edit"></i> Edit
                                     </button>
                                 </div>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                <i class="fas fa-building fa-3x mb-3 d-block"></i>
-                                No affiliates found. Create demo data or add new affiliates.
                             </td>
                         </tr>
                         {% endfor %}
@@ -184,118 +84,106 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal for Affiliate Details -->
-<div class="modal fade" id="affiliateModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Affiliate Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <!-- Statistics Cards -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-primary">{{ affiliates|length }}</h4>
+                    <p class="text-muted mb-0">Total Affiliates</p>
+                </div>
             </div>
-            <div class="modal-body" id="affiliateModalBody">
-                <!-- Content loaded via JavaScript -->
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-success">{{ affiliates|selectattr('offers_concierge')|list|length }}</h4>
+                    <p class="text-muted mb-0">Concierge Partners</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-warning">{{ affiliates|selectattr('strikes', 'gt', 0)|list|length }}</h4>
+                    <p class="text-muted mb-0">With Strikes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-info">{{ affiliates|sum(attribute='total_bookings') }}</h4>
+                    <p class="text-muted mb-0">Total Bookings</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Affiliate Modal -->
+<div class="modal fade" id="editAffiliateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Affiliate</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editAffiliateForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Commission Percentage</label>
+                        <select class="form-select" id="editCommissionPercent">
+                            <option value="3">3%</option>
+                            <option value="4">4%</option>
+                            <option value="5" selected>5%</option>
+                            <option value="6">6%</option>
+                            <option value="7">7%</option>
+                        </select>
+                        <div class="form-text">Admin can adjust between 3-7%</div>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="editOffersConcierge">
+                        <label class="form-check-label" for="editOffersConcierge">
+                            Offers Concierge Services
+                        </label>
+                        <div class="form-text">Enable $15k concierge add-on for this affiliate</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
-// Table sorting
-document.addEventListener('DOMContentLoaded', function() {
-    // Add sorting functionality if needed
-    console.log('Admin affiliates page loaded');
-});
+function viewAffiliate(id) {
+    // TODO: Implement view details
+    alert('View affiliate details for ID: ' + id);
+}
 
-function viewDetails(affiliateId) {
-    // Load affiliate details in modal
-    const modalBody = document.getElementById('affiliateModalBody');
-    modalBody.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-    
-    const modal = new bootstrap.Modal(document.getElementById('affiliateModal'));
+function editAffiliate(id) {
+    // Show edit modal
+    const modal = new bootstrap.Modal(document.getElementById('editAffiliateModal'));
     modal.show();
+}
+
+document.getElementById('editAffiliateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    // In a real implementation, fetch affiliate details via AJAX
-    setTimeout(() => {
-        modalBody.innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Company Information</h6>
-                    <p><strong>ID:</strong> ${affiliateId}</p>
-                    <p><strong>Status:</strong> Active</p>
-                    <p><strong>Join Date:</strong> 2024-01-15</p>
-                </div>
-                <div class="col-md-6">
-                    <h6>Performance Metrics</h6>
-                    <p><strong>Response Rate:</strong> 95%</p>
-                    <p><strong>Avg Response Time:</strong> 12 min</p>
-                    <p><strong>Customer Rating:</strong> 4.8/5</p>
-                </div>
-            </div>
-            <hr>
-            <h6>Recent Activity</h6>
-            <div class="list-group">
-                <div class="list-group-item">
-                    <strong>Quote Submitted</strong> - 2 hours ago
-                    <div class="text-muted">Orlando to Miami - $15,000</div>
-                </div>
-                <div class="list-group-item">
-                    <strong>Booking Completed</strong> - 1 day ago
-                    <div class="text-muted">Tampa to Jacksonville - $12,500</div>
-                </div>
-            </div>
-        `;
-    }, 1000);
-}
-
-function toggleConcierge(affiliateId) {
-    if (confirm('Toggle concierge service availability for this affiliate?')) {
-        // In a real implementation, make AJAX call to toggle concierge status
-        fetch(`/admin/affiliates/${affiliateId}/toggle-concierge`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload(); // Refresh to show updated status
-            } else {
-                alert('Error updating concierge status');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error updating concierge status');
-        });
-    }
-}
+    const commission = document.getElementById('editCommissionPercent').value;
+    const concierge = document.getElementById('editOffersConcierge').checked;
+    
+    // TODO: Send to backend
+    console.log('Saving changes:', { commission, concierge });
+    
+    // Close modal and show success
+    bootstrap.Modal.getInstance(document.getElementById('editAffiliateModal')).hide();
+    alert('Changes saved successfully!');
+});
 </script>
-
-<style>
-.avatar {
-    font-weight: bold;
-    font-size: 18px;
-}
-
-.progress {
-    background-color: #e9ecef;
-}
-
-.table th {
-    border-top: none;
-    font-weight: 600;
-}
-
-.btn-group-sm .btn {
-    padding: 0.25rem 0.5rem;
-}
-
-.card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-}
-</style>
 {% endblock %}

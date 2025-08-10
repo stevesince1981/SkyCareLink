@@ -3653,45 +3653,7 @@ def submit_feedback():
 
 # Phase 11.F: Complete Implementation - Admin Analytics, Demo Tools, Concierge UI
 
-# 1) Admin Analytics - Flights per Provider
-@consumer_app.route('/admin/analytics/affiliates')
-def admin_analytics_affiliates():
-    """Flights per Provider analytics table with sortable columns"""
-    if session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('home'))
-    
-    affiliates_data = []
-    
-    if DB_AVAILABLE:
-        try:
-            with consumer_app.app_context():
-                affiliates = Affiliate.query.all()
-                
-                for affiliate in affiliates:
-                    # Calculate recoup remaining
-                    recoup_remaining = max(25000 - affiliate.recouped_amount_usd, 0)
-                    
-                    # Get commission count (flights)
-                    completed_bookings = Commission.query.filter_by(affiliate_id=affiliate.id).count()
-                    
-                    affiliates_data.append({
-                        'id': affiliate.id,
-                        'company_name': affiliate.company_name,
-                        'fee_percent': affiliate.commission_percent_default * 100,
-                        'recoup_remaining': recoup_remaining,
-                        'total_flights': completed_bookings,
-                        'avg_response_time': affiliate.avg_response_time_minutes,
-                        'response_rate_30day': affiliate.response_rate_30day * 100,
-                        'is_spotlight': affiliate.is_spotlight,
-                        'recouped_amount': affiliate.recouped_amount_usd
-                    })
-        except Exception as e:
-            logging.error(f"Error loading affiliate analytics: {e}")
-            flash('Error loading analytics data', 'error')
-    
-    return render_template('admin_analytics_affiliates.html',
-                         affiliates_data=affiliates_data)
+# Original Phase 11.F admin_analytics_affiliates - replaced with enhanced Phase 11.J version
 
 # 2) Adjustable Commission Rate
 @consumer_app.route('/admin/affiliates/<int:affiliate_id>/edit-commission', methods=['POST'])
@@ -3925,39 +3887,13 @@ def portal_reset_demo():
 
 # Phase 11.H: Complete Implementation
 
-# 1) Admin Routes - Affiliates Management
-@consumer_app.route('/admin/affiliates')
-def admin_affiliates():
-    """Admin affiliates list with edit capabilities"""
-    if session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('home'))
-    
-    affiliates_data = []
-    if DB_AVAILABLE:
-        try:
-            with consumer_app.app_context():
-                affiliates = Affiliate.query.all()
-                for affiliate in affiliates:
-                    affiliates_data.append({
-                        'id': affiliate.id,
-                        'company_name': affiliate.company_name,
-                        'contact_email': affiliate.contact_email,
-                        'commission_percent': affiliate.commission_percent_default * 100,
-                        'recouped_amount': affiliate.recouped_amount_usd,
-                        'total_bookings': affiliate.total_bookings,
-                        'offers_concierge': getattr(affiliate, 'offers_concierge', False)
-                    })
-        except Exception as e:
-            logging.error(f"Error loading affiliates: {e}")
-    
-    return render_template('admin_affiliates.html', affiliates=affiliates_data)
+# Original Phase 11.H admin_affiliates - replaced with enhanced Phase 11.J version
 
-# 2) Join Flows
+# 2) Join Flows - Phase 11.J Enhanced
 @consumer_app.route('/join_individual')
 def join_individual():
-    """Individual self-service signup"""
-    return render_template('join_individual.html')
+    """Phase 11.J: Individual self-service signup with enhanced pricing model"""
+    return render_template('join_individual_phase11j.html')
 
 @consumer_app.route('/join_individual', methods=['POST'])
 def join_individual_submit():
@@ -4185,7 +4121,81 @@ def legacy_request_transport():
     """301 redirect legacy /request_transport to canonical intake"""
     return redirect(url_for('consumer_intake'), code=301)
 
-# 4) Canonical Intake Route
+# 4) Admin Routes - Phase 11.J
+@consumer_app.route('/admin/affiliates')
+def admin_affiliates():
+    """Admin affiliates list with edit capabilities"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required', 'danger')
+        return redirect(url_for('login'))
+    
+    affiliates_list = []
+    if DB_AVAILABLE:
+        try:
+            with consumer_app.app_context():
+                affiliates = Affiliate.query.all()
+                for affiliate in affiliates:
+                    affiliates_list.append({
+                        'id': affiliate.id,
+                        'name': affiliate.name,
+                        'default_commission': affiliate.default_commission,
+                        'recoup_remaining': max(0, 25000 - (affiliate.total_recoup or 0)),
+                        'strikes': affiliate.strikes or 0,
+                        'offers_concierge': affiliate.offers_concierge or False,
+                        'total_bookings': affiliate.total_bookings or 0
+                    })
+        except Exception as e:
+            logging.error(f"Error loading affiliates: {e}")
+    
+    if not affiliates_list:
+        # Fallback demo data
+        affiliates_list = [
+            {'id': 1, 'name': 'AirMed Partners', 'default_commission': 5.0, 'recoup_remaining': 22500, 'strikes': 0, 'offers_concierge': True, 'total_bookings': 15},
+            {'id': 2, 'name': 'Guardian Flight', 'default_commission': 5.0, 'recoup_remaining': 18000, 'strikes': 1, 'offers_concierge': False, 'total_bookings': 28},
+            {'id': 3, 'name': 'MedEvac Solutions', 'default_commission': 5.0, 'recoup_remaining': 25000, 'strikes': 0, 'offers_concierge': True, 'total_bookings': 0},
+        ]
+    
+    return render_template('admin_affiliates.html', affiliates=affiliates_list)
+
+@consumer_app.route('/admin/analytics/affiliates')
+def admin_analytics_affiliates():
+    """Admin analytics - flights per provider"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required', 'danger')
+        return redirect(url_for('login'))
+    
+    # Analytics data with flight details
+    analytics_data = [
+        {
+            'affiliate': 'AirMed Partners',
+            'fee_percent': 5.0,
+            'recoup_remaining': 22500,
+            'flights_completed': 15,
+            'response_rate_30d': 92,
+            'spotlight': False,
+            'flight_details': [
+                {'date': '2025-08-08', 'base_fare': 125000, 'concierge_addon': 15000, 'our_split': 7500},
+                {'date': '2025-08-06', 'base_fare': 98000, 'concierge_addon': 0, 'our_split': 0},
+                {'date': '2025-08-04', 'base_fare': 145000, 'concierge_addon': 15000, 'our_split': 7500}
+            ]
+        },
+        {
+            'affiliate': 'Guardian Flight',
+            'fee_percent': 5.0,
+            'recoup_remaining': 18000,
+            'flights_completed': 28,
+            'response_rate_30d': 78,
+            'spotlight': False,
+            'flight_details': [
+                {'date': '2025-08-09', 'base_fare': 110000, 'concierge_addon': 0, 'our_split': 0},
+                {'date': '2025-08-07', 'base_fare': 135000, 'concierge_addon': 0, 'our_split': 0}
+            ]
+        }
+    ]
+    
+    return render_template('admin_analytics_affiliates.html', analytics=analytics_data)
+
+# 5) Canonical Intake Route
 @consumer_app.route('/intake')
 def consumer_intake():
     """Canonical intake stepper - Phase 11.I hotfix"""

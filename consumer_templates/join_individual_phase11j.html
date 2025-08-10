@@ -1,0 +1,137 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Join as Individual - MediFly{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-user-plus me-3"></i>Individual Membership
+                </h1>
+                <p class="lead text-muted">Access the largest network of air medical providers</p>
+            </div>
+
+            <!-- Phase 11.J Pricing Model -->
+            <div class="card border-info mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-tag me-2"></i>No Fees Initially - Try Risk-Free
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>✅ First Booking: <span class="text-success fw-bold">FREE</span></h6>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="fas fa-check text-success me-2"></i>Try our service with no upfront cost</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Access full provider network</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Ground transport coordination included</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>🔒 Second Booking Paywall Options:</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_plan" id="oneTime" value="one_time" checked>
+                                    <label class="form-check-label fw-bold" for="oneTime">
+                                        $99 One-Time Fee
+                                    </label>
+                                    <div class="text-muted small">Lifetime access, no recurring charges</div>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment_plan" id="monthly" value="monthly">
+                                    <label class="form-check-label fw-bold" for="monthly">
+                                        $9.99/Month
+                                    </label>
+                                    <div class="text-muted small">1-year minimum, 30-day cancellation window anytime</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Create Your Account
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('join_individual_submit') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" class="form-control" name="first_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" name="last_name" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" name="email" required>
+                            <div class="form-text">Required for booking confirmations and account management</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mobile Phone * (Required)</label>
+                                <input type="tel" class="form-control" name="phone_mobile" placeholder="(555) 123-4567" required>
+                                <div class="form-text text-danger">Mobile required for SMS alerts</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Secondary Phone (Optional)</label>
+                                <input type="tel" class="form-control" name="phone_secondary" placeholder="(555) 123-4567">
+                                <div class="form-text">Backup contact number</div>
+                            </div>
+                        </div>
+
+                        <!-- Phase 11.J Marketing Preferences -->
+                        <div class="mb-4">
+                            <h6 class="mb-3">
+                                <i class="fas fa-bell me-2"></i>Marketing Preferences
+                            </h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="email_updates" id="emailUpdates" checked>
+                                <label class="form-check-label" for="emailUpdates">
+                                    <strong>Send me email updates</strong> about new features and services
+                                </label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="sms_updates" id="smsUpdates">
+                                <label class="form-check-label" for="smsUpdates">
+                                    <strong>Send me SMS updates</strong> for urgent service notifications
+                                </label>
+                            </div>
+                            <div class="alert alert-light border">
+                                <i class="fas fa-cog me-2"></i>
+                                <small>You can manage email/SMS subscription preferences and unsubscribe anytime through your portal after registration.</small>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket me-2"></i>Create My Free Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    By creating an account, you agree to our Terms of Service and Privacy Policy.
+                    <br>No date of birth required - we collect minimal personal information.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
