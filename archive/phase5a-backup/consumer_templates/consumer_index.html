@@ -1,0 +1,482 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}MediFly Consumer - Get Your Loved One Home Safely{% endblock %}
+
+{% block head %}
+<style>
+/* Enhanced Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #e6f3ff 0%, #ffe6f3 50%, #e6f3ff 100%);
+    padding: 4rem 0;
+    text-align: center;
+    color: #333;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+    color: #666;
+}
+
+/* Transport Type Grid */
+.transport-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.transport-card {
+    background: white;
+    padding: 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-content {
+    padding: 2rem 1.5rem 1rem 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-content p {
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.card-footer {
+    padding: 1rem 1.5rem 2rem 1.5rem;
+}
+
+.transport-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.critical-card {
+    border-left: 5px solid #dc3545;
+}
+
+.non-critical-card {
+    border-left: 5px solid #007bff;
+}
+
+.mvp-card {
+    border-left: 5px solid #ffc107;
+    background: linear-gradient(135deg, #fff9e6, #ffffff);
+}
+
+.hospital-card {
+    border-left: 5px solid #198754;
+    background: linear-gradient(135deg, #e9f7ef, #ffffff);
+}
+
+.hospital-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.2);
+}
+
+.toggle-section {
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* AI Chat Input */
+.ai-chat-section {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 2rem 0;
+}
+
+.ai-input {
+    border-radius: 25px;
+    border: 2px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+.ai-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
+}
+
+/* Priority animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.priority-card {
+    border: 3px solid gold;
+    animation: pulse 2s infinite;
+}
+
+/* Comparison Section Styles */
+.comparison-wrapper {
+    background: #f8f9fa;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    margin: 2rem 0;
+}
+
+.comparison-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    height: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.comparison-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.traditional-card {
+    border-left: 5px solid #dc3545;
+}
+
+.medifly-card {
+    border-left: 5px solid #198754;
+}
+
+.comparison-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.comparison-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.comparison-item:last-child {
+    border-bottom: none;
+}
+
+.comparison-item span {
+    font-size: 1rem;
+    color: #495057;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">
+            <i class="fas fa-ambulance me-3"></i>
+            <i class="fas fa-helicopter me-3"></i>
+            <i class="fas fa-plane me-3"></i>  
+            Professional Medical Transport Solutions
+        </h1>
+        <p class="hero-subtitle">
+            Comprehensive air medical transport for hospitals, families, and specialized procedures with transparent pricing
+        </p>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary btn-lg px-5 py-3 me-3">
+                Start Your Transport Request
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg px-5 py-3">
+                <i class="fas fa-sign-in-alt me-2"></i>Access Portal
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<!-- Transport Type Selection -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="toggle-section">
+                <h3 class="text-center mb-4">Choose Your Transport Type</h3>
+                <div class="row">
+                    <!-- Critical Transport -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="transport-option" data-type="critical">
+                            <div class="transport-card critical-card h-100">
+                                <div class="card-content">
+                                    <i class="fas fa-exclamation-triangle text-danger fa-2x mb-3"></i>
+                                    <h5>Critical Transport</h5>
+                                    <p class="flex-grow-1">Urgent medical emergencies requiring immediate attention and rapid response with same-day availability.</p>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i> Same-day available (+20% urgency fee)
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('consumer_intake') }}?type=critical" class="btn btn-danger w-100">
+                                        Emergency Transport
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Non-Critical Transport -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="transport-option" data-type="non-critical">
+                            <div class="transport-card non-critical-card h-100">
+                                <div class="card-content">
+                                    <i class="fas fa-heart text-primary fa-2x mb-3"></i>
+                                    <h5>Non-Critical Transport</h5>
+                                    <p class="flex-grow-1">Planned medical transport with comfort options, family seats, and VIP cabin upgrades available.</p>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-users me-1"></i> Family seat +$5K | VIP cabin +$10K
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('consumer_intake') }}?type=non-critical" class="btn btn-primary w-100">
+                                        Plan Transport
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hospital Partnership -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="transport-option" data-type="hospital">
+                            <div class="transport-card hospital-card h-100">
+                                <div class="card-content">
+                                    <i class="fas fa-hospital text-success fa-2x mb-3"></i>
+                                    <h5>Hospital Partnership</h5>
+                                    <p class="flex-grow-1">Institutional bulk pricing, priority matching, and 24/7 dedicated support for healthcare facilities.</p>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-handshake me-1"></i> Our core customer program
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('consumer_intake') }}?type=hospital" class="btn btn-success w-100">
+                                        Hospital Access
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Note: No Mobile App for MVP -->
+<div class="container mt-4">
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Note:</strong> MVP members receive web-based priority access. Mobile app coming in future releases.
+    </div>
+                
+                <!-- Partnership Note -->
+                <div class="text-center mt-4">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-handshake me-2"></i>Payment Partners</h5>
+                        <p class="mb-2">We partner with <strong>CareCredit</strong> and other medical financing options for flexible payment plans.</p>
+                        <a href="#" class="btn btn-outline-info btn-sm me-2">CareCredit Info</a>
+                        <a href="#" class="btn btn-outline-info btn-sm">Other Financing</a>
+                    </div>
+                </div>
+
+<!-- Why Choose Us Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="why-choose-us-section">
+                <h3 class="text-center mb-4">
+                    <i class="fas fa-heart-pulse me-2"></i>
+                    Why Choose MediFly?
+                </h3>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="scenario-card p-4 border rounded h-100">
+                            <div class="scenario-icon text-center mb-3">
+                                <i class="fas fa-baby text-danger fa-3x"></i>
+                            </div>
+                            <h5 class="text-center">Emergency Toddler Transport</h5>
+                            <p class="scenario-text">
+                                Your 3-year-old falls seriously ill while on vacation in Florida. Traditional services 
+                                require 10+ hours of phone calls, paperwork, and uncertainty about pricing.
+                            </p>
+                            <div class="solution-highlight alert alert-success">
+                                <strong>With MediFly:</strong> Get real-time quotes from multiple providers in minutes, 
+                                not hours. Compare prices, aircraft types, and medical capabilities instantly.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="scenario-card p-4 border rounded h-100">
+                            <div class="scenario-icon text-center mb-3">
+                                <i class="fas fa-person-cane text-info fa-3x"></i>
+                            </div>
+                            <h5 class="text-center">Grandma's Safe Journey Home</h5>
+                            <p class="scenario-text">
+                                Grandma suffered a stroke while visiting family in New York. She needs specialized 
+                                medical transport back home, but you're overwhelmed by complex medical transport processes.
+                            </p>
+                            <div class="solution-highlight alert alert-info">
+                                <strong>With MediFly:</strong> Transparent pricing, family seat options, VIP comfort 
+                                upgrades, and real-time tracking so you know she's in safe hands.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <div class="time-comparison">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="comparison-old p-3 border rounded">
+                                    <h6 class="text-danger">Traditional Process</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="fas fa-clock text-danger me-2"></i>10+ hours of phone calls</li>
+                                        <li><i class="fas fa-question-circle text-danger me-2"></i>Unknown pricing until the end</li>
+                                        <li><i class="fas fa-file-contract text-danger me-2"></i>Complex paperwork</li>
+                                        <li><i class="fas fa-phone text-danger me-2"></i>Limited provider comparison</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="comparison-new p-3 border rounded border-success">
+                                    <h6 class="text-success">MediFly Process</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="fas fa-bolt text-success me-2"></i>Real quotes in minutes</li>
+                                        <li><i class="fas fa-dollar-sign text-success me-2"></i>Transparent pricing upfront</li>
+                                        <li><i class="fas fa-mouse-pointer text-success me-2"></i>Simple online booking</li>
+                                        <li><i class="fas fa-star text-success me-2"></i>Multiple provider comparison</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Transport Assistant Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="ai-chat-section">
+                <div class="text-center">
+                    <h4 class="mb-3">
+                        <i class="fas fa-robot me-2"></i>
+                        AI Transport Assistant
+                    </h4>
+                    <div class="row justify-content-center">
+                        <div class="col-md-10">
+                            <input type="text" class="form-control ai-input" 
+                                   id="aiCommand" 
+                                   placeholder="Try: 'Help me build a flight for grandma from Orlando to NYC'"
+                                   onkeypress="handleAICommand(event)">
+                            <small class="text-muted mt-2 d-block">
+                                Ask me anything about planning your transport - I'll guide you through each step!
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                    <h5>Address Validation</h5>
+                    <p>Smart address autocomplete for hospitals, airports, and international destinations with Google Places integration.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-calculator fa-3x text-success mb-3"></i>
+                    <h5>Dynamic Equipment Pricing</h5>
+                    <p>Transparent pricing for Ventilator (+$5K), ECMO (+$10K), Incubator (+$3K), and custom medical equipment.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-md fa-3x text-warning mb-3"></i>
+                    <h5>Provider Privacy</h5>
+                    <p>Provider names are blurred until booking to prevent direct contact and ensure fair pricing competition.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// AI Command Processing
+function handleAICommand(event) {
+    if (event.key === 'Enter') {
+        const command = event.target.value.toLowerCase();
+        
+        // Parse command and redirect accordingly
+        if (command.includes('orlando') && command.includes('nyc')) {
+            window.location.href = "{{ url_for('consumer_intake') }}?type=non-critical&prefill=orlando-nyc";
+        } else if (command.includes('grandma') || command.includes('grandmother')) {
+            window.location.href = "{{ url_for('consumer_intake') }}?type=non-critical&family=true";
+        } else if (command.includes('emergency') || command.includes('urgent')) {
+            window.location.href = "{{ url_for('consumer_intake') }}?type=critical";
+        } else if (command.includes('mvp') || command.includes('membership')) {
+            window.location.href = "{{ url_for('subscribe', plan='monthly') }}";
+        } else {
+            // Show help popup
+            alert('I can help you with:\n• "Help me build a flight from Orlando to NYC"\n• "What options are good for my grandmother?"\n• "I need emergency transport"\n• "Tell me about MVP membership"');
+        }
+        
+        event.target.value = '';
+    }
+}
+
+// Enhanced transport type selection
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects and analytics tracking
+    document.querySelectorAll('.transport-card').forEach(card => {
+        card.addEventListener('click', function() {
+            console.log('Transport type selected:', this.closest('.transport-option').dataset.type);
+        });
+    });
+});
+</script>
+{% endblock %}

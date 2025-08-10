@@ -1,0 +1,1007 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Enhanced MediFly Transport - Professional Medical Aviation{% endblock %}
+
+{% block head %}
+<style>
+/* Professional Medical Aviation Design */
+:root {
+    --primary-blue: #1976d2;
+    --secondary-blue: #42a5f5;
+    --accent-red: #dc3545;
+    --success-green: #28a745;
+    --warning-orange: #fd7e14;
+    --light-blue: #e3f2fd;
+    --dark-blue: #0d47a1;
+}
+
+/* Hero Section with Plane Animation */
+.hero-section {
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.9) 0%, rgba(66, 165, 245, 0.9) 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:%2387CEEB;stop-opacity:1" /><stop offset="100%" style="stop-color:%23E0F6FF;stop-opacity:1" /></linearGradient></defs><rect width="1200" height="600" fill="url(%23sky)"/><g fill="%23ffffff" opacity="0.8"><circle cx="100" cy="100" r="3"/><circle cx="300" cy="150" r="2"/><circle cx="500" cy="80" r="4"/><circle cx="700" cy="200" r="3"/><circle cx="900" cy="120" r="2"/><circle cx="1100" cy="180" r="3"/></g></svg>');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 8rem 0 6rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 600px;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Pancake Stack Form Navigation */
+.pancake-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin: 2rem 0;
+}
+
+.pancake-step {
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.pancake-step:last-child {
+    border-bottom: none;
+}
+
+.pancake-step.collapsed {
+    background: #f8f9fa;
+}
+
+.pancake-step.active {
+    background: var(--light-blue);
+    border-left: 5px solid var(--primary-blue);
+}
+
+.pancake-header {
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.pancake-header.active {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.step-number {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: var(--primary-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 1rem;
+}
+
+.step-title {
+    flex-grow: 1;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.step-status {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.pancake-content {
+    padding: 2rem;
+    display: none;
+}
+
+.pancake-content.active {
+    display: block;
+}
+
+.step-summary {
+    background: rgba(255,255,255,0.1);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+/* Enhanced Location Dropdown */
+.location-search {
+    position: relative;
+}
+
+.location-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.location-option {
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f8f9fa;
+    transition: background 0.2s ease;
+}
+
+.location-option:hover {
+    background: var(--light-blue);
+}
+
+.location-option:last-child {
+    border-bottom: none;
+}
+
+/* Date and Time Fields */
+.datetime-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.datetime-field {
+    position: relative;
+}
+
+.datetime-field input {
+    width: 100%;
+}
+
+.datetime-warning {
+    font-size: 0.8rem;
+    color: var(--warning-orange);
+    margin-top: 0.5rem;
+}
+
+/* Equipment Selection */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.equipment-card {
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.equipment-card:hover {
+    border-color: var(--primary-blue);
+    background: var(--light-blue);
+}
+
+.equipment-card.selected {
+    border-color: var(--success-green);
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.equipment-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-blue);
+}
+
+.equipment-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.equipment-price {
+    color: var(--success-green);
+    font-weight: 600;
+}
+
+/* Professional Buttons */
+.btn-professional {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+}
+
+.btn-professional:hover {
+    background: var(--dark-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+    color: white;
+}
+
+.btn-secondary-professional {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-professional:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+/* Navigation Controls - Level with Current Field */
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+}
+
+.step-navigation {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 1rem;
+    z-index: 10;
+}
+
+.step-navigation .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+/* Features Section */
+.features-section {
+    padding: 6rem 0;
+    background: #f8f9fa;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .datetime-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-navigation {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Professional Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Emergency Medical Aviation</h1>
+            <p class="hero-subtitle">Connect with certified air ambulance providers for life-critical medical transport. Fast, reliable, and professional service when every minute counts.</p>
+            
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn btn-professional btn-lg" data-bs-toggle="modal" data-bs-target="#intakeModal">
+                    <i class="fas fa-plane-departure me-2"></i>Request Air Ambulance Quotes
+                </button>
+                <a href="{{ url_for('partner_dashboard') }}" class="btn btn-secondary-professional btn-lg">
+                    <i class="fas fa-building me-2"></i>Provider Portal
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Why Choose Us Section -->
+<div class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Why Choose MediFly</h2>
+            <p class="lead text-muted">Professional medical aviation services you can trust</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <i class="fas fa-clock feature-icon"></i>
+                    <h4>24/7 Availability</h4>
+                    <p>Emergency medical transport services available around the clock, 365 days a year. Our network responds to critical situations immediately.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <i class="fas fa-network-wired feature-icon"></i>
+                    <h4>Certified Network</h4>
+                    <p>All providers are fully certified with advanced life support capabilities. Rigorous vetting ensures only qualified operators in our network.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <i class="fas fa-calculator feature-icon"></i>
+                    <h4>Transparent Quotes</h4>
+                    <p>Compare multiple quotes from certified providers with clear pricing. No hidden fees, just transparent medical transport solutions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- About Us Section -->
+<div class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2>About MediFly</h2>
+                <p class="lead">Connecting patients with life-saving medical aviation services when time is critical.</p>
+                <p>MediFly revolutionizes medical transport by providing a seamless platform that connects hospitals, families, and certified medical aviation providers. Our mission is to ensure that distance never becomes a barrier to receiving the best medical care.</p>
+                <p>With our network of verified providers, advanced booking system, and 24/7 support, we make medical transport coordination simple, transparent, and reliable.</p>
+                <div class="d-flex gap-4 mt-4">
+                    <div class="text-center">
+                        <h3 class="text-primary mb-0">500+</h3>
+                        <small class="text-muted">Successful Transports</small>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-primary mb-0">50+</h3>
+                        <small class="text-muted">Certified Providers</small>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-primary mb-0">24/7</h3>
+                        <small class="text-muted">Support Available</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="bg-light rounded p-4">
+                    <h5>Our Commitment</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>HIPAA Compliant Data Protection</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Transparent Pricing Structure</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Certified Provider Network</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Real-time Communication</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Family Support Services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pancake Stack Intake Modal -->
+<div class="modal fade" id="intakeModal" tabindex="-1" aria-labelledby="intakeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="intakeModalLabel">
+                    <i class="fas fa-clipboard-list me-2"></i>Medical Transport Request
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <form id="pancakeForm" method="POST" action="{{ url_for('consumer_intake') }}">
+                    
+                    <!-- Step 1: Transport Type -->
+                    <div class="pancake-step active" data-step="1">
+                        <div class="pancake-header active" onclick="togglePancake(1)">
+                            <div class="d-flex align-items-center">
+                                <div class="step-number">1</div>
+                                <div class="step-title">Transport Type</div>
+                            </div>
+                            <div class="step-status" id="step1-status">Select transport urgency</div>
+                        </div>
+                        <div class="pancake-content active" id="step1-content">
+                            <h6 class="mb-3">Select Transport Urgency</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="equipment-card" onclick="selectTransportType('critical')">
+                                        <i class="fas fa-exclamation-triangle equipment-icon text-danger"></i>
+                                        <div class="equipment-name">Critical</div>
+                                        <div class="equipment-price">Same-day transport</div>
+                                        <small>+20% urgency fee</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="equipment-card" onclick="selectTransportType('non-critical')">
+                                        <i class="fas fa-calendar-alt equipment-icon text-primary"></i>
+                                        <div class="equipment-name">Non-Critical</div>
+                                        <div class="equipment-price">Planned transport</div>
+                                        <small>Standard pricing</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="equipment-card" onclick="selectTransportType('mvp')">
+                                        <i class="fas fa-crown equipment-icon text-warning"></i>
+                                        <div class="equipment-name">MVP Member</div>
+                                        <div class="equipment-price">Priority booking</div>
+                                        <small>10% discount</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="transport_type" id="transport_type_input">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Patient Information -->
+                    <div class="pancake-step collapsed" data-step="2">
+                        <div class="pancake-header" onclick="togglePancake(2)">
+                            <div class="d-flex align-items-center">
+                                <div class="step-number">2</div>
+                                <div class="step-title">Patient Information</div>
+                            </div>
+                            <div class="step-status" id="step2-status">Enter patient details</div>
+                        </div>
+                        <div class="pancake-content" id="step2-content">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="patient_name" class="form-label">Patient Name</label>
+                                    <input type="text" class="form-control" id="patient_name" name="patient_name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="patient_age" class="form-label">Patient Age</label>
+                                    <select class="form-select" id="patient_age" name="patient_age" required>
+                                        <option value="">Select age...</option>
+                                        <option value="under-1">Under 1 year (Infant)</option>
+                                        <option value="1-17">1-17 years (Pediatric)</option>
+                                        <option value="18-64">18-64 years (Adult)</option>
+                                        <option value="65+">65+ years (Senior)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Location Details -->
+                    <div class="pancake-step collapsed" data-step="3">
+                        <div class="pancake-header" onclick="togglePancake(3)">
+                            <div class="d-flex align-items-center">
+                                <div class="step-number">3</div>
+                                <div class="step-title">Location Details</div>
+                            </div>
+                            <div class="step-status" id="step3-status">Set pickup and destination</div>
+                        </div>
+                        <div class="pancake-content" id="step3-content">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="origin" class="form-label">From (Pickup Location)</label>
+                                    <div class="location-search">
+                                        <input type="text" class="form-control" id="origin" name="origin" 
+                                               placeholder="Enter hospital, airport, or city..." required
+                                               onkeyup="searchLocations(this.value, 'origin')" autocomplete="off">
+                                        <div class="location-dropdown" id="origin-dropdown"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="destination" class="form-label">To (Destination)</label>
+                                    <div class="location-search">
+                                        <input type="text" class="form-control" id="destination" name="destination" 
+                                               placeholder="Enter hospital, airport, or city..." required
+                                               onkeyup="searchLocations(this.value, 'destination')" autocomplete="off">
+                                        <div class="location-dropdown" id="destination-dropdown"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Date and Time -->
+                    <div class="pancake-step collapsed" data-step="4">
+                        <div class="pancake-header" onclick="togglePancake(4)">
+                            <div class="d-flex align-items-center">
+                                <div class="step-number">4</div>
+                                <div class="step-title">Date & Time</div>
+                            </div>
+                            <div class="step-status" id="step4-status">Schedule transport</div>
+                        </div>
+                        <div class="pancake-content" id="step4-content">
+                            <div class="datetime-container">
+                                <div class="datetime-field">
+                                    <label for="transport_date" class="form-label">Preferred Date</label>
+                                    <input type="date" class="form-control" id="transport_date" name="transport_date" required>
+                                    <div class="datetime-warning" id="date-warning"></div>
+                                </div>
+                                <div class="datetime-field">
+                                    <label for="transport_time" class="form-label">Preferred Time</label>
+                                    <input type="time" class="form-control" id="transport_time" name="transport_time" required>
+                                    <div class="datetime-warning" id="time-warning"></div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="same_day" name="same_day">
+                                    <label class="form-check-label" for="same_day">
+                                        Same-day transport (additional 20% fee applies)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Medical Equipment -->
+                    <div class="pancake-step collapsed" data-step="5">
+                        <div class="pancake-header" onclick="togglePancake(5)">
+                            <div class="d-flex align-items-center">
+                                <div class="step-number">5</div>
+                                <div class="step-title">Medical Equipment</div>
+                            </div>
+                            <div class="step-status" id="step5-status">Select required equipment</div>
+                        </div>
+                        <div class="pancake-content" id="step5-content">
+                            <h6 class="mb-3">Required Medical Equipment</h6>
+                            <div class="equipment-grid">
+                                <div class="equipment-card" onclick="toggleEquipment('ventilator', 5000, this)">
+                                    <i class="fas fa-lungs equipment-icon"></i>
+                                    <div class="equipment-name">Ventilator</div>
+                                    <div class="equipment-price">+$5,000</div>
+                                </div>
+                                <div class="equipment-card" onclick="toggleEquipment('ecmo', 10000, this)">
+                                    <i class="fas fa-heart equipment-icon"></i>
+                                    <div class="equipment-name">ECMO</div>
+                                    <div class="equipment-price">+$10,000</div>
+                                </div>
+                                <div class="equipment-card" onclick="toggleEquipment('incubator', 3000, this)">
+                                    <i class="fas fa-baby equipment-icon"></i>
+                                    <div class="equipment-name">Incubator</div>
+                                    <div class="equipment-price">+$3,000</div>
+                                </div>
+                                <div class="equipment-card" onclick="toggleEquipment('escort', 2000, this)">
+                                    <i class="fas fa-user-md equipment-icon"></i>
+                                    <div class="equipment-name">Medical Escort</div>
+                                    <div class="equipment-price">+$2,000</div>
+                                </div>
+                                <div class="equipment-card" onclick="toggleEquipment('oxygen', 1000, this)">
+                                    <i class="fas fa-tint equipment-icon"></i>
+                                    <div class="equipment-name">Oxygen</div>
+                                    <div class="equipment-price">+$1,000</div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label for="additional_notes" class="form-label">Additional Requirements</label>
+                                <textarea class="form-control" id="additional_notes" name="additional_notes" rows="3" 
+                                         placeholder="Describe any special medical equipment or requirements..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="form-navigation">
+                <button type="button" class="btn btn-secondary-professional" id="prevBtn" onclick="previousStep()" style="display: none;">
+                    <i class="fas fa-arrow-left me-1"></i>Previous
+                </button>
+                <div class="text-center">
+                    <small class="text-muted">Step <span id="currentStep">1</span> of 5</small>
+                </div>
+                <button type="button" class="btn btn-professional" id="nextBtn" onclick="nextStep()">
+                    Next<i class="fas fa-arrow-right ms-1"></i>
+                </button>
+                <button type="submit" class="btn btn-professional" id="submitBtn" style="display: none;" form="pancakeForm">
+                    <i class="fas fa-paper-plane me-1"></i>Get Quotes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Global variables
+let currentPancakeStep = 1;
+let selectedEquipment = [];
+let totalEquipmentCost = 0;
+
+// Location data for enhanced dropdown
+const locationOptions = [
+    // Major Medical Centers
+    "Orlando Regional Medical Center, Orlando, FL",
+    "Orlando International Airport (MCO), Orlando, FL", 
+    "UCLA Medical Center, Los Angeles, CA",
+    "Los Angeles International Airport (LAX), Los Angeles, CA",
+    "Mayo Clinic, Rochester, MN",
+    "Johns Hopkins Hospital, Baltimore, MD",
+    "Massachusetts General Hospital, Boston, MA",
+    "Cleveland Clinic, Cleveland, OH",
+    "Houston Methodist Hospital, Houston, TX",
+    "Mount Sinai Hospital, New York, NY",
+    "Cedars-Sinai Medical Center, Los Angeles, CA",
+    "NewYork-Presbyterian Hospital, New York, NY",
+    
+    // Major Airports
+    "John F. Kennedy International Airport (JFK), New York, NY",
+    "Miami International Airport (MIA), Miami, FL",
+    "Hartsfield-Jackson Atlanta International Airport (ATL), Atlanta, GA",
+    "Dallas/Fort Worth International Airport (DFW), Dallas, TX",
+    "Denver International Airport (DEN), Denver, CO",
+    "Seattle-Tacoma International Airport (SEA), Seattle, WA"
+];
+
+// Pancake stack navigation functions
+function togglePancake(stepNumber) {
+    if (stepNumber <= currentPancakeStep) {
+        // Show this step
+        showPancakeStep(stepNumber);
+    }
+}
+
+function showPancakeStep(stepNumber) {
+    // Hide all steps
+    document.querySelectorAll('.pancake-step').forEach(step => {
+        step.classList.add('collapsed');
+        step.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.pancake-header').forEach(header => {
+        header.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.pancake-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Show selected step
+    const targetStep = document.querySelector(`[data-step="${stepNumber}"]`);
+    const targetHeader = targetStep.querySelector('.pancake-header');
+    const targetContent = targetStep.querySelector('.pancake-content');
+    
+    targetStep.classList.remove('collapsed');
+    targetStep.classList.add('active');
+    targetHeader.classList.add('active');
+    targetContent.classList.add('active');
+    
+    currentPancakeStep = stepNumber;
+    updateNavigationButtons();
+    document.getElementById('currentStep').textContent = stepNumber;
+}
+
+function nextStep() {
+    if (validateCurrentStep()) {
+        if (currentPancakeStep < 5) {
+            currentPancakeStep++;
+            showPancakeStep(currentPancakeStep);
+        }
+    }
+}
+
+function previousStep() {
+    if (currentPancakeStep > 1) {
+        currentPancakeStep--;
+        showPancakeStep(currentPancakeStep);
+    }
+}
+
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    prevBtn.style.display = currentPancakeStep > 1 ? 'block' : 'none';
+    
+    if (currentPancakeStep === 5) {
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'block';
+    } else {
+        nextBtn.style.display = 'block';
+        submitBtn.style.display = 'none';
+    }
+}
+
+function validateCurrentStep() {
+    switch(currentPancakeStep) {
+        case 1:
+            return document.getElementById('transport_type_input').value !== '';
+        case 2:
+            return document.getElementById('patient_name').value && 
+                   document.getElementById('patient_age').value;
+        case 3:
+            return document.getElementById('origin').value && 
+                   document.getElementById('destination').value;
+        case 4:
+            return validateDateTime();
+        case 5:
+            return true; // Equipment is optional
+        default:
+            return true;
+    }
+}
+
+// Transport type selection
+function selectTransportType(type) {
+    document.querySelectorAll('.equipment-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    event.currentTarget.classList.add('selected');
+    document.getElementById('transport_type_input').value = type;
+    
+    // Update step status
+    document.getElementById('step1-status').textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' transport selected';
+    
+    console.log('Transport type selected:', type);
+}
+
+// Enhanced location search with better dropdown positioning
+function searchLocations(query, field) {
+    const dropdown = document.getElementById(field + '-dropdown');
+    
+    if (query.length < 2) {
+        dropdown.style.display = 'none';
+        return;
+    }
+    
+    const filteredOptions = locationOptions.filter(location => 
+        location.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    if (filteredOptions.length > 0) {
+        dropdown.innerHTML = filteredOptions.map(location => 
+            `<div class="location-option" onclick="selectLocation('${location}', '${field}')">${location}</div>`
+        ).join('');
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.style.display = 'none';
+    }
+    
+    console.log('Validating address:', query, 'for', field);
+}
+
+function selectLocation(location, field) {
+    document.getElementById(field).value = location;
+    document.getElementById(field + '-dropdown').style.display = 'none';
+    
+    // Update step status
+    if (field === 'origin' || field === 'destination') {
+        const origin = document.getElementById('origin').value;
+        const destination = document.getElementById('destination').value;
+        if (origin && destination) {
+            document.getElementById('step3-status').textContent = `${origin.split(',')[0]} → ${destination.split(',')[0]}`;
+        }
+    }
+    
+    console.log('Address selected:', location);
+}
+
+// Date and time validation with timezone awareness
+function validateDateTime() {
+    const dateInput = document.getElementById('transport_date');
+    const timeInput = document.getElementById('transport_time');
+    const dateWarning = document.getElementById('date-warning');
+    const timeWarning = document.getElementById('time-warning');
+    
+    const selectedDate = new Date(dateInput.value);
+    const selectedTime = timeInput.value;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // Clear previous warnings
+    dateWarning.textContent = '';
+    timeWarning.textContent = '';
+    
+    // Validate date
+    if (selectedDate < today) {
+        dateWarning.textContent = 'Cannot select a date in the past';
+        return false;
+    }
+    
+    // Validate time if date is today
+    if (selectedDate.getTime() === today.getTime() && selectedTime) {
+        const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+                           now.getMinutes().toString().padStart(2, '0');
+        
+        if (selectedTime <= currentTime) {
+            timeWarning.textContent = 'Cannot select a time in the past for today';
+            return false;
+        }
+    }
+    
+    return dateInput.value && timeInput.value;
+}
+
+// Set minimum date to today
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('transport_date').min = today;
+    
+    // Add event listeners for date/time validation
+    document.getElementById('transport_date').addEventListener('change', validateDateTime);
+    document.getElementById('transport_time').addEventListener('change', validateDateTime);
+});
+
+// Equipment selection
+function toggleEquipment(equipment, cost, element) {
+    const equipmentName = equipment.charAt(0).toUpperCase() + equipment.slice(1) + ` (+$${cost.toLocaleString()})`;
+    
+    if (element.classList.contains('selected')) {
+        element.classList.remove('selected');
+        selectedEquipment = selectedEquipment.filter(item => item !== equipmentName);
+        totalEquipmentCost -= cost;
+    } else {
+        element.classList.add('selected');
+        selectedEquipment.push(equipmentName);
+        totalEquipmentCost += cost;
+    }
+    
+    // Update step status
+    if (selectedEquipment.length > 0) {
+        document.getElementById('step5-status').textContent = 
+            `${selectedEquipment.length} items selected ($${totalEquipmentCost.toLocaleString()})`;
+    } else {
+        document.getElementById('step5-status').textContent = 'Select required equipment';
+    }
+    
+    console.log('Equipment total cost:', totalEquipmentCost);
+    console.log('Selected equipment:', selectedEquipment);
+}
+
+// Hide dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.location-search')) {
+        document.querySelectorAll('.location-dropdown').forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
+    }
+});
+
+// Modify function to return to pancakes instead of original form
+function modifyRequest() {
+    // Clear all form data and return to pancake navigation
+    document.getElementById('pancakeForm').reset();
+    selectedEquipment = [];
+    totalEquipmentCost = 0;
+    currentPancakeStep = 1;
+    
+    // Reset all step statuses
+    document.getElementById('step1-status').textContent = 'Select transport urgency';
+    document.getElementById('step2-status').textContent = 'Enter patient details';
+    document.getElementById('step3-status').textContent = 'Set pickup and destination';
+    document.getElementById('step4-status').textContent = 'Schedule transport';
+    document.getElementById('step5-status').textContent = 'Select required equipment';
+    
+    // Show pancake modal
+    const modal = new bootstrap.Modal(document.getElementById('intakeModal'));
+    modal.show();
+    
+    // Show first step
+    showPancakeStep(1);
+}
+
+// Auto-save functionality
+let autoSaveInterval;
+let currentFormData = {};
+
+function startAutoSave() {
+    if (autoSaveInterval) clearInterval(autoSaveInterval);
+    
+    autoSaveInterval = setInterval(() => {
+        const formData = gatherFormData();
+        if (JSON.stringify(formData) !== JSON.stringify(currentFormData)) {
+            currentFormData = formData;
+            saveFormDraft(formData);
+        }
+    }, 30000); // 30 seconds as per DRAFTS_CONFIG
+}
+
+function gatherFormData() {
+    const form = document.getElementById('pancakeForm');
+    if (!form) return {};
+    
+    const formData = new FormData(form);
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    return data;
+}
+
+function saveFormDraft(data) {
+    fetch('/api/save-draft', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            console.log('Draft auto-saved:', result.draft_id);
+            showDraftSavedIndicator();
+        }
+    })
+    .catch(error => console.error('Auto-save error:', error));
+}
+
+function showDraftSavedIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'draft-saved-indicator';
+    indicator.innerHTML = '<i class="fas fa-check"></i> Draft saved';
+    indicator.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #28a745; color: white; padding: 0.5rem 1rem; border-radius: 5px; z-index: 9999; opacity: 0.9;';
+    document.body.appendChild(indicator);
+    
+    setTimeout(() => {
+        indicator.remove();
+    }, 2000);
+}
+
+// Initialize professional form
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('MediFly Professional Enhanced Features Loaded');
+    console.log('Pancake stack navigation initialized');
+    console.log('Enhanced location search ready');
+    console.log('Date/time validation with timezone awareness active');
+    console.log('Auto-save system activated - 30 second intervals');
+    
+    updateNavigationButtons();
+    startAutoSave();
+    
+    // Add modify function to global scope for quotes page
+    window.modifyRequest = modifyRequest;
+});
+</script>
+{% endblock %}

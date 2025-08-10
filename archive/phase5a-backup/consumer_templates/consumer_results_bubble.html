@@ -1,0 +1,581 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Transport Quotes - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Bubble-inspired Results Page */
+:root {
+    --bubble-primary: #1976d2;
+    --bubble-secondary: #42a5f5;
+    --bubble-accent: #ff4081;
+    --success-green: #28a745;
+    --warning-orange: #fd7e14;
+    --danger-red: #dc3545;
+}
+
+.results-header {
+    background: linear-gradient(135deg, var(--bubble-primary) 0%, var(--bubble-secondary) 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+/* Request List Section */
+.request-list-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.request-item {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--bubble-primary);
+}
+
+.request-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Quotes Table Section */
+.quotes-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.quote-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.quote-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.quote-card.priority {
+    border-color: var(--bubble-accent);
+    background: linear-gradient(145deg, #fff 0%, #fff5f8 100%);
+}
+
+.quote-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.provider-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--bubble-primary);
+}
+
+.quote-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success-green);
+}
+
+.capability-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+}
+
+.capability-badge {
+    background: var(--bubble-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+/* Urgency Timer */
+.urgency-timer {
+    background: linear-gradient(135deg, var(--warning-orange) 0%, var(--danger-red) 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.timer-display {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Provider Unmasking */
+.provider-masked {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+    border: 2px dashed #dee2e6;
+}
+
+/* Multi-quote Selection */
+.quote-selection {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.quote-checkbox {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 20px;
+    height: 20px;
+}
+
+.selected-quote {
+    border-color: var(--success-green);
+    background: linear-gradient(145deg, #fff 0%, #f0fff4 100%);
+}
+
+/* Search Dialog */
+.search-dialog {
+    background: var(--bubble-secondary);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.search-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.search-option {
+    background: white;
+    color: var(--bubble-primary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-option:hover {
+    background: var(--bubble-primary);
+    color: white;
+}
+
+/* Compassionate Messaging */
+.no-availability-message {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .request-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .quote-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .search-options {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Results Header -->
+<div class="results-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <h1><i class="fas fa-calculator me-2"></i>Transport Quotes</h1>
+                <p class="mb-0">Compare available options for your medical transport request</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Urgency Timer -->
+    {% if hours_remaining <= 24 %}
+    <div class="urgency-timer">
+        <div class="timer-display" id="urgencyTimer">{{ hours_remaining }} hours remaining</div>
+        <p class="mb-0">Quote expires at {{ urgency_deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+        <small>Book now to secure your transport</small>
+    </div>
+    {% endif %}
+
+    <!-- Request List Section -->
+    <div class="request-list-section">
+        <h3 class="mb-3"><i class="fas fa-clipboard-list me-2"></i>Your Request</h3>
+        {% for request in request_list %}
+        <div class="request-item">
+            <div class="request-meta">
+                <div>
+                    <strong>{{ request.origin }}</strong> → <strong>{{ request.destination }}</strong>
+                </div>
+                <div>
+                    <span class="badge bg-info">{{ request.condition }}</span>
+                    <span class="badge bg-success">{{ request.status }}</span>
+                </div>
+                <div>
+                    <small class="text-muted">Created: {{ request.created }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Search Dialog -->
+    <div class="search-dialog">
+        <h4><i class="fas fa-search me-2"></i>Modify Search</h4>
+        <p class="mb-2">Adjust your search criteria to find more options</p>
+        <div class="search-options">
+            <button class="search-option" onclick="modifyEquipment()">
+                <i class="fas fa-medical-kit me-1"></i>Equipment
+            </button>
+            <button class="search-option" onclick="modifyTiming()">
+                <i class="fas fa-clock me-1"></i>Timing
+            </button>
+            <button class="search-option" onclick="modifyLocation()">
+                <i class="fas fa-map-marker-alt me-1"></i>Location
+            </button>
+            <button class="search-option" onclick="modifyBudget()">
+                <i class="fas fa-dollar-sign me-1"></i>Budget
+            </button>
+        </div>
+    </div>
+
+    <!-- Provider Unmasking Info -->
+    {% if not session.get('user_role') == 'mvp' %}
+    <div class="provider-masked">
+        <h4><i class="fas fa-eye-slash me-2"></i>Provider Names Masked</h4>
+        <p>Join MVP membership for $49/month to see full provider names and get priority booking</p>
+        <a href="{{ url_for('subscribe', plan='monthly') }}" class="btn btn-warning">
+            <i class="fas fa-crown me-2"></i>Upgrade to MVP
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Quotes Section -->
+    <div class="quotes-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3><i class="fas fa-list me-2"></i>Available Quotes ({{ quotes|length }})</h3>
+            <div>
+                <button class="btn btn-outline-primary btn-sm" onclick="selectMultiple()">
+                    <i class="fas fa-check-square me-1"></i>Compare Multiple
+                </button>
+            </div>
+        </div>
+
+        {% if quotes %}
+            {% for quote in quotes %}
+            <div class="quote-card {% if quote.priority %}priority{% endif %}" data-quote-id="{{ loop.index }}">
+                <div class="quote-selection">
+                    <input type="checkbox" class="quote-checkbox" id="quote{{ loop.index }}" 
+                           onchange="toggleQuoteSelection({{ loop.index }})">
+                </div>
+                
+                <div class="quote-header">
+                    <div>
+                        <div class="provider-name">
+                            {% if session.get('user_role') == 'mvp' %}
+                                {{ quote.name }}
+                            {% else %}
+                                Provider {{ quote.name[:1] }}****
+                            {% endif %}
+                            {% if quote.priority %}
+                                <span class="badge bg-warning ms-2">Priority Partner</span>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted">ETA: 45-60 minutes</small>
+                    </div>
+                    <div class="quote-price">${{ "{:,.0f}".format(quote.total_cost) }}</div>
+                </div>
+
+                <div class="capability-badges">
+                    {% for capability in quote.capabilities %}
+                    <span class="capability-badge">{{ capability.title() }}</span>
+                    {% endfor %}
+                    <span class="capability-badge">
+                        <i class="fas fa-helicopter me-1"></i>Helicopter
+                    </span>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6>Included Services:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Medical crew</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Basic life support</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Insurance coordination</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Pricing Breakdown:</h6>
+                        <ul class="list-unstyled">
+                            <li>Base transport: ${{ "{:,.0f}".format(quote.base_price) }}</li>
+                            <li>Equipment: ${{ "{:,.0f}".format(quote.equipment_cost) }}</li>
+                            <li>Deposit: ${{ "{:,.0f}".format(1000) }}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-primary me-2" onclick="bookQuote({{ loop.index }})">
+                        <i class="fas fa-credit-card me-1"></i>Book Now
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="viewDetails({{ loop.index }})">
+                        <i class="fas fa-info-circle me-1"></i>View Details
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Compassionate No Availability Message -->
+            <div class="no-availability-message">
+                <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                <h4>We're Working Hard for You</h4>
+                <p>We understand how important this transport is for your loved one. While no providers are immediately available for your exact requirements, our team is actively reaching out to our extended network.</p>
+                
+                <div class="mt-4">
+                    <h5>What happens next?</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone text-primary me-2"></i>We'll call you within 15 minutes with updates</li>
+                        <li><i class="fas fa-network-wired text-primary me-2"></i>Expanded search to partner networks</li>
+                        <li><i class="fas fa-clock text-primary me-2"></i>Alternative timing options if flexibility exists</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-4">
+                    <button class="btn btn-primary me-2" onclick="expandSearch()">
+                        <i class="fas fa-search-plus me-1"></i>Expand Search
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="callSupport()">
+                        <i class="fas fa-phone me-1"></i>Call Support Now
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Multi-quote Comparison -->
+    <div id="comparisonPanel" class="quotes-section" style="display: none;">
+        <h3><i class="fas fa-balance-scale me-2"></i>Quote Comparison</h3>
+        <div id="comparisonTable">
+            <!-- Dynamic comparison content -->
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-success" onclick="bookSelected()">
+                <i class="fas fa-check me-1"></i>Book Selected
+            </button>
+            <button class="btn btn-outline-secondary" onclick="clearSelection()">
+                <i class="fas fa-times me-1"></i>Clear Selection
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedQuotes = [];
+let comparisonMode = false;
+
+// Multi-quote selection
+function selectMultiple() {
+    comparisonMode = !comparisonMode;
+    const checkboxes = document.querySelectorAll('.quote-checkbox');
+    checkboxes.forEach(cb => {
+        cb.style.display = comparisonMode ? 'block' : 'none';
+    });
+    
+    if (!comparisonMode) {
+        clearSelection();
+    }
+}
+
+function toggleQuoteSelection(quoteId) {
+    const checkbox = document.getElementById(`quote${quoteId}`);
+    const card = document.querySelector(`[data-quote-id="${quoteId}"]`);
+    
+    if (checkbox.checked) {
+        selectedQuotes.push(quoteId);
+        card.classList.add('selected-quote');
+    } else {
+        selectedQuotes = selectedQuotes.filter(id => id !== quoteId);
+        card.classList.remove('selected-quote');
+    }
+    
+    updateComparisonPanel();
+}
+
+function updateComparisonPanel() {
+    const panel = document.getElementById('comparisonPanel');
+    if (selectedQuotes.length > 1) {
+        panel.style.display = 'block';
+        // Update comparison table
+        updateComparisonTable();
+    } else {
+        panel.style.display = 'none';
+    }
+}
+
+function updateComparisonTable() {
+    const table = document.getElementById('comparisonTable');
+    // Build comparison table dynamically
+    table.innerHTML = `
+        <div class="row">
+            ${selectedQuotes.map(id => `
+                <div class="col-md-${12/selectedQuotes.length}">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Quote ${id}</h6>
+                            <p>Comparison details here</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function clearSelection() {
+    selectedQuotes = [];
+    document.querySelectorAll('.quote-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+    document.querySelectorAll('.quote-card').forEach(card => {
+        card.classList.remove('selected-quote');
+    });
+    document.getElementById('comparisonPanel').style.display = 'none';
+}
+
+// Booking functions
+function bookQuote(quoteId) {
+    if (confirm('Proceed with booking? A $1,000 non-refundable deposit will be charged.')) {
+        window.location.href = `{{ url_for('consumer_confirm') }}?quote=${quoteId}`;
+    }
+}
+
+function bookSelected() {
+    if (selectedQuotes.length === 0) {
+        alert('Please select at least one quote to book.');
+        return;
+    }
+    
+    if (confirm(`Book ${selectedQuotes.length} selected quotes? Total deposit: $${selectedQuotes.length * 1000}`)) {
+        window.location.href = `{{ url_for('consumer_confirm') }}?quotes=${selectedQuotes.join(',')}`;
+    }
+}
+
+// Search modification functions
+function modifyEquipment() {
+    const equipment = prompt('Enter additional equipment needed:');
+    if (equipment) {
+        console.log('Equipment modification:', equipment);
+        // In production, this would trigger a new search
+        alert('Equipment preferences updated. Searching for new options...');
+    }
+}
+
+function modifyTiming() {
+    const timing = prompt('Enter preferred date/time (YYYY-MM-DD HH:MM):');
+    if (timing) {
+        console.log('Timing modification:', timing);
+        alert('Timing preferences updated. Searching for new options...');
+    }
+}
+
+function modifyLocation() {
+    const location = prompt('Enter alternative pickup/dropoff location:');
+    if (location) {
+        console.log('Location modification:', location);
+        alert('Location preferences updated. Searching for new options...');
+    }
+}
+
+function modifyBudget() {
+    const budget = prompt('Enter maximum budget:');
+    if (budget) {
+        console.log('Budget modification:', budget);
+        alert('Budget preferences updated. Filtering results...');
+    }
+}
+
+// Support functions
+function expandSearch() {
+    alert('Expanding search to partner networks and alternative options...');
+    // In production, this would trigger an expanded search
+}
+
+function callSupport() {
+    alert('Connecting you to 24/7 support at 1-800-MEDIFLY...');
+    // In production, this would initiate a support call
+}
+
+function viewDetails(quoteId) {
+    alert(`Viewing detailed information for Quote ${quoteId}...`);
+    // In production, this would show a detailed modal
+}
+
+// Urgency timer
+function updateUrgencyTimer() {
+    const timerElement = document.getElementById('urgencyTimer');
+    if (timerElement) {
+        // Update timer every minute
+        setInterval(() => {
+            console.log('Urgency timer tick');
+        }, 60000);
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Bubble-inspired results page loaded');
+    updateUrgencyTimer();
+    
+    // Analytics tracking
+    console.log('Patient data:', {{ patient_data|tojson }});
+    console.log('Quotes count:', {{ quotes|length }});
+});
+</script>
+{% endblock %}

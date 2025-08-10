@@ -1,0 +1,322 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Confirm Booking - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.confirmation-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.booking-summary {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.provider-reveal {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.fee-breakdown-card {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.fee-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.fee-item:last-child {
+    border-bottom: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.fee-item.refundable {
+    color: #28a745;
+}
+
+.fee-item.non-refundable {
+    color: #dc3545;
+}
+
+.account-creation {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.payment-options {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.external-payment {
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.external-payment:hover {
+    background: #f8f9ff;
+    border-color: #0056b3;
+}
+
+.security-notice {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+}
+
+.timer-reset-notice {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="confirmation-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1><i class="fas fa-check-circle text-success me-2"></i>Confirm Your Booking</h1>
+            <p class="lead">Review details and complete account setup to finalize your transport</p>
+        </div>
+
+        <!-- Provider Reveal -->
+        <div class="provider-reveal">
+            <h3><i class="fas fa-eye me-2"></i>Affiliate Revealed</h3>
+            <div class="h2 mt-3">{{ quote.affiliate_name }}</div>
+            <p class="mb-0">You've selected our trusted partner for your medical transport</p>
+            {% if quote.priority %}
+            <div class="badge bg-warning text-dark mt-2 fs-6">Priority Partner - Enhanced Service</div>
+            {% endif %}
+        </div>
+
+        <!-- Booking Summary -->
+        <div class="booking-summary">
+            <div class="disclaimer mb-3">
+                MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+            </div>
+            <h4><i class="fas fa-clipboard-list me-2"></i>Booking Summary</h4>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h6>Transport Details:</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>From:</strong> {{ patient_data.origin }}</li>
+                        <li><strong>To:</strong> {{ patient_data.destination }}</li>
+                        <li><strong>Type:</strong> {{ patient_data.transport_type.title() }}</li>
+                        <li><strong>ETA:</strong> {{ quote.eta_hours }} hours</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6">
+                    <h6>Patient Information:</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>Name:</strong> {{ patient_data.patient_name }}</li>
+                        <li><strong>Age:</strong> {{ patient_data.patient_age }}</li>
+                        <li><strong>Severity:</strong> Level {{ patient_data.severity }}</li>
+                        {% if patient_data.equipment %}
+                        <li><strong>Equipment:</strong> {{ patient_data.equipment|join(', ') }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Breakdown -->
+        <div class="fee-breakdown-card">
+            <h4><i class="fas fa-calculator me-2"></i>Transparent Fee Breakdown</h4>
+            <p class="text-muted mb-3">Understanding what you pay and when</p>
+            
+            <div class="fee-item non-refundable">
+                <span><i class="fas fa-building me-2"></i>MediFly Service Fee (Non-refundable)</span>
+                <span class="fw-bold">${{ "{:,}".format(fee_breakdown.medfly_fee) }}</span>
+            </div>
+            
+            <div class="fee-item refundable">
+                <span><i class="fas fa-plane me-2"></i>Affiliate Payment (Refundable until departure)</span>
+                <span class="fw-bold">${{ "{:,}".format(fee_breakdown.affiliate_payment) }}</span>
+            </div>
+            
+            {% if subscription_discount %}
+            <div class="fee-item text-success">
+                <span><i class="fas fa-percentage me-2"></i>Subscription Discount (10%)</span>
+                <span class="fw-bold">-${{ "{:,}".format((fee_breakdown.total_cost * 0.1)|int) }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="fee-item">
+                <span><strong>Total Amount Due</strong></span>
+                <span class="text-success">
+                    <strong>${{ "{:,}".format(fee_breakdown.total_cost - (fee_breakdown.total_cost * 0.1)|int if subscription_discount else fee_breakdown.total_cost) }}</strong>
+                </span>
+            </div>
+        </div>
+
+        <!-- Account Creation Requirement -->
+        {% if not session.user_email %}
+        <div class="account-creation">
+            <h4><i class="fas fa-user-plus me-2"></i>Account Required</h4>
+            <p>To finalize your booking, please create an account for managing your transport and receiving updates.</p>
+            
+            <form method="post" action="{{ url_for('create_account_confirm') }}">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="contact_name" class="form-label">Contact Name *</label>
+                        <input type="text" class="form-control" id="contact_name" name="contact_name" required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">Password *</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="patient_gender" class="form-label">Patient Gender</label>
+                        <select class="form-control" id="patient_gender" name="patient_gender">
+                            <option value="">Prefer not to say</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Data Security:</strong> All patient information is stored transiently in session only. No PHI/PII is permanently stored. Account data is encrypted and HIPAA-compliant.
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="email_verification" required>
+                    <label class="form-check-label" for="email_verification">
+                        I understand email verification will be sent to activate my account
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-check me-2"></i>Create Account & Continue
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Payment Options -->
+        <div class="payment-options">
+            <h4><i class="fas fa-credit-card me-2"></i>Secure Payment Options</h4>
+            
+            <div class="timer-reset-notice">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Timer Reset:</strong> Your 24-hour quote timer will reset once you initiate payment, giving you time to complete the process.
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="external-payment">
+                        <h5><i class="fab fa-stripe me-2"></i>Credit/Debit Card</h5>
+                        <p>Secure payment via Stripe (external)</p>
+                        <a href="#" class="btn btn-primary" onclick="initiateStripePayment()">
+                            Pay with Card
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="external-payment">
+                        <h5><i class="fas fa-medical-icon me-2"></i>CareCredit</h5>
+                        <p>Medical financing partner</p>
+                        <a href="#" class="btn btn-success" onclick="initiateCareCredit()">
+                            CareCredit Financing
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="security-notice mt-3">
+                <i class="fas fa-lock me-2"></i>
+                <strong>Payment Security:</strong> We never store credit card information. All payments are processed through certified external partners with bank-level encryption.
+            </div>
+        </div>
+
+        <!-- CareCredit Partnership -->
+        <div class="alert alert-info">
+            <h5><i class="fas fa-handshake me-2"></i>CareCredit Partnership</h5>
+            <p class="mb-2">We partner with CareCredit to offer low-interest medical payment plans with flexible terms.</p>
+            <ul class="mb-2">
+                <li>0% APR promotional financing available</li>
+                <li>Extended payment terms for qualified applicants</li>
+                <li>Instant approval decisions</li>
+                <li>No prepayment penalties</li>
+            </ul>
+            <a href="#" class="btn btn-outline-info">Learn More About CareCredit</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function initiateStripePayment() {
+    // Reset quote timer on payment initiation
+    console.log('Payment initiated - quote timer reset');
+    
+    // In production, redirect to Stripe Checkout
+    alert('Redirecting to secure Stripe payment portal...\n\nQuote timer has been reset - you now have 24 hours to complete payment.');
+    
+    // Mock redirect - in production use actual Stripe integration
+    // window.location.href = '/payment/stripe?quote_id={{ session.quote_id }}';
+}
+
+function initiateCareCredit() {
+    // Reset quote timer on payment initiation
+    console.log('CareCredit initiated - quote timer reset');
+    
+    // In production, redirect to CareCredit application
+    alert('Redirecting to CareCredit application portal...\n\nQuote timer has been reset for payment completion.');
+    
+    // Mock redirect - in production use actual CareCredit integration
+    // window.location.href = '/payment/carecredit?quote_id={{ session.quote_id }}';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+PHASE 5.A — APPLY: Quote Distribution Windows, Fairness, and Compact UX Polish
+ROLE: Senior engineer. Tighten quoting behavior and the compact results list. No schema changes.
+
+GOALS
+
+Requests fan out to eligible Affiliates fast.
+
+Results appear in a 15–60 min window, with a visible “View 5 more” control.
+
+Fairness: track low responders, rotate/balance requests.
+
+Compassionate zero‑result flow & affiliate‑assist opt‑in.
+
+Modify request stays enabled until selection; selection unblinds the chosen Affiliate.
+
+RULES
+
+Archive before edits.
+
+Keep compact quotes layout (3–5 visible rows).
+
+No payment/escrow changes.
+
+TASKS
+
+Fan‑out timing stub
+
+On intake submit, enqueue anonymized requests to eligible Affiliates.
+
+Surface UI copy: “Quotes typically arrive within 15–60 minutes.”
+
+Add a small timer on the quotes page (“Waiting for responses… 00:30, 01:00…”) purely cosmetic.
+
+“View 5 more” behavior
+
+Default show max 5 rows; clicking View 5 more appends up to 5 additional results if available.
+
+Show helper text: “Up to a 2‑hour delay in saturated markets.”
+
+Fairness & spotlight
+
+Track response‑rate % per Affiliate (rolling 30 days).
+
+If an Affiliate’s response rate <50%, deprioritize them one slot in rotation (don’t block them entirely).
+
+Spotlight badge remains for Affiliates with <50 bookings or <90 days since join (whichever comes first).
+
+Zero‑result compassionate state
+
+If zero quotes after a short wait:
+
+Show a warm message: “We’re sorry—no options yet. You can modify your request or we’ll keep checking.”
+
+Provide Yes/No opt‑in: “Would you like an Affiliate to contact you with third‑party options? Note: May not include Part 135 or guaranteed service.”
+
+Modify & selection rules
+
+Modify request: enabled until a quote is selected; opens with prefilled data; saving creates Version N+1 and retires N’s pending quotes.
+
+Select & Reveal: reveals the chosen Affiliate name and locks the intake from further edits.
+
+Ground‑included clarity
+
+Preserve the small “Ground included (where available)” badge on rows that offer it.
+
+Add a one‑line tooltip on hover: “Provider indicates ground transfer support on both ends when available.”
+
+Legal copy
+
+Keep the liability disclaimer directly under the quotes list (already added earlier).
+
+OUTPUTS
+
+Print what changed (files touched, components updated).
+
+Confirm: default shows 5 quotes; “View 5 more” appends; fairness logic active; compassionate zero‑result state visible; modify/selection rules enforced.
+
+End with READY FOR PHASE 5.B.

@@ -1,0 +1,523 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Book Transport - MediFly Consumer{% endblock %}
+
+{% block head %}
+<style>
+.intake-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: #007bff;
+    color: white;
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.equipment-option {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.equipment-option:hover {
+    border-color: #007bff;
+    background: #f8f9ff;
+}
+
+.equipment-option.selected {
+    border-color: #007bff;
+    background: #e7f3ff;
+}
+
+.price-tag {
+    background: #28a745;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.same-day-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.address-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.address-suggestion {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.address-suggestion:hover {
+    background: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">1</div>
+                <div class="step" id="step2">2</div>
+                <div class="step" id="step3">3</div>
+                <div class="step" id="step4">4</div>
+                <div class="step" id="step5">5</div>
+            </div>
+            
+            <div class="intake-form">
+                <form id="intakeForm" action="{{ url_for('consumer_intake') }}" method="post">
+                    <!-- Step 1: Transport Type -->
+                    <div class="form-step" id="formStep1">
+                        <h3 class="mb-4">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Transport Type Selection
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card transport-type-card" data-type="critical">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i>
+                                        <h5>Critical</h5>
+                                        <p><small>Urgent medical emergency</small></p>
+                                        <input type="radio" name="transport_type" value="critical" 
+                                               {% if request.args.get('type') == 'critical' %}checked{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card transport-type-card" data-type="non-critical">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-heart text-primary fa-2x mb-2"></i>
+                                        <h5>Non-Critical</h5>
+                                        <p><small>Planned transport</small></p>
+                                        <input type="radio" name="transport_type" value="non-critical" 
+                                               {% if request.args.get('type') == 'non-critical' or not request.args.get('type') %}checked{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card transport-type-card" data-type="mvp">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-star text-warning fa-2x mb-2"></i>
+                                        <h5>MVP Member</h5>
+                                        <p><small>Priority service</small></p>
+                                        <input type="radio" name="transport_type" value="mvp">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- MVP Membership Prompt -->
+                        <div class="alert alert-warning mt-3" id="mvpPrompt" style="display: none;">
+                            <h5><i class="fas fa-crown me-2"></i>MVP Membership Benefits</h5>
+                            <p>Join our MVP program for $49/month and get:</p>
+                            <ul>
+                                <li>10% discount on all bookings</li>
+                                <li>Priority booking queue ahead of others</li>
+                                <li>Early access to beta features</li>
+                                <li>Dedicated family advocate</li>
+                            </ul>
+                            <a href="{{ url_for('mvp_incentive') }}" class="btn btn-warning">Learn More About MVP</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Address Validation -->
+                    <div class="form-step" id="formStep2" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Transport Locations
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="origin" class="form-label">From (Origin)</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control address-input" id="origin" name="origin" 
+                                           placeholder="Enter hospital, airport, or address"
+                                           value="{% if request.args.get('prefill') == 'orlando-nyc' %}Orlando International Airport{% endif %}"
+                                           required>
+                                    <div class="address-suggestions" id="originSuggestions"></div>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    We support hospitals, airports, and international locations
+                                </small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="destination" class="form-label">To (Destination)</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control address-input" id="destination" name="destination" 
+                                           placeholder="Enter hospital, airport, or address"
+                                           value="{% if request.args.get('prefill') == 'orlando-nyc' %}LaGuardia Airport, NYC{% endif %}"
+                                           required>
+                                    <div class="address-suggestions" id="destinationSuggestions"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="patient_name" class="form-label">Patient Name</label>
+                            <input type="text" class="form-control" id="patient_name" name="patient_name" 
+                                   placeholder="First and last name" required>
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                All patient information is handled securely per HIPAA guidelines
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Severity Level -->
+                    <div class="form-step" id="formStep3" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-thermometer-half me-2"></i>
+                            Medical Severity Level
+                        </h3>
+                        
+                        <div class="severity-grid">
+                            <div class="row">
+                                {% for severity in range(1, 6) %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card severity-card" data-severity="{{ severity }}">
+                                        <div class="card-body text-center">
+                                            <div class="severity-indicator severity-{{ severity }} mb-2"></div>
+                                            <h6>Severity {{ severity }}</h6>
+                                            <p class="small">
+                                                {% if severity == 1 %}Minor injuries like fractures
+                                                {% elif severity == 2 %}Stable but needs monitoring
+                                                {% elif severity == 3 %}Serious conditions requiring attention
+                                                {% elif severity == 4 %}Critical requiring ICU support
+                                                {% elif severity == 5 %}Life support/critical care needed
+                                                {% endif %}
+                                            </p>
+                                            <input type="radio" name="severity" value="{{ severity }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Equipment Selection -->
+                    <div class="form-step" id="formStep4" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-tools me-2"></i>
+                            Medical Equipment Needed
+                        </h3>
+                        
+                        <div class="equipment-grid">
+                            <div class="equipment-option" data-equipment="ventilator">
+                                <i class="fas fa-lungs fa-2x mb-2 text-danger"></i>
+                                <h6>Ventilator</h6>
+                                <div class="price-tag">+$5,000</div>
+                                <input type="checkbox" name="equipment" value="ventilator" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="ecmo">
+                                <i class="fas fa-heart-pulse fa-2x mb-2 text-warning"></i>
+                                <h6>ECMO Machine</h6>
+                                <div class="price-tag">+$10,000</div>
+                                <input type="checkbox" name="equipment" value="ecmo" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="incubator">
+                                <i class="fas fa-baby fa-2x mb-2 text-info"></i>
+                                <h6>Incubator</h6>
+                                <div class="price-tag">+$3,000</div>
+                                <input type="checkbox" name="equipment" value="incubator" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="escort">
+                                <i class="fas fa-user-md fa-2x mb-2 text-success"></i>
+                                <h6>Medical Escort</h6>
+                                <div class="price-tag">+$2,000</div>
+                                <input type="checkbox" name="equipment" value="escort" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="oxygen">
+                                <i class="fas fa-wind fa-2x mb-2 text-primary"></i>
+                                <h6>Oxygen Support</h6>
+                                <div class="price-tag">+$1,000</div>
+                                <input type="checkbox" name="equipment" value="oxygen" style="display: none;">
+                            </div>
+                            <div class="equipment-option" data-equipment="other">
+                                <i class="fas fa-plus fa-2x mb-2 text-secondary"></i>
+                                <h6>Other Equipment</h6>
+                                <div class="price-tag">Custom Quote</div>
+                                <input type="checkbox" name="equipment" value="other" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3" id="otherEquipmentField" style="display: none;">
+                            <label for="other_equipment" class="form-label">Specify Other Equipment Needed</label>
+                            <textarea class="form-control" id="other_equipment" name="other_equipment" 
+                                      placeholder="Describe any specialized medical equipment or support needed"></textarea>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> If the provider deems additional life-saving equipment necessary, 
+                            you'll be notified and given the option to approve before the flight.
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5: Date/Time -->
+                    <div class="form-step" id="formStep5" style="display: none;">
+                        <h3 class="mb-4">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Schedule Transport
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="transport_date" class="form-label">Preferred Date</label>
+                                <input type="date" class="form-control" id="transport_date" name="transport_date" 
+                                       min="{{ datetime.now().strftime('%Y-%m-%d') }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="transport_time" class="form-label">Preferred Time</label>
+                                <input type="time" class="form-control" id="transport_time" name="transport_time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="same_day" name="same_day">
+                            <label class="form-check-label" for="same_day">
+                                <strong>Same-day transport needed</strong>
+                                <span class="badge bg-warning ms-2">+20% urgency fee</span>
+                            </label>
+                        </div>
+                        
+                        <div class="same-day-warning" id="sameDayWarning" style="display: none;">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            <strong>Same-day Transport Notice:</strong> Same-day requests are reasonable but subject to 
+                            availability and weather conditions. The provider will confirm feasibility and any risks before proceeding.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="additional_notes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="additional_notes" name="additional_notes" 
+                                      placeholder="Any special requirements, medical conditions, or family considerations"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                            <i class="fas fa-arrow-left me-2"></i>Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                            Next<i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                        <div class="disclaimer mb-3" id="disclaimerText" style="display: none;">
+                            MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+                        </div>
+                        <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                            <i class="fas fa-search me-2"></i>Find Affiliates
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentStep = 1;
+const totalSteps = 5;
+
+// Address suggestions (Google Places API stub)
+const addressSuggestions = {
+    'orlando': ['Orlando International Airport', 'Orlando Regional Medical Center', 'AdventHealth Orlando'],
+    'nyc': ['LaGuardia Airport, NYC', 'JFK Airport, NYC', 'Mount Sinai Hospital, NYC'],
+    'miami': ['Miami International Airport', 'Jackson Memorial Hospital', 'Baptist Hospital Miami'],
+    'hospital': ['Orlando Regional Medical Center', 'Tampa General Hospital', 'Baptist Health Jacksonville']
+};
+
+function changeStep(direction) {
+    if (direction === 1 && currentStep < totalSteps) {
+        if (validateCurrentStep()) {
+            hideStep(currentStep);
+            currentStep++;
+            showStep(currentStep);
+        }
+    } else if (direction === -1 && currentStep > 1) {
+        hideStep(currentStep);
+        currentStep--;
+        showStep(currentStep);
+    }
+    
+    updateNavigation();
+    updateStepIndicator();
+}
+
+function validateCurrentStep() {
+    const currentStepElement = document.getElementById(`formStep${currentStep}`);
+    const requiredFields = currentStepElement.querySelectorAll('[required]');
+    
+    for (let field of requiredFields) {
+        if (!field.value.trim()) {
+            field.focus();
+            alert('Please complete all required fields before proceeding.');
+            return false;
+        }
+    }
+    return true;
+}
+
+function hideStep(step) {
+    document.getElementById(`formStep${step}`).style.display = 'none';
+}
+
+function showStep(step) {
+    document.getElementById(`formStep${step}`).style.display = 'block';
+}
+
+function updateNavigation() {
+    document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-block';
+    document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-block';
+    document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+    document.getElementById('disclaimerText').style.display = currentStep === totalSteps ? 'block' : 'none';
+}
+
+function updateStepIndicator() {
+    for (let i = 1; i <= totalSteps; i++) {
+        const stepElement = document.getElementById(`step${i}`);
+        stepElement.classList.remove('active', 'completed');
+        
+        if (i < currentStep) {
+            stepElement.classList.add('completed');
+        } else if (i === currentStep) {
+            stepElement.classList.add('active');
+        }
+    }
+}
+
+// Equipment selection
+document.addEventListener('DOMContentLoaded', function() {
+    // Equipment options
+    document.querySelectorAll('.equipment-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            this.classList.toggle('selected', checkbox.checked);
+            
+            // Show other equipment field
+            if (this.dataset.equipment === 'other' && checkbox.checked) {
+                document.getElementById('otherEquipmentField').style.display = 'block';
+            } else if (this.dataset.equipment === 'other') {
+                document.getElementById('otherEquipmentField').style.display = 'none';
+            }
+        });
+    });
+    
+    // Transport type selection
+    document.querySelectorAll('.transport-type-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Show MVP prompt
+            if (this.dataset.type === 'mvp') {
+                document.getElementById('mvpPrompt').style.display = 'block';
+            } else {
+                document.getElementById('mvpPrompt').style.display = 'none';
+            }
+        });
+    });
+    
+    // Same-day warning
+    document.getElementById('same_day').addEventListener('change', function() {
+        document.getElementById('sameDayWarning').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    // Address autocomplete (stub)
+    document.querySelectorAll('.address-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const suggestionsContainer = this.parentNode.querySelector('.address-suggestions');
+            
+            if (query.length > 2) {
+                const suggestions = [];
+                for (let key in addressSuggestions) {
+                    if (query.includes(key)) {
+                        suggestions.push(...addressSuggestions[key]);
+                    }
+                }
+                
+                suggestionsContainer.innerHTML = suggestions.map(suggestion => 
+                    `<div class="address-suggestion" onclick="selectAddress('${this.id}', '${suggestion}')">${suggestion}</div>`
+                ).join('');
+                suggestionsContainer.style.display = suggestions.length ? 'block' : 'none';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+    });
+});
+
+function selectAddress(inputId, address) {
+    document.getElementById(inputId).value = address;
+    document.querySelector(`#${inputId} + .address-suggestions`).style.display = 'none';
+}
+</script>
+{% endblock %}

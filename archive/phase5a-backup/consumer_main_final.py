@@ -49,96 +49,13 @@ SUBSCRIPTION_PRICING = {
     'yearly': {'price': 499, 'type': 'year', 'savings': 89}
 }
 
-# Mock affiliate database (air operators) - Enhanced for Phase 5.A
+# Mock affiliate database (air operators)
 MOCK_AFFILIATES = [
-    {
-        'name': 'AirMed Response', 
-        'base_price': 128000, 
-        'capabilities': ['ventilator', 'ecmo'], 
-        'priority': True,
-        'response_rate_30d': 85,  # Response rate percentage
-        'total_bookings': 120,
-        'days_since_join': 180,
-        'ground_included': True,
-        'last_response_time': '2025-08-09T10:30:00Z'
-    },
-    {
-        'name': 'LifeFlight Elite', 
-        'base_price': 135000, 
-        'capabilities': ['incubator', 'escort'], 
-        'priority': True,
-        'response_rate_30d': 92,
-        'total_bookings': 45,  # < 50 bookings = spotlight
-        'days_since_join': 45,  # < 90 days = spotlight
-        'ground_included': True,
-        'last_response_time': '2025-08-09T11:15:00Z'
-    },
-    {
-        'name': 'CriticalCare Jets', 
-        'base_price': 142000, 
-        'capabilities': ['ventilator', 'oxygen'], 
-        'priority': True,
-        'response_rate_30d': 45,  # < 50% = deprioritized
-        'total_bookings': 80,
-        'days_since_join': 200,
-        'ground_included': False,
-        'last_response_time': '2025-08-08T14:20:00Z'
-    },
-    {
-        'name': 'MedEvac Solutions', 
-        'base_price': 125000, 
-        'capabilities': ['oxygen', 'escort'], 
-        'priority': False,
-        'response_rate_30d': 78,
-        'total_bookings': 95,
-        'days_since_join': 150,
-        'ground_included': True,
-        'last_response_time': '2025-08-09T09:45:00Z'
-    },
-    {
-        'name': 'Emergency Wings', 
-        'base_price': 138000, 
-        'capabilities': ['ventilator', 'incubator'], 
-        'priority': False,
-        'response_rate_30d': 67,
-        'total_bookings': 25,  # < 50 bookings = spotlight
-        'days_since_join': 30,  # < 90 days = spotlight
-        'ground_included': False,
-        'last_response_time': '2025-08-09T12:00:00Z'
-    },
-    {
-        'name': 'Skyward Medical', 
-        'base_price': 148000, 
-        'capabilities': ['ecmo', 'escort'], 
-        'priority': False,
-        'response_rate_30d': 88,
-        'total_bookings': 65,
-        'days_since_join': 120,
-        'ground_included': True,
-        'last_response_time': '2025-08-09T13:30:00Z'
-    },
-    {
-        'name': 'Rapid Response Air', 
-        'base_price': 132000, 
-        'capabilities': ['oxygen', 'ventilator'], 
-        'priority': False,
-        'response_rate_30d': 72,
-        'total_bookings': 110,
-        'days_since_join': 300,
-        'ground_included': True,
-        'last_response_time': '2025-08-09T08:15:00Z'
-    },
-    {
-        'name': 'Guardian Flight Services', 
-        'base_price': 155000, 
-        'capabilities': ['incubator', 'ecmo'], 
-        'priority': False,
-        'response_rate_30d': 95,
-        'total_bookings': 75,
-        'days_since_join': 90,
-        'ground_included': False,
-        'last_response_time': '2025-08-09T14:45:00Z'
-    }
+    {'name': 'AirMed Response', 'base_price': 128000, 'capabilities': ['ventilator', 'ecmo'], 'priority': True},
+    {'name': 'LifeFlight Elite', 'base_price': 135000, 'capabilities': ['incubator', 'escort'], 'priority': True},
+    {'name': 'CriticalCare Jets', 'base_price': 142000, 'capabilities': ['ventilator', 'oxygen'], 'priority': True},
+    {'name': 'MedEvac Solutions', 'base_price': 125000, 'capabilities': ['oxygen', 'escort'], 'priority': False},
+    {'name': 'Emergency Wings', 'base_price': 138000, 'capabilities': ['ventilator', 'incubator'], 'priority': False}
 ]
 
 # Training/Dummy mode configuration
@@ -156,86 +73,6 @@ DRAFTS_CONFIG = {
     'draft_expiry_days': 7,
     'max_drafts_per_user': 10
 }
-
-# Quote Distribution Configuration - Phase 5.A
-QUOTE_CONFIG = {
-    'response_window_min': 15,  # minimum minutes for quotes
-    'response_window_max': 60,  # maximum minutes for quotes
-    'default_visible_quotes': 5,  # show 5 quotes initially
-    'expand_increment': 5,  # show 5 more when expanding
-    'fairness_threshold': 50,  # response rate % threshold
-    'spotlight_booking_threshold': 50,  # bookings for spotlight eligibility
-    'spotlight_days_threshold': 90,  # days since join for spotlight
-    'saturated_market_delay': 120  # 2 hours max delay message
-}
-
-def get_affiliate_priority_order():
-    """Sort affiliates by fairness rules: high responders first, then deprioritized low responders"""
-    affiliates = MOCK_AFFILIATES.copy()
-    
-    # Separate by response rate
-    high_responders = [a for a in affiliates if a['response_rate_30d'] >= QUOTE_CONFIG['fairness_threshold']]
-    low_responders = [a for a in affiliates if a['response_rate_30d'] < QUOTE_CONFIG['fairness_threshold']]
-    
-    # Sort each group by response rate (descending)
-    high_responders.sort(key=lambda x: x['response_rate_30d'], reverse=True)
-    low_responders.sort(key=lambda x: x['response_rate_30d'], reverse=True)
-    
-    # High responders first, then low responders (deprioritized but not blocked)
-    return high_responders + low_responders
-
-def has_spotlight_badge(affiliate):
-    """Determine if affiliate gets spotlight badge (new or low booking count)"""
-    return (affiliate['total_bookings'] < QUOTE_CONFIG['spotlight_booking_threshold'] or 
-            affiliate['days_since_join'] < QUOTE_CONFIG['spotlight_days_threshold'])
-
-def generate_mock_quotes(request_data, affiliate_count=None):
-    """Generate mock quotes with fairness ordering and realistic timing"""
-    ordered_affiliates = get_affiliate_priority_order()
-    
-    if affiliate_count:
-        # Limit to specific count for testing
-        ordered_affiliates = ordered_affiliates[:affiliate_count]
-    
-    quotes = []
-    base_equipment_cost = sum(EQUIPMENT_PRICING.get(eq, 0) for eq in request_data.get('equipment', []))
-    
-    for i, affiliate in enumerate(ordered_affiliates):
-        # Simulate some affiliates not responding (based on response rate)
-        if random.randint(1, 100) > affiliate['response_rate_30d']:
-            continue  # This affiliate didn't respond
-        
-        equipment_cost = base_equipment_cost
-        total_cost = affiliate['base_price'] + equipment_cost
-        
-        # Add same-day upcharge if applicable
-        if request_data.get('same_day'):
-            total_cost += int(total_cost * 0.2)
-        
-        # Add subscription discount if applicable
-        if request_data.get('subscription_discount'):
-            total_cost = int(total_cost * 0.9)
-        
-        quote = {
-            'affiliate_id': f"affiliate_{i+1}",
-            'affiliate_name': affiliate['name'],
-            'aircraft_type': random.choice(['King Air 350', 'Citation CJ3', 'Learjet 45', 'Beechcraft Premier']),
-            'total_cost': total_cost,
-            'base_cost': affiliate['base_price'],
-            'equipment_cost': equipment_cost,
-            'eta_minutes': random.randint(45, 120),
-            'capabilities': affiliate['capabilities'],
-            'ground_included': affiliate['ground_included'],
-            'response_rate': affiliate['response_rate_30d'],
-            'spotlight_badge': has_spotlight_badge(affiliate),
-            'priority_partner': affiliate['priority'],
-            'response_time_minutes': random.randint(QUOTE_CONFIG['response_window_min'], QUOTE_CONFIG['response_window_max'])
-        }
-        quotes.append(quote)
-    
-    # Sort by total cost for display
-    quotes.sort(key=lambda x: x['total_cost'])
-    return quotes
 
 # Provider Search System - JSON-based cache with upgrade path
 PROVIDERS_INDEX_PATH = 'data/providers_index.json'
@@ -378,39 +215,51 @@ def generate_quote_session():
     return quote_id
 
 def get_affiliate_quotes(origin, destination, equipment_list, transport_type, is_training_mode=False):
-    """Generate mock affiliate quotes using Phase 5.A fairness system"""
-    request_data = {
-        'origin': origin,
-        'destination': destination,
-        'equipment': equipment_list,
-        'transport_type': transport_type,
-        'same_day': transport_type == 'critical',
-        'subscription_discount': False  # Can be updated based on session
-    }
+    """Generate mock affiliate quotes based on parameters"""
+    import random
     
-    # Use the new fairness-based quote generation
-    quotes = generate_mock_quotes(request_data)
+    available_affiliates = MOCK_AFFILIATES.copy()
     
-    # Convert to legacy format for compatibility
-    formatted_quotes = []
-    for quote in quotes:
-        formatted_quotes.append({
-            'affiliate_id': quote['affiliate_id'],
-            'affiliate_name': quote['affiliate_name'],
-            'masked_name': f"Affiliate {quote['affiliate_id'][-1]}****",
-            'total_cost': quote['total_cost'],
-            'equipment_cost': quote['equipment_cost'],
-            'capabilities': quote['capabilities'],
-            'priority': quote['priority_partner'],
-            'eta_hours': round(quote['eta_minutes'] / 60, 1),
-            'is_training': is_training_mode,
-            'ground_included': quote['ground_included'],
-            'response_rate': quote['response_rate'],
-            'spotlight_badge': quote['spotlight_badge'],
-            'response_time_minutes': quote['response_time_minutes']
+    # Training mode simulation
+    if is_training_mode:
+        # Simulate faster response in training mode
+        import time
+        time.sleep(TRAINING_CONFIG['auto_quote_delay'])
+    
+    # Simulate geographic limitations
+    if 'pakistan' in destination.lower() or 'international' in transport_type.lower():
+        available_affiliates = [p for p in available_affiliates if p['priority']]
+    
+    # Ensure compact quote display (3-5 items)
+    num_quotes = min(random.randint(3, 5), len(available_affiliates))
+    
+    if num_quotes == 0:
+        return []
+    
+    selected_affiliates = random.sample(available_affiliates, num_quotes)
+    quotes = []
+    
+    for i, affiliate in enumerate(selected_affiliates):
+        equipment_cost = sum(EQUIPMENT_PRICING.get(eq, 0) for eq in equipment_list)
+        variation = random.uniform(0.9, 1.1)
+        total_cost = int((affiliate['base_price'] + equipment_cost) * variation)
+        
+        if transport_type == 'critical':
+            total_cost = int(total_cost * 1.2)
+        
+        quotes.append({
+            'affiliate_id': f"affiliate_{chr(65 + i)}",
+            'affiliate_name': affiliate['name'],
+            'masked_name': f"Affiliate {chr(65 + i)}****",
+            'total_cost': total_cost,
+            'equipment_cost': equipment_cost,
+            'capabilities': affiliate['capabilities'],
+            'priority': affiliate['priority'],
+            'eta_hours': random.randint(2, 8),
+            'is_training': is_training_mode
         })
     
-    return formatted_quotes
+    return sorted(quotes, key=lambda x: x['total_cost'])
 
 def save_draft(session_data, draft_id=None):
     """Auto-save draft functionality"""
@@ -613,59 +462,6 @@ def api_delete_draft(draft_id):
         logging.error(f"Draft delete error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# Phase 5.A: Quote Selection and Opt-in API Endpoints
-@consumer_app.route('/api/select-quote', methods=['POST'])
-def api_select_quote():
-    """Phase 5.A: Select quote and reveal affiliate name"""
-    try:
-        data = request.get_json()
-        affiliate_id = data.get('affiliate_id')
-        affiliate_name = data.get('affiliate_name')
-        
-        # Lock the quote selection to prevent further modifications
-        session['quote_selection_locked'] = True
-        session['selected_affiliate_id'] = affiliate_id
-        session['selected_affiliate_name'] = affiliate_name
-        session['selection_timestamp'] = datetime.now().isoformat()
-        session.modified = True
-        
-        logging.info(f"Quote selected: {affiliate_name} ({affiliate_id})")
-        return jsonify({
-            'success': True, 
-            'message': f'Selected {affiliate_name}. Request is now locked.',
-            'revealed_name': affiliate_name
-        })
-        
-    except Exception as e:
-        logging.error(f"Quote selection error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@consumer_app.route('/api/opt-in-assistance', methods=['POST'])
-def api_opt_in_assistance():
-    """Phase 5.A: Handle compassionate opt-in for third-party assistance"""
-    try:
-        data = request.get_json()
-        opt_in = data.get('opt_in', False)
-        
-        # Store opt-in preference
-        session['third_party_assistance_opt_in'] = opt_in
-        session['opt_in_timestamp'] = datetime.now().isoformat()
-        session.modified = True
-        
-        if opt_in:
-            logging.info("User opted in for third-party assistance contact")
-            # In production, this would trigger affiliate contact workflow
-            message = "Thank you. We'll have an affiliate contact you with additional options."
-        else:
-            logging.info("User declined third-party assistance")
-            message = "Thank you for your preference. We'll continue monitoring for direct quotes."
-        
-        return jsonify({'success': True, 'message': message})
-        
-    except Exception as e:
-        logging.error(f"Opt-in assistance error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
 @consumer_app.route('/api/cancel-request/<request_id>', methods=['POST'])
 def api_cancel_request(request_id):
     """Cancel active request endpoint (cannot delete, only cancel)"""
@@ -751,7 +547,7 @@ def consumer_intake_post():
 
 @consumer_app.route('/quotes')
 def consumer_quotes():
-    """Phase 5.A Enhanced quotes with fairness, timing windows, and compact UX"""
+    """Enhanced quote results with urgency timer and subscription options"""
     if 'patient_data' not in session:
         flash('Please complete the intake form first.', 'warning')
         return redirect(url_for('consumer_intake'))
@@ -760,38 +556,12 @@ def consumer_quotes():
         generate_quote_session()
     
     patient_data = session['patient_data']
-    is_training_mode = session.get('training_mode', False)
-    
-    # Phase 5.A: Fan-out timing and response windows
-    quote_request_time = session.get('quote_request_time')
-    if not quote_request_time:
-        session['quote_request_time'] = datetime.now().isoformat()
-        quote_request_time = session['quote_request_time']
-    
-    # Calculate elapsed time for timer display
-    request_start = datetime.fromisoformat(quote_request_time)
-    elapsed_minutes = int((datetime.now() - request_start).total_seconds() / 60)
-    
-    # Get affiliate quotes using fairness system
     quotes = get_affiliate_quotes(
         patient_data['origin'],
         patient_data['destination'],
         patient_data['equipment'],
-        patient_data['transport_type'],
-        is_training_mode
+        patient_data['transport_type']
     )
-    
-    # Phase 5.A: Compact display logic (default 5, expand by 5)
-    visible_count = int(request.args.get('show', QUOTE_CONFIG['default_visible_quotes']))
-    visible_quotes = quotes[:visible_count]
-    remaining_quotes = max(0, len(quotes) - visible_count)
-    can_show_more = remaining_quotes > 0
-    
-    # Phase 5.A: Zero-result compassionate state
-    show_compassionate_message = len(quotes) == 0 and elapsed_minutes >= 5
-    
-    # Phase 5.A: Selection & modify rules
-    quote_selection_locked = session.get('quote_selection_locked', False)
     
     if not quotes:
         return render_template('consumer_no_availability.html', 
@@ -799,45 +569,28 @@ def consumer_quotes():
                              search_params={
                                  'origin': patient_data['origin'],
                                  'destination': patient_data['destination']
-                             },
-                             show_compassionate_message=show_compassionate_message,
-                             elapsed_minutes=elapsed_minutes)
+                             })
     
     user_subscription = session.get('subscription_status', None)
-    show_names = user_subscription in ['monthly', 'yearly'] or session.get('user_role') in ['mvp', 'hospital'] or quote_selection_locked
+    show_names = user_subscription in ['monthly', 'yearly'] or session.get('user_role') in ['mvp', 'hospital']
     
     quote_expiry = datetime.fromisoformat(session['quote_expiry'])
     time_remaining = quote_expiry - datetime.now()
     hours_remaining = max(0, int(time_remaining.total_seconds() // 3600))
     
-    # Enhanced data for professional display with Phase 5.A features
-    for i, quote in enumerate(visible_quotes):
-        quote['early_adopter'] = quote.get('spotlight_badge', False)
-        quote['rating'] = 5 if quote.get('response_rate', 0) > 90 else 4
-        quote['flight_time'] = f"{quote.get('eta_hours', 3)} hours"
+    # Add early adopter status and enhanced data for professional display
+    for i, quote in enumerate(quotes):
+        quote['early_adopter'] = i < 2  # First 2 affiliates are early adopters
+        quote['rating'] = random.randint(4, 5)
+        quote['flight_time'] = f"{random.randint(2, 4)} hours"
         quote['aircraft_type'] = random.choice(['Medical Helicopter', 'Fixed Wing Aircraft', 'Medical Jet'])
         quote['crew_size'] = '2 Medical Professionals'
         quote['certifications'] = 'FAA Part 135 + Medical'
-        quote['name'] = quote['affiliate_name'] if show_names else quote.get('masked_name', f"Affiliate {chr(65 + i)}")
+        quote['name'] = quote.get('affiliate_name', f"Affiliate {chr(65 + i)}")
         quote['base_price'] = quote['total_cost'] - quote.get('equipment_cost', 0)
     
-    # Phase 5.A specific data
-    quote_timing = {
-        'elapsed_minutes': elapsed_minutes,
-        'response_window_min': QUOTE_CONFIG['response_window_min'],
-        'response_window_max': QUOTE_CONFIG['response_window_max'],
-        'saturated_delay_hours': QUOTE_CONFIG['saturated_market_delay'] // 60
-    }
-    
-    return render_template('consumer_quotes_phase5a.html',
-                         quotes=visible_quotes,
-                         total_quotes=len(quotes),
-                         visible_count=visible_count,
-                         remaining_quotes=remaining_quotes,
-                         can_show_more=can_show_more,
-                         show_compassionate_message=show_compassionate_message,
-                         quote_timing=quote_timing,
-                         quote_selection_locked=quote_selection_locked,
+    return render_template('consumer_quotes_enhanced.html',
+                         quotes=quotes,
                          patient_data=patient_data,
                          show_names=show_names,
                          quote_expiry=session.get('quote_expiry'),
@@ -845,9 +598,7 @@ def consumer_quotes():
                          urgency_deadline=quote_expiry,
                          slots_remaining=session.get('slots_remaining', 2),
                          subscription_pricing=SUBSCRIPTION_PRICING,
-                         medfly_fee=MEDFLY_CONFIG['non_refundable_fee'],
-                         is_training_mode=is_training_mode,
-                         training_label=TRAINING_CONFIG['dummy_label'])
+                         medfly_fee=MEDFLY_CONFIG['non_refundable_fee'])
 
 @consumer_app.route('/subscribe/<plan>')
 def subscribe(plan):

@@ -1,0 +1,404 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Provider Rewards - MediFly{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Provider Rewards Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="fas fa-trophy me-2"></i>Provider Rewards System</h1>
+                <div class="btn-group">
+                    <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Admin
+                    </a>
+                    <button class="btn btn-success" onclick="processRewards()">
+                        <i class="fas fa-money-bill-wave"></i> Process Rewards
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted">Engagement and performance-based reward system for medical transport providers</p>
+        </div>
+    </div>
+
+    <!-- Reward System Overview -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3><i class="fas fa-medal me-2"></i>Gold Tier</h3>
+                    <p class="mb-1">10-19 Bookings</p>
+                    <small>5% revenue share</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3><i class="fas fa-trophy me-2"></i>Platinum Tier</h3>
+                    <p class="mb-1">20-49 Bookings</p>
+                    <small>7% revenue share</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3><i class="fas fa-crown me-2"></i>Diamond Tier</h3>
+                    <p class="mb-1">50+ Bookings</p>
+                    <small>10% revenue share</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider Performance Dashboard -->
+    <div class="row mb-4">
+        {% for provider_name, data in provider_rewards.items() %}
+        <div class="col-lg-4 mb-4">
+            <div class="card border-{{ 'warning' if data.tier == 'Gold' else 'primary' if data.tier == 'Platinum' else 'success' }}">
+                <div class="card-header bg-{{ 'warning' if data.tier == 'Gold' else 'primary' if data.tier == 'Platinum' else 'success' }} text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-{{ 'medal' if data.tier == 'Gold' else 'trophy' if data.tier == 'Platinum' else 'crown' }} me-2"></i>
+                        {{ provider_name }}
+                    </h5>
+                    <small>{{ data.tier }} Tier Provider</small>
+                </div>
+                <div class="card-body">
+                    <!-- Performance Metrics -->
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <h4 class="text-primary">{{ data.total_bookings }}</h4>
+                            <small>Total Bookings</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success">${{ "{:,}".format(data.revenue_generated) }}</h4>
+                            <small>Revenue Generated</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <h4 class="text-warning">{{ data.avg_rating }}</h4>
+                            <div style="color: #ffc107; font-size: 0.8rem;">
+                                {% for i in range(5) %}
+                                    {% if i < data.avg_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <small>Average Rating</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-info">{{ "%.0f"|format(data.completion_rate * 100) }}%</h4>
+                            <small>Completion Rate</small>
+                        </div>
+                    </div>
+
+                    <!-- Rewards Earned -->
+                    <div class="bg-light p-3 rounded mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><strong>Rewards Earned:</strong></span>
+                            <span class="text-success fs-5"><strong>${{ "{:,}".format(data.rewards_earned) }}</strong></span>
+                        </div>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: {{ (data.rewards_earned / 25000 * 100)|round }}%"></div>
+                        </div>
+                        <small class="text-muted">Next milestone: $25,000</small>
+                    </div>
+
+                    <!-- Bonus Badges -->
+                    <div class="mb-3">
+                        <h6>Achievement Badges:</h6>
+                        {% for bonus in data.bonuses %}
+                        <span class="badge bg-{{ 'danger' if 'Specialist' in bonus else 'warning' if 'Excellence' in bonus else 'success' }} me-1 mb-1">
+                            <i class="fas fa-{{ 'user-md' if 'Specialist' in bonus else 'clock' if 'Excellence' in bonus else 'award' }}"></i>
+                            {{ bonus }}
+                        </span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="viewProviderDetails('{{ provider_name }}')">
+                            <i class="fas fa-chart-bar"></i> View Details
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="sendReward('{{ provider_name }}', {{ data.rewards_earned }})">
+                            <i class="fas fa-paper-plane"></i> Send Reward
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Reward Leaderboard -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-ranking-star me-2"></i>Provider Leaderboard</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Provider</th>
+                                    <th>Tier</th>
+                                    <th>Bookings</th>
+                                    <th>Revenue</th>
+                                    <th>Rating</th>
+                                    <th>Completion</th>
+                                    <th>Total Rewards</th>
+                                    <th>Bonus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set sorted_providers = provider_rewards.items() | sort(attribute='1.rewards_earned', reverse=true) %}
+                                {% for provider_name, data in sorted_providers %}
+                                <tr class="{{ 'table-warning' if loop.index == 1 else 'table-light' if loop.index <= 3 else '' }}">
+                                    <td>
+                                        {% if loop.index == 1 %}
+                                            <i class="fas fa-crown text-warning fs-4"></i>
+                                        {% elif loop.index == 2 %}
+                                            <i class="fas fa-medal text-secondary fs-4"></i>
+                                        {% elif loop.index == 3 %}
+                                            <i class="fas fa-award text-warning fs-4"></i>
+                                        {% else %}
+                                            <span class="fs-5">{{ loop.index }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ provider_name }}</strong>
+                                        {% if loop.index <= 3 %}
+                                        <br><small class="text-muted">Top Performer</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if data.tier == 'Gold' else 'primary' if data.tier == 'Platinum' else 'success' }}">
+                                            {{ data.tier }}
+                                        </span>
+                                    </td>
+                                    <td><strong>{{ data.total_bookings }}</strong></td>
+                                    <td>${{ "{:,}".format(data.revenue_generated) }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-1">{{ data.avg_rating }}</span>
+                                            <div style="color: #ffc107; font-size: 0.8rem;">
+                                                {% for i in range(5) %}
+                                                    {% if i < data.avg_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ "%.0f"|format(data.completion_rate * 100) }}%</td>
+                                    <td class="text-success"><strong>${{ "{:,}".format(data.rewards_earned) }}</strong></td>
+                                    <td>
+                                        {% if loop.index == 1 %}
+                                            <span class="badge bg-warning">$5,000 Bonus</span>
+                                        {% elif loop.index <= 3 %}
+                                            <span class="badge bg-info">$2,500 Bonus</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Engagement Programs -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bullseye me-2"></i>Monthly Challenges</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Family Satisfaction 95%+</strong>
+                                <br><small class="text-muted">Maintain high family satisfaction scores</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">$1,000</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Zero Delays</strong>
+                                <br><small class="text-muted">Complete all transports on schedule</small>
+                            </div>
+                            <span class="badge bg-warning rounded-pill">$1,500</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Rural Specialist</strong>
+                                <br><small class="text-muted">Complete 5+ rural transports</small>
+                            </div>
+                            <span class="badge bg-info rounded-pill">$2,000</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Emergency Response</strong>
+                                <br><small class="text-muted">Available for 24/7 emergency calls</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">$2,500</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line me-2"></i>Reward Analytics</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="rewardChart" width="400" height="200"></canvas>
+                    <div class="mt-3">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <h5 class="text-primary">${{ "{:,}".format(provider_rewards.values() | sum(attribute='rewards_earned')) }}</h5>
+                                <small>Total Rewards Paid</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="text-success">{{ provider_rewards.values() | sum(attribute='total_bookings') }}</h5>
+                                <small>Total Bookings</small>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="text-warning">{{ "%.1f"|format(provider_rewards.values() | sum(attribute='avg_rating') / provider_rewards.values() | length) }}</h5>
+                                <small>Network Average</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-cogs me-2"></i>Reward System Management</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Reward Actions</h6>
+                            <div class="btn-group-vertical w-100">
+                                <button class="btn btn-outline-success mb-2" onclick="bulkProcessRewards()">
+                                    <i class="fas fa-money-bill-wave"></i> Process All Pending Rewards
+                                </button>
+                                <button class="btn btn-outline-primary mb-2" onclick="adjustRewardRates()">
+                                    <i class="fas fa-percentage"></i> Adjust Reward Rates
+                                </button>
+                                <button class="btn btn-outline-info mb-2" onclick="createNewChallenge()">
+                                    <i class="fas fa-plus"></i> Create New Challenge
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="exportRewardReport()">
+                                    <i class="fas fa-file-export"></i> Export Reward Report
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Provider Engagement</h6>
+                            <div class="btn-group-vertical w-100">
+                                <button class="btn btn-outline-secondary mb-2" onclick="sendPerformanceReport()">
+                                    <i class="fas fa-chart-bar"></i> Send Performance Reports
+                                </button>
+                                <button class="btn btn-outline-info mb-2" onclick="scheduleRewardMeeting()">
+                                    <i class="fas fa-calendar"></i> Schedule Reward Review
+                                </button>
+                                <button class="btn btn-outline-success mb-2" onclick="recognizeProvider()">
+                                    <i class="fas fa-award"></i> Provider Recognition
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="inviteNewProvider()">
+                                    <i class="fas fa-user-plus"></i> Invite New Provider
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewProviderDetails(providerName) {
+    alert(`📊 Provider Details: ${providerName}\n\nDetailed analytics would include:\n• Monthly performance trends\n• Family feedback analysis\n• Geographic coverage map\n• Equipment utilization\n• Revenue breakdown\n• Reward history\n\nFull provider dashboard would open here.`);
+}
+
+function sendReward(providerName, amount) {
+    alert(`💰 Processing reward for ${providerName}\n\nReward Amount: $${amount.toLocaleString()}\nPayment Method: ACH Transfer\nProcessing Time: 2-3 business days\n\nReward notification sent to provider.\nAccounting record created.\nTax documentation prepared.`);
+}
+
+function processRewards() {
+    alert('💸 Processing all pending rewards...\n\nBatch processing initiated:\n• Life Flight Neonatal: $22,500\n• AirCare Mountain: $15,000\n• SkyMed Elite: $12,500\n\nTotal: $50,000\nEstimated processing: 2-3 business days\nProviders will receive notification emails.');
+}
+
+function bulkProcessRewards() {
+    alert('⚡ Bulk Reward Processing\n\nProcessing rewards for all eligible providers:\n• Calculating tier bonuses\n• Applying challenge rewards\n• Processing performance bonuses\n• Generating payment batches\n\nEstimated completion: 15 minutes');
+}
+
+function adjustRewardRates() {
+    alert('📈 Adjust Reward Rates\n\nCurrent rates:\n• Gold: 5% revenue share\n• Platinum: 7% revenue share\n• Diamond: 10% revenue share\n\nProposed changes:\n• Increase Diamond to 12%\n• Add Emerald tier at 15%\n• Seasonal bonus multipliers');
+}
+
+function createNewChallenge() {
+    alert('🎯 Create New Challenge\n\nChallenge options:\n• Patient satisfaction goals\n• Response time targets\n• Rural coverage expansion\n• Equipment maintenance excellence\n• Family communication excellence\n\nReward range: $500 - $5,000');
+}
+
+function exportRewardReport() {
+    alert('📋 Exporting Reward Report\n\nReport includes:\n• Provider performance metrics\n• Reward calculations\n• Payment history\n• Challenge completions\n• Tier progressions\n\nFile format: Excel with multiple tabs');
+}
+
+function sendPerformanceReport() {
+    alert('📈 Sending Performance Reports\n\nPersonalized reports for each provider:\n• Monthly performance summary\n• Benchmarking against network\n• Improvement recommendations\n• Upcoming challenges\n• Reward opportunities');
+}
+
+function scheduleRewardMeeting() {
+    alert('📅 Schedule Reward Review Meeting\n\nMeeting agenda:\n• Q3 reward program review\n• Provider feedback session\n• New challenge proposals\n• Rate adjustment discussion\n• Network expansion plans\n\nSuggested date: August 15, 2025');
+}
+
+function recognizeProvider() {
+    alert('🏆 Provider Recognition Program\n\nRecognition options:\n• Provider of the Month award\n• Excellence in Family Care\n• Innovation in Rural Transport\n• Safety Leadership Award\n• Community Impact Recognition\n\nPublic recognition + bonus reward');
+}
+
+function inviteNewProvider() {
+    alert('👥 Invite New Provider\n\nProvider requirements:\n• HIPAA compliance certification\n• Medical transport license\n• Insurance coverage verification\n• Equipment standards compliance\n• Geographic coverage needs\n\nReward tier starts at Gold level');
+}
+
+// Simple chart placeholder (in production, would use Chart.js)
+const canvas = document.getElementById('rewardChart');
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = '#007bff';
+ctx.fillRect(50, 150, 60, 40);
+ctx.fillRect(150, 130, 60, 60);
+ctx.fillRect(250, 110, 60, 80);
+ctx.fillStyle = '#6c757d';
+ctx.font = '12px Arial';
+ctx.fillText('Q1', 70, 205);
+ctx.fillText('Q2', 170, 205);
+ctx.fillText('Q3', 290, 205);
+ctx.fillText('Reward Growth Trend', 120, 30);
+</script>
+{% endblock %}
