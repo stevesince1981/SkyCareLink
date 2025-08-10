@@ -21,6 +21,7 @@ DEMO_USERS = {
     'family': {'password': 'demo123', 'role': 'family', 'name': 'Sarah Johnson'},
     'hospital': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
     'affiliate': {'password': 'demo123', 'role': 'affiliate', 'name': 'Captain Lisa Martinez'},
+    'provider': {'password': 'demo123', 'role': 'affiliate', 'name': 'Captain Lisa Martinez'},  # Backwards compatibility
     'mvp': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
     'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'}
 }
@@ -504,9 +505,18 @@ def login_post():
         session['user_role'] = user['role']
         session['contact_name'] = user['name']
         flash(f'Welcome, {user["name"]}!', 'success')
-        return redirect(url_for('consumer_index'))
+        
+        # Role-based redirects
+        if user['role'] == 'affiliate':
+            return redirect(url_for('affiliate_commissions'))
+        elif user['role'] == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        elif user['role'] == 'hospital':
+            return redirect(url_for('consumer_requests'))
+        else:
+            return redirect(url_for('consumer_index'))
     else:
-        flash('Invalid credentials. Try: family, hospital, provider, mvp, or admin with password: demo123', 'error')
+        flash('Invalid credentials. Try: family, hospital, affiliate, mvp, or admin with password: demo123', 'error')
         return redirect(url_for('login'))
 
 @consumer_app.route('/logout')
