@@ -1,1 +1,24 @@
-{"users": {}}
+{
+  "users": {
+    "affiliate": {
+      "known_ips": [
+        "172.31.66.130"
+      ],
+      "known_user_agents": [
+        "7ddeda88"
+      ],
+      "last_login": "2025-08-10T06:23:55.305739",
+      "mfa_enabled": false
+    },
+    "admin": {
+      "known_ips": [
+        "172.31.66.130"
+      ],
+      "known_user_agents": [
+        "7ddeda88"
+      ],
+      "last_login": "2025-08-10T06:24:27.565301",
+      "mfa_enabled": false
+    }
+  }
+}
