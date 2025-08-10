@@ -1304,7 +1304,7 @@ def consumer_booking():
 def consumer_intake():
     """Enhanced intake form with type selector and dynamic pricing"""
     transport_type = request.args.get('type', 'critical')
-    return render_template('consumer_intake.html', 
+    return render_template('consumer_intake_updated.html', 
                          transport_type=transport_type,
                          equipment_pricing=EQUIPMENT_PRICING,
                          datetime=datetime)
