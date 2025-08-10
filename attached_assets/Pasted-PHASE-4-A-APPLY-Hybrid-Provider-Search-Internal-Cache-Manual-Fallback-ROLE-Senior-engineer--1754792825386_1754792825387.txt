@@ -1,0 +1,141 @@
+PHASE 4.A — APPLY: Hybrid Provider Search + Internal Cache + Manual Fallback
+ROLE: Senior engineer. Implement hybrid search without breaking current flows. If a DB is not wired, use a JSON cache now (upgradeable later).
+
+GOALS
+
+Internal provider/facility index checked first (fast).
+
+If no match, use Google Places (if key present).
+
+If still no match (or no key), allow Manual Entry and queue for Admin Approval.
+
+Track internal vs external hit ratio (for Year‑3 cost control).
+
+Keep privacy: store minimal fields.
+
+RULES
+
+Archive before modifying.
+
+No destructive schema changes. If DB is missing, fall back to JSON storage under /data/.
+
+Minimal UI wiring—preserve your compact intake/quotes design.
+
+TASKS
+
+Create internal cache (JSON)
+
+Ensure folder /data/ exists (create if missing).
+
+Create /data/providers_index.json with structure:
+
+json
+Copy
+Edit
+{
+  "providers": [
+    {
+      "id": "<uuid>",
+      "name": "Texas Hospital",
+      "type": "hospital",        // hospital | clinic | airport | address | unknown
+      "address": "123 Main St, Houston, TX",
+      "lat": null,
+      "lng": null,
+      "source": "internal",      // internal | google | manual
+      "approved": true,
+      "search_count_90d": 0,
+      "created_at": "ISO",
+      "updated_at": "ISO"
+    }
+  ]
+}
+Pre‑seed with ~10 demo entries (Texas/New Jersey… etc.) marked approved:true, source:"internal".
+
+Add server helpers
+
+In consumer_main_final.py (or a utilities module), add functions to:
+
+load_index() / save_index() to read/write /data/providers_index.json.
+
+search_internal(query): case‑insensitive substring match on name or address, return top 5 approved:true.
+
+promote_or_increment(hit): when an internal result is selected, increment search_count_90d.
+
+submit_manual_entry(name, address, type): add with source:"manual", approved:false.
+
+record_hit_ratio(source): update counters in a simple /data/search_metrics.json:
+
+ruby
+Copy
+Edit
+{"period_start":"ISO","internal_hits":X,"external_hits":Y,"manual_entries":Z}
+Add search endpoints (minimal)
+
+GET /api/providers/search?q=...
+
+Try internal first; if results ≥1 → return them; record internal hit.
+
+Else if GOOGLE_PLACES_API_KEY present → call Places Autocomplete/Details → return top 5 (type mapped to hospital/clinic/airport/address) and record external hit.
+
+Else → return { "ok": true, "results": [] }.
+
+POST /api/providers/manual
+
+Accept name, address, type → add to JSON index with approved:false and record manual_entries.
+
+Wire intake UI
+
+On the From/To inputs, call /api/providers/search?q= on user typing:
+
+Show internal results first, labeled “Internal”.
+
+If none, show “Search results (Google)” if key is present.
+
+Always include a “Can’t find it? Add manually” link → opens a small form (name, address, type) → POST /api/providers/manual.
+
+After a selection (internal or Google), store:
+
+name, address, lat/lng (if available), type, and the Google place_id (if used).
+
+Keep your graceful fallback: if APIs fail, raw text still submits.
+
+Admin approval queue
+
+Add an Admin → Facilities page/section:
+
+Show source:"manual", approved:false entries.
+
+Actions: Approve → sets approved:true, source:"internal", Reject → remove from index.
+
+Show search_count_90d and updated_at.
+
+Add a tiny hit‑ratio widget (text is fine) to Admin or Analytics:
+
+“Internal hits: X | External hits: Y | Manual entries: Z | Internal % = X/(X+Y)”
+
+This is the cost‑control KPI for Years 2–3.
+
+Year‑3 scale hooks (lightweight)
+
+When a provider is returned by external API ≥2 times in 90 days (you can infer by accumulating external_hits per normalized name), auto‑promote it into the internal index with approved:true, source:"google".
+
+Maintain a rolling 90‑day window by resetting counters if period_start is >90 days old (or just start a new period).
+
+Legal copy at selection
+
+When a user picks any entry, ensure the small line (already added) remains visible:
+“MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.”
+
+Outputs
+
+Print:
+
+Created/updated: /data/providers_index.json, /data/search_metrics.json
+
+Routes added: /api/providers/search, /api/providers/manual
+
+Templates updated: note where intake search UI was augmented and where “Add manually” shows
+
+Admin page/section path for Facilities queue and KPI widget
+
+End with: READY FOR PHASE 4.B if all steps succeed.

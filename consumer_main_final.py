@@ -2,6 +2,7 @@ import os
 import logging
 import json
 import uuid
+# import requests  # Will install if Google Places API is needed
 from datetime import datetime, timedelta
 import random
 from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
@@ -72,6 +73,133 @@ DRAFTS_CONFIG = {
     'draft_expiry_days': 7,
     'max_drafts_per_user': 10
 }
+
+# Provider Search System - JSON-based cache with upgrade path
+PROVIDERS_INDEX_PATH = 'data/providers_index.json'
+SEARCH_METRICS_PATH = 'data/search_metrics.json'
+
+def load_index():
+    """Load providers index from JSON file"""
+    try:
+        with open(PROVIDERS_INDEX_PATH, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"providers": []}
+
+def save_index(index_data):
+    """Save providers index to JSON file"""
+    os.makedirs('data', exist_ok=True)
+    with open(PROVIDERS_INDEX_PATH, 'w') as f:
+        json.dump(index_data, f, indent=2)
+
+def load_metrics():
+    """Load search metrics from JSON file"""
+    try:
+        with open(SEARCH_METRICS_PATH, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {
+            "period_start": datetime.utcnow().isoformat() + "Z",
+            "internal_hits": 0,
+            "external_hits": 0,
+            "manual_entries": 0
+        }
+
+def save_metrics(metrics_data):
+    """Save search metrics to JSON file"""
+    os.makedirs('data', exist_ok=True)
+    with open(SEARCH_METRICS_PATH, 'w') as f:
+        json.dump(metrics_data, f, indent=2)
+
+def search_internal(query):
+    """Search internal providers index - case insensitive substring match"""
+    index = load_index()
+    query_lower = query.lower()
+    
+    results = []
+    for provider in index['providers']:
+        if not provider.get('approved', False):
+            continue
+            
+        name_match = query_lower in provider['name'].lower()
+        address_match = query_lower in provider['address'].lower()
+        
+        if name_match or address_match:
+            results.append(provider)
+    
+    # Sort by search_count_90d (popularity) and return top 5
+    results.sort(key=lambda x: x.get('search_count_90d', 0), reverse=True)
+    return results[:5]
+
+def promote_or_increment(provider_id):
+    """Increment search count for selected internal provider"""
+    index = load_index()
+    
+    for provider in index['providers']:
+        if provider['id'] == provider_id:
+            provider['search_count_90d'] = provider.get('search_count_90d', 0) + 1
+            provider['updated_at'] = datetime.utcnow().isoformat() + "Z"
+            break
+    
+    save_index(index)
+
+def submit_manual_entry(name, address, provider_type):
+    """Add manual provider entry for admin approval"""
+    index = load_index()
+    
+    new_provider = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "type": provider_type,
+        "address": address,
+        "lat": None,
+        "lng": None,
+        "source": "manual",
+        "approved": False,
+        "search_count_90d": 0,
+        "created_at": datetime.utcnow().isoformat() + "Z",
+        "updated_at": datetime.utcnow().isoformat() + "Z"
+    }
+    
+    index['providers'].append(new_provider)
+    save_index(index)
+    
+    # Update metrics
+    metrics = load_metrics()
+    metrics['manual_entries'] += 1
+    save_metrics(metrics)
+    
+    return new_provider
+
+def record_hit_ratio(source):
+    """Record search hit by source type"""
+    metrics = load_metrics()
+    
+    # Check if period is > 90 days old, reset if needed
+    period_start = datetime.fromisoformat(metrics['period_start'].replace('Z', '+00:00'))
+    if datetime.utcnow() - period_start.replace(tzinfo=None) > timedelta(days=90):
+        metrics = {
+            "period_start": datetime.utcnow().isoformat() + "Z",
+            "internal_hits": 0,
+            "external_hits": 0,
+            "manual_entries": 0
+        }
+    
+    if source == 'internal':
+        metrics['internal_hits'] += 1
+    elif source == 'external':
+        metrics['external_hits'] += 1
+    
+    save_metrics(metrics)
+
+def search_google_places(query, api_key):
+    """Search Google Places API for providers - stub implementation"""
+    if not api_key or api_key == "demo-key":
+        return []
+    
+    # Return mock results for demonstration (Google Places would be enabled with real API key)
+    logging.info(f"Google Places API stub called for query: {query}")
+    return []
 
 def authenticate_user(username, password):
     if username in DEMO_USERS and DEMO_USERS[username]['password'] == password:
@@ -735,6 +863,184 @@ def partner_dashboard():
 def join_affiliate():
     """Join as Affiliate (Air Operator)"""
     return render_template('join_affiliate.html')
+
+# Provider Search API Endpoints
+@consumer_app.route('/api/providers/search')
+def api_providers_search():
+    """Hybrid search: internal cache first, then Google Places, then manual fallback"""
+    query = request.args.get('q', '').strip()
+    
+    if not query:
+        return jsonify({'ok': True, 'results': []})
+    
+    # Step 1: Try internal search first
+    internal_results = search_internal(query)
+    
+    if internal_results:
+        # Record internal hit and return
+        record_hit_ratio('internal')
+        
+        # Format results for frontend
+        results = []
+        for provider in internal_results:
+            results.append({
+                'id': provider['id'],
+                'name': provider['name'],
+                'address': provider['address'],
+                'type': provider['type'],
+                'source': 'internal',
+                'lat': provider.get('lat'),
+                'lng': provider.get('lng'),
+                'search_count': provider.get('search_count_90d', 0)
+            })
+        
+        return jsonify({
+            'ok': True,
+            'results': results,
+            'source': 'internal',
+            'message': f'Found {len(results)} internal matches'
+        })
+    
+    # Step 2: Try Google Places if API key is available
+    api_key = MEDFLY_CONFIG.get('google_places_api_key')
+    if api_key and api_key != "demo-key":
+        google_results = search_google_places(query, api_key)
+        
+        if google_results:
+            record_hit_ratio('external')
+            return jsonify({
+                'ok': True,
+                'results': google_results,
+                'source': 'google',
+                'message': f'Found {len(google_results)} Google Places matches'
+            })
+    
+    # Step 3: No results - return empty with manual entry suggestion
+    return jsonify({
+        'ok': True,
+        'results': [],
+        'source': 'none',
+        'message': 'No matches found. Please add manually if needed.'
+    })
+
+@consumer_app.route('/api/providers/manual', methods=['POST'])
+def api_providers_manual():
+    """Submit manual provider entry for admin approval"""
+    data = request.get_json()
+    
+    name = data.get('name', '').strip()
+    address = data.get('address', '').strip()
+    provider_type = data.get('type', 'unknown').strip()
+    
+    if not name or not address:
+        return jsonify({'ok': False, 'error': 'Name and address are required'}), 400
+    
+    # Valid types
+    valid_types = ['hospital', 'clinic', 'airport', 'address', 'unknown']
+    if provider_type not in valid_types:
+        provider_type = 'unknown'
+    
+    try:
+        new_provider = submit_manual_entry(name, address, provider_type)
+        
+        return jsonify({
+            'ok': True,
+            'provider': {
+                'id': new_provider['id'],
+                'name': new_provider['name'],
+                'address': new_provider['address'],
+                'type': new_provider['type'],
+                'source': 'manual',
+                'approved': False
+            },
+            'message': 'Manual entry submitted for admin approval'
+        })
+    
+    except Exception as e:
+        logging.error(f"Manual entry error: {e}")
+        return jsonify({'ok': False, 'error': 'Failed to save manual entry'}), 500
+
+@consumer_app.route('/api/providers/select', methods=['POST'])
+def api_providers_select():
+    """Record provider selection and increment usage stats"""
+    data = request.get_json()
+    provider_id = data.get('provider_id')
+    source = data.get('source', 'unknown')
+    
+    if not provider_id:
+        return jsonify({'ok': False, 'error': 'Provider ID required'}), 400
+    
+    # If internal provider, increment usage count
+    if source == 'internal':
+        promote_or_increment(provider_id)
+    
+    return jsonify({'ok': True, 'message': 'Selection recorded'})
+
+# Admin Facilities Management
+@consumer_app.route('/admin/facilities')
+def admin_facilities():
+    """Admin page for managing facilities and approval queue"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('login'))
+    
+    index = load_index()
+    metrics = load_metrics()
+    
+    # Separate approved and pending providers
+    approved_providers = [p for p in index['providers'] if p.get('approved', False)]
+    pending_providers = [p for p in index['providers'] if not p.get('approved', False)]
+    
+    # Calculate hit ratio for cost control KPI
+    total_hits = metrics['internal_hits'] + metrics['external_hits']
+    internal_percentage = (metrics['internal_hits'] / total_hits * 100) if total_hits > 0 else 0
+    
+    hit_ratio_stats = {
+        'internal_hits': metrics['internal_hits'],
+        'external_hits': metrics['external_hits'],
+        'manual_entries': metrics['manual_entries'],
+        'internal_percentage': round(internal_percentage, 1),
+        'period_start': metrics['period_start']
+    }
+    
+    return render_template('admin_facilities.html',
+                         approved_providers=approved_providers,
+                         pending_providers=pending_providers,
+                         hit_ratio_stats=hit_ratio_stats)
+
+@consumer_app.route('/admin/facilities/approve/<provider_id>', methods=['POST'])
+def admin_approve_provider(provider_id):
+    """Approve a manual provider entry"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        return jsonify({'ok': False, 'error': 'Admin access required'}), 403
+    
+    index = load_index()
+    
+    for provider in index['providers']:
+        if provider['id'] == provider_id:
+            provider['approved'] = True
+            provider['source'] = 'internal'  # Promote to internal once approved
+            provider['updated_at'] = datetime.utcnow().isoformat() + "Z"
+            break
+    
+    save_index(index)
+    flash('Provider approved and added to internal index.', 'success')
+    return redirect(url_for('admin_facilities'))
+
+@consumer_app.route('/admin/facilities/reject/<provider_id>', methods=['POST'])
+def admin_reject_provider(provider_id):
+    """Reject and remove a manual provider entry"""
+    if not session.get('logged_in') or session.get('user_role') != 'admin':
+        return jsonify({'ok': False, 'error': 'Admin access required'}), 403
+    
+    index = load_index()
+    index['providers'] = [p for p in index['providers'] if p['id'] != provider_id]
+    save_index(index)
+    
+    flash('Provider rejected and removed.', 'success')
+    return redirect(url_for('admin_facilities'))
+
+# Duplicate route removed - keeping original join_affiliate route above
 
 @consumer_app.route('/join_hospital')
 def join_hospital():

@@ -49,3 +49,57 @@
 }
 .quotes-compact .quote-price{ font-weight:700; font-size: 18px; }
 .quotes-compact .quote-actions button{ margin-left:8px; }
+
+/* Provider Search Enhancement Styles - Phase 4.A */
+.address-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.address-suggestion {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.address-suggestion:hover {
+    background: #f8f9fa;
+}
+
+.address-suggestion:last-child {
+    border-bottom: none;
+}
+
+.search-header {
+    background: #e3f2fd;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600;
+}
+
+.manual-entry-prompt {
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 0.5rem;
+}
+
+.manual-entry-prompt a {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.manual-entry-prompt a:hover {
+    color: #0056b3;
+    text-decoration: underline !important;
+}

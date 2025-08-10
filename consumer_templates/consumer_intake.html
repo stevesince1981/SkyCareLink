@@ -198,6 +198,9 @@
                                            value="{% if request.args.get('prefill') == 'orlando-nyc' %}Orlando International Airport{% endif %}"
                                            required>
                                     <div class="address-suggestions" id="originSuggestions"></div>
+                                    <small class="text-muted mt-1">
+                                        <i class="fas fa-search me-1"></i>Internal database checked first, then Google Places
+                                    </small>
                                 </div>
                                 <small class="text-muted">
                                     <i class="fas fa-info-circle me-1"></i>
@@ -212,6 +215,11 @@
                                            value="{% if request.args.get('prefill') == 'orlando-nyc' %}LaGuardia Airport, NYC{% endif %}"
                                            required>
                                     <div class="address-suggestions" id="destinationSuggestions"></div>
+                                    <small class="text-muted mt-1">
+                                        <a href="#" class="text-decoration-none" onclick="showManualEntry('destination')">
+                                            <i class="fas fa-plus me-1"></i>Can't find it? Add manually
+                                        </a>
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -546,8 +554,218 @@ function updateStepIndicator() {
     }
 }
 
+// Hybrid Provider Search System - Phase 4.A
+function setupProviderSearch() {
+    const originInput = document.getElementById('origin');
+    const destinationInput = document.getElementById('destination');
+    
+    // Add search functionality to origin input
+    if (originInput) {
+        let searchTimeout;
+        originInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    searchProviders(query, 'originSuggestions');
+                }, 300);
+            } else {
+                document.getElementById('originSuggestions').innerHTML = '';
+            }
+        });
+    }
+    
+    // Add search functionality to destination input
+    if (destinationInput) {
+        let searchTimeout;
+        destinationInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    searchProviders(query, 'destinationSuggestions');
+                }, 300);
+            } else {
+                document.getElementById('destinationSuggestions').innerHTML = '';
+            }
+        });
+    }
+}
+
+async function searchProviders(query, containerId) {
+    try {
+        const response = await fetch(`/api/providers/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        
+        if (data.results && data.results.length > 0) {
+            const sourceLabel = data.source === 'internal' ? 'Internal Database' : 
+                               data.source === 'google' ? 'Google Places' : 'Search Results';
+            
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'search-header';
+            headerDiv.innerHTML = `<small class="text-primary"><i class="fas fa-database me-1"></i>${sourceLabel}</small>`;
+            container.appendChild(headerDiv);
+            
+            data.results.forEach(provider => {
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.className = 'address-suggestion';
+                suggestionDiv.innerHTML = `
+                    <strong>${provider.name}</strong><br>
+                    <small class="text-muted">${provider.address}</small>
+                    <span class="badge bg-secondary ms-2">${provider.type}</span>
+                `;
+                
+                suggestionDiv.addEventListener('click', () => {
+                    // Set the input value
+                    const input = containerId.includes('origin') ? 
+                        document.getElementById('origin') : 
+                        document.getElementById('destination');
+                    input.value = `${provider.name} - ${provider.address}`;
+                    
+                    // Record the selection for metrics
+                    recordProviderSelection(provider);
+                    
+                    // Clear suggestions
+                    container.innerHTML = '';
+                });
+                
+                container.appendChild(suggestionDiv);
+            });
+        } else {
+            // Show manual entry option
+            const manualDiv = document.createElement('div');
+            manualDiv.className = 'manual-entry-prompt text-center p-3';
+            manualDiv.innerHTML = `
+                <small class="text-muted">No matches found</small><br>
+                <a href="#" class="text-decoration-none" onclick="showManualEntry('${containerId}')">
+                    <i class="fas fa-plus me-1"></i>Add manually for admin approval
+                </a>
+            `;
+            container.appendChild(manualDiv);
+        }
+    } catch (error) {
+        console.error('Provider search error:', error);
+    }
+}
+
+async function recordProviderSelection(provider) {
+    try {
+        await fetch('/api/providers/select', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                provider_id: provider.id,
+                source: provider.source
+            })
+        });
+    } catch (error) {
+        console.error('Failed to record provider selection:', error);
+    }
+}
+
+function showManualEntry(containerId) {
+    const fieldType = containerId.includes('origin') ? 'origin' : 'destination';
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.id = 'manualEntryModal';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="manualEntryForm">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" id="manualName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <input type="text" class="form-control" id="manualAddress" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            <select class="form-control" id="manualType">
+                                <option value="hospital">Hospital</option>
+                                <option value="clinic">Clinic</option>
+                                <option value="airport">Airport</option>
+                                <option value="address">Address</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitManualEntry('${fieldType}')">Submit for Approval</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+    
+    modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+    });
+}
+
+async function submitManualEntry(fieldType) {
+    const name = document.getElementById('manualName').value.trim();
+    const address = document.getElementById('manualAddress').value.trim();
+    const type = document.getElementById('manualType').value;
+    
+    if (!name || !address) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/providers/manual', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, address, type })
+        });
+        
+        const data = await response.json();
+        
+        if (data.ok) {
+            // Set the input value
+            const input = fieldType === 'origin' ? 
+                document.getElementById('origin') : 
+                document.getElementById('destination');
+            input.value = `${name} - ${address}`;
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('manualEntryModal'));
+            modal.hide();
+            
+            alert('Location submitted for admin approval and temporarily added to your form.');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Manual entry error:', error);
+        alert('Failed to submit manual entry. Please try again.');
+    }
+}
+
 // Equipment selection
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize provider search
+    setupProviderSearch();
     // Equipment options
     document.querySelectorAll('.equipment-option').forEach(option => {
         option.addEventListener('click', function() {
