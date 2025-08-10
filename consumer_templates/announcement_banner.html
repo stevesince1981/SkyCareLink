@@ -1,0 +1,126 @@
+<!-- Phase 7.A: Site-wide Announcement Banner -->
+{% if active_announcements %}
+{% for announcement in active_announcements %}
+<div class="announcement-banner banner-{{ announcement.style }}" id="announcement-{{ announcement.id }}">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="flex-grow-1 text-center">
+            <strong>{{ announcement.message }}</strong>
+            {% if announcement.countdown_display %}
+            <span class="countdown-timer ms-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2);">
+                Go-live in {{ announcement.countdown_display }}
+            </span>
+            {% endif %}
+        </div>
+        <button type="button" class="btn-close btn-close-white ms-2" onclick="dismissAnnouncement('{{ announcement.id }}')" aria-label="Dismiss announcement"></button>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+.announcement-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    padding: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.banner-info { 
+    background: linear-gradient(135deg, #17a2b8, #138496); 
+    color: white; 
+}
+
+.banner-warn { 
+    background: linear-gradient(135deg, #ffc107, #e0a800); 
+    color: #212529; 
+}
+
+.banner-success { 
+    background: linear-gradient(135deg, #28a745, #1e7e34); 
+    color: white; 
+}
+
+.countdown-timer {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Adjust body top margin when banners are present */
+body.has-announcements {
+    margin-top: 60px;
+}
+
+/* Stack multiple banners */
+{% for announcement in active_announcements %}
+#announcement-{{ announcement.id }} {
+    top: {{ loop.index0 * 50 }}px;
+}
+{% endfor %}
+
+{% if active_announcements|length > 1 %}
+body.has-announcements {
+    margin-top: {{ active_announcements|length * 50 }}px;
+}
+{% endif %}
+</style>
+
+<script>
+// Add body class for announcements
+if (document.querySelectorAll('.announcement-banner').length > 0) {
+    document.body.classList.add('has-announcements');
+}
+
+function dismissAnnouncement(announcementId) {
+    const banner = document.getElementById('announcement-' + announcementId);
+    if (banner) {
+        banner.style.display = 'none';
+        
+        // Store dismissal in session storage
+        let dismissed = JSON.parse(sessionStorage.getItem('dismissed_announcements') || '[]');
+        if (!dismissed.includes(announcementId)) {
+            dismissed.push(announcementId);
+            sessionStorage.setItem('dismissed_announcements', JSON.stringify(dismissed));
+        }
+        
+        // Recalculate body margin
+        const remainingBanners = document.querySelectorAll('.announcement-banner:not([style*="display: none"])');
+        if (remainingBanners.length === 0) {
+            document.body.classList.remove('has-announcements');
+            document.body.style.marginTop = '';
+        } else {
+            document.body.style.marginTop = (remainingBanners.length * 50) + 'px';
+        }
+    }
+}
+
+// Hide previously dismissed announcements
+document.addEventListener('DOMContentLoaded', function() {
+    const dismissed = JSON.parse(sessionStorage.getItem('dismissed_announcements') || '[]');
+    dismissed.forEach(announcementId => {
+        const banner = document.getElementById('announcement-' + announcementId);
+        if (banner) {
+            banner.style.display = 'none';
+        }
+    });
+    
+    // Recalculate body margin after hiding dismissed
+    const visibleBanners = document.querySelectorAll('.announcement-banner:not([style*="display: none"])');
+    if (visibleBanners.length === 0) {
+        document.body.classList.remove('has-announcements');
+    } else {
+        document.body.style.marginTop = (visibleBanners.length * 50) + 'px';
+    }
+});
+
+// Update countdown timers every minute
+setInterval(function() {
+    document.querySelectorAll('.countdown-timer').forEach(function(timer) {
+        // In production, recalculate countdown from server time
+        console.log('Countdown timer update (stub)');
+    });
+}, 60000);
+</script>
+{% endif %}

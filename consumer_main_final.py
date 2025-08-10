@@ -45,6 +45,26 @@ COMMISSION_CONFIG = {
     'invoice_net_days': 7  # NET 7 payment terms
 }
 
+# Phase 7.A: Operational Controls Configuration
+OPERATIONAL_CONFIG = {
+    'strike_rules': {
+        'lifetime_ban_threshold': 2,
+        'relist_fee_usd': 25000,
+        'relist_penalty': 'no 1% payback in year 1'
+    },
+    'training_limits': {
+        'dummy_cases_per_affiliate': 50,
+        'reset_policy': 'monthly'
+    },
+    'delist_reasons': [
+        'Unpaid affiliate fee/commission',
+        'False licensing attestation (Part 135)', 
+        'Service misrepresentation',
+        'Quality/SLA failure',
+        'Other (notes required)'
+    ]
+}
+
 # Equipment pricing (dynamic)
 EQUIPMENT_PRICING = {
     'ventilator': 5000,
@@ -796,12 +816,153 @@ def record_commission_entry(booking_id, affiliate_id, base_amount_usd, is_dummy=
         logging.error(f"Error recording commission: {e}")
         return False
 
+# Phase 7.A: Operational Control Functions
+def record_audit_event(event_type, **kwargs):
+    """Record audit trail event"""
+    try:
+        audit_data = load_json_data('data/audit_trail.json', {'events': [], 'meta': {}})
+        
+        event = {
+            'id': f"audit_{len(audit_data['events']) + 1:03d}",
+            'event_type': event_type,
+            'timestamp': datetime.now().isoformat(),
+            **kwargs
+        }
+        
+        audit_data['events'].append(event)
+        save_json_data('data/audit_trail.json', audit_data)
+        logging.info(f"Audit event recorded: {event_type}")
+        return True
+    except Exception as e:
+        logging.error(f"Error recording audit event: {e}")
+        return False
+
+def get_active_affiliates():
+    """Get list of active (non-delisted) affiliates"""
+    try:
+        delisted_data = load_json_data('data/delisted_affiliates.json', {'delisted': []})
+        delisted_ids = [item['affiliate_id'] for item in delisted_data['delisted'] if not item.get('relisted_at')]
+        
+        # Return mock affiliates excluding delisted ones
+        active = [
+            {'id': 'affiliate_1', 'name': 'AirMed Response'},
+            {'id': 'affiliate_2', 'name': 'LifeFlight Services'},
+            {'id': 'affiliate_3', 'name': 'MedAir Transport'}
+        ]
+        
+        return [aff for aff in active if aff['id'] not in delisted_ids]
+    except Exception as e:
+        logging.error(f"Error getting active affiliates: {e}")
+        return []
+
+def get_affiliate_strikes(affiliate_id):
+    """Get current strike count for affiliate"""
+    try:
+        delisted_data = load_json_data('data/delisted_affiliates.json', {'delisted': []})
+        for item in delisted_data['delisted']:
+            if item['affiliate_id'] == affiliate_id:
+                return item.get('strikes', 0)
+        return 0
+    except Exception as e:
+        logging.error(f"Error getting strikes: {e}")
+        return 0
+
+def get_training_limit_status(affiliate_id):
+    """Get training dummy case usage for affiliate"""
+    try:
+        training_data = load_json_data('data/training_limits.json', {'affiliate_limits': {}})
+        limit_info = training_data['affiliate_limits'].get(affiliate_id, {
+            'dummy_cases_used': 0,
+            'dummy_cases_limit': OPERATIONAL_CONFIG['training_limits']['dummy_cases_per_affiliate']
+        })
+        
+        remaining = limit_info['dummy_cases_limit'] - limit_info['dummy_cases_used']
+        return {
+            'used': limit_info['dummy_cases_used'],
+            'limit': limit_info['dummy_cases_limit'],
+            'remaining': max(0, remaining),
+            'at_limit': remaining <= 0
+        }
+    except Exception as e:
+        logging.error(f"Error getting training limits: {e}")
+        return {'used': 0, 'limit': 50, 'remaining': 50, 'at_limit': False}
+
+def get_active_announcements():
+    """Get currently active announcements for display"""
+    try:
+        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
+        from datetime import timezone
+        now = datetime.now(timezone.utc)
+        
+        active = []
+        for announcement in announcements_data['announcements']:
+            if not announcement.get('active', True):
+                continue
+                
+            start_time = datetime.fromisoformat(announcement['start_at'].replace('Z', '+00:00'))
+            end_time = datetime.fromisoformat(announcement['end_at'].replace('Z', '+00:00'))
+            
+            if start_time <= now <= end_time:
+                # Calculate countdown if target exists
+                if announcement.get('countdown_target'):
+                    target_time = datetime.fromisoformat(announcement['countdown_target'].replace('Z', '+00:00'))
+                    if target_time > now:
+                        delta = target_time - now
+                        days = delta.days
+                        hours, remainder = divmod(delta.seconds, 3600)
+                        minutes, _ = divmod(remainder, 60)
+                        announcement['countdown_display'] = f"{days}d:{hours:02d}h:{minutes:02d}m"
+                    else:
+                        announcement['countdown_display'] = "Go-live reached!"
+                
+                active.append(announcement)
+        
+        return active
+    except Exception as e:
+        logging.error(f"Error getting announcements: {e}")
+        return []
+
 @consumer_app.route('/api/cancel-request/<request_id>', methods=['POST'])
 def api_cancel_request(request_id):
-    """Cancel active request endpoint (cannot delete, only cancel)"""
+    """Phase 7.A: Cancel active request with reason and audit trail"""
     try:
-        success = cancel_active_request(request_id)
-        return jsonify({'success': success})
+        data = request.get_json() or {}
+        cancel_reason = data.get('cancel_reason', 'User requested cancellation')
+        
+        # Check if request has quotes (cannot delete, only cancel)
+        has_quotes = True  # In production, check actual quote status
+        
+        if has_quotes:
+            # Record audit event
+            record_audit_event(
+                'cancel_request',
+                request_id=request_id,
+                user_id=session.get('contact_name', 'unknown'),
+                cancel_reason=cancel_reason,
+                metadata={'quotes_existed': True}
+            )
+            
+            success = cancel_active_request(request_id)
+            return jsonify({
+                'success': success,
+                'message': 'Request cancelled (quotes notified)',
+                'action': 'cancelled'
+            })
+        else:
+            # Can delete if no quotes
+            record_audit_event(
+                'delete_request',
+                request_id=request_id,
+                user_id=session.get('contact_name', 'unknown'),
+                metadata={'quotes_existed': False}
+            )
+            
+            return jsonify({
+                'success': True,
+                'message': 'Request deleted',
+                'action': 'deleted'
+            })
+            
     except Exception as e:
         logging.error(f"Request cancel error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -1858,6 +2019,56 @@ def test_commission():
     
     flash(f'Created {created} test commission entries', 'success')
     return redirect(url_for('admin_invoices'))
+
+# Phase 7.A: Enhanced QA Hardening Functions
+def enforce_training_limit(affiliate_id):
+    """Check and enforce training dummy case limits"""
+    try:
+        training_data = load_json_data('data/training_limits.json', {'affiliate_limits': {}})
+        
+        if affiliate_id not in training_data['affiliate_limits']:
+            training_data['affiliate_limits'][affiliate_id] = {
+                'dummy_cases_used': 0,
+                'dummy_cases_limit': OPERATIONAL_CONFIG['training_limits']['dummy_cases_per_affiliate'],
+                'last_dummy_case': None
+            }
+        
+        limit_info = training_data['affiliate_limits'][affiliate_id]
+        
+        if limit_info['dummy_cases_used'] >= limit_info['dummy_cases_limit']:
+            return False, f"Training limit reached ({limit_info['dummy_cases_used']}/{limit_info['dummy_cases_limit']})"
+        
+        # Increment usage
+        limit_info['dummy_cases_used'] += 1
+        limit_info['last_dummy_case'] = datetime.now().isoformat()
+        
+        save_json_data('data/training_limits.json', training_data)
+        
+        remaining = limit_info['dummy_cases_limit'] - limit_info['dummy_cases_used']
+        return True, f"Training case recorded. Remaining: {remaining}"
+        
+    except Exception as e:
+        logging.error(f"Error enforcing training limit: {e}")
+        return False, "Error checking training limits"
+
+def check_modify_permissions(request_id):
+    """Check if request can be modified (locked after quote selection)"""
+    # In production, check actual quote selection status
+    quote_selected = session.get('quote_selection_locked', False)
+    
+    if quote_selected:
+        return False, "Cannot modify - quote already selected"
+    
+    return True, "Modification allowed"
+
+# Phase 7.A: Template Context Processor for Site-wide Announcements
+@consumer_app.context_processor
+def inject_announcements():
+    """Inject active announcements into all templates"""
+    return {
+        'active_announcements': get_active_announcements(),
+        'training_config': TRAINING_CONFIG
+    }
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

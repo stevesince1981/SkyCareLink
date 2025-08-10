@@ -1,0 +1,246 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Delisted Affiliates - Admin Portal{% endblock %}
+
+{% block head %}
+<style>
+.admin-header {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.delisted-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.strike-badge {
+    background: #dc3545;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.lifetime-ban {
+    background: #000;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.delist-form {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border-left: 5px solid #dc3545;
+}
+
+.relist-form {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border-left: 5px solid #28a745;
+}
+
+.preset-reason {
+    cursor: pointer;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.preset-reason:hover {
+    background: #e9ecef;
+}
+
+.preset-reason.selected {
+    background: #007bff;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if session.get('user_role') != 'admin' %}
+    <div class="alert alert-danger">
+        <i class="fas fa-lock me-2"></i>Admin access required
+    </div>
+    {% else %}
+    
+    <div class="admin-header">
+        <h1><i class="fas fa-ban me-2"></i>Delisted Affiliates Management</h1>
+        <p>Manage affiliate strikes, delisting, and relisting with operational controls</p>
+    </div>
+
+    <!-- Strike/Ban Rules Info -->
+    <div class="alert alert-warning">
+        <strong>Strike Rules:</strong> 2 strikes → lifetime ban (cannot relist; $25k forfeit note shown). 
+        Relist fee: $25k with no 1% payback in year 1.
+    </div>
+
+    <!-- Active Affiliates - Delist Section -->
+    <div class="delisted-card">
+        <h3><i class="fas fa-user-times me-2"></i>Delist Active Affiliate</h3>
+        
+        <form method="POST" action="{{ url_for('admin_delist_affiliate') }}" class="delist-form">
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Affiliate ID</label>
+                    <select class="form-select" name="affiliate_id" required>
+                        <option value="">Select affiliate to delist...</option>
+                        {% for affiliate in active_affiliates %}
+                        <option value="{{ affiliate.id }}">{{ affiliate.name }} ({{ affiliate.id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Preset Reason</label>
+                    <select class="form-select" name="delist_reason" required onchange="toggleNotesField(this)">
+                        <option value="">Select reason...</option>
+                        <option value="Unpaid affiliate fee/commission">Unpaid affiliate fee/commission</option>
+                        <option value="False licensing attestation (Part 135)">False licensing attestation (Part 135)</option>
+                        <option value="Service misrepresentation">Service misrepresentation</option>
+                        <option value="Quality/SLA failure">Quality/SLA failure</option>
+                        <option value="Other">Other (notes required)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-3" id="notesField" style="display: none;">
+                <label class="form-label">Additional Notes</label>
+                <textarea class="form-control" name="notes" rows="3" placeholder="Required for 'Other' reason..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-danger mt-3">
+                <i class="fas fa-ban me-2"></i>Delist Affiliate
+            </button>
+        </form>
+    </div>
+
+    <!-- Delisted Affiliates Table -->
+    <div class="delisted-card">
+        <h3><i class="fas fa-list me-2"></i>Currently Delisted ({{ delisted_affiliates|length }})</h3>
+        
+        {% if delisted_affiliates %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Affiliate ID</th>
+                        <th>Delisted Date</th>
+                        <th>Reason</th>
+                        <th>Strikes</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for affiliate in delisted_affiliates %}
+                    <tr>
+                        <td><strong>{{ affiliate.affiliate_id }}</strong></td>
+                        <td>{{ affiliate.delisted_at[:10] }}</td>
+                        <td>{{ affiliate.delist_reason }}</td>
+                        <td><span class="strike-badge">{{ affiliate.strikes }} strikes</span></td>
+                        <td>
+                            {% if affiliate.lifetime_ban %}
+                            <span class="lifetime-ban">Lifetime Ban</span>
+                            {% else %}
+                            <span class="badge bg-warning">Delisted</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not affiliate.lifetime_ban %}
+                            <button class="btn btn-success btn-sm" onclick="showRelistForm('{{ affiliate.affiliate_id }}')">
+                                <i class="fas fa-undo me-1"></i>Relist ($25k fee)
+                            </button>
+                            {% else %}
+                            <small class="text-muted">Cannot relist - $25k forfeit</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if affiliate.notes %}
+                    <tr>
+                        <td colspan="6" class="text-muted">
+                            <small><strong>Notes:</strong> {{ affiliate.notes }}</small>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No delisted affiliates</p>
+        {% endif %}
+    </div>
+
+    <!-- Relist Modal -->
+    <div class="modal fade" id="relistModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Relist Affiliate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{{ url_for('admin_relist_affiliate') }}">
+                    <div class="modal-body">
+                        <input type="hidden" name="affiliate_id" id="relistAffiliateId">
+                        
+                        <div class="alert alert-info">
+                            <strong>Relist Requirements:</strong>
+                            <ul class="mb-0">
+                                <li>$25,000 relist fee (no payment wiring in demo)</li>
+                                <li>No 1% commission payback in year 1</li>
+                                <li>Strikes reset to 0</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="fee_acknowledged" required>
+                            <label class="form-check-label">
+                                Fee payment acknowledged ($25k received)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Relist Affiliate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+
+<script>
+function toggleNotesField(select) {
+    const notesField = document.getElementById('notesField');
+    if (select.value === 'Other') {
+        notesField.style.display = 'block';
+        document.querySelector('textarea[name="notes"]').required = true;
+    } else {
+        notesField.style.display = 'none';
+        document.querySelector('textarea[name="notes"]').required = false;
+    }
+}
+
+function showRelistForm(affiliateId) {
+    document.getElementById('relistAffiliateId').value = affiliateId;
+    new bootstrap.Modal(document.getElementById('relistModal')).show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,86 @@
+PHASE 7.A — APPLY: Delist/Relist + Strikes, Announcements/Countdown, QA Hardening
+ROLE: Senior engineer. Add operational controls and harden guardrails. No schema changes required if you’re using JSON; use /data/*.json if DB isn’t wired.
+
+GOALS
+
+Admin can delist/relist Affiliates with preset reasons, track strikes, enforce bans.
+
+Co‑owners can post Announcements and a Countdown to Go‑Live banner.
+
+Enforce final QA rules (delete vs cancel, modify limits, training caps).
+
+TASKS
+
+Delist/Relist + Strikes (Admin)
+
+Admin screen: Delisted Affiliates table with filters.
+
+Preset reasons dropdown (final list):
+
+Unpaid affiliate fee/commission
+
+False licensing attestation (Part 135)
+
+Service misrepresentation
+
+Quality/SLA failure
+
+Other (notes required)
+
+Actions:
+
+Delist: set delisted_at, delist_reason, increment strikes.
+
+Relist: requires fee flag (no payment wiring now), set relisted_at, clear delist flag.
+
+Rules:
+
+At 2 strikes → lifetime ban (cannot relist; $25k forfeit note shown).
+
+Relist fee note: $25k fee; no 1% payback in year 1 after relist.
+
+Announcements & Countdown
+
+Admin → Announcements:
+
+Fields: message, style (info|warn|success), start_at, end_at, optional countdown_target (ISO date).
+
+UI: show a top banner site‑wide within start/end; if countdown_target present, show D‑day timer (“Go‑live in 12d:04h:29m”).
+
+Dismissible per session.
+
+QA Hardening
+
+Delete vs Cancel:
+
+Drafts: deletable.
+
+Active requests with quotes: not deletable, only Cancelable with a reason; providers get notified (stub ok).
+
+Modify limit:
+
+Allowed only until a quote is selected (already implemented); show tooltip if locked.
+
+Training caps & labels:
+
+Enforce 50 dummy cases per Affiliate; show count used/remaining.
+
+Ensure Dummy label shows on lists and never hits analytics or invoices.
+
+Audit trail:
+
+Record: delist/relist actions, cancel reasons, modify → version transitions, and selection events.
+
+Outputs
+
+Print paths/pages updated:
+
+Admin > Delisted Affiliates, Admin > Announcements
+
+Print the strike/ban logic summary:
+
+“2 strikes → lifetime ban (forfeit note shown).”
+
+Confirm delete/cancel/modify/training rules are now enforced.
+
+End with READY FOR PHASE 7.B.
