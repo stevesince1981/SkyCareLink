@@ -611,6 +611,76 @@ def admin_announcements():
     announcements_data = load_json_data('data/announcements.json', {'announcements': []})
     return render_template('admin_announcements.html', announcements_data=announcements_data)
 
+@consumer_app.route('/admin/create_announcement', methods=['POST'])
+def admin_create_announcement():
+    """Create new announcement with countdown"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('consumer_index'))
+    
+    try:
+        new_announcement = {
+            'id': f"ann_{len(load_json_data('data/announcements.json', {'announcements': []})['announcements']) + 1:03d}",
+            'message': request.form.get('message'),
+            'style': request.form.get('style'),
+            'start_at': request.form.get('start_at'),
+            'end_at': request.form.get('end_at'),
+            'countdown_target': request.form.get('countdown_target'),
+            'active': True,
+            'created_at': datetime.now().isoformat(),
+            'created_by': session.get('username', 'admin')
+        }
+        
+        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
+        announcements_data['announcements'].append(new_announcement)
+        save_json_data('data/announcements.json', announcements_data)
+        
+        flash('Announcement created successfully.', 'success')
+        return redirect(url_for('admin_announcements'))
+        
+    except Exception as e:
+        logging.error(f"Create announcement error: {e}")
+        flash('Error creating announcement.', 'error')
+        return redirect(url_for('admin_announcements'))
+
+@consumer_app.route('/admin/delist_affiliate', methods=['POST'])
+def admin_delist_affiliate():
+    """Delist affiliate with strike tracking"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('consumer_index'))
+    
+    try:
+        affiliate_id = request.form.get('affiliate_id')
+        reason = request.form.get('reason')
+        
+        delisted_data = load_json_data('data/delisted_affiliates.json', {'delisted': []})
+        
+        # Check current strikes
+        current_strikes = get_affiliate_strikes(affiliate_id)
+        new_strikes = current_strikes + 1
+        
+        delist_entry = {
+            'id': f"delist_{len(delisted_data['delisted']) + 1:03d}",
+            'affiliate_id': affiliate_id,
+            'reason': reason,
+            'strikes': new_strikes,
+            'delisted_at': datetime.now().isoformat(),
+            'delisted_by': session.get('username', 'admin'),
+            'lifetime_ban': new_strikes >= 2
+        }
+        
+        delisted_data['delisted'].append(delist_entry)
+        save_json_data('data/delisted_affiliates.json', delisted_data)
+        
+        flash(f'Affiliate delisted successfully. Strike count: {new_strikes}/2', 'warning')
+        return redirect(url_for('admin_delisted'))
+        
+    except Exception as e:
+        logging.error(f"Delist affiliate error: {e}")
+        flash('Error delisting affiliate.', 'error')
+        return redirect(url_for('admin_delisted'))
+
 @consumer_app.route('/admin-dashboard')
 def admin_dashboard():
     """Enhanced admin dashboard with comprehensive controls"""

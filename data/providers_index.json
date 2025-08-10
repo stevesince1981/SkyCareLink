@@ -142,6 +142,19 @@
       "search_count_90d": 0,
       "created_at": "2025-08-10T02:36:27.856039Z",
       "updated_at": "2025-08-10T02:36:27.856044Z"
+    },
+    {
+      "id": "4e5ad73b-9050-44d8-9bd8-755415e9e8f4",
+      "name": "steve's place",
+      "type": "airport",
+      "address": "1234 main street, mcallen, tx",
+      "lat": null,
+      "lng": null,
+      "source": "manual",
+      "approved": false,
+      "search_count_90d": 0,
+      "created_at": "2025-08-10T04:01:14.994127Z",
+      "updated_at": "2025-08-10T04:01:14.994132Z"
     }
   ]
 }
