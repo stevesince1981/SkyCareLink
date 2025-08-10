@@ -1,0 +1,100 @@
+PHASE 11.C — APPLY: Bugfix Mega‑Batch + Stepper Intake You Want
+ROLE: Senior engineer. Fix every bug you listed and ship the exact intake UX. Archive before edits.
+
+WHAT TO FIX
+
+A) Announcements CRUD (edit/delete/multi‑active)
+/admin/announcements: enable edit in place and delete.
+
+Support multiple active announcements.
+
+Fix Active list: after create/edit, it appears immediately.
+
+Banner is fixed at very top, semi‑transparent, click‑through (already added), persists site‑wide.
+
+B) Invoices
+Fix Generate Invoices button (no 500).
+
+Add auto invoice job (daily): generate invoices for bookings completed ≥ 7 days ago and not already invoiced.
+(You asked “auto 30 days”; operationally, we’ll: generate at week‑end, and auto‑re‑issue/roll any not‑paid by 30 days—both implemented.)
+
+Admin setting: “Auto‑generate invoices” ON/OFF; “Auto roll unpaid at 30 days” ON/OFF.
+
+C) Demo/Reset tools (granular + per‑portal)
+Fix /admin/demo/create 500.
+
+Add Reset Demo Data dialog with checkboxes:
+
+Bookings, Quotes, Commissions, Announcements, Dashboard Stats
+
+Add Portal‑level Demo Reset button in Affiliate and Hospital portals (clears only their demo rows).
+
+Keep audit logs.
+
+D) Quotes: Spotlight + Concierge
+Spotlight definition (row badge + tooltip): “New Affiliate Spotlight — fewer than 50 bookings or joined < 90 days ago.”
+
+Add Concierge option on quotes:
+
+Badge + explainer tooltip: “Concierge add‑on available ($15,000; split $7,500 each + base 5% applies).”
+
+On selection, Confirm page shows the concierge add‑on line item (non‑escrow; billed by Affiliate).
+
+E) Intake: Step‑by‑Step “Pancake” (your exact flow)
+Route /intake renders the stepper you approved:
+
+Service (Air, Ground, Air+Ground)
+→ Next shrinks card and advances.
+
+From / To with internal‑first autocomplete + Google fallback + “+ Can’t find it?” manual add.
+
+Date/Time (Bootstrap dropdown), same‑day warning (+20%) with confirm checkbox.
+
+Patient: Age band dropdown (no DOB), severity 1–3 (green/yellow/red with tooltips), niches + international regions multi‑select, ground ambulance included checkbox.
+
+Back button and clickable previous pancakes to jump around; state saved between steps; auto‑draft quietly (no spam toasts).
+
+CTA “New Request” on Home always goes to this stepper intake.
+
+F) My Transport Requests + Realtime “New Quote” indicator
+“My Transport Requests” list:
+
+Show Pending requests (e.g., submitted 10–30 mins ago) with elapsed timer and “New quote available” badge when a new quote arrives (poll or websocket stub).
+
+Clicking opens Quotes; badge clears when viewed.
+
+G) Admin Dashboard fixes
+Quote & Payment Management panel wired (no 500).
+
+“Announcements” button opens page (no modal dialog bug).
+
+H) Portal sample data
+Ensure portals (Affiliate/Hospital) show seeded sample rows when Dummy ON.
+
+I) Affiliate Commissions polish
+Preload sample commissions when Dummy ON.
+
+Filters: Date range, Status (Issued/Paid); Outstanding Fees badge for unpaid totals.
+
+Weekly Commission Summary: expandable “±” to show bookings included.
+
+Copy fix: “Amount credited toward your $25,000” (not “commission earned”).
+
+Control: “Mark Paid (ACH)” (Admin edges already exist) + search by date.
+
+J) Adjustable Affiliate Fee %
+Admin/Affiliate profile: editable default commission percent (range 3–7%, default 5%).
+The recoup mechanic still uses 4% effective until $25k (with 1% credit), then normalizes to the profile % (default 5%).
+
+K) Flights per Provider (Admin)
+Table shows Affiliate name, fee %, recoup progress ($ remaining to $25k), total flights, response rate; sortable.
+
+OUTPUTS
+
+Print a bullet list of each fix applied with file paths touched.
+
+Print: Intake stepper active at /intake.
+
+Print: Announcements CRUD working; demo tools fixed; invoices auto job set.
+
+End with: READY FOR 11.D RUNTIME TEST.

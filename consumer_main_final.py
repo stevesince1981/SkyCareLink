@@ -3286,7 +3286,7 @@ def admin_dummy_toggle():
     """Toggle dummy data in database"""
     if session.get('user_role') != 'admin':
         flash('Admin access required', 'error')
-        return redirect(url_for('consumer_login'))
+        return redirect(url_for('login'))
     
     if not DB_AVAILABLE:
         flash('Database not available', 'error')

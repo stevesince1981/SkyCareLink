@@ -300,6 +300,596 @@
         "anomaly_detected": false,
         "risk_factors": []
       }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.128713",
+      "user": "unknown",
+      "type": "login_failed",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "reason": "unknown_user"
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.133832",
+      "user": "unknown",
+      "type": "login_failed",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "reason": "unknown_user"
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.140896",
+      "user": "unknown",
+      "type": "login_failed",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "reason": "unknown_user"
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.145188",
+      "user": "unknown",
+      "type": "login_failed",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "reason": "unknown_user"
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.149364",
+      "user": "unknown",
+      "type": "login_failed",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "reason": "unknown_user"
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.152301",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.155819",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.159488",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.162164",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.165352",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.168531",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.179243",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.182641",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.186300",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.190417",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.193944",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.197117",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.200784",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.204283",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.207399",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.210880",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.214039",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.217043",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.221305",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.224870",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.228563",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.232300",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.235609",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.238829",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.242156",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.246731",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.250642",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.254609",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.258404",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.262717",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.266080",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.269737",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.273701",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.277759",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.281216",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.284893",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.288246",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.303837",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.310339",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.313926",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.317603",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.322198",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.326072",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.330252",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
+    },
+    {
+      "timestamp": "2025-08-10T17:48:32.335567",
+      "user": "unknown",
+      "type": "login_rate_limited",
+      "ip": "127.0.0.1",
+      "user_agent": "curl/8.14.1",
+      "details": {
+        "allowed": false,
+        "reason": "ip_rate_limit",
+        "attempts": 5
+      }
     }
   ]
 }
