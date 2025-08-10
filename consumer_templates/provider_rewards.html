@@ -1,6 +1,6 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Provider Rewards - MediFly{% endblock %}
+{% block title %}Affiliate Rewards - MediFly{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -8,7 +8,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h1><i class="fas fa-trophy me-2"></i>Provider Rewards System</h1>
+                <h1><i class="fas fa-trophy me-2"></i>Affiliate Rewards System</h1>
                 <div class="btn-group">
                     <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-primary">
                         <i class="fas fa-arrow-left"></i> Back to Admin
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <!-- Provider Performance Dashboard -->
+    <!-- Affiliate Performance Dashboard -->
     <div class="row mb-4">
         {% for provider_name, data in provider_rewards.items() %}
         <div class="col-lg-4 mb-4">
