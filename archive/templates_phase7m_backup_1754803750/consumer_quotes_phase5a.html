@@ -1,0 +1,430 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Transport Quotes{% if is_training_mode %} - {{ training_label }}{% endif %} - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Phase 5.A Enhanced Quotes Page */
+:root {
+    --primary-blue: #1976d2;
+    --secondary-blue: #42a5f5;
+    --accent-red: #dc3545;
+    --success-green: #28a745;
+    --warning-orange: #fd7e14;
+    --early-adopter: #ffc107;
+    --light-blue: #e3f2fd;
+    --compassionate-purple: #6f42c1;
+}
+
+/* Phase 5.A: Response Timer Styling */
+.response-timer {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    border: 2px solid var(--primary-blue);
+}
+
+.timer-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin: 0.5rem 0;
+}
+
+/* Phase 5.A: Compassionate Zero-Result State */
+.compassionate-message {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+    border: 2px solid var(--compassionate-purple);
+}
+
+.compassionate-message h4 {
+    color: var(--compassionate-purple);
+    margin-bottom: 1rem;
+}
+
+.opt-in-section {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border: 1px solid #dee2e6;
+}
+
+/* Phase 5.A: View More Button */
+.view-more-section {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.btn-view-more {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-view-more:hover {
+    background: var(--secondary-blue);
+    transform: translateY(-2px);
+}
+
+/* Phase 5.A: Compact Quotes Layout */
+.quotes-compact {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.quote-row {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.quote-row:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.1);
+}
+
+.quote-row.spotlight {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffffff 100%);
+    border-color: var(--early-adopter);
+}
+
+.spotlight-badge {
+    position: absolute;
+    top: -8px;
+    right: 15px;
+    background: var(--early-adopter);
+    color: #000;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.quote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.quote-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.quote-details {
+    display: flex;
+    gap: 2rem;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+}
+
+.quote-detail {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.ground-badge {
+    background: var(--success-green);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.response-rate {
+    font-weight: 600;
+    color: var(--success-green);
+}
+
+/* Modify/Selection Controls */
+.selection-controls {
+    position: sticky;
+    top: 80px;
+    background: white;
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e9ecef;
+}
+
+.btn-modify {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.btn-modify:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quotes-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.btn-select {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-select:hover {
+    background: var(--secondary-blue);
+    transform: translateY(-2px);
+}
+
+.liability-disclaimer {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-left: 4px solid var(--warning-orange);
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Phase 5.A Enhanced Quotes Results -->
+<div class="container-fluid">
+    <div class="quotes-header text-center">
+        <div class="container">
+            <h1 class="mb-3">
+                <i class="fas fa-helicopter"></i>
+                Available Transport Options
+                {% if is_training_mode %}
+                <span class="badge bg-warning text-dark ms-2">{{ training_label }}</span>
+                {% endif %}
+            </h1>
+            <p class="lead">Professional air medical transport options for your journey</p>
+            <p class="mb-0">{{ patient_data.origin }} → {{ patient_data.destination }}</p>
+        </div>
+    </div>
+
+    <!-- Phase 5.A: Response Timer -->
+    <div class="container quotes-compact">
+        <div class="response-timer">
+            <div class="timer-info">
+                <i class="fas fa-clock"></i>
+                <strong>Quotes typically arrive within {{ quote_timing.response_window_min }}–{{ quote_timing.response_window_max }} minutes</strong>
+            </div>
+            <div class="timer-display" id="response-timer">
+                Waiting for responses… {{ '%02d'|format(quote_timing.elapsed_minutes // 60) }}:{{ '%02d'|format(quote_timing.elapsed_minutes % 60) }}
+            </div>
+            <small class="text-muted">Up to {{ quote_timing.saturated_delay_hours }} hour delay in saturated markets</small>
+        </div>
+
+        <!-- Phase 5.A: Selection Controls -->
+        <div class="selection-controls">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button class="btn btn-modify" {% if quote_selection_locked %}disabled{% endif %} onclick="modifyRequest()">
+                        <i class="fas fa-edit"></i> Modify Request
+                    </button>
+                    {% if quote_selection_locked %}
+                    <small class="text-muted ms-2">Request locked after selection</small>
+                    {% endif %}
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Showing {{ visible_count }} of {{ total_quotes }} quotes</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 5.A: Compassionate Zero-Result Message -->
+        {% if show_compassionate_message %}
+        <div class="compassionate-message">
+            <h4><i class="fas fa-heart"></i> We're Sorry</h4>
+            <p class="mb-3">No options yet. You can modify your request or we'll keep checking.</p>
+            
+            <div class="opt-in-section">
+                <h6>Additional Assistance</h6>
+                <p>Would you like an Affiliate to contact you with third-party options?</p>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="opt_in" id="opt_in_yes" value="yes">
+                    <label class="form-check-label" for="opt_in_yes">Yes, please contact me</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="opt_in" id="opt_in_no" value="no">
+                    <label class="form-check-label" for="opt_in_no">No, thank you</label>
+                </div>
+                <br><small class="text-muted">Note: May not include Part 135 or guaranteed service.</small>
+                <br><button class="btn btn-sm btn-outline-primary mt-2" onclick="submitOptIn()">Submit</button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Phase 5.A: Compact Quote Rows -->
+        {% for quote in quotes %}
+        <div class="quote-row {% if quote.early_adopter %}spotlight{% endif %}" data-quote-id="{{ quote.affiliate_id }}">
+            {% if quote.early_adopter %}
+            <div class="spotlight-badge">Spotlight</div>
+            {% endif %}
+            
+            <div class="quote-header">
+                <div>
+                    <h5 class="mb-1">{{ quote.name }}</h5>
+                    <small class="text-muted">{{ quote.aircraft_type }}</small>
+                </div>
+                <div class="quote-price">${{ "{:,}".format(quote.total_cost) }}</div>
+            </div>
+            
+            <div class="quote-details">
+                <div class="quote-detail">
+                    <i class="fas fa-clock"></i> {{ quote.eta_hours }}h ETA
+                </div>
+                <div class="quote-detail">
+                    <i class="fas fa-users"></i> {{ quote.crew_size }}
+                </div>
+                <div class="quote-detail">
+                    <i class="fas fa-certificate"></i> {{ quote.certifications }}
+                </div>
+                {% if quote.ground_included %}
+                <span class="ground-badge" data-bs-toggle="tooltip" title="Provider indicates ground transfer support on both ends when available">
+                    <i class="fas fa-ambulance"></i> Ground included (where available)
+                </span>
+                {% endif %}
+                <div class="quote-detail response-rate">
+                    {{ quote.response_rate }}% Response Rate
+                </div>
+            </div>
+            
+            <div class="quote-actions mt-3">
+                <button class="btn btn-select" onclick="selectQuote('{{ quote.affiliate_id }}', '{{ quote.name }}')">
+                    Select This Option
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Phase 5.A: View More Section -->
+        {% if can_show_more %}
+        <div class="view-more-section">
+            <p class="mb-3">{{ remaining_quotes }} additional quotes available</p>
+            <a href="{{ url_for('consumer_quotes', show=visible_count + 5) }}" class="btn btn-view-more">
+                <i class="fas fa-plus-circle"></i> View {{ [remaining_quotes, 5]|min }} More
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Liability Disclaimer -->
+        <div class="liability-disclaimer">
+            <h6><i class="fas fa-exclamation-triangle text-warning"></i> Important Notice</h6>
+            <p class="mb-0 small">
+                MediFly facilitates connections between patients and air medical transport providers. We are not a medical provider. 
+                All medical decisions and transport services are provided by independent, licensed operators. 
+                By proceeding, you acknowledge understanding of our role as a booking platform.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Phase 5.A: Enhanced JavaScript for quote selection and modification
+function modifyRequest() {
+    if (confirm('Modifying your request will create a new version and retire pending quotes. Continue?')) {
+        // Redirect back to intake with prefilled data
+        window.location.href = '/intake?modify=true';
+    }
+}
+
+function selectQuote(affiliateId, affiliateName) {
+    if (confirm(`Select ${affiliateName} for your transport? This will reveal the provider and lock your request.`)) {
+        // Mark selection as locked
+        fetch('/api/select-quote', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                affiliate_id: affiliateId,
+                affiliate_name: affiliateName,
+                action: 'select_and_reveal'
+            })
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload page to show revealed name and locked state
+                window.location.reload();
+            } else {
+                alert('Error selecting quote: ' + data.error);
+            }
+        });
+    }
+}
+
+function submitOptIn() {
+    const optIn = document.querySelector('input[name="opt_in"]:checked');
+    if (!optIn) {
+        alert('Please select yes or no for additional assistance.');
+        return;
+    }
+    
+    // Submit opt-in preference
+    fetch('/api/opt-in-assistance', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            opt_in: optIn.value === 'yes',
+            timestamp: new Date().toISOString()
+        })
+    }).then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Thank you for your preference. We will continue monitoring for quotes.');
+        }
+    });
+}
+
+// Phase 5.A: Live timer update
+setInterval(function() {
+    const timerElement = document.getElementById('response-timer');
+    if (timerElement) {
+        const startTime = new Date('{{ quote_timing.request_start_time }}');
+        const now = new Date();
+        const elapsed = Math.floor((now - startTime) / 1000 / 60);
+        const hours = Math.floor(elapsed / 60);
+        const minutes = elapsed % 60;
+        timerElement.textContent = `Waiting for responses… ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+}, 60000); // Update every minute
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,395 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Confirm Transport Booking{% endblock %}
+
+{% block head %}
+<style>
+.confirmation-header {
+    background: linear-gradient(135deg, #e6f3ff, #ffe6f3);
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.booking-summary {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.vip-upgrade-section {
+    background: linear-gradient(135deg, #6f42c1, #8c5cf6);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: 0 10px 30px rgba(111, 66, 193, 0.3);
+}
+
+.vip-features {
+    list-style: none;
+    padding: 0;
+}
+
+.vip-features li {
+    margin: 0.75rem 0;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.vip-features li:before {
+    content: '✨';
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+}
+
+.family-seat-section {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border: 2px solid #007bff;
+}
+
+.carecredit-section {
+    background: linear-gradient(135deg, #e8f4fd, #ffffff);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    border: 2px solid #007bff;
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.payment-option {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.payment-option:hover {
+    border-color: #007bff;
+    background: #f8f9ff;
+}
+
+.payment-option.selected {
+    border-color: #007bff;
+    background: #e7f3ff;
+}
+
+.cost-breakdown {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.cost-line {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.cost-line.total {
+    border-top: 2px solid #007bff;
+    border-bottom: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #007bff;
+}
+
+.security-badges {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.security-badge {
+    background: #d4edda;
+    color: #155724;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    border: 1px solid #c3e6cb;
+}
+
+.confirm-button {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+    color: white;
+    padding: 1rem 3rem;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.confirm-button:hover {
+    background: linear-gradient(135deg, #20c997, #17a2b8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-header">
+    <div class="container">
+        <h1 class="mb-3">
+            <i class="fas fa-check-circle me-2"></i>
+            Confirm Your Transport Booking
+        </h1>
+        <p class="lead">Review your selections and complete your booking</p>
+    </div>
+</div>
+
+<div class="container">
+    <form action="{{ url_for('consumer_confirm') }}" method="post" id="confirmationForm">
+        <!-- Booking Summary -->
+        <div class="booking-summary">
+            <div class="disclaimer mb-3">
+                MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+            </div>
+            <h4><i class="fas fa-clipboard-list me-2"></i>Booking Summary</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Transport Type:</strong> {{ patient_data.transport_type|title }}</p>
+                    <p><strong>Patient:</strong> {{ patient_data.patient_name }}</p>
+                    <p><strong>Severity Level:</strong> {{ patient_data.severity }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>From:</strong> {{ patient_data.origin }}</p>
+                    <p><strong>To:</strong> {{ patient_data.destination }}</p>
+                    <p><strong>Date:</strong> {{ patient_data.get('date_time', 'ASAP') }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- VIP Cabin Upgrade -->
+        <div class="vip-upgrade-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4 class="text-warning mb-3">
+                        <i class="fas fa-crown me-2"></i>{{ vip_description.title }}
+                    </h4>
+                    <ul class="vip-features">
+                        {% for feature in vip_description.features %}
+                        <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="mt-3"><em>{{ vip_description.note }}</em></p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="vip_cabin" name="vip_cabin" value="1">
+                        <label class="form-check-label text-white" for="vip_cabin">
+                            <h3 class="text-warning">${{ "{:,}".format(vip_description.price) }}</h3>
+                            <p>Add VIP Cabin</p>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Family Seat Option -->
+        <div class="family-seat-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5><i class="fas fa-users me-2"></i>Family Seat Addition</h5>
+                    <p>Add a family member seat for emotional support during transport. Availability depends on aircraft type and patient condition.</p>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Affiliate will confirm family seat availability based on medical requirements and aircraft configuration.
+                    </small>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="family_seat" name="family_seat" value="1">
+                        <label class="form-check-label" for="family_seat">
+                            <h4 class="text-primary">${{ "{:,}".format(family_seat_cost) }}</h4>
+                            <p>Add Family Seat</p>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CareCredit Partnership -->
+        <div class="carecredit-section">
+            <h5><i class="fas fa-handshake me-2"></i>Payment & Financing Options</h5>
+            <div class="row">
+                <div class="col-md-8">
+                    <h6>CareCredit Medical Financing</h6>
+                    <p>Partner with CareCredit for low-interest medical payment plans:</p>
+                    <ul>
+                        <li>{{ carecredit_info.interest_rate }} promotional financing</li>
+                        <li>{{ carecredit_info.approval_time }} approval process</li>
+                        <li>Minimum amount: ${{ "{:,}".format(carecredit_info.minimum_amount) }}</li>
+                        <li>No prepayment penalties</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center">
+                    <a href="{{ carecredit_info.link }}" target="_blank" class="btn btn-info btn-lg">
+                        <i class="fas fa-external-link-alt me-2"></i>Apply for CareCredit
+                    </a>
+                    <small class="d-block mt-2">Opens in new window</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Options -->
+        <div class="payment-options">
+            <div class="payment-option" data-method="external">
+                <i class="fas fa-credit-card fa-2x mb-2 text-primary"></i>
+                <h6>Secure Payment Portal</h6>
+                <p>Redirect to secure payment system</p>
+                <small class="text-muted">No card details stored on our servers</small>
+            </div>
+            <div class="payment-option" data-method="carecredit">
+                <i class="fas fa-university fa-2x mb-2 text-success"></i>
+                <h6>CareCredit Financing</h6>
+                <p>Use existing CareCredit account</p>
+                <small class="text-muted">{{ carecredit_info.interest_rate }}</small>
+            </div>
+            <div class="payment-option" data-method="insurance">
+                <i class="fas fa-shield-alt fa-2x mb-2 text-warning"></i>
+                <h6>Insurance Billing</h6>
+                <p>Direct insurance submission</p>
+                <small class="text-muted">We handle the paperwork</small>
+            </div>
+        </div>
+        
+        <!-- Cost Breakdown -->
+        <div class="cost-breakdown">
+            <h5><i class="fas fa-calculator me-2"></i>Cost Breakdown</h5>
+            <div class="cost-line">
+                <span>Base Transport Cost:</span>
+                <span>${{ "{:,}".format(base_cost) }}</span>
+            </div>
+            {% if equipment_cost > 0 %}
+            <div class="cost-line">
+                <span>Medical Equipment:</span>
+                <span>${{ "{:,}".format(equipment_cost) }}</span>
+            </div>
+            {% endif %}
+            <div class="cost-line" id="familySeatCost" style="display: none;">
+                <span>Family Seat:</span>
+                <span>${{ "{:,}".format(family_seat_cost) }}</span>
+            </div>
+            <div class="cost-line" id="vipCabinCost" style="display: none;">
+                <span>VIP Cabin Upgrade:</span>
+                <span>${{ "{:,}".format(vip_description.price) }}</span>
+            </div>
+            <div class="cost-line total" id="totalCost">
+                <span>Total Cost:</span>
+                <span>${{ "{:,}".format(base_cost + equipment_cost) }}</span>
+            </div>
+        </div>
+        
+        <!-- Security Badges -->
+        <div class="security-badges">
+            <div class="security-badge">
+                <i class="fas fa-shield-alt me-1"></i>HIPAA Compliant
+            </div>
+            <div class="security-badge">
+                <i class="fas fa-lock me-1"></i>SSL Encrypted
+            </div>
+            <div class="security-badge">
+                <i class="fas fa-clock me-1"></i>30-day Data Purge
+            </div>
+        </div>
+        
+        <!-- Confirmation Button -->
+        <button type="submit" class="confirm-button">
+            <i class="fas fa-plane me-2"></i>Confirm Transport Booking
+        </button>
+        
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                By confirming, you agree to our terms of service and authorize the selected medical transport.
+                You will receive confirmation and provider contact details immediately after booking.
+            </small>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const familySeatCheckbox = document.getElementById('family_seat');
+    const vipCabinCheckbox = document.getElementById('vip_cabin');
+    const totalCostElement = document.getElementById('totalCost').querySelector('span:last-child');
+    
+    let baseCost = {{ base_cost + equipment_cost }};
+    const familySeatCost = {{ family_seat_cost }};
+    const vipCabinCost = {{ vip_description.price }};
+    
+    function updateTotalCost() {
+        let total = baseCost;
+        
+        if (familySeatCheckbox.checked) {
+            total += familySeatCost;
+            document.getElementById('familySeatCost').style.display = 'flex';
+        } else {
+            document.getElementById('familySeatCost').style.display = 'none';
+        }
+        
+        if (vipCabinCheckbox.checked) {
+            total += vipCabinCost;
+            document.getElementById('vipCabinCost').style.display = 'flex';
+        } else {
+            document.getElementById('vipCabinCost').style.display = 'none';
+        }
+        
+        totalCostElement.textContent = '$' + total.toLocaleString();
+    }
+    
+    familySeatCheckbox.addEventListener('change', updateTotalCost);
+    vipCabinCheckbox.addEventListener('change', updateTotalCost);
+    
+    // Payment method selection
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Store selected payment method
+            const method = this.dataset.method;
+            console.log('Payment method selected:', method);
+        });
+    });
+    
+    // Form submission
+    document.getElementById('confirmationForm').addEventListener('submit', function(e) {
+        const selectedPayment = document.querySelector('.payment-option.selected');
+        if (!selectedPayment) {
+            e.preventDefault();
+            alert('Please select a payment method before confirming your booking.');
+            return;
+        }
+        
+        // Add loading state to button
+        const submitBtn = document.querySelector('.confirm-button');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Booking...';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %}

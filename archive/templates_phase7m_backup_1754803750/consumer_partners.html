@@ -1,0 +1,337 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Partner Program - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.partner-hero {
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    padding: 5rem 0;
+    text-align: center;
+}
+
+.benefits-section {
+    padding: 4rem 0;
+    background: #f8f9fa;
+}
+
+.benefit-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.benefit-icon {
+    font-size: 3rem;
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.stats-showcase {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.stat-highlight {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.infographic-section {
+    padding: 4rem 0;
+}
+
+.infographic-item {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #007bff;
+}
+
+.roi-calculator {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.partnership-levels {
+    background: white;
+    border-radius: 15px;
+    padding: 3rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.level-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.bronze { background: #cd7f32; color: white; }
+.silver { background: #c0c0c0; color: black; }
+.gold { background: #ffd700; color: black; }
+.platinum { background: #e5e4e2; color: black; }
+
+.cta-partner {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Partner Hero -->
+<div class="partner-hero">
+    <div class="container">
+        <h1 class="display-4 mb-4">Partner with MediFly</h1>
+        <p class="lead mb-4">Join our network of trusted medical transport providers and grow your business</p>
+        <div class="hero-stats row mt-5">
+            <div class="col-md-4">
+                <h3>{{ stats.partner_count }}</h3>
+                <p>Active Partners</p>
+            </div>
+            <div class="col-md-4">
+                <h3>{{ stats.cost_reduction }}</h3>
+                <p>Sales Cost Reduction</p>
+            </div>
+            <div class="col-md-4">
+                <h3>{{ stats.volume_increase }}</h3>
+                <p>Average Volume Growth</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Benefits Section -->
+<div class="benefits-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Partner with MediFly?</h2>
+        <div class="row">
+            {% for benefit in benefits %}
+            <div class="col-md-6 col-lg-3">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-{{ benefit.icon }}"></i>
+                    </div>
+                    <h4>{{ benefit.title }}</h4>
+                    <p>{{ benefit.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Stats Showcase -->
+<div class="stats-showcase">
+    <div class="container">
+        <h2 class="mb-5">Proven Results for Our Partners</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-highlight">{{ stats.cost_reduction }}</div>
+                <h5>Reduction in Sales Costs</h5>
+                <p>Less time spent on lead generation</p>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-highlight">{{ stats.volume_increase }}</div>
+                <h5>Volume Growth</h5>
+                <p>Average increase in bookings</p>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-highlight">{{ stats.partner_count }}</div>
+                <h5>Network Partners</h5>
+                <p>Trusted providers nationwide</p>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-highlight">{{ stats.success_stories }}</div>
+                <h5>Success Stories</h5>
+                <p>Successful transports completed</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Infographic Section -->
+<div class="infographic-section">
+    <div class="container">
+        <h2 class="text-center mb-5">How Partnership Works</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="infographic-item">
+                    <h4><i class="fas fa-search text-primary me-2"></i>Step 1: Lead Generation</h4>
+                    <p>We generate qualified leads through our platform and marketing efforts, sending them directly to you based on your service area and capabilities.</p>
+                </div>
+                
+                <div class="infographic-item">
+                    <h4><i class="fas fa-handshake text-success me-2"></i>Step 3: Service Delivery</h4>
+                    <p>You provide your excellent medical transport service while we handle customer support and satisfaction tracking.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="infographic-item">
+                    <h4><i class="fas fa-calculator text-warning me-2"></i>Step 2: Quote & Book</h4>
+                    <p>Submit competitive quotes through our platform. When customers book, payment is processed securely with transparent fee structure.</p>
+                </div>
+                
+                <div class="infographic-item">
+                    <h4><i class="fas fa-chart-line text-info me-2"></i>Step 4: Growth & Rewards</h4>
+                    <p>Earn tier status with increased referrals, unlock priority placement, and access exclusive partnership benefits.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROI Calculator -->
+<div class="container">
+    <div class="roi-calculator">
+        <h3><i class="fas fa-calculator me-2"></i>Partnership ROI Calculator</h3>
+        <p>See how much you could save and earn as a MediFly partner:</p>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Current Monthly Leads</h5>
+                <div class="h4 text-primary">12 leads</div>
+                <small>Average for similar providers</small>
+            </div>
+            
+            <div class="col-md-4">
+                <h5>With MediFly Partnership</h5>
+                <div class="h4 text-success">30+ leads</div>
+                <small>150% increase potential</small>
+            </div>
+            
+            <div class="col-md-4">
+                <h5>Sales Cost Savings</h5>
+                <div class="h4 text-warning">$15,000/month</div>
+                <small>Reduced marketing spend</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Partnership Levels -->
+<div class="container">
+    <div class="partnership-levels">
+        <h3 class="text-center mb-4">Partnership Tier System</h3>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="level-bronze mb-4">
+                    <span class="level-badge bronze">Bronze (10+ referrals)</span>
+                    <ul class="list-unstyled mt-3">
+                        <li><i class="fas fa-check text-success me-2"></i>Priority support access</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Monthly performance reports</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Basic dashboard access</li>
+                    </ul>
+                </div>
+                
+                <div class="level-gold">
+                    <span class="level-badge gold">Gold (50+ referrals)</span>
+                    <ul class="list-unstyled mt-3">
+                        <li><i class="fas fa-check text-success me-2"></i>Front-page placement priority</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Enhanced marketing support</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Quarterly business reviews</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="level-silver mb-4">
+                    <span class="level-badge silver">Silver (25+ referrals)</span>
+                    <ul class="list-unstyled mt-3">
+                        <li><i class="fas fa-check text-success me-2"></i>Enhanced profile visibility</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Top referrer badge</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Free month extensions</li>
+                    </ul>
+                </div>
+                
+                <div class="level-platinum">
+                    <span class="level-badge platinum">Platinum (100+ referrals)</span>
+                    <ul class="list-unstyled mt-3">
+                        <li><i class="fas fa-check text-success me-2"></i>Exclusive partnership events</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Revenue share bonuses</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Co-marketing opportunities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Trust Builders -->
+<div class="container my-5">
+    <div class="alert alert-info">
+        <h4><i class="fas fa-shield-alt me-2"></i>Partnership Security & Compliance</h4>
+        <div class="row">
+            <div class="col-md-4">
+                <strong>HIPAA Compliant</strong>
+                <p>All data handling meets strict medical privacy standards</p>
+            </div>
+            <div class="col-md-4">
+                <strong>Secure Payments</strong>
+                <p>Bank-level encryption for all financial transactions</p>
+            </div>
+            <div class="col-md-4">
+                <strong>Verified Network</strong>
+                <p>All partners undergo thorough certification verification</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="cta-partner">
+    <div class="container">
+        <h2 class="mb-4">Ready to Join Our Network?</h2>
+        <p class="lead mb-4">Start growing your medical transport business with qualified leads and enhanced visibility</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <a href="#" class="btn btn-light btn-lg w-100">
+                            <i class="fas fa-file-contract me-2"></i>Download Partnership MOU
+                        </a>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Partner Portal Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <p>Questions about partnership? Contact our business development team:</p>
+            <p><strong>partnerships@medifly.com</strong> | <strong>1-800-PARTNER</strong></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

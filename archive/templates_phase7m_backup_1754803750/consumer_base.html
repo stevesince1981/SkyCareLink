@@ -21,31 +21,37 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Top Transparent Click-Through Announcement Banners -->
-    {% if active_announcements or session.get('user_role') == 'admin' %}
-    <div class="annc-wrapper">
-        {% if active_announcements %}
-            {% for announcement in active_announcements %}
-            <div class="annc {{ announcement.style or 'info' }}">
-                {{ announcement.message }}
-                {% if announcement.countdown_target and not announcement.countdown_expired %}
-                    <span class="countdown-timer" data-target="{{ announcement.countdown_target }}">
-                        ⏰ {{ announcement.countdown_display }}
-                    </span>
-                {% elif announcement.countdown_expired %}
-                    <span>✅ We're live!</span>
+    <!-- Global Announcement Banners -->
+    {% if active_announcements %}
+        {% for announcement in active_announcements %}
+        <div class="announcement-banner bg-{{ announcement.style or 'info' }} text-white py-2">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="announcement-content">
+                    <strong>{{ announcement.title or 'Announcement' }}:</strong>
+                    {{ announcement.message }}
+                    {% if announcement.countdown_target and not announcement.countdown_expired %}
+                        <span class="countdown-timer ms-3" data-target="{{ announcement.countdown_target }}">
+                            <i class="fas fa-clock me-1"></i>{{ announcement.countdown_display }}
+                        </span>
+                    {% elif announcement.countdown_expired %}
+                        <span class="ms-3 text-success"><i class="fas fa-check me-1"></i>We're live!</span>
+                    {% endif %}
+                </div>
+                {% if session.get('user_role') == 'admin' %}
+                <div class="admin-debug-badge">
+                    <small class="badge bg-secondary">Loaded: {{ active_announcements|length }}</small>
+                </div>
                 {% endif %}
             </div>
-            {% endfor %}
-        {% endif %}
-        
-        {% if session.get('user_role') == 'admin' %}
-        <!-- Admin debug badge - small, non-intrusive -->
-        <div style="position:absolute;top:2px;right:10px;font-size:10px;color:#666;pointer-events:auto;">
-            Announcements loaded: {{ active_announcements|length }}
         </div>
-        {% endif %}
-    </div>
+        {% endfor %}
+    {% elif session.get('user_role') == 'admin' %}
+        <!-- Debug badge for admins when no announcements -->
+        <div class="bg-secondary text-white py-1">
+            <div class="container">
+                <small class="badge bg-dark">Announcements loaded: 0</small>
+            </div>
+        </div>
     {% endif %}
 
     <!-- Bubble-inspired Navigation -->

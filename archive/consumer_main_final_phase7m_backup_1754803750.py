@@ -665,110 +665,81 @@ def admin_announcements():
     return render_template('admin_announcements.html', announcements_data=announcements_data)
 
 @consumer_app.route('/admin/announcements', methods=['POST'])
-def admin_announcements_create():
-    """Create new announcement - CRUD CREATE"""
+def admin_announcements_post():
+    """Create or update announcements"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
         return redirect(url_for('consumer_index'))
     
     try:
+        action = request.form.get('action', 'create')
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
         
-        # Schema normalization on save
-        new_announcement = {
-            'id': str(uuid.uuid4()),  # UUID instead of incremental ID
-            'message': request.form.get('message', '').strip(),
-            'style': request.form.get('style', 'info'),  # info|warn|success
-            'is_active': bool(request.form.get('is_active', 'true').lower() in ('true', '1', 'on')),
-            'start_at': request.form.get('start_at'),    # ISO 8601 format
-            'end_at': request.form.get('end_at'),        # ISO 8601 format
-            'countdown_target': request.form.get('countdown_target', '').strip() or None,
-            'countdown_target_tz': 'America/New_York',
-            'created_at': datetime.now().isoformat(),
-            'updated_at': datetime.now().isoformat()
-        }
-        announcements_data['announcements'].append(new_announcement)
+        if action == 'create':
+            # Schema normalization on save
+            new_announcement = {
+                'id': f"ann_{len(announcements_data['announcements']) + 1:03d}",
+                'message': request.form.get('message', '').strip(),
+                'style': request.form.get('style', 'info'),  # info|warn|success
+                'start_at': request.form.get('start_at'),    # ISO 8601 format
+                'end_at': request.form.get('end_at'),        # ISO 8601 format
+                'countdown_target': request.form.get('countdown_target', '').strip() or None,
+                'countdown_target_tz': 'America/New_York',
+                'is_active': True,  # Boolean, not string
+                'created_at': datetime.now().isoformat(),
+                'created_by': session.get('username', 'admin')
+            }
+            announcements_data['announcements'].append(new_announcement)
+            flash('Announcement created successfully.', 'success')
+            
+        elif action == 'toggle':
+            announcement_id = request.form.get('announcement_id')
+            for announcement in announcements_data['announcements']:
+                if announcement['id'] == announcement_id:
+                    announcement['is_active'] = not announcement.get('is_active', True)
+                    status = 'activated' if announcement['is_active'] else 'deactivated'
+                    flash(f'Announcement {status} successfully.', 'success')
+                    break
         
         save_json_data('data/announcements.json', announcements_data)
+        return redirect(url_for('admin_announcements'))
+        
+    except Exception as e:
+        logging.error(f"Announcement management error: {e}")
+        flash('Error managing announcement.', 'error')
+        return redirect(url_for('admin_announcements'))
+
+@consumer_app.route('/admin/create_announcement', methods=['POST'])
+def admin_create_announcement():
+    """Create new announcement with countdown"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('consumer_index'))
+    
+    try:
+        new_announcement = {
+            'id': f"ann_{len(load_json_data('data/announcements.json', {'announcements': []})['announcements']) + 1:03d}",
+            'message': request.form.get('message'),
+            'style': request.form.get('style'),
+            'start_at': request.form.get('start_at'),
+            'end_at': request.form.get('end_at'),
+            'countdown_target': request.form.get('countdown_target'),
+            'active': True,
+            'created_at': datetime.now().isoformat(),
+            'created_by': session.get('username', 'admin')
+        }
+        
+        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
+        announcements_data['announcements'].append(new_announcement)
+        save_json_data('data/announcements.json', announcements_data)
+        
         flash('Announcement created successfully.', 'success')
         return redirect(url_for('admin_announcements'))
         
     except Exception as e:
-        logging.error(f"Announcement creation error: {e}")
+        logging.error(f"Create announcement error: {e}")
         flash('Error creating announcement.', 'error')
         return redirect(url_for('admin_announcements'))
-
-@consumer_app.route('/admin/announcements/<announcement_id>', methods=['POST'])
-def admin_announcements_update(announcement_id):
-    """Update existing announcement - CRUD UPDATE"""
-    if session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
-    
-    try:
-        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-        
-        for announcement in announcements_data['announcements']:
-            if announcement['id'] == announcement_id:
-                # Update fields
-                announcement['message'] = request.form.get('message', announcement.get('message', '')).strip()
-                announcement['style'] = request.form.get('style', announcement.get('style', 'info'))
-                announcement['is_active'] = bool(request.form.get('is_active', 'false').lower() in ('true', '1', 'on'))
-                announcement['start_at'] = request.form.get('start_at', announcement.get('start_at'))
-                announcement['end_at'] = request.form.get('end_at', announcement.get('end_at'))
-                announcement['countdown_target'] = request.form.get('countdown_target', '').strip() or None
-                announcement['updated_at'] = datetime.now().isoformat()
-                
-                save_json_data('data/announcements.json', announcements_data)
-                status = 'activated' if announcement['is_active'] else 'deactivated'
-                flash(f'Announcement updated and {status} successfully.', 'success')
-                return redirect(url_for('admin_announcements'))
-        
-        flash('Announcement not found.', 'error')
-        return redirect(url_for('admin_announcements'))
-        
-    except Exception as e:
-        logging.error(f"Announcement update error: {e}")
-        flash('Error updating announcement.', 'error')
-        return redirect(url_for('admin_announcements'))
-
-@consumer_app.route('/admin/announcements/<announcement_id>/delete', methods=['POST'])
-def admin_announcements_delete(announcement_id):
-    """Delete announcement permanently - CRUD DELETE"""
-    if session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
-    
-    try:
-        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-        original_count = len(announcements_data['announcements'])
-        
-        announcements_data['announcements'] = [
-            ann for ann in announcements_data['announcements'] 
-            if ann['id'] != announcement_id
-        ]
-        
-        if len(announcements_data['announcements']) < original_count:
-            save_json_data('data/announcements.json', announcements_data)
-            flash('Announcement deleted successfully.', 'success')
-        else:
-            flash('Announcement not found.', 'error')
-            
-        return redirect(url_for('admin_announcements'))
-        
-    except Exception as e:
-        logging.error(f"Announcement deletion error: {e}")
-        flash('Error deleting announcement.', 'error')
-        return redirect(url_for('admin_announcements'))
-
-# Legacy route redirects - Phase 7.M
-@consumer_app.route('/request')
-@consumer_app.route('/transport_request')
-@consumer_app.route('/consumer_request')
-@consumer_app.route('/request_transport')
-def legacy_request_redirects():
-    """301 Redirect legacy request routes to canonical /intake"""
-    return redirect(url_for('consumer_intake'), code=301)
 
 @consumer_app.route('/admin/delist_affiliate', methods=['POST'])
 def admin_delist_affiliate():

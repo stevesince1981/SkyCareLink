@@ -1,0 +1,864 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}MediFly - Critical Medical Transport Network{% endblock %}
+
+{% block head %}
+<style>
+/* Bubble-inspired UI with all existing features */
+:root {
+    --primary-blue: #007bff;
+    --secondary-blue: #6c757d;
+    --success-green: #28a745;
+    --warning-orange: #fd7e14;
+    --danger-red: #dc3545;
+    --light-gray: #f8f9fa;
+    --border-light: #e9ecef;
+    --text-muted: #6c757d;
+    --pastel-blue: #e3f2fd;
+    --pastel-pink: #fce4ec;
+    --gold: #ffd700;
+    --bubble-primary: #1976d2;
+    --bubble-secondary: #42a5f5;
+    --bubble-accent: #ff4081;
+}
+
+/* Hero Section with Plane Animation */
+.hero-section {
+    background: linear-gradient(135deg, var(--bubble-primary) 0%, var(--bubble-secondary) 100%);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.hero-section::before {
+    content: '✈️';
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.15;
+    right: 10%;
+    top: 20%;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Primary CTAs */
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.btn-primary-cta {
+    background: var(--bubble-accent);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+}
+
+.btn-primary-cta:hover {
+    background: #e91e63;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 64, 129, 0.4);
+}
+
+.btn-secondary-cta {
+    background: transparent;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-cta:hover {
+    background: white;
+    color: var(--bubble-primary);
+}
+
+/* Features Icons Section */
+.features-section {
+    padding: 4rem 0;
+    background: white;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2rem 1rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    background: var(--pastel-blue);
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--bubble-primary);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Workflow Steps */
+.workflow-section {
+    padding: 4rem 0;
+    background: var(--light-gray);
+}
+
+.workflow-step {
+    text-align: center;
+    padding: 2rem 1rem;
+    position: relative;
+}
+
+.workflow-step::after {
+    content: '→';
+    position: absolute;
+    right: -1rem;
+    top: 50%;
+    font-size: 2rem;
+    color: var(--bubble-primary);
+    transform: translateY(-50%);
+}
+
+.workflow-step:last-child::after {
+    display: none;
+}
+
+.step-number {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background: var(--bubble-primary);
+    color: white;
+    border-radius: 50%;
+    line-height: 60px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+/* Transport Options with Popup Integration */
+.transport-options {
+    padding: 4rem 0;
+    background: white;
+}
+
+.transport-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 3px solid transparent;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.transport-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+
+.transport-card.critical {
+    border-color: var(--danger-red);
+}
+
+.transport-card.non-critical {
+    border-color: var(--primary-blue);
+}
+
+.transport-card.mvp {
+    border-color: var(--gold);
+    background: linear-gradient(145deg, #fff 0%, #fffbf0 100%);
+}
+
+.transport-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.transport-card .critical .transport-icon {
+    color: var(--danger-red);
+}
+
+.transport-card .non-critical .transport-icon {
+    color: var(--primary-blue);
+}
+
+.transport-card .mvp .transport-icon {
+    color: var(--gold);
+}
+
+/* AI Command Box */
+.ai-command-section {
+    background: var(--pastel-blue);
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.ai-command-box {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.ai-command-input {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    outline: none;
+}
+
+.ai-command-input:focus {
+    box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3);
+}
+
+.ai-send-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bubble-primary);
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Metrics Cards */
+.metrics-section {
+    padding: 3rem 0;
+    background: var(--light-gray);
+}
+
+.metric-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.metric-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--bubble-primary);
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    color: var(--text-muted);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Provider CTA Section */
+.provider-cta-section {
+    background: linear-gradient(135deg, var(--success-green) 0%, #20c997 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+/* Popup Modal Styles */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: var(--bubble-primary);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .workflow-step::after {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Plane Image -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <h1 class="hero-title">Critical Medical Transport Network</h1>
+                <p class="hero-subtitle">Connect with verified air medical providers for urgent patient transport. Get multiple quotes, compare options, and secure the best care for your loved ones.</p>
+                
+                <div class="cta-buttons">
+                    <button class="btn btn-primary-cta" onclick="openIntakeModal()">
+                        <i class="fas fa-plus-circle me-2"></i>Request Quotes
+                    </button>
+                    <a href="{{ url_for('partner_dashboard') }}" class="btn btn-secondary-cta">
+                        <i class="fas fa-helicopter me-2"></i>Provider Portal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Icons Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="section-title">Why Choose MediFly</h2>
+                <p class="text-muted">Trusted by families and hospitals nationwide</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-clock feature-icon"></i>
+                    <h4>24/7 Availability</h4>
+                    <p>Round-the-clock emergency response and booking support for critical situations</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-network-wired feature-icon"></i>
+                    <h4>Verified Network</h4>
+                    <p>Pre-screened medical transport providers with proper certifications and insurance</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-calculator feature-icon"></i>
+                    <h4>Multiple Quotes</h4>
+                    <p>Compare pricing and capabilities from multiple providers to find the best option</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Workflow Steps -->
+<section class="workflow-section">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="section-title">How It Works</h2>
+                <p class="text-muted">Simple 4-step process to secure medical transport</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <h5>Submit Request</h5>
+                    <p>Provide patient details, medical condition, and transport requirements</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <h5>Receive Quotes</h5>
+                    <p>Get competitive quotes from verified medical transport providers</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <h5>Compare & Select</h5>
+                    <p>Review provider capabilities, pricing, and availability details</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="workflow-step">
+                    <div class="step-number">4</div>
+                    <h5>Secure Transport</h5>
+                    <p>Book confirmed transport with real-time tracking and updates</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Transport Options -->
+<section class="transport-options">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="section-title">Transport Options</h2>
+                <p class="text-muted">Choose the service level that matches your needs</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="transport-card critical" onclick="openIntakeModal('critical')">
+                    <i class="fas fa-ambulance transport-icon"></i>
+                    <h4>Critical Transport</h4>
+                    <p>Emergency same-day transport with 20% urgency fee. Weather risk warnings included.</p>
+                    <div class="mt-3">
+                        <span class="badge bg-danger">Same Day</span>
+                        <span class="badge bg-warning">+20% Fee</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="transport-card non-critical" onclick="openIntakeModal('non-critical')">
+                    <i class="fas fa-helicopter transport-icon"></i>
+                    <h4>Non-Critical Transport</h4>
+                    <p>Planned transport with family accommodation options and flexible scheduling.</p>
+                    <div class="mt-3">
+                        <span class="badge bg-primary">Planned</span>
+                        <span class="badge bg-info">Family Friendly</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="transport-card mvp" onclick="openSubscribeModal()">
+                    <i class="fas fa-star transport-icon"></i>
+                    <h4>MVP Membership</h4>
+                    <p>$49/month for 10% discounts, priority queue, and unmasked provider names.</p>
+                    <div class="mt-3">
+                        <span class="badge bg-warning">10% Off</span>
+                        <span class="badge bg-success">Priority</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Command Section -->
+<section class="ai-command-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <h3 class="mb-4">AI Transport Planning</h3>
+                <p class="mb-4">Describe your transport needs in natural language</p>
+                
+                <div class="ai-command-box">
+                    <input type="text" class="ai-command-input" 
+                           placeholder="e.g., 'Help me build a flight for grandma from Orlando to NYC'"
+                           onkeypress="handleAICommand(event)">
+                    <button class="ai-send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="mt-3">
+                    <small class="text-muted">
+                        Try: "Emergency transport", "Family-friendly options", "MVP membership info"
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Metrics Cards -->
+<section class="metrics-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="metric-card">
+                    <div class="metric-number">2,847</div>
+                    <div class="metric-label">Successful Transports</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="metric-card">
+                    <div class="metric-number">156</div>
+                    <div class="metric-label">Verified Providers</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="metric-card">
+                    <div class="metric-number">24/7</div>
+                    <div class="metric-label">Support Available</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="metric-card">
+                    <div class="metric-number">98.5%</div>
+                    <div class="metric-label">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Provider CTA Section -->
+<section class="provider-cta-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <h2 class="mb-4">Medical Transport Providers</h2>
+                <p class="mb-4">Join our network and access new booking opportunities with transparent pricing</p>
+                <a href="{{ url_for('partner_dashboard') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-handshake me-2"></i>Join Provider Network
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Intake Modal -->
+<div class="modal fade" id="intakeModal" tabindex="-1" aria-labelledby="intakeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="intakeModalLabel">
+                    <i class="fas fa-clipboard-list me-2"></i>Transport Request
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="intakeForm" method="POST" action="{{ url_for('consumer_intake') }}">
+                    <!-- Transport Type Selection -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Transport Type</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="transport_type" value="critical" id="criticalRadio">
+                                    <label class="form-check-label" for="criticalRadio">
+                                        <strong>Critical</strong><br>
+                                        <small class="text-muted">Same-day urgency</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="transport_type" value="non-critical" id="nonCriticalRadio" checked>
+                                    <label class="form-check-label" for="nonCriticalRadio">
+                                        <strong>Non-Critical</strong><br>
+                                        <small class="text-muted">Planned transport</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="transport_type" value="mvp" id="mvpRadio">
+                                    <label class="form-check-label" for="mvpRadio">
+                                        <strong>MVP Member</strong><br>
+                                        <small class="text-muted">Priority service</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Patient Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="patient_name" class="form-label">Patient Name</label>
+                            <input type="text" class="form-control" id="patient_name" name="patient_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="patient_age" class="form-label">Patient Age</label>
+                            <input type="number" class="form-control" id="patient_age" name="patient_age" min="0" max="150" required>
+                        </div>
+                    </div>
+
+                    <!-- Locations -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="origin" class="form-label">From (Origin)</label>
+                            <input type="text" class="form-control" id="origin" name="origin" 
+                                   placeholder="Hospital, airport, or address" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="destination" class="form-label">To (Destination)</label>
+                            <input type="text" class="form-control" id="destination" name="destination" 
+                                   placeholder="Hospital, airport, or address" required>
+                        </div>
+                    </div>
+
+                    <!-- Medical Condition -->
+                    <div class="mb-3">
+                        <label for="severity" class="form-label">Medical Condition Severity (1-10)</label>
+                        <input type="range" class="form-range" id="severity" name="severity" min="1" max="10" value="5">
+                        <div class="d-flex justify-content-between">
+                            <small>Stable</small>
+                            <small>Critical</small>
+                        </div>
+                    </div>
+
+                    <!-- Equipment Needed -->
+                    <div class="mb-3">
+                        <label class="form-label">Medical Equipment Needed</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="equipment" value="ventilator" id="ventilator">
+                                    <label class="form-check-label" for="ventilator">
+                                        Ventilator (+$5,000)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="equipment" value="ecmo" id="ecmo">
+                                    <label class="form-check-label" for="ecmo">
+                                        ECMO (+$10,000)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="equipment" value="incubator" id="incubator">
+                                    <label class="form-check-label" for="incubator">
+                                        Incubator (+$3,000)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="equipment" value="escort" id="escort">
+                                    <label class="form-check-label" for="escort">
+                                        Medical Escort (+$2,000)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="equipment" value="oxygen" id="oxygen">
+                                    <label class="form-check-label" for="oxygen">
+                                        Oxygen Support (+$1,000)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="equipment" value="other" id="other">
+                                    <label class="form-check-label" for="other">
+                                        Other (specify below)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="text" class="form-control" name="equipment_other" placeholder="Specify other equipment needed">
+                        </div>
+                    </div>
+
+                    <!-- Same Day Option -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="same_day" id="same_day">
+                            <label class="form-check-label" for="same_day">
+                                <strong>Same-Day Transport</strong> (+20% urgency fee)
+                                <br><small class="text-warning">Weather risk warnings apply</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Preferred Date/Time -->
+                    <div class="mb-3">
+                        <label for="date_time" class="form-label">Preferred Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="date_time" name="date_time">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="intakeForm" class="btn btn-primary">Get Quotes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscribe Modal -->
+<div class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subscribeModalLabel">
+                    <i class="fas fa-star me-2"></i>MVP Membership
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <h4 class="text-primary">Join MVP for $49/month</h4>
+                    <p class="text-muted">Get exclusive benefits and priority service</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5>Monthly</h5>
+                                <h3 class="text-primary">$49</h3>
+                                <p>per month</p>
+                                <a href="{{ url_for('subscribe', plan='monthly') }}" class="btn btn-primary">Choose Monthly</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <h5>Yearly <span class="badge bg-warning">Save $89</span></h5>
+                                <h3 class="text-primary">$499</h3>
+                                <p>per year</p>
+                                <a href="{{ url_for('subscribe', plan='yearly') }}" class="btn btn-warning">Choose Yearly</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4">MVP Benefits:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>10% discount on all bookings</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Priority booking queue</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Unmasked provider names</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Early access to beta features</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Dedicated family advocate</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// AI Command Processing
+function handleAICommand(event) {
+    if (event.key === 'Enter') {
+        const command = event.target.value.toLowerCase();
+        
+        // Parse command and redirect accordingly
+        if (command.includes('orlando') && command.includes('nyc')) {
+            openIntakeModal('non-critical');
+            // Pre-fill form
+            setTimeout(() => {
+                document.getElementById('origin').value = 'Orlando International Airport';
+                document.getElementById('destination').value = 'NYC LaGuardia Airport';
+            }, 500);
+        } else if (command.includes('grandma') || command.includes('grandmother')) {
+            openIntakeModal('non-critical');
+            setTimeout(() => {
+                document.getElementById('patient_age').value = '75';
+                document.getElementById('severity').value = '3';
+            }, 500);
+        } else if (command.includes('emergency') || command.includes('urgent')) {
+            openIntakeModal('critical');
+            setTimeout(() => {
+                document.getElementById('same_day').checked = true;
+                document.getElementById('severity').value = '8';
+            }, 500);
+        } else if (command.includes('mvp') || command.includes('membership')) {
+            openSubscribeModal();
+        } else {
+            // Show help popup
+            alert('I can help you with:\n• "Help me build a flight from Orlando to NYC"\n• "What options are good for my grandmother?"\n• "I need emergency transport"\n• "Tell me about MVP membership"');
+        }
+        
+        event.target.value = '';
+    }
+}
+
+// Modal Functions
+function openIntakeModal(type = 'non-critical') {
+    const modal = new bootstrap.Modal(document.getElementById('intakeModal'));
+    modal.show();
+    
+    // Set transport type
+    if (type === 'critical') {
+        document.getElementById('criticalRadio').checked = true;
+    } else if (type === 'mvp') {
+        document.getElementById('mvpRadio').checked = true;
+    } else {
+        document.getElementById('nonCriticalRadio').checked = true;
+    }
+}
+
+function openSubscribeModal() {
+    const modal = new bootstrap.Modal(document.getElementById('subscribeModal'));
+    modal.show();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('MediFly Bubble-inspired Consumer MVP Enhanced Features Loaded');
+    console.log('AI command system initialized');
+    console.log('Popup modals ready');
+    
+    // Add transport type analytics
+    document.querySelectorAll('.transport-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const type = this.classList.contains('critical') ? 'critical' : 
+                        this.classList.contains('mvp') ? 'mvp' : 'non-critical';
+            console.log('Transport type selected:', type);
+        });
+    });
+});
+</script>
+{% endblock %}

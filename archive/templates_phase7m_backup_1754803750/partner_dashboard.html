@@ -1,0 +1,277 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Partner Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.partner-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.stats-cards {
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.bookings-table {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.priority-badge {
+    background: #ffd700;
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    animation: priorityGlow 2s infinite;
+}
+
+@keyframes priorityGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+}
+
+.mou-section {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.revenue-filter {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Partner Header -->
+    <div class="partner-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="fas fa-tachometer-alt me-2"></i>Provider Dashboard</h1>
+                <p class="mb-0">Welcome back, {{ session.contact_name }}!</p>
+            </div>
+            <div class="col-md-4 text-end">
+                {% if stats.priority_status %}
+                <span class="priority-badge">
+                    <i class="fas fa-crown me-1"></i>Priority Partner
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.total_bookings }}</div>
+                    <h6>Total Bookings</h6>
+                    <small class="text-muted">This month</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">${{ "{:,}".format(stats.total_revenue) }}</div>
+                    <h6>Total Revenue</h6>
+                    <small class="text-muted">Gross earnings</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.success_rate }}</div>
+                    <h6>Success Rate</h6>
+                    <small class="text-muted">Completed transports</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">90%</div>
+                    <h6>Revenue Share</h6>
+                    <small class="text-muted">Priority partner rate</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Filter -->
+    <div class="revenue-filter">
+        <h4><i class="fas fa-filter me-2"></i>Revenue Filtering</h4>
+        <form class="row g-3">
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="start_date" value="2025-08-01">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="end_date" value="2025-08-31">
+            </div>
+            <div class="col-md-3">
+                <label for="status_filter" class="form-label">Status</label>
+                <select class="form-control" id="status_filter">
+                    <option value="">All Status</option>
+                    <option value="completed">Completed</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-1"></i>Filter Results
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="bookings-table">
+        <h4><i class="fas fa-list-alt me-2"></i>Recent Bookings</h4>
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Route</th>
+                        <th>Revenue</th>
+                        <th>MediFly Share</th>
+                        <th>Your Share</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.date }}</td>
+                        <td>{{ booking.origin }} → {{ booking.destination }}</td>
+                        <td>${{ "{:,}".format(booking.revenue) }}</td>
+                        <td>${{ "{:,}".format(booking.revenue * 0.1) }}</td>
+                        <td>${{ "{:,}".format(booking.revenue * 0.9) }}</td>
+                        <td>
+                            {% if booking.status == 'completed' %}
+                            <span class="badge bg-success">Completed</span>
+                            {% elif booking.status == 'active' %}
+                            <span class="badge bg-primary">Active</span>
+                            {% else %}
+                            <span class="badge bg-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MOU Section -->
+    <div class="mou-section">
+        <h4><i class="fas fa-file-contract me-2"></i>Partnership Agreement (MOU)</h4>
+        <p>Access your full Memorandum of Understanding and partnership documentation.</p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <a href="#" class="btn btn-primary btn-lg w-100 mb-2">
+                    <i class="fas fa-download me-2"></i>Download Full MOU
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="#" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                    <i class="fas fa-envelope me-2"></i>Email MOU Copy
+                </a>
+            </div>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <h6><i class="fas fa-handshake me-2"></i>Priority Partner Benefits</h6>
+            <ul class="mb-0">
+                <li><strong>Enhanced Revenue Share:</strong> 90% vs standard 85%</li>
+                <li><strong>Front-Page Placement:</strong> Priority visibility in search results</li>
+                <li><strong>Performance Bonuses:</strong> Quarterly incentives for volume</li>
+                <li><strong>Dedicated Support:</strong> Direct line to business development team</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="bookings-table">
+        <h4><i class="fas fa-chart-bar me-2"></i>Performance Analytics</h4>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="revenueChart" width="400" height="200"></canvas>
+            </div>
+            <div class="col-md-6">
+                <canvas id="bookingChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h6>Key Performance Indicators</h6>
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Average Deal Size:</strong> ${{ "{:,}".format(stats.total_revenue // stats.total_bookings) }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Conversion Rate:</strong> 85%
+                </div>
+                <div class="col-md-3">
+                    <strong>Customer Rating:</strong> 4.8/5
+                </div>
+                <div class="col-md-3">
+                    <strong>Response Time:</strong> 2.1 hours
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mock charts for demo (in production, use Chart.js with real data)
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Partner dashboard analytics loaded');
+    
+    // Revenue filtering
+    document.querySelector('.revenue-filter button').addEventListener('click', function() {
+        console.log('Filtering revenue data...');
+        // In production, this would make an AJAX call to filter the data
+        alert('Revenue filter applied - showing filtered results');
+    });
+});
+</script>
+{% endblock %}

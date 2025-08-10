@@ -1,0 +1,286 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Admin Fee Adjustment - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.admin-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.admin-header {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.fee-adjustment-form {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.current-fee-display {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.fee-amount {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.impact-calculator {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.security-notice {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+}
+
+.adjustment-history {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.revenue-impact {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-container">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <h1><i class="fas fa-cog me-2"></i>Fee Administration</h1>
+            <p class="mb-0">Adjust non-refundable MediFly service fee</p>
+        </div>
+
+        <!-- Current Fee Display -->
+        <div class="current-fee-display">
+            <h3>Current Non-Refundable Fee</h3>
+            <div class="fee-amount">${{ "{:,}".format(current_fee) }}</div>
+            <p class="text-muted">Applied to all new bookings</p>
+        </div>
+
+        <!-- Fee Adjustment Form -->
+        <div class="fee-adjustment-form">
+            <h4><i class="fas fa-dollar-sign me-2"></i>Update Fee Amount</h4>
+            
+            <form method="post">
+                <div class="mb-3">
+                    <label for="new_fee" class="form-label">New Fee Amount ($)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" 
+                               class="form-control" 
+                               id="new_fee" 
+                               name="new_fee" 
+                               value="{{ current_fee }}" 
+                               min="100" 
+                               max="5000" 
+                               step="50" 
+                               required>
+                    </div>
+                    <small class="text-muted">Range: $100 - $5,000 (increments of $50)</small>
+                </div>
+                
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Security Note:</strong> Fee changes are logged with admin user details and timestamp for audit purposes. This affects all new bookings immediately.
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="confirm_change" required>
+                    <label class="form-check-label" for="confirm_change">
+                        I confirm this fee change will apply to all new bookings immediately
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-danger btn-lg w-100">
+                    <i class="fas fa-save me-2"></i>Update Fee Amount
+                </button>
+            </form>
+        </div>
+
+        <!-- Impact Calculator -->
+        <div class="impact-calculator">
+            <h4><i class="fas fa-calculator me-2"></i>Revenue Impact Calculator</h4>
+            <p>Estimate the impact of fee changes on monthly revenue:</p>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <h6>Current Monthly Volume</h6>
+                    <div class="h5">50 bookings</div>
+                    <small class="text-muted">Average monthly bookings</small>
+                </div>
+                
+                <div class="col-md-4">
+                    <h6>Current Monthly Revenue</h6>
+                    <div class="h5">${{ "{:,}".format(current_fee * 50) }}</div>
+                    <small class="text-muted">From non-refundable fees</small>
+                </div>
+                
+                <div class="col-md-4">
+                    <h6>Projected Annual</h6>
+                    <div class="h5">${{ "{:,}".format(current_fee * 50 * 12) }}</div>
+                    <small class="text-muted">Estimated yearly revenue</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Impact Analysis -->
+        <div class="revenue-impact">
+            <h5><i class="fas fa-chart-line me-2"></i>Fee Change Analysis</h5>
+            <div id="impact-analysis">
+                <p>Enter a new fee amount to see projected impact.</p>
+            </div>
+        </div>
+
+        <!-- Adjustment History -->
+        <div class="adjustment-history">
+            <h4><i class="fas fa-history me-2"></i>Recent Fee Changes</h4>
+            
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Previous Fee</th>
+                            <th>New Fee</th>
+                            <th>Changed By</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-08-01</td>
+                            <td>$750</td>
+                            <td>${{ current_fee }}</td>
+                            <td>Admin User</td>
+                            <td>
+                                {% if current_fee > 750 %}
+                                <span class="text-success">+${{ "{:,}".format((current_fee - 750) * 50) }}/month</span>
+                                {% else %}
+                                <span class="text-danger">-${{ "{:,}".format((750 - current_fee) * 50) }}/month</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2025-07-15</td>
+                            <td>$500</td>
+                            <td>$750</td>
+                            <td>System Admin</td>
+                            <td><span class="text-success">+$12,500/month</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-07-01</td>
+                            <td>$1,000</td>
+                            <td>$500</td>
+                            <td>Admin User</td>
+                            <td><span class="text-danger">-$25,000/month</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Business Context -->
+        <div class="alert alert-info">
+            <h5><i class="fas fa-info-circle me-2"></i>Business Context</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Current Business Model:</strong>
+                    <ul class="mt-2">
+                        <li>$1,000 non-refundable fee to MediFly</li>
+                        <li>Remaining amount refundable to provider</li>
+                        <li>5% commission on total service value</li>
+                        <li>Two-founder operation (Mike & Steve)</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <strong>Year 1 Targets:</strong>
+                    <ul class="mt-2">
+                        <li>50 bookings target</li>
+                        <li>$375k revenue goal</li>
+                        <li>$12k operational expenses</li>
+                        <li>Tiered profit sharing model</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Real-time impact calculator
+document.getElementById('new_fee').addEventListener('input', function() {
+    const newFee = parseInt(this.value) || 0;
+    const currentFee = {{ current_fee }};
+    const monthlyVolume = 50;
+    
+    const difference = newFee - currentFee;
+    const monthlyImpact = difference * monthlyVolume;
+    const annualImpact = monthlyImpact * 12;
+    
+    let impactHtml = `
+        <div class="row">
+            <div class="col-md-4">
+                <h6>Monthly Impact</h6>
+                <div class="h5 ${monthlyImpact >= 0 ? 'text-success' : 'text-danger'}">
+                    ${monthlyImpact >= 0 ? '+' : ''}$${Math.abs(monthlyImpact).toLocaleString()}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h6>Annual Impact</h6>
+                <div class="h5 ${annualImpact >= 0 ? 'text-success' : 'text-danger'}">
+                    ${annualImpact >= 0 ? '+' : ''}$${Math.abs(annualImpact).toLocaleString()}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h6>Per Booking</h6>
+                <div class="h5 ${difference >= 0 ? 'text-success' : 'text-danger'}">
+                    ${difference >= 0 ? '+' : ''}$${Math.abs(difference)}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    if (newFee < 100 || newFee > 5000) {
+        impactHtml = '<p class="text-warning">Please enter a fee between $100 and $5,000.</p>';
+    }
+    
+    document.getElementById('impact-analysis').innerHTML = impactHtml;
+});
+</script>
+{% endblock %}

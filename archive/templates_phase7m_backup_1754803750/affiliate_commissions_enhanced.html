@@ -1,0 +1,158 @@
+<!-- Phase 7.C: Enhanced Affiliate Commission Dashboard with Recoup Copy -->
+{% extends "consumer_base.html" %}
+
+{% block title %}Affiliate Commission Dashboard - MediFly{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-chart-line me-2"></i>Commission Dashboard</h2>
+                <span class="badge bg-primary">{{ current_user.name or 'Affiliate Portal' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase 7.C: Enhanced Recoup Progress Card -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    {% set recoup_progress = (recouped_amount / 25000 * 100)|round(1) %}
+                    {% set remaining = 25000 - recouped_amount %}
+                    {% set threshold_reached = recouped_amount >= 25000 %}
+                    
+                    {% if threshold_reached %}
+                    <div class="alert alert-success border-0" role="alert">
+                        <h4 class="alert-heading">🎉 You've unlocked the full 5% commission rate on new bookings!</h4>
+                        <p class="mb-0">Congratulations! All future bookings will earn the full 5% commission rate.</p>
+                    </div>
+                    {% else %}
+                    <h4 class="card-title text-primary">You're {{ recoup_progress }}% of the way to your 5% commission.</h4>
+                    <p class="lead">{{ format_currency(recouped_amount) }} recouped of {{ format_currency(25000) }} — {{ format_currency(remaining) }} to go.</p>
+                    
+                    <div class="progress mb-3" style="height: 12px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             style="width: {{ recoup_progress }}%" 
+                             aria-valuenow="{{ recoup_progress }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5>Current Rate</h5>
+                    <h2 class="text-primary">{{ "5%" if threshold_reached else "4%" }}</h2>
+                    <small class="text-muted">
+                        {% if not threshold_reached %}+ 1% toward recoup{% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commission Breakdown Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Recent Commission Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Date</th>
+                                    <th>Base Fare</th>
+                                    <th>Gross (5%)</th>
+                                    <th>Effective Commission</th>
+                                    <th>1% Credit Applied</th>
+                                    <th>Net Due This Booking</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in recent_bookings %}
+                                <tr>
+                                    <td><code>{{ booking.booking_id }}</code></td>
+                                    <td>{{ booking.completed_at[:10] }}</td>
+                                    <td>{{ format_currency(booking.base_amount_usd) }}</td>
+                                    <td>{{ format_currency(booking.base_amount_usd * 0.05) }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if booking.effective_percent == 0.05 else 'warning' }}">
+                                            {{ (booking.effective_percent * 100)|round(0)|int }}%
+                                        </span>
+                                        {{ format_currency(booking.commission_amount_usd) }}
+                                    </td>
+                                    <td>
+                                        {% if booking.recoup_applied_usd > 0 %}
+                                        <span class="text-primary">{{ format_currency(booking.recoup_applied_usd) }}</span>
+                                        {% else %}
+                                        <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fw-bold">{{ format_currency(booking.commission_amount_usd) }}</td>
+                                    <td>
+                                        <span class="badge bg-success">Paid</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Card -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Display Preferences</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('update_preferences') }}">
+                        <div class="mb-3">
+                            <label class="form-label">Time Format</label>
+                            <select class="form-select" name="time_format">
+                                <option value="12h" {{ 'selected' if get_user_time_preference() == '12h' else '' }}>12-hour (AM/PM)</option>
+                                <option value="24h" {{ 'selected' if get_user_time_preference() == '24h' else '' }}>24-hour (Military)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Save Preferences</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.progress {
+    border-radius: 8px;
+}
+
+.progress-bar {
+    border-radius: 8px;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

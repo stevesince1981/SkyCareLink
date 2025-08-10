@@ -1,0 +1,78 @@
+PHASE 7.M — APPLY FIXES (banner UX + announcements CRUD + request routing)
+ROLE: Senior engineer. Implement exactly what the user asked. Archive before edits. No schema changes beyond what’s listed.
+
+A) Banner UX: top, transparent, click‑through
+In the base layout (e.g., consumer_templates/consumer_base.html), ensure banners render as the first element inside <body>.
+
+Update CSS (append to your main CSS) so the banner:
+
+Is fixed at the very top, full width, and above everything.
+
+Is transparent/ghosted and does not capture clicks (clicks pass through to the page).
+
+Still readable (slight background gradient optional).
+
+css
+Copy
+Edit
+.annc-wrapper{position:fixed;top:0;left:0;right:0;z-index:9999;pointer-events:none}
+.annc{margin:0 auto;max-width:1200px;padding:6px 10px;font-weight:600;text-align:center;opacity:.85}
+.annc.info{background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0));color:#111}
+.annc.warn{background:linear-gradient(180deg,rgba(255,193,7,.18),rgba(0,0,0,0));color:#7a5a00}
+.annc.success{background:linear-gradient(180deg,rgba(40,167,69,.18),rgba(0,0,0,0));color:#0a5}
+body{padding-top:40px;} /* avoid content underlap */
+Render multiple active banners stacked (one per line) inside a single .annc-wrapper.
+
+Ensure no links or buttons inside banners (since they’re click‑through). If a close/dismiss is needed later, we can add a small fixed “X” outside the click‑through area.
+
+B) Announcements CRUD (Admin)
+Use a single file: /data/announcements.json with structure:
+
+json
+Copy
+Edit
+{"announcements":[
+  {"id":"uuid","message":"...","style":"info|warn|success","is_active":true,
+   "start_at":"ISO8601","end_at":"ISO8601",
+   "countdown_target":"ISO8601|null","countdown_target_tz":"America/New_York",
+   "created_at":"ISO8601","updated_at":"ISO8601"}
+]}
+Admin routes:
+
+GET /admin/announcements — list all, filter Active; show counts.
+
+POST /admin/announcements — create (server fills id, timestamps; coerce is_active to boolean).
+
+POST /admin/announcements/<id> — update existing (message, style, dates, active flag).
+
+POST /admin/announcements/<id>/delete — delete permanently.
+
+Loader (context processor):
+
+Reads the same file, parses to EST aware datetimes (ZoneInfo("America/New_York")).
+
+Filters active announcements where is_active and nowEST ∈ [start,end].
+
+Injects active_announcements into all templates.
+
+Show a tiny admin‑only debug label at the top: Announcements loaded: {{ active_announcements|length }} (we’ll remove later).
+
+C) Force all “+ New Request” to pancake‑stack intake
+Canonical route: /intake must render the pancake‑stack template (the one titled “Medical Transport Request” with the pancake stack).
+
+Link sweep: search all templates/JS and update any of these (or similar) to href="/intake":
+
+/request, /transport_request, /consumer_request, /consumer_index, /request_transport
+
+Redirects: add 301 redirects from legacy routes to /intake so old bookmarks still work.
+
+Confirm helper text under From remains concise and “+ Can’t find it?” stays.
+
+D) Outputs
+Print: BANNER: top/transparent/click-through enabled
+
+Print: CRUD routes added (paths) and storage path verified.
+
+Print: legacy request routes that were redirected and templates updated.
+
+End with: READY FOR PHASE 7.N

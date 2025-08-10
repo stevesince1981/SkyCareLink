@@ -103,3 +103,11 @@
     color: #0056b3;
     text-decoration: underline !important;
 }
+/* Transparent Click-Through Announcement Banners */
+.annc-wrapper{position:fixed;top:0;left:0;right:0;z-index:9999;pointer-events:none}
+.annc{margin:0 auto;max-width:1200px;padding:6px 10px;font-weight:600;text-align:center;opacity:.85}
+.annc.info{background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0));color:#111}
+.annc.warn{background:linear-gradient(180deg,rgba(255,193,7,.18),rgba(0,0,0,0));color:#7a5a00}
+.annc.success{background:linear-gradient(180deg,rgba(40,167,69,.18),rgba(0,0,0,0));color:#0a5}
+body{padding-top:40px;} /* avoid content underlap */
+

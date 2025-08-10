@@ -1,0 +1,289 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Provider Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.provider-dashboard {
+    background: linear-gradient(135deg, #e8f5e8, #f0f8ff);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.provider-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #28a745;
+}
+
+.earnings-metric {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    margin: 0.5rem;
+}
+
+.request-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-left: 3px solid #007bff;
+}
+
+.flight-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-available { background: #d4edda; color: #155724; }
+.status-assigned { background: #cce7ff; color: #004085; }
+.status-completed { background: #d1ecf1; color: #0c5460; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="provider-dashboard">
+    <div class="container">
+        <!-- Header -->
+        <div class="provider-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-helicopter me-3"></i>Provider Dashboard</h1>
+                    <p class="lead">Welcome, {{ user.name }}</p>
+                    <p class="text-muted">Medical transport provider portal</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="earnings-metric">
+                        <i class="fas fa-dollar-sign fs-3"></i>
+                        <div>${{ "{:,}".format(earnings_summary.this_month) }}</div>
+                        <small>This Month Earnings</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Overview -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="earnings-metric">
+                    <i class="fas fa-coins fs-4"></i>
+                    <h3>${{ "{:,}".format(earnings_summary.this_month) }}</h3>
+                    <small>Monthly Earnings</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="earnings-metric" style="background: linear-gradient(135deg, #ffc107, #e0a800);">
+                    <i class="fas fa-clock fs-4"></i>
+                    <h3>${{ "{:,}".format(earnings_summary.pending_payments) }}</h3>
+                    <small>Pending Payments</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="earnings-metric" style="background: linear-gradient(135deg, #007bff, #0056b3);">
+                    <i class="fas fa-plane fs-4"></i>
+                    <h3>{{ earnings_summary.total_flights }}</h3>
+                    <small>Total Flights</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Available Requests -->
+            <div class="col-md-8">
+                <div class="provider-card">
+                    <h4><i class="fas fa-clipboard-list me-2"></i>Available Transport Requests</h4>
+                    {% if available_requests %}
+                        {% for request in available_requests %}
+                        <div class="request-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <strong>{{ request.id }}</strong>
+                                    <br><small class="text-muted">{{ request.origin }} → {{ request.destination }}</small>
+                                    <br><span class="flight-status status-available">
+                                        Severity {{ request.severity }} - Available for Bid
+                                    </span>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>${{ "{:,}".format(request.cost) }}</strong>
+                                    <br><small class="text-muted">Estimated value</small>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <button class="btn btn-primary btn-sm" onclick="bidOnRequest('{{ request.id }}')">
+                                        <i class="fas fa-hand-paper me-1"></i>Place Bid
+                                    </button>
+                                    <br><small class="text-muted">{{ request.date }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-search fs-1 text-muted"></i>
+                            <p class="mt-2">No available requests at this time</p>
+                            <small class="text-muted">New requests will appear here automatically</small>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Active Bookings -->
+                <div class="provider-card">
+                    <h4><i class="fas fa-route me-2"></i>Your Active Transports</h4>
+                    {% for booking in active_bookings %}
+                    <div class="request-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <strong>{{ booking.id }}</strong>
+                                <br><small class="text-muted">{{ booking.origin }} → {{ booking.destination }}</small>
+                                <br><span class="flight-status status-completed">{{ booking.status }}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>${{ "{:,}".format(booking.cost) }}</strong>
+                                <br><small class="text-muted">Contract value</small>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <span class="badge bg-success">Rating: {{ booking.provider_rating }}</span>
+                                <br><small class="text-muted">{{ booking.date }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Provider Tools -->
+            <div class="col-md-4">
+                <div class="provider-card">
+                    <h5><i class="fas fa-tools me-2"></i>Provider Tools</h5>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="showFlightPlanning()">
+                            <i class="fas fa-route me-2"></i>Flight Planning
+                        </button>
+                        <button class="btn btn-outline-success" onclick="showEquipmentCheck()">
+                            <i class="fas fa-stethoscope me-2"></i>Equipment Check
+                        </button>
+                        <button class="btn btn-outline-info" onclick="showWeatherUpdate()">
+                            <i class="fas fa-cloud me-2"></i>Weather Updates
+                        </button>
+                        <a href="{{ url_for('provider_rewards') }}" class="btn btn-outline-warning">
+                            <i class="fas fa-trophy me-2"></i>Reward Status
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="provider-card">
+                    <h5><i class="fas fa-chart-line me-2"></i>Performance</h5>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="earnings-metric">
+                                <div>4.8</div>
+                                <small>Avg Rating</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="earnings-metric">
+                                <div>95%</div>
+                                <small>On-Time Rate</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Excellent performance! You're in the top 10% of providers.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Reward Tier -->
+                <div class="provider-card">
+                    <h5><i class="fas fa-award me-2"></i>Current Tier</h5>
+                    <div class="text-center">
+                        <div class="earnings-metric">
+                            <i class="fas fa-star fs-3"></i>
+                            <div>Gold Tier</div>
+                            <small>$15K+ monthly earnings</small>
+                        </div>
+                        <p><small class="text-muted">
+                            Next tier: Platinum at $25K monthly
+                        </small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Administrative Access -->
+        <div class="row">
+            <div class="col-12">
+                <div class="provider-card">
+                    <h5><i class="fas fa-cogs me-2"></i>System Access</h5>
+                    <p class="text-muted">Access administrative features and analytics</p>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin_storyboard') }}" class="btn btn-info w-100">
+                                <i class="fas fa-presentation me-2"></i>Admin Storyboard
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('provider_search') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Search System
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('security_scan') }}" class="btn btn-warning w-100">
+                                <i class="fas fa-shield-alt me-2"></i>Security Status
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('migration_status') }}" class="btn btn-success w-100">
+                                <i class="fas fa-rocket me-2"></i>Platform Status
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="mt-4">
+                    <a href="{{ url_for('secure_logout') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-out-alt me-2"></i>Secure Logout
+                    </a>
+                    <a href="{{ url_for('landing') }}" class="btn btn-outline-primary ms-3">
+                        <i class="fas fa-home me-2"></i>Back to Main Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function bidOnRequest(requestId) {
+    alert(`Bidding System:\n\nRequest: ${requestId}\n\n• Submit competitive bid\n• Specify aircraft type and medical capabilities\n• Provide estimated response time\n• Include crew qualifications\n• Set pricing and terms\n\nBid submitted successfully! You'll be notified of selection within 30 minutes.`);
+}
+
+function showFlightPlanning() {
+    alert('Flight Planning Tools:\n\n• Route optimization\n• Weather analysis\n• Fuel calculations\n• Airport information\n• Medical equipment requirements\n• Crew scheduling\n\nIntegrated with aviation weather services and flight management systems.');
+}
+
+function showEquipmentCheck() {
+    alert('Equipment Checklist:\n\n• Medical devices status\n• Life support systems\n• Communication equipment\n• Emergency supplies\n• Medication inventory\n• Crew qualifications\n\nAll systems operational - Ready for transport.');
+}
+
+function showWeatherUpdate() {
+    alert('Current Weather Conditions:\n\n• Clear skies at departure\n• Light winds at destination\n• No weather delays expected\n• Visibility: 10+ miles\n• Updated every 15 minutes\n\nFlight conditions: FAVORABLE');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,704 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Admin Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Bubble-inspired Admin Dashboard */
+:root {
+    --bubble-primary: #1976d2;
+    --bubble-secondary: #42a5f5;
+    --bubble-accent: #ff4081;
+    --success-green: #28a745;
+    --warning-orange: #fd7e14;
+    --danger-red: #dc3545;
+}
+
+.admin-header {
+    background: linear-gradient(135deg, var(--danger-red) 0%, var(--bubble-accent) 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 3rem;
+}
+
+/* High-level Metrics Cards */
+.metrics-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--bubble-primary) 0%, var(--bubble-secondary) 100%);
+}
+
+.metric-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.metric-card.users::before {
+    background: linear-gradient(90deg, var(--success-green) 0%, #20c997 100%);
+}
+
+.metric-card.requests::before {
+    background: linear-gradient(90deg, var(--bubble-primary) 0%, var(--bubble-secondary) 100%);
+}
+
+.metric-card.quotes::before {
+    background: linear-gradient(90deg, var(--warning-orange) 0%, #ffc107 100%);
+}
+
+.metric-card.revenue::before {
+    background: linear-gradient(90deg, var(--bubble-accent) 0%, #e91e63 100%);
+}
+
+.metric-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+.metric-card.users .metric-icon {
+    color: var(--success-green);
+}
+
+.metric-card.requests .metric-icon {
+    color: var(--bubble-primary);
+}
+
+.metric-card.quotes .metric-icon {
+    color: var(--warning-orange);
+}
+
+.metric-card.revenue .metric-icon {
+    color: var(--bubble-accent);
+}
+
+.metric-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--bubble-primary) 0%, var(--bubble-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.metric-label {
+    color: #6c757d;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.metric-change {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.change-positive {
+    background: rgba(40, 167, 69, 0.1);
+    color: var(--success-green);
+}
+
+.change-negative {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--danger-red);
+}
+
+/* Management Sections */
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.management-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--bubble-primary);
+}
+
+/* Data Tables */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.admin-table th {
+    background: var(--bubble-primary);
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.admin-table tr:hover {
+    background: #f8f9fa;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: rgba(40, 167, 69, 0.1);
+    color: var(--success-green);
+}
+
+.status-pending {
+    background: rgba(253, 126, 20, 0.1);
+    color: var(--warning-orange);
+}
+
+.status-completed {
+    background: rgba(25, 118, 210, 0.1);
+    color: var(--bubble-primary);
+}
+
+/* Profit Split Tracking */
+.profit-split-section {
+    background: linear-gradient(135deg, var(--success-green) 0%, #20c997 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.split-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.split-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.split-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Notifications Panel */
+.notifications-panel {
+    background: linear-gradient(135deg, var(--bubble-secondary) 0%, var(--bubble-primary) 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.notification-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.notification-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+
+/* Export and Actions */
+.action-bar {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.export-btn {
+    background: var(--success-green);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+    background: #1e7e34;
+    transform: translateY(-2px);
+}
+
+/* Fee Adjustment */
+.fee-adjustment {
+    background: linear-gradient(145deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    border: 2px solid var(--bubble-primary);
+}
+
+.fee-input-group {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .metrics-overview,
+    .management-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .fee-input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Admin Header -->
+<div class="admin-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <h1><i class="fas fa-cog me-2"></i>Admin Dashboard</h1>
+                <p class="mb-0">Comprehensive platform management and analytics</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- High-level Metrics Cards -->
+    <div class="metrics-overview">
+        <div class="metric-card users">
+            <i class="fas fa-users metric-icon"></i>
+            <div class="metric-number">2,847</div>
+            <div class="metric-label">Total Users</div>
+            <div class="metric-change change-positive">
+                <i class="fas fa-arrow-up me-1"></i>+12% this month
+            </div>
+        </div>
+        
+        <div class="metric-card requests">
+            <i class="fas fa-clipboard-list metric-icon"></i>
+            <div class="metric-number">156</div>
+            <div class="metric-label">Active Requests</div>
+            <div class="metric-change change-positive">
+                <i class="fas fa-arrow-up me-1"></i>+8% this week
+            </div>
+        </div>
+        
+        <div class="metric-card quotes">
+            <i class="fas fa-calculator metric-icon"></i>
+            <div class="metric-number">428</div>
+            <div class="metric-label">Quotes Generated</div>
+            <div class="metric-change change-positive">
+                <i class="fas fa-arrow-up me-1"></i>+15% this month
+            </div>
+        </div>
+        
+        <div class="metric-card revenue">
+            <i class="fas fa-dollar-sign metric-icon"></i>
+            <div class="metric-number">$847K</div>
+            <div class="metric-label">Platform Revenue</div>
+            <div class="metric-change change-positive">
+                <i class="fas fa-arrow-up me-1"></i>+22% this quarter
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <div class="me-auto">
+            <h5 class="mb-0">Platform Management</h5>
+            <small class="text-muted">Monitor and control system operations</small>
+        </div>
+        
+        <button class="export-btn" onclick="exportUserData()">
+            <i class="fas fa-users me-1"></i>Export Users
+        </button>
+        
+        <button class="export-btn" onclick="exportQuoteData()">
+            <i class="fas fa-file-csv me-1"></i>Export Quotes
+        </button>
+        
+        <button class="export-btn" onclick="exportRevenueData()">
+            <i class="fas fa-chart-line me-1"></i>Export Revenue
+        </button>
+    </div>
+
+    <!-- Profit Split Tracking -->
+    <div class="profit-split-section">
+        <h3><i class="fas fa-chart-pie me-2"></i>Revenue Split Analysis</h3>
+        <p>Real-time tracking of commission distribution and platform profitability</p>
+        
+        <div class="split-breakdown">
+            <div class="split-item">
+                <div class="split-amount">$720K</div>
+                <div>Provider Share (85%)</div>
+                <small>$42,375 to MediFly (5%)</small>
+            </div>
+            
+            <div class="split-item">
+                <div class="split-amount">$49K</div>
+                <div>MediFly Revenue</div>
+                <small>Deposits + Commission</small>
+            </div>
+            
+            <div class="split-item">
+                <div class="split-amount">$7K</div>
+                <div>Deposits (Non-refundable)</div>
+                <small>7 bookings × $1,000</small>
+            </div>
+            
+            <div class="split-item">
+                <div class="split-amount">5.8%</div>
+                <div>Effective Commission</div>
+                <small>Target: 5-7%</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel">
+        <h3><i class="fas fa-bell me-2"></i>System Notifications</h3>
+        
+        <div class="notification-item">
+            <i class="fas fa-exclamation-triangle notification-icon"></i>
+            <div>
+                <strong>High Volume Alert</strong><br>
+                <small>156 active requests - 23% above normal</small>
+            </div>
+        </div>
+        
+        <div class="notification-item">
+            <i class="fas fa-dollar-sign notification-icon"></i>
+            <div>
+                <strong>Revenue Milestone</strong><br>
+                <small>$847K reached - 85% of annual goal</small>
+            </div>
+        </div>
+        
+        <div class="notification-item">
+            <i class="fas fa-star notification-icon"></i>
+            <div>
+                <strong>New Priority Partner</strong><br>
+                <small>AirMed Elite upgraded to priority status</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Sections -->
+    <div class="management-grid">
+        <!-- User Management -->
+        <div class="management-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-users me-2"></i>User Management
+                </div>
+                <span class="badge bg-success">2,847 Active</span>
+            </div>
+            
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Last Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sarah Johnson</td>
+                        <td>Family</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>2 hours ago</td>
+                    </tr>
+                    <tr>
+                        <td>Michael Chen</td>
+                        <td>Hospital</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>15 min ago</td>
+                    </tr>
+                    <tr>
+                        <td>AirMed Response</td>
+                        <td>Provider</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>1 day ago</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Quote Management -->
+        <div class="management-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-calculator me-2"></i>Quote Management
+                </div>
+                <span class="badge bg-primary">428 Total</span>
+            </div>
+            
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Provider</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TR-2025-001</td>
+                        <td>AirMed Response</td>
+                        <td>$145,000</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>TR-2025-002</td>
+                        <td>LifeFlight Elite</td>
+                        <td>$95,000</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td>TR-2025-003</td>
+                        <td>CriticalCare Jets</td>
+                        <td>$178,000</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Payment Management -->
+        <div class="management-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-credit-card me-2"></i>Payment Management
+                </div>
+                <span class="badge bg-warning">12 Pending</span>
+            </div>
+            
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Transaction</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TXN-001</td>
+                        <td>$1,000</td>
+                        <td>Deposit</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>TXN-002</td>
+                        <td>$42,375</td>
+                        <td>Commission</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                    </tr>
+                    <tr>
+                        <td>TXN-003</td>
+                        <td>$720,000</td>
+                        <td>Provider</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Fee Adjustment -->
+        <div class="management-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-dollar-sign me-2"></i>Fee Management
+                </div>
+                <span class="badge bg-info">Current: $1,000</span>
+            </div>
+            
+            <div class="fee-adjustment">
+                <h6>Non-refundable Deposit Adjustment</h6>
+                <p class="text-muted">Current fee: ${{ current_fee or 1000 }}</p>
+                
+                <form method="POST" action="{{ url_for('admin_fee_adjustment') }}">
+                    <div class="fee-input-group">
+                        <div class="flex-grow-1">
+                            <label class="form-label">New Fee Amount</label>
+                            <input type="number" name="new_fee" class="form-control" 
+                                   placeholder="1000" min="500" max="5000" step="100">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Update Fee
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-3">
+                    <h6>Impact Calculation:</h6>
+                    <small class="text-muted">
+                        Monthly average: 25 bookings<br>
+                        Revenue impact: +$100 fee = +$2,500/month<br>
+                        Competitive analysis: Industry range $800-$1,500
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Export functions
+function exportUserData() {
+    alert('Exporting user data to CSV...\n\nColumns: Name, Role, Status, Registration Date, Last Active\nRows: 2,847 users');
+    // In production, this would generate and download a CSV file
+    console.log('User data export initiated');
+}
+
+function exportQuoteData() {
+    alert('Exporting quote data to CSV...\n\nColumns: Request ID, Provider, Amount, Status, Date\nRows: 428 quotes');
+    // In production, this would generate and download a CSV file
+    console.log('Quote data export initiated');
+}
+
+function exportRevenueData() {
+    alert('Exporting revenue analytics to CSV...\n\nColumns: Date, Revenue, Commission, Deposits, Split\nRows: Daily breakdown');
+    // In production, this would generate and download a CSV file
+    console.log('Revenue data export initiated');
+}
+
+// Real-time updates
+function updateDashboardMetrics() {
+    setInterval(() => {
+        // Simulate real-time metric updates
+        console.log('Updating dashboard metrics...');
+        
+        // In production, this would fetch latest data from API
+        // and update the metric cards dynamically
+    }, 30000); // Update every 30 seconds
+}
+
+// Notification management
+function markNotificationRead(notificationId) {
+    console.log('Marking notification as read:', notificationId);
+    // In production, this would update notification status
+}
+
+function clearAllNotifications() {
+    if (confirm('Clear all notifications?')) {
+        console.log('Clearing all notifications');
+        // In production, this would clear notification panel
+    }
+}
+
+// Fee adjustment impact calculator
+function calculateFeeImpact() {
+    const newFeeInput = document.querySelector('input[name="new_fee"]');
+    if (newFeeInput) {
+        newFeeInput.addEventListener('input', function() {
+            const newFee = parseInt(this.value) || 1000;
+            const currentFee = {{ current_fee or 1000 }};
+            const difference = newFee - currentFee;
+            const monthlyImpact = difference * 25; // 25 bookings per month average
+            
+            console.log(`Fee change: ${difference > 0 ? '+' : ''}$${difference}`);
+            console.log(`Monthly impact: ${monthlyImpact > 0 ? '+' : ''}$${monthlyImpact}`);
+        });
+    }
+}
+
+// Initialize admin dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Bubble-inspired Admin Dashboard loaded');
+    console.log('Platform metrics initialized');
+    
+    updateDashboardMetrics();
+    calculateFeeImpact();
+    
+    // Log current system status
+    console.log('System Status:', {
+        users: 2847,
+        requests: 156,
+        quotes: 428,
+        revenue: 847000,
+        medfly_revenue: {{ medfly_revenue or 49375 }}
+    });
+});
+</script>
+{% endblock %}

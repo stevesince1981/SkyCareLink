@@ -1,0 +1,35 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Referral Program - MediFly{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Referral Program</h2>
+    <p>Refer new providers to our network and earn bonuses.</p>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Your Referral Stats</h4>
+            <ul>
+                <li>Total Referrals: 15</li>
+                <li>Active Providers: 8</li>
+                <li>Bonus Earned: $12,000</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h4>Refer New Provider</h4>
+            <form>
+                <div class="mb-3">
+                    <label class="form-label">Provider Name</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Send Referral</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

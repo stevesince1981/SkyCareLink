@@ -1,0 +1,291 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Admin Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+/* Admin Dashboard Styles */
+.admin-header {
+    background: linear-gradient(135deg, #fd7e14, #e83e8c);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border-left: 5px solid var(--primary-blue);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.stat-change {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.stat-change.positive { color: var(--success-green); }
+.stat-change.negative { color: var(--accent-red); }
+
+.management-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.provider-table {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.provider-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    border: none;
+    font-weight: 600;
+}
+
+.provider-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.action-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reset { background: #ffc107; color: #000; }
+.btn-admin { background: #dc3545; color: white; }
+.btn-partner { background: #28a745; color: white; }
+.btn-view { background: #17a2b8; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Admin Header -->
+<div class="admin-header">
+    <div class="container">
+        <div class="text-center">
+            <h1><i class="fas fa-crown me-2"></i>MediFly Admin Dashboard</h1>
+            <p>System Administration - Revenue Analytics & User Management</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Revenue & Analytics Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ admin_data.total_revenue }}</div>
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-change positive">+{{ admin_data.monthly_revenue }} This Month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ admin_data.total_users }}</div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-change positive">+{{ admin_data.new_users_week }} New This Week</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ admin_data.flight_requests }}</div>
+            <div class="stat-label">Flight Requests</div>
+            <div class="stat-change">{{ admin_data.completed_flights }} Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ admin_data.active_quotes }}</div>
+            <div class="stat-label">Active Quotes</div>
+            <div class="stat-change positive">{{ admin_data.paid_quotes_today }} Paid Today</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- User Management -->
+        <div class="col-md-6">
+            <div class="management-section">
+                <h4><i class="fas fa-users me-2"></i>User Management</h4>
+                <p class="text-muted">Manage user permissions and access controls</p>
+                
+                <div class="list-group">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Reset Passwords</strong>
+                            <br><small class="text-muted">Bulk password reset for users</small>
+                        </div>
+                        <button class="action-btn btn-reset" onclick="managePasswords()">Manage</button>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Delisted Affiliates</strong>
+                            <br><small class="text-muted">Manage strikes, delist/relist controls</small>
+                        </div>
+                        <a href="{{ url_for('admin_delisted') }}" class="action-btn btn-warning">Manage</a>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Announcements</strong>
+                            <br><small class="text-muted">Site-wide announcements with countdown</small>
+                        </div>
+                        <a href="{{ url_for('admin_announcements') }}" class="action-btn btn-info">Create</a>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Admin Controls</strong>
+                            <br><small class="text-muted">Grant administrative privileges</small>
+                        </div>
+                        <button class="action-btn btn-admin" onclick="grantAdminAccess()">Grant Access</button>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Partner Control</strong>
+                            <br><small class="text-muted">Configure provider partnerships</small>
+                        </div>
+                        <button class="action-btn btn-partner" onclick="configurePartners()">Configure</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quote & Payment Management -->
+        <div class="col-md-6">
+            <div class="management-section">
+                <h4><i class="fas fa-credit-card me-2"></i>Quote & Payment Management</h4>
+                <p class="text-muted">Monitor quotes and payment transactions</p>
+                
+                <div class="list-group">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Quote Management</strong>
+                            <br><small class="text-muted">View and manage all active quotes</small>
+                        </div>
+                        <button class="action-btn btn-view" onclick="viewAllQuotes()">View All</button>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Payment Transactions</strong>
+                            <br><small class="text-muted">Review payment history and disputes</small>
+                        </div>
+                        <button class="action-btn btn-view" onclick="reviewTransactions()">Review</button>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Provider Analytics</strong>
+                            <br><small class="text-muted">Flights per provider and performance</small>
+                        </div>
+                        <button class="action-btn btn-view" onclick="viewProviderAnalytics()">Analytics</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider Performance Table -->
+    <div class="management-section">
+        <h4><i class="fas fa-plane me-2"></i>Flights per Provider</h4>
+        <p class="text-muted">Provider performance and revenue breakdown</p>
+        
+        <table class="provider-table table">
+            <thead>
+                <tr>
+                    <th>Provider Name</th>
+                    <th>Total Flights</th>
+                    <th>Revenue Generated</th>
+                    <th>Success Rate</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for provider in admin_data.providers %}
+                <tr>
+                    <td><strong>{{ provider.name }}</strong></td>
+                    <td>{{ provider.flights }}</td>
+                    <td>{{ format_currency(provider.revenue) }}</td>
+                    <td><span class="badge bg-success">98%</span></td>
+                    <td>
+                        <button class="action-btn btn-view" onclick="viewProviderDetails('{{ provider.name }}')">Details</button>
+                        <button class="action-btn btn-partner" onclick="configureProvider('{{ provider.name }}')">Configure</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// User Management Functions
+function managePasswords() {
+    alert('Password Management System\n\n• Bulk password reset functionality\n• Security audit trails\n• User notification system\n• Emergency access protocols');
+}
+
+function grantAdminAccess() {
+    const user = prompt('Enter username to grant admin access:');
+    if (user) {
+        alert(`Admin access granted to: ${user}\n\nPermissions include:\n• User management\n• Revenue analytics\n• Quote management\n• System configuration`);
+    }
+}
+
+function configurePartners() {
+    alert('Partner Configuration Panel\n\n• Provider onboarding\n• Contract management\n• Revenue sharing settings\n• Performance monitoring\n• Compliance tracking');
+}
+
+// Quote & Payment Management Functions
+function viewAllQuotes() {
+    alert('Quote Management Dashboard\n\nActive Quotes: 67\nPending Payment: 23\nCompleted Today: 12\n\nFeatures:\n• Quote status tracking\n• Provider response times\n• Pricing analytics\n• Approval workflows');
+}
+
+function reviewTransactions() {
+    alert('Payment Transaction Review\n\nToday\'s Transactions: $45,750\nPending Payments: $23,400\nDisputes: 2\n\nIncludes:\n• Payment processing logs\n• Dispute resolution\n• Refund management\n• Audit trails');
+}
+
+function viewProviderAnalytics() {
+    alert('Provider Analytics Dashboard\n\n• Performance metrics\n• Response time analysis\n• Revenue per provider\n• Customer satisfaction scores\n• Geographic coverage\n• Equipment utilization');
+}
+
+// Provider Management Functions
+function viewProviderDetails(providerName) {
+    alert(`${providerName} Detailed Analytics\n\n• Flight history\n• Customer ratings\n• Equipment inventory\n• Crew certifications\n• Insurance status\n• Performance trends`);
+}
+
+function configureProvider(providerName) {
+    alert(`Configure ${providerName}\n\n• Update service areas\n• Modify pricing structures\n• Manage equipment listings\n• Set availability schedules\n• Update certifications\n• Configure notifications`);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin dashboard loaded');
+    console.log('Total revenue:', {{ admin_data.total_revenue }});
+    console.log('Active users:', {{ admin_data.total_users }});
+});
+</script>
+{% endblock %}

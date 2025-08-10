@@ -1,0 +1,217 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Subscribe to MediFly {{ plan.title() }} - Premium Access{% endblock %}
+
+{% block head %}
+<style>
+.subscription-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.subscription-form {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    margin-top: -2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.plan-highlight {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.benefits-list {
+    list-style: none;
+    padding: 0;
+}
+
+.benefits-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f3f4;
+    display: flex;
+    align-items: center;
+}
+
+.benefits-list li:last-child {
+    border-bottom: none;
+}
+
+.benefits-list i {
+    color: #28a745;
+    margin-right: 1rem;
+    width: 20px;
+}
+
+.account-section {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 2rem 0;
+}
+
+.security-note {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+}
+
+.terms-section {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Subscription Hero -->
+<div class="subscription-hero">
+    <div class="container">
+        <h1><i class="fas fa-crown me-3"></i>Upgrade to Premium Access</h1>
+        <p class="lead">Unlock unmasked provider names, priority booking, and exclusive discounts</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="subscription-form">
+                <!-- Plan Details -->
+                <div class="plan-highlight">
+                    <h2>{{ plan.title() }} Plan</h2>
+                    <div class="h1">${{ pricing.price }}{% if plan == 'monthly' %}/month{% else %}/year{% endif %}</div>
+                    {% if plan == 'yearly' %}
+                    <div class="badge bg-success fs-6">Save ${{ pricing.savings }} annually!</div>
+                    {% endif %}
+                </div>
+
+                <!-- Benefits -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h4>What You Get:</h4>
+                        <ul class="benefits-list">
+                            <li><i class="fas fa-eye"></i>Unmasked provider names</li>
+                            <li><i class="fas fa-percentage"></i>10% discount on add-ons</li>
+                            <li><i class="fas fa-star"></i>Priority booking queue</li>
+                            <li><i class="fas fa-shield-alt"></i>Exclusive dashboard access</li>
+                            <li><i class="fas fa-tools"></i>Free aid tools and resources</li>
+                            <li><i class="fas fa-headset"></i>24/7 premium support</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h4>Subscription Terms:</h4>
+                        <ul class="benefits-list">
+                            {% if plan == 'monthly' %}
+                            <li><i class="fas fa-calendar"></i>Monthly billing cycle</li>
+                            <li><i class="fas fa-times-circle"></i>Cancel after 30 days notice</li>
+                            <li><i class="fas fa-redo"></i>Auto-renewal (opt-out available)</li>
+                            {% else %}
+                            <li><i class="fas fa-calendar-alt"></i>12-month minimum commitment</li>
+                            <li><i class="fas fa-times-circle"></i>Cancel with 30 days notice</li>
+                            <li><i class="fas fa-ban"></i>No refund for committed period</li>
+                            {% endif %}
+                            <li><i class="fas fa-cog"></i>Manage in account settings</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Account Creation Form -->
+                <div class="account-section">
+                    <h4><i class="fas fa-user-plus me-2"></i>Create Your Account</h4>
+                    <p class="text-muted">Account required to manage your subscription and access premium features</p>
+                    
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="contact_name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="contact_name" name="contact_name" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <small class="text-muted">We'll send your subscription confirmation here</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password *</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number (Optional)</label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                                <small class="text-muted">For urgent booking notifications</small>
+                            </div>
+                        </div>
+                        
+                        <div class="security-note">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            <strong>Security:</strong> Your account data is encrypted and stored securely. We only keep essential contact information and never store payment details on our servers.
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="email_verification" required>
+                            <label class="form-check-label" for="email_verification">
+                                I understand that email verification is required to activate my account
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="terms_agreement" required>
+                            <label class="form-check-label" for="terms_agreement">
+                                I agree to the subscription terms and auto-renewal settings
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-credit-card me-2"></i>Subscribe & Create Account
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="terms-section">
+                    <h5><i class="fas fa-file-contract me-2"></i>Important Terms</h5>
+                    <ul class="mb-0">
+                        {% if plan == 'yearly' %}
+                        <li><strong>12-month commitment:</strong> You're committing to a full year of service</li>
+                        <li><strong>No partial refunds:</strong> If you cancel, no refund for the remaining committed period</li>
+                        {% endif %}
+                        <li><strong>Auto-renewal:</strong> Your subscription will auto-renew unless you opt-out in settings</li>
+                        <li><strong>Cancellation:</strong> Provide 30 days notice to cancel, full payment required for committed period</li>
+                        <li><strong>Benefits:</strong> All premium features activate immediately upon successful payment</li>
+                    </ul>
+                </div>
+
+                <!-- Payment Integration Note -->
+                <div class="alert alert-info">
+                    <h5><i class="fas fa-info-circle me-2"></i>Payment Processing</h5>
+                    <p class="mb-2">After account creation, you'll be redirected to our secure payment partner (Stripe) to complete your subscription.</p>
+                    <p class="mb-0"><strong>We never store credit card information</strong> - all payment data is handled by certified payment processors.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

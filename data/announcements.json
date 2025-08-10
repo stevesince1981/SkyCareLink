@@ -8,6 +8,17 @@
       "end_at": "2025-08-11T02:00:00",
       "countdown_target": "2025-08-11T02:00:00",
       "countdown_target_tz": "America/New_York"
+    },
+    {
+      "id": "ann_002",
+      "message": "hello world",
+      "style": "info",
+      "start_at": "2025-08-10T00:17",
+      "end_at": "2025-08-17T00:17",
+      "countdown_target": "",
+      "active": true,
+      "created_at": "2025-08-10T05:17:33.897645",
+      "created_by": "admin"
     }
   ]
 }

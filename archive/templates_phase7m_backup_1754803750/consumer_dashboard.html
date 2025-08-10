@@ -1,0 +1,536 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}MediFly Dashboard - Business Analytics{% endblock %}
+
+{% block head %}
+<style>
+.dashboard-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+.metric-card {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-ring {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+}
+
+.progress-ring circle {
+    fill: transparent;
+    stroke-width: 8;
+    r: 50;
+    cx: 60;
+    cy: 60;
+}
+
+.progress-ring .background {
+    stroke: #e9ecef;
+}
+
+.progress-ring .progress {
+    stroke: #007bff;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 60px 60px;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.profit-split-chart {
+    display: flex;
+    height: 60px;
+    border-radius: 30px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.profit-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.profit-segment:hover {
+    filter: brightness(1.1);
+}
+
+.mike-segment {
+    background: #007bff;
+}
+
+.steve-segment {
+    background: #28a745;
+}
+
+.business-segment {
+    background: #ffc107;
+    color: #212529;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-left: 4px solid #007bff;
+    background: #f8f9fa;
+    margin-bottom: 0.75rem;
+    border-radius: 0 10px 10px 0;
+}
+
+.notification-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    color: #007bff;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.diversity-meter {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.diversity-item {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #f8f9fa;
+}
+
+.diversity-count {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.diversity-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+.export-section {
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.real-time-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #28a745;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.tier-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.tier-1-10 {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.tier-11-30 {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.tier-31-plus {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+@media (max-width: 768px) {
+    .metric-value {
+        font-size: 2rem;
+    }
+    
+    .diversity-meter {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .profit-split-chart {
+        height: 40px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container">
+        <h1 class="mb-3">
+            <span class="real-time-indicator"></span>
+            MediFly Business Dashboard
+        </h1>
+        <p class="lead">Real-time analytics, profit tracking, and notifications</p>
+        <div class="d-flex justify-content-center gap-3 mt-3 mb-3">
+            <button class="btn btn-light btn-sm" onclick="refreshDashboard()">
+                <i class="fas fa-sync-alt me-2"></i>Refresh Data
+            </button>
+            <a href="{{ url_for('dashboard_export_csv') }}" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-download me-2"></i>Export CSV
+            </a>
+        </div>
+        
+        <!-- Comprehensive Admin Navigation -->
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-10">
+                <div class="btn-group-vertical btn-group-lg w-100" role="group">
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-light">
+                            <i class="fas fa-cog me-2"></i>Admin Panel
+                        </a>
+                        <a href="{{ url_for('provider_search') }}" class="btn btn-outline-light">
+                            <i class="fas fa-search me-2"></i>Provider Search
+                        </a>
+                        <a href="{{ url_for('security_scan') }}" class="btn btn-outline-light">
+                            <i class="fas fa-shield-alt me-2"></i>Security Scan
+                        </a>
+                        <a href="{{ url_for('provider_rewards') }}" class="btn btn-outline-light">
+                            <i class="fas fa-trophy me-2"></i>Provider Rewards
+                        </a>
+                        <a href="{{ url_for('migration_status') }}" class="btn btn-outline-light">
+                            <i class="fas fa-rocket me-2"></i>Migration Status
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Key Metrics -->
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-card metric-card">
+                <div class="metric-value text-primary">{{ dashboard.bookings }}</div>
+                <div class="metric-label">Total Bookings</div>
+                {% set tier = 'tier-1-10' if dashboard.bookings <= 10 else 'tier-11-30' if dashboard.bookings <= 30 else 'tier-31-plus' %}
+                <div class="mt-2">
+                    <span class="tier-badge {{ tier }}">
+                        {% if dashboard.bookings <= 10 %}Tier 1 (1-10)
+                        {% elif dashboard.bookings <= 30 %}Tier 2 (11-30)
+                        {% else %}Tier 3 (31+){% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-card metric-card">
+                <div class="metric-value text-success">${{ dashboard.revenue|number_format }}</div>
+                <div class="metric-label">Total Revenue</div>
+                <div class="mt-2 small text-muted">
+                    Goal: ${{ dashboard.goal_revenue|number_format }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-card metric-card">
+                <div class="metric-value text-info">${{ dashboard.gross_profit|number_format }}</div>
+                <div class="metric-label">Gross Profit</div>
+                <div class="mt-2 small text-muted">
+                    After ${{ dashboard.expenses|number_format }} expenses
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="dashboard-card metric-card">
+                <div class="metric-value text-warning">{{ dashboard.unique_visits }}</div>
+                <div class="metric-label">Unique Visits</div>
+                <div class="mt-2 small text-muted">
+                    {{ (dashboard.conversion_rate * 100)|round(1) }}% conversion rate
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Revenue Progress -->
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h5><i class="fas fa-chart-line me-2"></i>Revenue Progress</h5>
+                <div class="text-center">
+                    <svg class="progress-ring">
+                        <circle class="background" />
+                        <circle class="progress" style="stroke-dashoffset: {{ 314 - (dashboard.revenue_progress * 3.14) }};" />
+                    </svg>
+                    <div class="h4">{{ dashboard.revenue_progress|round(1) }}%</div>
+                    <div class="text-muted">of ${{ dashboard.goal_revenue|number_format }} goal</div>
+                </div>
+                <div class="mt-3 text-center">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="h6 text-success">${{ dashboard.revenue|number_format }}</div>
+                            <small class="text-muted">Current</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="h6 text-primary">${{ (dashboard.goal_revenue - dashboard.revenue)|number_format }}</div>
+                            <small class="text-muted">Remaining</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit Sharing -->
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h5><i class="fas fa-users me-2"></i>Profit Sharing (Tier {{ dashboard.bookings // 10 + 1 }})</h5>
+                <div class="profit-split-chart">
+                    <div class="profit-segment mike-segment" style="width: {{ dashboard.profit_split.mike }}%;">
+                        Mike {{ dashboard.profit_split.mike }}%
+                    </div>
+                    <div class="profit-segment steve-segment" style="width: {{ dashboard.profit_split.steve }}%;">
+                        Steve {{ dashboard.profit_split.steve }}%
+                    </div>
+                    <div class="profit-segment business-segment" style="width: {{ dashboard.profit_split.business }}%;">
+                        Business {{ dashboard.profit_split.business }}%
+                    </div>
+                </div>
+                <div class="row text-center mt-3">
+                    <div class="col-4">
+                        <div class="h6 text-primary">${{ dashboard.individual_shares.mike|round|number_format }}</div>
+                        <small class="text-muted">Mike's Share</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="h6 text-success">${{ dashboard.individual_shares.steve|round|number_format }}</div>
+                        <small class="text-muted">Steve's Share</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="h6 text-warning">${{ dashboard.individual_shares.business|round|number_format }}</div>
+                        <small class="text-muted">Business</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Provider Diversity -->
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h5><i class="fas fa-network-wired me-2"></i>Provider Network Diversity</h5>
+                <div class="diversity-meter">
+                    <div class="diversity-item">
+                        <div class="diversity-count">{{ dashboard.provider_diversity.traditional }}</div>
+                        <div class="diversity-label">Traditional</div>
+                    </div>
+                    <div class="diversity-item">
+                        <div class="diversity-count text-success">{{ dashboard.provider_diversity.rural }}</div>
+                        <div class="diversity-label">Rural</div>
+                    </div>
+                    <div class="diversity-item">
+                        <div class="diversity-count text-info">{{ dashboard.provider_diversity.drone }}</div>
+                        <div class="diversity-label">Drone</div>
+                    </div>
+                    <div class="diversity-item">
+                        <div class="diversity-count text-warning">{{ dashboard.provider_diversity.hybrid }}</div>
+                        <div class="diversity-label">Hybrid</div>
+                    </div>
+                </div>
+                <div class="mt-3 text-center">
+                    <div class="alert alert-success py-2">
+                        <strong>50% Emerging Technology:</strong> Meeting diversity targets for rural and innovative providers
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <h5><i class="fas fa-bell me-2"></i>Recent Notifications</h5>
+                <div class="notifications-list" style="max-height: 300px; overflow-y: auto;">
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="fw-bold">Booking Confirmed</div>
+                            <div class="small">New transport request: Orlando → LA</div>
+                        </div>
+                        <div class="notification-time">2 min ago</div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-chart-line text-primary"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="fw-bold">Conversion Rate Update</div>
+                            <div class="small">{{ (dashboard.conversion_rate * 100)|round(1) }}% this week (up 2%)</div>
+                        </div>
+                        <div class="notification-time">1 hour ago</div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-users text-info"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="fw-bold">Milestone: {{ dashboard.unique_visits }} Visits</div>
+                            <div class="small">Unique visitors today</div>
+                        </div>
+                        <div class="notification-time">3 hours ago</div>
+                    </div>
+
+                    {% if dashboard.bookings >= 10 %}
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-trophy text-warning"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="fw-bold">Tier Upgrade!</div>
+                            <div class="small">Moved to Tier 2 profit sharing</div>
+                        </div>
+                        <div class="notification-time">1 day ago</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="export-section">
+                <h5><i class="fas fa-download me-2"></i>Data Export & Reports</h5>
+                <p class="mb-3">Export detailed analytics for financial reporting and business analysis</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{{ url_for('dashboard_export_csv') }}" class="btn btn-primary">
+                        <i class="fas fa-file-csv me-2"></i>Export CSV
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="generatePDFReport()">
+                        <i class="fas fa-file-pdf me-2"></i>PDF Report
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="emailReport()">
+                        <i class="fas fa-envelope me-2"></i>Email Report
+                    </button>
+                </div>
+                <div class="mt-3 small text-muted">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    All exports include HIPAA-compliant data masking for patient privacy
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard initialized');
+    
+    // Animate progress ring
+    animateProgressRing();
+    
+    // Auto-refresh every 30 seconds
+    setInterval(function() {
+        refreshDashboard();
+    }, 30000);
+});
+
+function animateProgressRing() {
+    const progressRing = document.querySelector('.progress-ring .progress');
+    if (progressRing) {
+        setTimeout(() => {
+            progressRing.style.transition = 'stroke-dashoffset 2s ease';
+        }, 500);
+    }
+}
+
+function refreshDashboard() {
+    // Show loading state
+    const refreshBtn = document.querySelector('[onclick="refreshDashboard()"]');
+    const originalText = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+    refreshBtn.disabled = true;
+    
+    // Simulate refresh (in production, would make AJAX call)
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
+
+function generatePDFReport() {
+    alert('PDF Report: Generating comprehensive business analytics report with profit sharing breakdown, conversion metrics, and HIPAA-compliant data summaries.');
+}
+
+function emailReport() {
+    alert('Email Report: Sending weekly analytics summary to stakeholders with key performance indicators and financial projections.');
+}
+
+// Add number formatting for template filter
+function numberFormat(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+</script>
+{% endblock %}

@@ -1,0 +1,300 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Transport Quotes - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.quote-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.quote-card.priority {
+    border: 3px solid #ffd700;
+    animation: priorityPulse 2s infinite;
+}
+
+@keyframes priorityPulse {
+    0%, 100% { border-color: #ffd700; }
+    50% { border-color: #ffed4e; }
+}
+
+.urgency-timer {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.urgency-timer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.1) 75%), 
+                linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.1) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    animation: move 1s linear infinite;
+}
+
+@keyframes move {
+    0% { background-position: 0 0, 10px 10px; }
+    100% { background-position: 20px 20px, 30px 30px; }
+}
+
+.timer-content {
+    position: relative;
+    z-index: 1;
+}
+
+.countdown {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.slots-badge {
+    background: #ff4757;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.subscription-offer {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.provider-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.provider-name.blurred {
+    filter: blur(2px);
+    position: relative;
+}
+
+.provider-name.blurred::after {
+    content: 'Upgrade to reveal';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #007bff;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    filter: none;
+}
+
+.price-display {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #28a745;
+    margin: 1rem 0;
+}
+
+.fee-breakdown {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+}
+
+.no-pressure-note {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.family-messaging {
+    font-style: italic;
+    color: #6c757d;
+}
+
+.hospital-messaging {
+    font-weight: 500;
+    color: #495057;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Urgency Timer -->
+    {% if hours_remaining > 0 %}
+    <div class="urgency-timer">
+        <div class="timer-content">
+            <h4><i class="fas fa-clock me-2"></i>Quote Expires Soon</h4>
+            <div class="countdown" id="countdownTimer">{{ hours_remaining }} hours remaining</div>
+            {% if session.user_role == 'family' %}
+            <p class="family-messaging">Secure now—slots can fill quickly, but take your time if needed</p>
+            {% else %}
+            <p class="hospital-messaging">Lock for priority—availability limited in {{ patient_data.origin }}</p>
+            {% endif %}
+            <div class="slots-badge">{{ slots_remaining }} slots left today</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- No Pressure Note -->
+    <div class="no-pressure-note">
+        <i class="fas fa-heart me-2"></i>
+        <strong>No pressure—contact us if you need support.</strong> Our team is here to help with any questions or concerns.
+    </div>
+
+    <!-- Subscription Offer for Non-Subscribers -->
+    {% if not show_names %}
+    <div class="subscription-offer">
+        <h3><i class="fas fa-crown me-2"></i>Upgrade for Full Provider Details</h3>
+        <p>See unmasked provider names, get 10% discounts, and access priority booking</p>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card bg-light">
+                    <div class="card-body text-dark text-center">
+                        <h5>Monthly</h5>
+                        <div class="h2">${{ subscription_pricing.monthly.price }}/month</div>
+                        <p>Cancel anytime after 30 days</p>
+                        <a href="{{ url_for('subscribe', plan='monthly') }}" class="btn btn-primary">Subscribe Monthly</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-warning">
+                    <div class="card-body text-center">
+                        <h5>Yearly <span class="badge bg-success">Save ${{ subscription_pricing.yearly.savings }}</span></h5>
+                        <div class="h2">${{ subscription_pricing.yearly.price }}/year</div>
+                        <p>12-month minimum commitment</p>
+                        <a href="{{ url_for('subscribe', plan='yearly') }}" class="btn btn-dark">Best Value</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quote Results -->
+    <div class="row">
+        {% for quote in quotes %}
+        <div class="col-12 mb-4">
+            <div class="quote-card {% if quote.priority %}priority{% endif %}">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="provider-name {% if not show_names %}blurred{% endif %}">
+                                {% if show_names %}
+                                    {{ quote.provider_name }}
+                                    {% if quote.priority %}
+                                        <span class="badge bg-warning text-dark ms-2">Priority Partner</span>
+                                    {% endif %}
+                                {% else %}
+                                    {{ quote.masked_name }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="provider-details">
+                                <p class="mb-1"><i class="fas fa-clock me-1"></i> ETA: {{ quote.eta_hours }} hours</p>
+                                <p class="mb-1"><i class="fas fa-plane me-1"></i> Aircraft: Fixed-wing jet</p>
+                                <div class="capabilities">
+                                    {% for capability in quote.capabilities %}
+                                    <span class="badge bg-secondary me-1">{{ capability }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-end">
+                            <div class="price-display">${{ "{:,}".format(quote.total_cost) }}</div>
+                            
+                            <div class="fee-breakdown">
+                                <small class="text-muted">
+                                    MediFly Fee: ${{ "{:,}".format(medfly_fee) }} (non-refundable)<br>
+                                    Provider Payment: ${{ "{:,}".format(quote.total_cost - medfly_fee) }} (refundable)
+                                </small>
+                            </div>
+                            
+                            <a href="{{ url_for('consumer_confirm', provider=quote.provider_id) }}" 
+                               class="btn btn-primary btn-lg">
+                                Select This Quote
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Ground Transport Alternative -->
+    {% if quotes|length == 0 %}
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle me-2"></i>Consider Ground Transport</h5>
+        <p>For some routes, ground medical transport may be a viable alternative. Contact us for ground transport options.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Countdown timer
+function updateCountdown() {
+    const expiryTime = new Date("{{ quote_expiry }}");
+    const now = new Date();
+    const timeLeft = expiryTime - now;
+    
+    if (timeLeft <= 0) {
+        document.getElementById('countdownTimer').innerHTML = 'Quote Expired';
+        return;
+    }
+    
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    
+    document.getElementById('countdownTimer').innerHTML = `${hours}h ${minutes}m remaining`;
+}
+
+// Update countdown every minute
+setInterval(updateCountdown, 60000);
+updateCountdown();
+
+// Urgency alerts simulation
+function checkUrgencyAlerts() {
+    const expiryTime = new Date("{{ quote_expiry }}");
+    const now = new Date();
+    const hoursLeft = Math.floor((expiryTime - now) / (1000 * 60 * 60));
+    
+    if ([12, 6, 1].includes(hoursLeft)) {
+        console.log(`URGENCY ALERT: ${hoursLeft} hours remaining`);
+        // In production, this would trigger actual SMS/email alerts
+    }
+}
+
+checkUrgencyAlerts();
+</script>
+{% endblock %}
