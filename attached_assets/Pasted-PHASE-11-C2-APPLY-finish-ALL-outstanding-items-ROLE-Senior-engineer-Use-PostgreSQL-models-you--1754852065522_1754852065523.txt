@@ -1,0 +1,91 @@
+PHASE 11.C2 — APPLY (finish ALL outstanding items)
+ROLE: Senior engineer. Use PostgreSQL models you added. Archive before edits.
+
+IMPLEMENT THE FOLLOWING (one pass):
+
+A) Announcements CRUD
+
+/admin/announcements: add Edit + Delete; support multiple active banners; instant site‑wide render after save.
+
+B) Invoices (manual + auto + 30‑day roll)
+
+Fix Generate Invoices (no 500).
+
+Add weekly auto‑issue (Mon 02:00 local) for completed bookings in prior week, not yet invoiced.
+
+Nightly roll at 30 days: create roll‑up invoice (mark old as rolled).
+
+Admin toggles: auto_generate_weekly, auto_roll_30d.
+
+C) Demo Tools (granular + per‑portal reset)
+
+Fix /admin/demo/create 500.
+
+Admin modal with checkboxes to reset: Bookings, Quotes, Commissions, Announcements, Dashboards.
+
+Affiliate/Hospital portal: “Reset Demo Data” clears only their demo rows (is_demo_data=True).
+
+Audit to SecurityEvents.
+
+D) Quotes: Spotlight + Concierge
+
+Finalize Spotlight badge/tooltip (“<50 bookings or <90 days”).
+
+Add Concierge add‑on option ($15k; split $7.5k each; base 5% still applies); show line item on Confirm; ledger stays base‑fare only.
+
+E) Intake Stepper (exact 4‑step “pancake”)
+
+Service (Air | Ground | Air+Ground) → Next shrinks & advances.
+
+From/To with internal‑first autocomplete, Places fallback, “+ Can’t find it?” modal for manual add.
+
+Date/Time (dropdown); same‑day (<4h) shows +20% warning & confirm checkbox.
+
+Patient & Requirements: Age band (no DOB), Severity 1–3 (G/Y/R + tooltips), Niches, International regions multi‑select, Ground included checkbox.
+
+Back button + click previous steps to jump; state persists; quiet autosave (no toast spam).
+
+Home New Request goes to this stepper.
+
+F) My Transport Requests — live “New quote”
+
+List shows Pending with elapsed timer; poll 15s for new quotes → “New quote available” badge (clears on view).
+
+G) Admin Dashboard panels
+
+Fix 500s; wire Quote Management + Payment Management (filter, open, reveal/lock, mark paid, remittance ref).
+
+“Announcements” button opens page (no dialog bug).
+
+H) Portals sample data
+
+When Dummy ON, Affiliate/Hospital portals show seeded rows for that org (scope by role + is_demo_data).
+
+I) Affiliate Commissions polish
+
+Filters: Date range, Status chips (Issued/Paid/Rolled).
+
+Outstanding Fees badge.
+
+Weekly Summary expandable (±) to list included bookings.
+
+Copy: “Amount credited toward your $25,000”.
+
+“Mark Paid (ACH)” control.
+
+J) Adjustable Affiliate default fee %
+
+Add commission_percent_default (3–7%, default 5%) on Affiliate profile (Admin editable).
+
+Post‑recoup bookings use that %; pre‑recoup stays 4% + 1% credit.
+
+K) Flights per Provider (Admin analytics)
+
+Table with Affiliate, Fee %, Recoup remaining to $25k, Total flights, Response rate, Spotlight; sortable.
+
+OUTPUT
+
+Print PASS/FAIL for A–K, list new/changed routes (demo tools, invoice jobs/toggles).
+
+End: READY FOR 11.E RUNTIME TEST.
+

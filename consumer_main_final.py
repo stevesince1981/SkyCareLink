@@ -17,7 +17,8 @@ except ImportError:
     # Fallback for older Python versions
     EST = timezone(timedelta(hours=-5))
 import random
-from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify, send_file
+from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify, send_file, Response
+import io
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -3210,7 +3211,7 @@ def admin_demo_create():
     session['demo_cases'] = demo_cases
     session['training_mode'] = True
     
-    logger.info(f"Admin {session.get('username')} created guided demo with {len(demo_cases)} cases")
+    logging.info(f"Admin {session.get('username')} created guided demo with {len(demo_cases)} cases")
     
     flash(f'Guided demo created successfully with {len(demo_cases)} realistic cases. Training mode enabled.', 'success')
     return redirect(url_for('admin_dashboard'))
@@ -3233,7 +3234,7 @@ def admin_demo_reset():
     commission_ledger = session.get('commission_ledger', [])
     session['commission_ledger'] = [booking for booking in commission_ledger if not booking.get('demo_booking')]
     
-    logger.info(f"Admin {session.get('username')} reset demo data")
+    logging.info(f"Admin {session.get('username')} reset demo data")
     
     flash('Demo data reset successfully. System returned to clean state.', 'success')
     return redirect(url_for('admin_dashboard'))
@@ -3289,7 +3290,7 @@ def admin_analytics_export():
     response = Response(output.getvalue(), mimetype='text/csv')
     response.headers['Content-Disposition'] = f'attachment; filename=medifly_analytics_{datetime.now().strftime("%Y-%m")}.csv'
     
-    logger.info(f"Admin {session.get('username')} exported monthly analytics")
+    logging.info(f"Admin {session.get('username')} exported monthly analytics")
     return response
 
 # Email functionality
@@ -3308,15 +3309,15 @@ def send_email_template(template_name, recipient_email, **template_vars):
         smtp_host = os.environ.get('SMTP_HOST')
         if smtp_host:
             # TODO: Implement actual SMTP sending
-            logger.info(f"Would send email via SMTP to {recipient_email}")
+            logging.info(f"Would send email via SMTP to {recipient_email}")
         else:
             # Log the rendered HTML
-            logger.info(f"Email template '{template_name}' rendered for {recipient_email}:")
-            logger.info(email_html)
+            logging.info(f"Email template '{template_name}' rendered for {recipient_email}:")
+            logging.info(email_html)
             
         return True
     except Exception as e:
-        logger.error(f"Error sending email template {template_name}: {e}")
+        logging.error(f"Error sending email template {template_name}: {e}")
         return False
 
 # Demo toolkit guided demo cards
