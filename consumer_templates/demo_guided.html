@@ -1,0 +1,88 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Guided Demo - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.demo-header {
+    background: linear-gradient(135deg, #4caf50, #8bc34a);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.demo-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    border-left: 5px solid #4caf50;
+}
+
+.demo-card:hover {
+    transform: translateY(-5px);
+}
+
+.demo-icon {
+    font-size: 3rem;
+    color: #4caf50;
+    margin-bottom: 1rem;
+}
+
+.training-badge {
+    background: #4caf50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demo-header">
+    <div class="container">
+        <span class="training-badge">
+            <i class="fas fa-graduation-cap me-2"></i>Training Mode Active
+        </span>
+        <h1><i class="fas fa-play-circle me-3"></i>Guided Demo</h1>
+        <p class="mb-0">Interactive tutorials for {{ user_role|title }} users</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% for card in demo_cards %}
+            <div class="demo-card">
+                <div class="text-center">
+                    <i class="fas fa-lightbulb demo-icon"></i>
+                    <h4>{{ card.title }}</h4>
+                    <p class="text-muted">{{ card.description }}</p>
+                    <a href="{{ card.url }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-play me-2"></i>{{ card.action }}
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if not demo_cards %}
+            <div class="demo-card text-center">
+                <i class="fas fa-info-circle demo-icon"></i>
+                <h4>Demo Mode Active</h4>
+                <p class="text-muted">Guided tutorials are available for Affiliate and Hospital users.</p>
+                <a href="{{ url_for('home') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-home me-2"></i>Return to Home
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

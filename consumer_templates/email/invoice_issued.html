@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Invoice - MediFly</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #1976d2; color: white; padding: 20px; text-align: center; border-radius: 8px; }
+        .content { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .invoice-summary { background: white; padding: 20px; border-radius: 8px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .amount { font-size: 24px; font-weight: bold; color: #4caf50; text-align: center; margin: 20px 0; }
+        .payment-info { background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .btn { background: #1976d2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-file-invoice-dollar"></i> Weekly Invoice</h1>
+        <p>Invoice #{{ invoice_number | default('INV-2025-001') }}</p>
+    </div>
+    
+    <div class="content">
+        <h2>Hello {{ affiliate_name | default('Partner') }},</h2>
+        
+        <p>Your weekly commission statement is ready for the period <strong>{{ week_start | default('Jan 6') }}</strong> to <strong>{{ week_end | default('Jan 12, 2025') }}</strong>.</p>
+        
+        <div class="invoice-summary">
+            <h3>Commission Summary</h3>
+            <table>
+                <tr>
+                    <th>Bookings Completed</th>
+                    <td>{{ bookings_count | default('12') }}</td>
+                </tr>
+                <tr>
+                    <th>Total Booking Value</th>
+                    <td>${{ total_value | default('48,750') }}</td>
+                </tr>
+                <tr>
+                    <th>Commission Rate</th>
+                    <td>{{ commission_rate | default('4.5%') }}</td>
+                </tr>
+                <tr>
+                    <th>Gross Commission</th>
+                    <td>${{ gross_commission | default('2,193.75') }}</td>
+                </tr>
+                <tr>
+                    <th>Processing Fees</th>
+                    <td>-${{ processing_fees | default('65.81') }}</td>
+                </tr>
+            </table>
+            
+            <div class="amount">
+                Net Amount: ${{ net_amount | default('2,127.94') }}
+            </div>
+        </div>
+        
+        <div class="payment-info">
+            <h3><i class="fas fa-university"></i> ACH Payment Details</h3>
+            <p><strong>Payment Date:</strong> {{ payment_date | default('Friday, Jan 15, 2025') }}</p>
+            <p><strong>Bank Account:</strong> ***{{ account_last_four | default('7842') }}</p>
+            <p><strong>Reference:</strong> MediFly-{{ invoice_number | default('INV-2025-001') }}</p>
+        </div>
+        
+        <h3>Year-to-Date Progress</h3>
+        <ul>
+            <li>Total Bookings: {{ ytd_bookings | default('47') }}</li>
+            <li>Total Commission: ${{ ytd_commission | default('8,456.32') }}</li>
+            <li>Progress to 5% Tier: ${{ recoup_progress | default('8,456') }} / $25,000</li>
+        </ul>
+        
+        <a href="{{ statement_url | default('#') }}" class="btn">View Detailed Statement</a>
+        
+        <p><strong>Questions about your invoice?</strong> Contact our finance team at <strong>{{ finance_email | default('finance@medifly.com') }}</strong></p>
+        
+        <p>Thank you for your continued partnership!</p>
+        
+        <p>Best regards,<br>
+        MediFly Finance Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>MediFly Air Medical Transport | {{ current_year | default('2025') }}</p>
+        <p>Invoice sent to {{ recipient_email | default('affiliate@example.com') }}</p>
+    </div>
+</body>
+</html>

@@ -93,6 +93,32 @@
 {% endblock %}
 
 {% block content %}
+<!-- Quick Actions Bar -->
+<div class="container-fluid">
+    <div class="alert alert-light border mb-4">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('admin_generate_invoices') }}" class="btn btn-sm btn-success" aria-label="Generate weekly invoices">
+                <i class="fas fa-file-invoice me-1" aria-hidden="true"></i>Generate Invoices
+            </a>
+            <a href="{{ url_for('admin_demo_reset') }}" class="btn btn-sm btn-warning" aria-label="Reset demo data">
+                <i class="fas fa-undo me-1" aria-hidden="true"></i>Reset Demo
+            </a>
+            <a href="{{ url_for('admin_monthly_analytics') }}" class="btn btn-sm btn-info" aria-label="View monthly analytics roll-up">
+                <i class="fas fa-chart-line me-1" aria-hidden="true"></i>Monthly Roll-up
+            </a>
+            <a href="{{ url_for('admin_demo_create') }}" class="btn btn-sm btn-primary" aria-label="Create guided demo">
+                <i class="fas fa-play me-1" aria-hidden="true"></i>Demo Tools
+            </a>
+            <button class="btn btn-sm btn-secondary" onclick="alert('Security log feature coming soon')" aria-label="Open security log">
+                <i class="fas fa-shield-alt me-1" aria-hidden="true"></i>Security Log
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="alert('Announcements feature coming soon')" aria-label="Manage announcements">
+                <i class="fas fa-bullhorn me-1" aria-hidden="true"></i>Announcements
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Admin Header -->
 <div class="admin-header">
     <div class="container">

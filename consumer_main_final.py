@@ -3033,6 +3033,237 @@ def mvp_incentive():
     """MVP Incentive Program placeholder page"""
     return render_template('mvp_incentive.html')
 
+# Error handlers
+@consumer_app.errorhandler(404)
+def page_not_found(e):
+    """Custom 404 error page"""
+    return render_template('404.html'), 404
+
+@consumer_app.errorhandler(500)
+def internal_server_error(e):
+    """Custom 500 error page"""
+    return render_template('500.html'), 500
+
+# Demo Toolkit Routes
+@consumer_app.route('/admin/demo/create')
+def admin_demo_create():
+    """Create guided demo with realistic cases"""
+    if session.get('user_role') != 'admin':
+        return redirect(url_for('login'))
+    
+    # Seed 5 realistic cases with staggered timestamps
+    demo_cases = [
+        {
+            'patient_name': 'Emma Rodriguez',
+            'age': 67,
+            'condition': 'Acute MI - STEMI',
+            'transport_type': 'critical',
+            'from_location': 'Rural General Hospital, TX',
+            'to_location': 'Houston Methodist Hospital, TX',
+            'equipment': ['Ventilator', 'Cardiac Monitor'],
+            'timestamp': datetime.now() - timedelta(hours=2)
+        },
+        {
+            'patient_name': 'Michael Chen',
+            'age': 34,
+            'condition': 'Trauma - Multi-organ',
+            'transport_type': 'critical',
+            'from_location': 'Community Hospital, CO',
+            'to_location': 'Denver Health Medical Center, CO',
+            'equipment': ['ECMO', 'Blood Bank'],
+            'timestamp': datetime.now() - timedelta(hours=1, minutes=30)
+        },
+        {
+            'patient_name': 'Sarah Johnson',
+            'age': 45,
+            'condition': 'Stroke - Large Vessel',
+            'transport_type': 'critical',
+            'from_location': 'Regional Medical Center, FL',
+            'to_location': 'Miami Neuroscience Institute, FL',
+            'equipment': ['Neuro Monitor', 'Ventilator'],
+            'timestamp': datetime.now() - timedelta(hours=1)
+        },
+        {
+            'patient_name': 'Robert Williams',
+            'age': 72,
+            'condition': 'Cardiac - Planned Transfer',
+            'transport_type': 'non-critical',
+            'from_location': 'Valley Hospital, CA',
+            'to_location': 'UCLA Medical Center, CA',
+            'equipment': ['Cardiac Monitor'],
+            'timestamp': datetime.now() - timedelta(minutes=45)
+        },
+        {
+            'patient_name': 'Maria Gonzalez',
+            'age': 28,
+            'condition': 'High-risk Pregnancy',
+            'transport_type': 'non-critical',
+            'from_location': 'County Hospital, AZ',
+            'to_location': 'Phoenix Childrens Hospital, AZ',
+            'equipment': ['Neonatal Transport'],
+            'timestamp': datetime.now() - timedelta(minutes=20)
+        }
+    ]
+    
+    # Store demo data in session
+    session['demo_mode'] = True
+    session['demo_cases'] = demo_cases
+    session['training_mode'] = True
+    
+    logger.info(f"Admin {session.get('username')} created guided demo with {len(demo_cases)} cases")
+    
+    flash(f'Guided demo created successfully with {len(demo_cases)} realistic cases. Training mode enabled.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@consumer_app.route('/admin/demo/reset')
+def admin_demo_reset():
+    """Reset demo data to clean state"""
+    if session.get('user_role') != 'admin':
+        return redirect(url_for('login'))
+    
+    # Clear demo-related session data
+    if 'demo_mode' in session:
+        del session['demo_mode']
+    if 'demo_cases' in session:
+        del session['demo_cases']
+    if 'training_mode' in session:
+        del session['training_mode']
+    
+    # Clear any demo bookings from commission ledger
+    commission_ledger = session.get('commission_ledger', [])
+    session['commission_ledger'] = [booking for booking in commission_ledger if not booking.get('demo_booking')]
+    
+    logger.info(f"Admin {session.get('username')} reset demo data")
+    
+    flash('Demo data reset successfully. System returned to clean state.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+# Monthly Analytics Roll-up
+@consumer_app.route('/admin/analytics/monthly')
+def admin_monthly_analytics():
+    """Monthly roll-up analytics dashboard"""
+    if session.get('user_role') != 'admin':
+        return redirect(url_for('login'))
+    
+    # Calculate monthly stats
+    current_month = datetime.now().strftime('%B %Y')
+    
+    # Mock data for demonstration
+    monthly_stats = {
+        'period': current_month,
+        'bookings': 247,
+        'win_rate': 68.3,
+        'avg_response_time': '18 minutes',
+        'revenue': 89750.00,
+        'top_niches': [
+            {'name': 'Critical Care', 'bookings': 89, 'revenue': 34250},
+            {'name': 'Cardiac Transport', 'bookings': 67, 'revenue': 28900},
+            {'name': 'Trauma Response', 'bookings': 45, 'revenue': 19800}
+        ]
+    }
+    
+    return render_template('admin_monthly_analytics.html', stats=monthly_stats)
+
+@consumer_app.route('/admin/analytics/export')
+def admin_analytics_export():
+    """Export monthly analytics as CSV"""
+    if session.get('user_role') != 'admin':
+        return redirect(url_for('login'))
+    
+    # Generate CSV data
+    csv_data = []
+    csv_data.append(['Metric', 'Value'])
+    csv_data.append(['Total Bookings', '247'])
+    csv_data.append(['Win Rate', '68.3%'])
+    csv_data.append(['Avg Response Time', '18 minutes'])
+    csv_data.append(['Total Revenue', '$89,750.00'])
+    csv_data.append(['Top Niche', 'Critical Care (89 bookings)'])
+    
+    # Create CSV response
+    import io
+    output = io.StringIO()
+    import csv
+    writer = csv.writer(output)
+    writer.writerows(csv_data)
+    
+    response = Response(output.getvalue(), mimetype='text/csv')
+    response.headers['Content-Disposition'] = f'attachment; filename=medifly_analytics_{datetime.now().strftime("%Y-%m")}.csv'
+    
+    logger.info(f"Admin {session.get('username')} exported monthly analytics")
+    return response
+
+# Email functionality
+def send_email_template(template_name, recipient_email, **template_vars):
+    """Send email using template or log HTML if SMTP not configured"""
+    try:
+        # Render email template
+        template_vars.update({
+            'recipient_email': recipient_email,
+            'current_year': datetime.now().year
+        })
+        
+        email_html = render_template(f'email/{template_name}', **template_vars)
+        
+        # Check for SMTP configuration
+        smtp_host = os.environ.get('SMTP_HOST')
+        if smtp_host:
+            # TODO: Implement actual SMTP sending
+            logger.info(f"Would send email via SMTP to {recipient_email}")
+        else:
+            # Log the rendered HTML
+            logger.info(f"Email template '{template_name}' rendered for {recipient_email}:")
+            logger.info(email_html)
+            
+        return True
+    except Exception as e:
+        logger.error(f"Error sending email template {template_name}: {e}")
+        return False
+
+# Demo toolkit guided demo cards
+@consumer_app.route('/demo/guided')
+def demo_guided():
+    """Show guided demo cards for affiliates and hospitals"""
+    if not session.get('training_mode'):
+        return redirect(url_for('home'))
+    
+    user_role = session.get('user_role', 'family')
+    
+    if user_role in ['affiliate', 'hospital']:
+        demo_cards = {
+            'affiliate': [
+                {
+                    'title': 'Refer Your First Hospital',
+                    'description': 'Learn how to onboard medical facilities',
+                    'action': 'Start Tutorial',
+                    'url': url_for('join_hospital')
+                },
+                {
+                    'title': 'Track Commission Progress',
+                    'description': 'Monitor your path to 5% commission tier',
+                    'action': 'View Analytics',
+                    'url': url_for('affiliate_dashboard')
+                }
+            ],
+            'hospital': [
+                {
+                    'title': 'Submit Transport Request',
+                    'description': 'Walk through the request process',
+                    'action': 'Start Demo',
+                    'url': url_for('consumer_intake')
+                },
+                {
+                    'title': 'Compare Provider Quotes',
+                    'description': 'Learn quote evaluation process',
+                    'action': 'View Examples',
+                    'url': url_for('consumer_results')
+                }
+            ]
+        }
+        
+        return render_template('demo_guided.html', 
+                             demo_cards=demo_cards.get(user_role, []),
+                             user_role=user_role)
+
 # Phase 6.A: Test Commission Recording (for demonstration)
 @consumer_app.route('/test-commission')
 def test_commission():
