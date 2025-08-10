@@ -17,7 +17,7 @@ consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-ch
 DEMO_USERS = {
     'family': {'password': 'demo123', 'role': 'family', 'name': 'Sarah Johnson'},
     'hospital': {'password': 'demo123', 'role': 'hospital', 'name': 'Dr. Michael Chen'},
-    'provider': {'password': 'demo123', 'role': 'provider', 'name': 'Captain Lisa Martinez'},
+    'affiliate': {'password': 'demo123', 'role': 'affiliate', 'name': 'Captain Lisa Martinez'},
     'mvp': {'password': 'demo123', 'role': 'mvp', 'name': 'Alex Thompson'},
     'admin': {'password': 'demo123', 'role': 'admin', 'name': 'Admin User'}
 }
@@ -452,13 +452,13 @@ def consumer_quotes():
     
     # Add early adopter status and enhanced data for professional display
     for i, quote in enumerate(quotes):
-        quote['early_adopter'] = i < 2  # First 2 providers are early adopters
+        quote['early_adopter'] = i < 2  # First 2 affiliates are early adopters
         quote['rating'] = random.randint(4, 5)
         quote['flight_time'] = f"{random.randint(2, 4)} hours"
         quote['aircraft_type'] = random.choice(['Medical Helicopter', 'Fixed Wing Aircraft', 'Medical Jet'])
         quote['crew_size'] = '2 Medical Professionals'
         quote['certifications'] = 'FAA Part 135 + Medical'
-        quote['name'] = quote.get('provider_name', f"Provider {chr(65 + i)}")
+        quote['name'] = quote.get('affiliate_name', f"Affiliate {chr(65 + i)}")
         quote['base_price'] = quote['total_cost'] - quote.get('equipment_cost', 0)
     
     return render_template('consumer_quotes_enhanced.html',
@@ -504,9 +504,9 @@ def subscribe_post(plan):
 @consumer_app.route('/confirm')
 def consumer_confirm():
     """Enhanced confirmation with account creation requirement and fee breakdown"""
-    provider_id = request.args.get('provider')
+    affiliate_id = request.args.get('affiliate')
     
-    if not provider_id or 'patient_data' not in session:
+    if not affiliate_id or 'patient_data' not in session:
         flash('Invalid booking session. Please start over.', 'error')
         return redirect(url_for('consumer_intake'))
     
@@ -520,24 +520,24 @@ def consumer_confirm():
     
     selected_quote = None
     for quote in quotes:
-        if quote['provider_id'] == provider_id:
+        if quote['affiliate_id'] == affiliate_id:
             selected_quote = quote
             break
     
     if not selected_quote:
-        flash('Selected provider not found. Please choose again.', 'error')
+        flash('Selected affiliate not found. Please choose again.', 'error')
         return redirect(url_for('consumer_quotes'))
     
     session['selected_quote'] = selected_quote
     
     medfly_fee = MEDFLY_CONFIG['non_refundable_fee']
-    provider_payment = selected_quote['total_cost'] - medfly_fee
+    affiliate_payment = selected_quote['total_cost'] - medfly_fee
     
     fee_breakdown = {
         'total_cost': selected_quote['total_cost'],
         'medfly_fee': medfly_fee,
-        'provider_payment': provider_payment,
-        'refundable_amount': provider_payment
+        'affiliate_payment': affiliate_payment,
+        'refundable_amount': affiliate_payment
     }
     
     return render_template('consumer_confirm.html',
@@ -556,7 +556,7 @@ def create_account_confirm():
     
     if not all([contact_name, email, password]):
         flash('Please fill in all required fields.', 'error')
-        return redirect(url_for('consumer_confirm', provider=session.get('selected_quote', {}).get('provider_id')))
+        return redirect(url_for('consumer_confirm', affiliate=session.get('selected_quote', {}).get('affiliate_id')))
     
     session['user_email'] = email
     session['contact_name'] = contact_name
@@ -708,8 +708,8 @@ def ai_command():
 @consumer_app.route('/partner_dashboard')
 def partner_dashboard():
     """Partner dashboard with bookings and revenue"""
-    if not session.get('logged_in') or session.get('user_role') != 'provider':
-        flash('Provider access required.', 'error')
+    if not session.get('logged_in') or session.get('user_role') != 'affiliate':
+        flash('Affiliate access required.', 'error')
         return redirect(url_for('login'))
     
     # Mock partner data
@@ -730,6 +730,16 @@ def partner_dashboard():
     return render_template('partner_dashboard.html', 
                          bookings=partner_bookings, 
                          stats=partner_stats)
+
+@consumer_app.route('/join_affiliate')
+def join_affiliate():
+    """Join as Affiliate (Air Operator)"""
+    return render_template('join_affiliate.html')
+
+@consumer_app.route('/join_hospital')
+def join_hospital():
+    """Join as Hospital/Clinic"""
+    return render_template('join_hospital.html')
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

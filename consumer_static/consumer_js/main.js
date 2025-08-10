@@ -324,7 +324,7 @@ function initializeBotUI() {
                         value: 'severity'
                     },
                     {
-                        text: 'Provider Comparison',
+                        text: 'Affiliate Comparison',
                         value: 'providers'
                     },
                     {
@@ -356,7 +356,7 @@ function handleChatbotResponse(choice) {
             response = 'Severity Guide for your loved one: Level 1 (Minor - stable injuries like sprains), Level 2 (Stable but needs monitoring), Level 3 (Serious - immediate medical attention), Level 4 (Critical - ICU care required), Level 5 (Life-threatening - ventilator/life support needed). Select a level and I\'ll recommend appropriate equipment.';
             break;
         case 'providers':
-            response = 'Provider comparison for your family: AirMed Response (Premium care - $128,500, ICU certified, 3h ETA), REVA CriticalCare (Doctor onboard - $112,000, physician accompanies, 5h ETA), MercyWings Global (Family-friendly - $102,000, compassionate care, 6h ETA). Choose based on your loved one\'s needs and urgency.';
+            response = 'Affiliate comparison for your family: AirMed Response (Premium care - $128,500, ICU certified, 3h ETA), REVA CriticalCare (Doctor onboard - $112,000, physician accompanies, 5h ETA), MercyWings Global (Family-friendly - $102,000, compassionate care, 6h ETA). Choose based on your loved one\'s needs and urgency.';
             break;
         case 'family':
             response = 'Family accommodations available: Family Seat (+$5,000 - allows one family member to accompany your loved one), VIP Cabin (+$10,000 - enhanced comfort and privacy). We also provide regular updates throughout the journey to keep you informed about your loved one\'s condition.';

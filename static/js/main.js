@@ -513,7 +513,7 @@ function initializeBotUI() {
                         value: 'severity'
                     },
                     {
-                        text: 'Provider Comparison',
+                        text: 'Affiliate Comparison',
                         value: 'providers'
                     },
                     {
@@ -549,7 +549,7 @@ function handleChatbotResponse(choice) {
             response = 'Severity Guide: Level 1 (Minor - broken bones, stable injuries), Level 2 (Moderate - needs monitoring), Level 3 (Serious - immediate medical attention), Level 4 (Critical - ICU care required), Level 5 (Life-threatening - ventilator/life support needed). Select a level and I\'ll recommend appropriate equipment.';
             break;
         case 'providers':
-            response = 'Provider comparison: AirMed Response (Premium - $128,500, ICU certified, 3h ETA), REVA CriticalCare (Standard - $112,000, Doctor onboard, 5h ETA), MercyWings Global (Budget - $102,000, Basic evacuation, 6h ETA). Choose based on urgency and medical needs.';
+            response = 'Affiliate comparison: AirMed Response (Premium - $128,500, ICU certified, 3h ETA), REVA CriticalCare (Standard - $112,000, Doctor onboard, 5h ETA), MercyWings Global (Budget - $102,000, Basic evacuation, 6h ETA). Choose based on urgency and medical needs.';
             break;
         case 'pricing':
             response = 'Base costs: AirMed $128,500, REVA $112,000, MercyWings $102,000. Optional add-ons: Family Seat (+$5,000 - allows one family member), VIP Cabin (+$10,000 - enhanced comfort and privacy). Prices include medical team and basic equipment.';

@@ -366,8 +366,11 @@
                         <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
                             Next<i class="fas fa-arrow-right ms-2"></i>
                         </button>
+                        <div class="disclaimer mb-3" id="disclaimerText" style="display: none;">
+                            MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+                        </div>
                         <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
-                            <i class="fas fa-search me-2"></i>Find Providers
+                            <i class="fas fa-search me-2"></i>Find Affiliates
                         </button>
                     </div>
                 </form>
@@ -433,6 +436,7 @@ function updateNavigation() {
     document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-block';
     document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-block';
     document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+    document.getElementById('disclaimerText').style.display = currentStep === totalSteps ? 'block' : 'none';
 }
 
 function updateStepIndicator() {

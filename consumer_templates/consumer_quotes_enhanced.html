@@ -437,7 +437,7 @@
                         {% if session.get('user_role') == 'mvp' %}
                             {{ quote.affiliate_name }}
                         {% else %}
-                            Provider {{ quote.name[:1] }}****
+                            Affiliate {{ quote.name[:1] }}****
                         {% endif %}
                     </div>
                     <div class="provider-rating">
@@ -508,7 +508,7 @@
         <div class="col-md-4">
             <div class="text-center">
                 <h4 class="text-primary">{{ quotes|length }}</h4>
-                <small class="text-muted">Providers Available</small>
+                <small class="text-muted">Affiliates Available</small>
             </div>
         </div>
         <div class="col-md-4">
@@ -570,7 +570,7 @@ function bookQuote(quoteIndex, providerName, totalCost) {
     
     if (confirm(message)) {
         // In production, redirect to payment processing
-        alert(`Booking confirmed!\n\nProvider: ${providerName}\nBooking Reference: BK-${Date.now()}\n\nRedirecting to secure payment...`);
+        alert(`Booking confirmed!\n\nAffiliate: ${affiliateName}\nBooking Reference: BK-${Date.now()}\n\nRedirecting to secure payment...`);
         
         // Simulate redirect to booking confirmation
         setTimeout(() => {

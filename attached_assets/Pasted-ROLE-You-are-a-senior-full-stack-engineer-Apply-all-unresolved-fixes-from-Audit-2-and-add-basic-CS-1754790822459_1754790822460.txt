@@ -1,0 +1,180 @@
+ROLE: You are a senior full‑stack engineer. Apply all unresolved fixes from Audit 2 and add basic CSS so banners/tags render correctly. Make a short PASS/FAIL summary at the end.
+
+STRICT RULES
+
+Archive, don’t delete. Use /archive/... (not /archieve).
+
+Keep only one active launcher in root: main.py that imports consumer_main_final.py.
+
+Don’t change DB schemas in this pass.
+
+If a file path doesn’t exist, create it.
+
+1) ENTRYPOINTS CLEANUP
+Move these from project root → /archive/entrypoints/ if they still exist there:
+
+consumer_main.py, consumer_main_updated.py, consumer_app.py, consumer_app_updated.py, app.py
+
+If any files are under the misspelled /archieve/..., move the entire tree to /archive/... keeping structure, then remove the empty /archieve/ folder.
+
+2) TERMINOLOGY FIXES (UI TEXT ONLY)
+In consumer_main_final.py update air-operator role/labels at lines flagged in Audit 2:
+
+20, 455, 461, 507, 523, 528, 534, 711–712 → change “provider/Provider” to “affiliate/Affiliate” where the context is the air operator role.
+
+In templates under /templates/ and /consumer_templates/: replace visible role labels “Provider” → “Affiliate” where it refers to air operators. If a “Provider” label actually means the requester, change to “Hospital/Clinic”.
+
+In JS under /static/ and /consumer_static/: update any UI labels/messages that show “Provider” to “Affiliate” (role context only).
+
+3) LIABILITY DISCLAIMER (FOUR SCREENS)
+Insert the exact text below in these places (if missing):
+
+sql
+Copy
+Edit
+MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+Intake page(s): all consumer_templates/consumer_intake*.html — add near the submit area (before the button), wrapped in a <div class="disclaimer">…</div>.
+
+Quotes: keep if already present in consumer_templates/consumer_quotes_enhanced.html. If not, add immediately below the compact list container.
+
+Confirm: all consumer_templates/consumer_confirm*.html — add near the top of the summary card.
+
+Footer/Base: consumer_templates/consumer_base.html (or your base layout) — add in the footer area in small text.
+
+4) JOIN ROUTES & NAV
+In consumer_main_final.py add minimal routes if missing:
+
+less
+Copy
+Edit
+@consumer_app.route('/join_affiliate')
+def join_affiliate(): return render_template('join_affiliate.html')
+
+@consumer_app.route('/join_hospital')
+def join_hospital(): return render_template('join_hospital.html')
+Create placeholder templates if they don’t exist:
+
+consumer_templates/join_affiliate.html → heading “Join as Affiliate (Air Operator)”
+
+consumer_templates/join_hospital.html → heading “Join as Hospital/Clinic”
+
+Add a one‑line note: “Signup form TBD.”
+
+Add nav links in the base layout (header menu) pointing to /join_affiliate and /join_hospital.
+
+5) TRAINING/DUMMY MODE VISUALS
+In your base layout (consumer_templates/consumer_base.html or equivalent), add a site-wide banner that shows when training is active. Use the session flag if present; otherwise use any existing training flag you implemented:
+
+html
+Copy
+Edit
+{% if session.get('training_mode') %}
+  <div class="training-banner">TRAINING MODE — DUMMY DATA</div>
+{% endif %}
+In all list templates that render requests/quotes/bookings (e.g., quotes list, requests dashboard):
+
+When an item is dummy/training data, show a small <span class="dummy-tag">Dummy</span> next to the title/label.
+
+6) DRAFT UX VISUALS
+In lists where requests appear, show a Draft badge when the request is a draft:
+
+html
+Copy
+Edit
+{% if request_obj.is_draft %}
+  <span class="badge-draft">Draft</span>
+{% endif %}
+Ensure the “Modify request” control is visible before any quote is selected. It must reload the stored draft values (locations, severity, niches, ground, date/time, notes). If a quote has been selected, disable with tooltip text: “Editing disabled after selection; start a new request.”
+
+7) COMPACT QUOTES LAYOUT ENFORCEMENT (VISUAL)
+Ensure the quotes screen shows 3–5 rows by default with a simple “View 5 more” button below the list (no giant cards).
+
+Each row should include, left→right: blinded Affiliate name + badges, price/ETA in the middle, actions (Select & Reveal, Compare) on the right.
+
+Keep the liability disclaimer directly under the list.
+
+8) CSS: ADD/UPDATE STYLES
+Ensure a primary CSS file exists (/consumer_static/css/main.css or /static/css/style.css). If neither exists, create /consumer_static/css/main.css.
+
+Add/update the following CSS rules (append if the file exists):
+
+css
+Copy
+Edit
+/* Training banner */
+.training-banner{
+  position: sticky; top:0; z-index: 1030;
+  width: 100%;
+  padding: 8px 12px;
+  text-align: center;
+  background: #f1f1f1;
+  border-bottom: 1px solid #ddd;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+
+/* Dummy tags */
+.dummy-tag{
+  display:inline-block;
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  color:#555;
+  background:#fafafa;
+  margin-left: 6px;
+}
+
+/* Draft badge */
+.badge-draft{
+  display:inline-block;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color:#6c4a00;
+  background:#fff2cc;
+  border: 1px solid #f3d27a;
+  margin-left: 6px;
+}
+
+/* Liability disclaimer block */
+.disclaimer{
+  margin-top: 8px;
+  font-size: 12px;
+  color:#6c757d;
+}
+
+/* Compact quotes list spacing */
+.quotes-compact .quote-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 12px; padding: 10px 12px; border:1px solid #eee; border-radius:8px;
+  margin-bottom: 8px; background:#fff;
+}
+.quotes-compact .quote-price{ font-weight:700; font-size: 18px; }
+.quotes-compact .quote-actions button{ margin-left:8px; }
+Make sure this CSS file is linked in your base layout (consumer_base.html or equivalent), e.g.:
+
+html
+Copy
+Edit
+<link rel="stylesheet" href="{{ url_for('static', filename='consumer_static/css/main.css') }}">
+If your static root differs, adjust the path so the browser can load the file.
+
+9) FINAL VERIFICATION OUTPUT
+After applying, print a concise summary with:
+
+ENTRYPOINTS: list of root files kept and list of files moved to /archive/entrypoints/
+
+TERMINOLOGY: number of occurrences updated (py/html/js)
+
+LIABILITY: PASS/FAIL per screen with file paths
+
+TRAINING VISUALS: PASS/FAIL + file paths where banner/tag are present
+
+JOIN ROUTES: PASS/FAIL + file paths of routes and nav links
+
+DRAFT UX: PASS/FAIL + file paths where “Draft” badge and “Modify request” appear
+
+CSS: which file was updated/created and confirmation that it’s linked in base layout
+
+End with READY FOR PHASE 3 if no blocking FAIL remains.

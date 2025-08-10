@@ -57,7 +57,7 @@ function processGrandmaOrlandoCommand() {
 }
 
 function processCriticalCommand() {
-    showAIResponse('For emergency/critical transport, I recommend same-day options with weather monitoring. This includes a 20% urgency fee. Would you like to see critical transport providers?');
+    showAIResponse('For emergency/critical transport, I recommend same-day options with weather monitoring. This includes a 20% urgency fee. Would you like to see critical transport affiliates?');
     setTimeout(() => {
         if (window.location.pathname === '/') {
             window.location.href = '/intake?type=critical';
@@ -282,7 +282,7 @@ function updateEquipmentCostDisplay(totalCost, selectedEquipment) {
             </div>
             <small class="text-muted d-block mt-1">
                 <i class="fas fa-info-circle me-1"></i>
-                Provider may recommend additional life-saving equipment during pre-flight assessment.
+                Affiliate may recommend additional life-saving equipment during pre-flight assessment.
             </small>
         `;
         costDisplay.style.display = 'block';
@@ -303,13 +303,13 @@ function updateSameDayPricing() {
             warning.innerHTML = `
                 <h6><i class="fas fa-exclamation-triangle me-2"></i>Same-Day Transport Notice</h6>
                 <ul class="mb-2">
-                    <li><strong>20% urgency fee</strong> will be added to all provider quotes</li>
+                    <li><strong>20% urgency fee</strong> will be added to all affiliate quotes</li>
                     <li><strong>Weather dependent</strong> - flights may be delayed or canceled</li>
-                    <li><strong>Limited availability</strong> - fewer providers for immediate departure</li>
+                    <li><strong>Limited availability</strong> - fewer affiliates for immediate departure</li>
                     <li><strong>Priority scheduling</strong> - takes precedence over planned transports</li>
                 </ul>
                 <small class="text-muted">
-                    Same-day requests are subject to provider availability and weather conditions.
+                    Same-day requests are subject to affiliate availability and weather conditions.
                 </small>
             `;
             
@@ -355,8 +355,8 @@ function triggerFormUpdate() {
     console.log('Form updates triggered');
 }
 
-// Handle provider name blurring on results page
-function initializeProviderBlurring() {
+// Handle affiliate name blurring on results page
+function initializeAffiliateBlurring() {
     const providerNames = document.querySelectorAll('.provider-name');
     providerNames.forEach(name => {
         const originalName = name.dataset.actualName;
