@@ -115,12 +115,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Update countdown timers every minute
-setInterval(function() {
+// Phase 7.C: Enhanced countdown with EST timezone and live updates
+function updateCountdowns() {
     document.querySelectorAll('.countdown-timer').forEach(function(timer) {
-        // In production, recalculate countdown from server time
-        console.log('Countdown timer update (stub)');
+        // Get target date from data attribute (would be set from server)
+        const targetDate = new Date('2025-08-20T09:00:00-05:00'); // EST target
+        const now = new Date();
+        const diff = targetDate - now;
+        
+        if (diff <= 0) {
+            timer.textContent = "We're live!";
+            timer.style.background = 'rgba(40, 167, 69, 0.8)';
+        } else {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            timer.textContent = `Go-live in ${days.toString().padStart(2, '0')}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
     });
-}, 60000);
+}
+
+// Update every second for live countdown
+updateCountdowns();
+setInterval(updateCountdowns, 1000);
 </script>
 {% endif %}

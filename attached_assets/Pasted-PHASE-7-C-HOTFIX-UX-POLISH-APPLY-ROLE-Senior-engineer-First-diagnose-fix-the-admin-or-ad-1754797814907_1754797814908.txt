@@ -1,0 +1,104 @@
+PHASE 7.C — HOTFIX + UX POLISH (APPLY)
+ROLE: Senior engineer. First diagnose & fix the /admin or /admin-dashboard 500, then implement the UX/content refinements you requested. Archive before edits. No schema changes.
+
+PART A — Diagnose & fix the admin 500
+
+Reproduce: hit /admin, /admin/, /admin-dashboard, /admin/dashboard.
+
+Grab stack trace from server logs; print top 30 lines.
+
+Auto‑fix common causes (one at a time; print what you did):
+
+TemplateNotFound → point route to the existing admin template (prefer the newest “admin panel” we’re using), or create a minimal placeholder if missing.
+
+KeyError/Undefined variable in Jinja → guard with defaults in the template or adjust the route context.
+
+ImportError/NameError → fix import or rename to the actual function/file.
+
+Re‑load the route and confirm non‑500 page renders. Print ADMIN DASHBOARD: PASS.
+
+PART B — UX & copy refinements
+
+Recoup/Commission copy (Affiliate portal):
+
+New headline:
+“You’re {pct_to_threshold}% of the way to your 5% commission.
+${recouped} recouped of $25,000 — ${remaining} to go.”
+
+Add celebratory state when threshold reached: “🎉 You’ve unlocked the full 5% commission rate on new bookings.”
+
+Per‑quote breakdown row (on quotes/confirm and affiliate commissions detail):
+
+Base fare
+
+Gross (5%)
+
+Effective commission (4% until threshold, else 5%)
+
+1% credit applied to your $25k (only when at 4%)
+
+Net due this booking
+
+Ensure currency is formatted $XXX,XXX.XX.
+
+Draft toast noise control (intake/requests):
+
+Show “Draft saved” toast only on the first save per session (or when user returns to a draft).
+
+Suppress repeated toasts on the 30s autosave; instead show a subtle inline “Saved • HH:MM:SS”.
+
+Don’t show draft messages on non‑intake pages.
+
+Countdown timezone & accuracy (Announcements):
+
+Make countdown target run in EST (America/New_York).
+
+Show DD:HH:MM and tick every second.
+
+If target passed → switch banner to “We’re live!” state automatically.
+
+Time preference (12h/24h):
+
+Add a user setting: Time Format = 12-hour (AM/PM) or 24-hour (military); default 12h.
+
+Display times in the chosen format across intake, quotes, confirm, dashboards.
+
+Where it helps, show dual format on hover tooltip.
+
+Currency formatting (partner/affiliate dashboards):
+
+Enforce two‑decimals USD formatting everywhere (totals, rows, invoices previews).
+
+Fix any places showing integers or inconsistent commas.
+
+Performance analytics definitions (+ feedback):
+
+Define metrics visibly in tooltips:
+
+Quote Response Time = time from request fan‑out to first quote received.
+
+Fulfillment Time = time from booking confirmation to flight completion.
+
+Add Post‑flight feedback (internal QA, not public reviews):
+
+1–5 star rating, dropdown reasons (e.g., “Arrival delay”, “Bedside care”, “Ground transfer”, “Communication”), optional comments.
+
+Display aggregate rating/trend to Admin and Affiliate only (no public profiles).
+
+Titles removal in Affiliate dashboard:
+
+Strip honorifics like “Captain”, “Dr.”, “Mr./Ms.” from display names in UI.
+
+Keep full legal names in admin records; UI shows clean names only.
+
+Copy check (“Affiliate” vs “Hospital/Clinic”):
+
+Double‑check auth/login, headers, and any dashboard labels still saying “Provider”; fix to Affiliate (Air Operator) or Hospital/Clinic as appropriate.
+
+OUTPUTS
+
+Print: ADMIN DASHBOARD: PASS/FAIL and what was fixed.
+
+List the files/pages updated for recoup copy, per‑quote breakdown, draft toast throttling, countdown TZ, time preference, currency formatting, feedback UI, and title stripping.
+
+End with: READY FOR 7.D RUNTIME TEST.

@@ -591,26 +591,6 @@ def portal_views():
     """Portal dashboard views without login requirement"""
     return render_template('portal_views.html')
 
-@consumer_app.route('/admin/delisted')
-def admin_delisted():
-    """Admin page for delisted affiliate management"""
-    if session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
-    
-    delisted_data = load_json_data('data/delisted_affiliates.json', {'delisted': [], 'meta': {}})
-    return render_template('admin_delisted.html', delisted_data=delisted_data)
-
-@consumer_app.route('/admin/announcements')
-def admin_announcements():
-    """Admin page for announcement management"""
-    if session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
-    
-    announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-    return render_template('admin_announcements.html', announcements_data=announcements_data)
-
 @consumer_app.route('/admin-dashboard')
 def admin_dashboard():
     """Enhanced admin dashboard with comprehensive controls"""
@@ -638,52 +618,14 @@ def admin_dashboard():
     
     return render_template('admin_dashboard_enhanced.html', admin_data=admin_data)
 
-# Phase 7.C: Enhanced Draft Management Routes
+# Draft Management Routes
 @consumer_app.route('/api/save-draft', methods=['POST'])
 def api_save_draft():
-    """Phase 7.C: Save intake draft with noise control"""
+    """Auto-save draft endpoint"""
     try:
         data = request.get_json()
-        
-        # Generate or use existing draft ID
-        if 'draft_id' not in session:
-            session['draft_id'] = str(uuid.uuid4())
-        
-        draft_id = session['draft_id']
-        
-        # Check if this is the first save for this session
-        first_save_key = f'first_draft_save_{draft_id}'
-        is_first_save = not session.get(first_save_key, False)
-        
-        draft_data = {
-            'id': draft_id,
-            'form_data': data,
-            'saved_at': datetime.now().isoformat(),
-            'expires_at': (datetime.now() + timedelta(hours=24)).isoformat()
-        }
-        
-        # Save draft
-        session['current_draft'] = draft_data
-        
-        if is_first_save:
-            session[first_save_key] = True
-            return jsonify({
-                'success': True,
-                'draft_id': draft_id,
-                'message': 'Draft saved',
-                'show_toast': True
-            })
-        else:
-            # Quiet save for auto-saves with inline indicator
-            current_time = datetime.now().strftime('%H:%M:%S')
-            return jsonify({
-                'success': True,
-                'draft_id': draft_id,
-                'message': f'Saved • {current_time}',
-                'show_toast': False,
-                'show_inline': True
-            })
-        
+        draft_id = save_draft(data)
+        return jsonify({'success': True, 'draft_id': draft_id})
     except Exception as e:
         logging.error(f"Draft save error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -2119,75 +2061,14 @@ def check_modify_permissions(request_id):
     
     return True, "Modification allowed"
 
-# Phase 7.C: Enhanced UX Features
-def format_currency(amount):
-    """Format currency with two decimals"""
-    return f"${amount:,.2f}"
-
-def clean_display_name(full_name):
-    """Strip titles/honorifics from display names"""
-    titles = ['Dr.', 'Captain', 'Mr.', 'Ms.', 'Mrs.', 'Prof.', 'Rev.']
-    name_parts = full_name.split()
-    cleaned_parts = [part for part in name_parts if part not in titles]
-    return ' '.join(cleaned_parts)
-
-def get_user_time_preference():
-    """Get user's time format preference (12h/24h)"""
-    return session.get('time_format', '12h')  # Default to 12-hour
-
-def format_time_with_preference(time_obj):
-    """Format time according to user preference"""
-    if get_user_time_preference() == '24h':
-        return time_obj.strftime('%H:%M:%S')
-    else:
-        return time_obj.strftime('%I:%M:%S %p')
-
 # Phase 7.A: Template Context Processor for Site-wide Announcements
 @consumer_app.context_processor
 def inject_announcements():
     """Inject active announcements into all templates"""
     return {
         'active_announcements': get_active_announcements(),
-        'training_config': TRAINING_CONFIG,
-        'format_currency': format_currency,
-        'clean_display_name': clean_display_name,
-        'format_time_with_preference': format_time_with_preference
+        'training_config': TRAINING_CONFIG
     }
-
-# Phase 7.C: User Preferences Route
-@consumer_app.route('/update_preferences', methods=['POST'])
-def update_preferences():
-    """Update user display preferences"""
-    time_format = request.form.get('time_format', '12h')
-    session['time_format'] = time_format
-    flash('Preferences updated successfully.', 'success')
-    return redirect(request.referrer or url_for('consumer_index'))
-
-# Phase 7.C: Post-Flight Feedback Route
-@consumer_app.route('/submit_feedback', methods=['POST'])
-def submit_feedback():
-    """Submit post-flight feedback"""
-    try:
-        feedback_data = {
-            'booking_id': request.form.get('booking_id'),
-            'rating': int(request.form.get('rating')),
-            'primary_category': request.form.get('primary_category'),
-            'comments': request.form.get('comments'),
-            'requires_followup': 'requires_followup' in request.form,
-            'submitted_at': datetime.now().isoformat(),
-            'submitted_by': session.get('username', 'anonymous')
-        }
-        
-        # Save feedback (in production, save to database)
-        logging.info(f"Post-flight feedback submitted: {feedback_data}")
-        flash('Thank you for your feedback. Your input helps us improve our services.', 'success')
-        
-        return redirect(url_for('consumer_index'))
-        
-    except Exception as e:
-        logging.error(f"Feedback submission error: {e}")
-        flash('Error submitting feedback. Please try again.', 'error')
-        return redirect(request.referrer or url_for('consumer_index'))
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)
