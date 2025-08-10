@@ -604,50 +604,6 @@ def admin_delisted():
                          delisted_data=delisted_data,
                          active_affiliates=active_affiliates)
 
-@consumer_app.route('/admin/relist-affiliate', methods=['POST'])
-def admin_relist_affiliate():
-    """Phase 7.A: Relist affiliate with fee validation"""
-    try:
-        affiliate_id = request.form.get('affiliate_id')
-        
-        if not affiliate_id:
-            flash('Missing affiliate ID', 'error')
-            return redirect(url_for('admin_delisted'))
-        
-        # Load delisted data
-        delisted_data = load_json_data('data/delisted_affiliates.json', {'delisted': [], 'meta': {}})
-        
-        # Check if affiliate exists in delisted records
-        affiliate_found = False
-        for affiliate in delisted_data.get('delisted', []):
-            if affiliate.get('affiliate_id') == affiliate_id:
-                affiliate_found = True
-                # Check if lifetime banned (2+ strikes)
-                if affiliate.get('strikes', 0) >= 2:
-                    flash('Cannot relist lifetime banned affiliate (2+ strikes)', 'error')
-                    return redirect(url_for('admin_delisted'))
-                
-                # Mark as relisted
-                affiliate['relisted_at'] = datetime.now().isoformat()
-                affiliate['relist_fee_paid'] = True
-                affiliate['is_delisted'] = False
-                break
-        
-        if not affiliate_found:
-            flash('Affiliate not found in delisted records', 'error')
-            return redirect(url_for('admin_delisted'))
-        
-        # Save updated data
-        save_json_data('data/delisted_affiliates.json', delisted_data)
-        
-        flash(f'Affiliate {affiliate_id} has been successfully relisted', 'success')
-        return redirect(url_for('admin_delisted'))
-        
-    except Exception as e:
-        logging.error(f"Error relisting affiliate: {e}")
-        flash('Error relisting affiliate', 'error')
-        return redirect(url_for('admin_delisted'))
-
 @consumer_app.route('/admin/announcements')
 def admin_announcements():
     """Admin page for announcement management with EST timezone"""
@@ -1106,56 +1062,36 @@ def get_training_limit_status(affiliate_id):
         return {'used': 0, 'limit': 50, 'remaining': 50, 'at_limit': False}
 
 def get_active_announcements():
-    """Get active announcements with EST timezone support"""
+    """Get currently active announcements for display"""
     try:
-        from datetime import timezone, timedelta
-        
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-        est = timezone(timedelta(hours=-5))  # EST is UTC-5
-        now = datetime.now(est)
+        from datetime import timezone
+        now = datetime.now(timezone.utc)
         
-        active_announcements = []
-        for announcement in announcements_data.get('announcements', []):
-            if not announcement.get('is_active', False):
+        active = []
+        for announcement in announcements_data['announcements']:
+            if not announcement.get('active', True):
                 continue
                 
-            try:
-                # Parse dates with EST timezone
-                start_str = announcement.get('start_at', '2025-01-01T00:00:00')
-                end_str = announcement.get('end_at', '2025-12-31T23:59:59')
+            start_time = datetime.fromisoformat(announcement['start_at'].replace('Z', '+00:00'))
+            end_time = datetime.fromisoformat(announcement['end_at'].replace('Z', '+00:00'))
+            
+            if start_time <= now <= end_time:
+                # Calculate countdown if target exists
+                if announcement.get('countdown_target'):
+                    target_time = datetime.fromisoformat(announcement['countdown_target'].replace('Z', '+00:00'))
+                    if target_time > now:
+                        delta = target_time - now
+                        days = delta.days
+                        hours, remainder = divmod(delta.seconds, 3600)
+                        minutes, _ = divmod(remainder, 60)
+                        announcement['countdown_display'] = f"{days}d:{hours:02d}h:{minutes:02d}m"
+                    else:
+                        announcement['countdown_display'] = "Go-live reached!"
                 
-                # Parse as naive datetime then make timezone-aware
-                start_naive = datetime.fromisoformat(start_str.replace('Z', ''))
-                end_naive = datetime.fromisoformat(end_str.replace('Z', ''))
-                
-                start_at = start_naive.replace(tzinfo=est)
-                end_at = end_naive.replace(tzinfo=est)
-                
-                # Check if current time is within announcement window
-                if start_at <= now <= end_at:
-                    # Calculate countdown if target is set
-                    countdown_target = announcement.get('countdown_target')
-                    if countdown_target:
-                        target_naive = datetime.fromisoformat(countdown_target.replace('Z', ''))
-                        target_dt = target_naive.replace(tzinfo=est)
-                        
-                        time_diff = target_dt - now
-                        
-                        if time_diff.total_seconds() > 0:
-                            days = time_diff.days
-                            hours, remainder = divmod(time_diff.seconds, 3600)
-                            minutes, _ = divmod(remainder, 60)
-                            announcement['countdown_display'] = f"{days:02d}:{hours:02d}:{minutes:02d}"
-                        else:
-                            announcement['countdown_display'] = "00:00:00"
-                    
-                    active_announcements.append(announcement)
-            except Exception as date_error:
-                logging.error(f"Error parsing announcement dates: {date_error}")
-                continue
+                active.append(announcement)
         
-        return active_announcements
-        
+        return active
     except Exception as e:
         logging.error(f"Error getting announcements: {e}")
         return []
@@ -2301,23 +2237,10 @@ def check_modify_permissions(request_id):
 
 # Phase 7.E: Enhanced Currency Formatting
 def format_currency(amount):
-    """Enhanced currency formatting with error handling"""
+    """Format currency with commas and two decimals ($XXX,XXX.XX)"""
+    if amount is None:
+        return "$0.00"
     try:
-        if amount is None:
-            return "$0.00"
-        
-        # Handle string input (already formatted currency)
-        if isinstance(amount, str):
-            # If already starts with $, return as-is
-            if amount.startswith('$'):
-                return amount
-            # Strip non-numeric characters and parse
-            clean_amount = ''.join(c for c in amount if c.isdigit() or c == '.')
-            if clean_amount:
-                return f"${float(clean_amount):,.2f}"
-            return "$0.00"
-        
-        # Handle numeric input
         return f"${float(amount):,.2f}"
     except (ValueError, TypeError):
         return "$0.00"

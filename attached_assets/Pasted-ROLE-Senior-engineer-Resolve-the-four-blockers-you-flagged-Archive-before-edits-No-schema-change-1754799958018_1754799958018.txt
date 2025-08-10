@@ -1,0 +1,60 @@
+ROLE: Senior engineer. Resolve the four blockers you flagged. Archive before edits. No schema changes.
+
+BLOCKERS TO FIX
+
+Admin Delisted 500 — missing admin_relist_affiliate route / mis‑wired action
+
+Announcements timezone error — datetime comparison (EST)
+
+Currency formatting — double‑format conflict (ValueError)
+
+Request workflow — remove old request page; “+ New Request” must open the pancake‑stack intake
+
+1) Admin Delisted — route + template wiring
+Add/confirm POST route: /admin/relist_affiliate (or the exact name used in the template) that:
+
+Validates the affiliate isn’t lifetime‑banned (2 strikes).
+
+Sets relisted_at, clears delist flag, and (optionally) tracks “Relist fee paid” boolean.
+
+Returns to /admin/delisted with a success message.
+
+In consumer_templates/admin_delisted.html, ensure the relist action points to the exact route name above, not a placeholder.
+
+Output: print ADMIN DELISTED: relist route wired
+
+2) Announcements — EST timezone comparison
+Normalize all announcement times to aware datetimes in America/New_York:
+
+When reading start_at, end_at, and countdown_target, parse to aware datetimes in EST.
+
+When checking “is active now?”, compare using EST on both sides.
+
+Countdown display should compute target_now_diff in EST and render DD:HH:MM.
+
+Ensure banner honored only when is_active true and now ∈ [start_at, end_at].
+
+Output: print ANNOUNCEMENTS: EST comparisons fixed
+
+3) Currency formatting — single source of truth
+Create/confirm one formatting helper/filter (e.g., format_currency(value)):
+
+It should accept numbers only (int/float/Decimal).
+
+If a string comes in (already formatted), strip non‑digits and parse safely or skip reformatting.
+
+Always return $XXX,XXX.XX.
+
+Remove template‑side double‑formatting. Anywhere we were doing both backend and Jinja formatting, use only the helper.
+
+Update:
+
+Admin dashboard totals and cards
+
+Affiliate commissions list
+
+Any summaries on invoices previews
+
+Re‑run the admin dashboard view to confirm no ValueError; values render as $XX,XXX.XX.
+
+Output: print CURRENCY: unified helper applied (files updated: …)

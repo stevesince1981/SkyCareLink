@@ -107,12 +107,12 @@
     <!-- Revenue & Analytics Stats -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-value">{{ admin_data.total_revenue }}</div>
+            <div class="stat-value">${{ "{:,.0f}".format(admin_data.total_revenue) }}</div>
             <div class="stat-label">Total Revenue</div>
-            <div class="stat-change positive">+{{ admin_data.monthly_revenue }} This Month</div>
+            <div class="stat-change positive">+${{ "{:,.0f}".format(admin_data.monthly_revenue) }} This Month</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">{{ admin_data.total_users }}</div>
+            <div class="stat-value">{{ "{:,.0f}".format(admin_data.total_users) }}</div>
             <div class="stat-label">Total Users</div>
             <div class="stat-change positive">+{{ admin_data.new_users_week }} New This Week</div>
         </div>
