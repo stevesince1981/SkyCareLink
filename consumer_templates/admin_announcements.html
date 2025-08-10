@@ -133,9 +133,9 @@
 
     <!-- Active Announcements -->
     <div class="announcement-card">
-        <h3><i class="fas fa-list me-2"></i>Active Announcements ({{ announcements|length }})</h3>
+        <h3><i class="fas fa-list me-2"></i>Active Announcements ({{ announcements_data.announcements|length }})</h3>
         
-        {% if announcements %}
+        {% if announcements_data.announcements %}
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -149,7 +149,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for announcement in announcements %}
+                    {% for announcement in announcements_data.announcements %}
                     <tr>
                         <td><strong>{{ announcement.message }}</strong></td>
                         <td>
@@ -168,7 +168,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if announcement.active %}
+                            {% if announcement.active or announcement.is_active %}
                             <span class="badge bg-success">Active</span>
                             {% else %}
                             <span class="badge bg-secondary">Inactive</span>
@@ -177,8 +177,8 @@
                         <td>
                             <form method="POST" action="{{ url_for('admin_toggle_announcement') }}" style="display: inline;">
                                 <input type="hidden" name="announcement_id" value="{{ announcement.id }}">
-                                <button type="submit" class="btn btn-sm btn-outline-{{ 'danger' if announcement.active else 'success' }}">
-                                    {{ 'Deactivate' if announcement.active else 'Activate' }}
+                                <button type="submit" class="btn btn-sm btn-outline-{{ 'danger' if (announcement.active or announcement.is_active) else 'success' }}">
+                                    {{ 'Deactivate' if (announcement.active or announcement.is_active) else 'Activate' }}
                                 </button>
                             </form>
                         </td>

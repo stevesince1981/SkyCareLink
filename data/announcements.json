@@ -31,6 +31,18 @@
       "countdown_target_tz": "America/New_York",
       "created_at": "2025-08-10T05:33:31.542070",
       "updated_at": "2025-08-10T05:33:31.542075"
+    },
+    {
+      "id": "dc9c51f1-3ce9-403a-ba0b-2a09ce2877ad",
+      "message": "coming soon",
+      "style": "info",
+      "is_active": true,
+      "start_at": "2025-08-08T00:40",
+      "end_at": "2025-08-12T00:40",
+      "countdown_target": null,
+      "countdown_target_tz": "America/New_York",
+      "created_at": "2025-08-10T05:40:51.055876",
+      "updated_at": "2025-08-10T05:40:51.055885"
     }
   ]
 }
