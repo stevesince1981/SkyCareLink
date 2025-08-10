@@ -175,6 +175,29 @@
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
+                            <strong>Run Backup Now</strong>
+                            <br><small class="text-muted">Create backup of all data files and invoices</small>
+                        </div>
+                        <form method="post" action="{{ url_for('admin_backup') }}" style="display: inline;">
+                            <button type="submit" class="action-btn" style="background: #198754; color: white;">
+                                <i class="fas fa-download"></i> Backup
+                            </button>
+                        </form>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Reset Demo/Training</strong>
+                            <br><small class="text-muted">Clear demo data and reset training flags</small>
+                        </div>
+                        <form method="post" action="{{ url_for('admin_reset_demo') }}" style="display: inline;" 
+                              onsubmit="return confirm('Reset all demo/training data? This cannot be undone.');">
+                            <button type="submit" class="action-btn" style="background: #fd7e14; color: white;">
+                                <i class="fas fa-refresh"></i> Reset Demo
+                            </button>
+                        </form>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
                             <strong>Partner Control</strong>
                             <br><small class="text-muted">Configure provider partnerships</small>
                         </div>

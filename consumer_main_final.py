@@ -6,6 +6,7 @@ import csv
 import hashlib
 import hmac
 import secrets
+import shutil
 from pathlib import Path
 # import requests  # Will install if Google Places API is needed
 from datetime import datetime, timedelta, timezone
@@ -1404,7 +1405,8 @@ def admin_dashboard():
         ]
     }
     
-    return render_template('admin_dashboard_enhanced.html', admin_data=admin_data)
+    config = load_config()
+    return render_template('admin_dashboard_enhanced.html', admin_data=admin_data, config=config)
 
 # Phase 7.C: Enhanced Draft Management Routes
 @consumer_app.route('/api/save-draft', methods=['POST'])
@@ -1915,6 +1917,162 @@ def consumer_intake_post():
 def legacy_redirects():
     """301 redirects from legacy routes to homepage"""
     return redirect(url_for('consumer_index'), code=301)
+
+# System utilities and health checks
+def load_config():
+    """Load system configuration"""
+    try:
+        with open('data/config.json', 'r') as f:
+            return json.load(f)
+    except:
+        return {"env": "staging", "flags": {"training_mode": False, "email_enabled": False, "sms_enabled": False}}
+
+def log_error(error_type, message, details=None):
+    """Log errors to error_log.json"""
+    try:
+        error_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": error_type,
+            "message": str(message),
+            "details": details or {}
+        }
+        
+        try:
+            with open('data/error_log.json', 'r') as f:
+                error_log = json.load(f)
+        except:
+            error_log = {"errors": []}
+        
+        error_log["errors"].append(error_entry)
+        
+        # Keep only last 1000 errors
+        if len(error_log["errors"]) > 1000:
+            error_log["errors"] = error_log["errors"][-1000:]
+        
+        with open('data/error_log.json', 'w') as f:
+            json.dump(error_log, f, indent=2)
+            
+        logging.error(f"Error logged: {error_type} - {message}")
+    except Exception as e:
+        logging.error(f"Failed to log error: {e}")
+
+def run_backup():
+    """Create backup of critical data files"""
+    try:
+        backup_date = datetime.now().strftime('%Y-%m-%d-%H%M%S')
+        backup_dir = f'data/backups/{backup_date}'
+        os.makedirs(backup_dir, exist_ok=True)
+        
+        # Backup JSON files
+        for json_file in ['security_log.json', 'rate_limits.json', 'user_settings.json', 'config.json', 'error_log.json', 'manifest.json']:
+            try:
+                if os.path.exists(f'data/{json_file}'):
+                    shutil.copy2(f'data/{json_file}', f'{backup_dir}/{json_file}')
+            except Exception as e:
+                logging.error(f"Failed to backup {json_file}: {e}")
+        
+        # Backup invoices directory if it exists
+        if os.path.exists('data/invoices'):
+            shutil.copytree('data/invoices', f'{backup_dir}/invoices', dirs_exist_ok=True)
+        
+        backup_info = {
+            "timestamp": datetime.now().isoformat(),
+            "backup_dir": backup_dir,
+            "files_backed_up": os.listdir(backup_dir) if os.path.exists(backup_dir) else []
+        }
+        
+        with open(f'{backup_dir}/backup_info.json', 'w') as f:
+            json.dump(backup_info, f, indent=2)
+        
+        return {"success": True, "backup_dir": backup_dir, "files": backup_info["files_backed_up"]}
+    except Exception as e:
+        log_error("backup_failed", str(e))
+        return {"success": False, "error": str(e)}
+
+def reset_demo_data():
+    """Reset demo/training data while preserving production data"""
+    try:
+        reset_actions = []
+        
+        # Clear session data
+        session.clear()
+        reset_actions.append("Cleared session data")
+        
+        # Reset training flags in config
+        config = load_config()
+        config["flags"]["training_mode"] = False
+        with open('data/config.json', 'w') as f:
+            json.dump(config, f, indent=2)
+        reset_actions.append("Reset training mode flag")
+        
+        # Log audit entry
+        audit_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "action": "demo_reset",
+            "user": session.get('username', 'system'),
+            "actions": reset_actions
+        }
+        
+        try:
+            with open('data/security_log.json', 'r') as f:
+                security_log = json.load(f)
+        except:
+            security_log = {"events": []}
+        
+        security_log["events"].append(audit_entry)
+        
+        with open('data/security_log.json', 'w') as f:
+            json.dump(security_log, f, indent=2)
+        
+        return {"success": True, "actions": reset_actions}
+    except Exception as e:
+        log_error("demo_reset_failed", str(e))
+        return {"success": False, "error": str(e)}
+
+@consumer_app.route('/healthz')
+def healthcheck():
+    """Health check endpoint"""
+    try:
+        config = load_config()
+        return jsonify({
+            "ok": True,
+            "ts": datetime.now().isoformat(),
+            "env": config.get("env", "unknown"),
+            "version": "1.0.0"
+        })
+    except Exception as e:
+        log_error("healthcheck_failed", str(e))
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+@consumer_app.route('/admin/backup', methods=['POST'])
+def admin_backup():
+    """Admin endpoint to trigger backup"""
+    if session.get('user_role') != 'admin':
+        flash('Access denied', 'error')
+        return redirect(url_for('login'))
+    
+    result = run_backup()
+    if result["success"]:
+        flash(f'Backup completed: {result["backup_dir"]}', 'success')
+    else:
+        flash(f'Backup failed: {result["error"]}', 'error')
+    
+    return redirect(url_for('admin_dashboard_enhanced'))
+
+@consumer_app.route('/admin/reset-demo', methods=['POST'])
+def admin_reset_demo():
+    """Admin endpoint to reset demo/training data"""
+    if session.get('user_role') != 'admin':
+        flash('Access denied', 'error')
+        return redirect(url_for('login'))
+    
+    result = reset_demo_data()
+    if result["success"]:
+        flash(f'Demo reset completed: {", ".join(result["actions"])}', 'success')
+    else:
+        flash(f'Demo reset failed: {result["error"]}', 'error')
+    
+    return redirect(url_for('admin_dashboard_enhanced'))
 
 @consumer_app.route('/quotes')
 def consumer_quotes():
