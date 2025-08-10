@@ -1,0 +1,83 @@
+PHASE 5.B — RUNTIME TEST: Quote Display & Fairness Features
+ROLE: QA navigator, read-only verification in running app.
+
+TASKS
+
+Fan-out timer stub
+
+Submit a new request via /intake.
+
+On the quotes page, confirm you see:
+
+Copy: “Quotes typically arrive within 15–60 minutes.”
+
+A small cosmetic timer counting up.
+
+Initial compact view
+
+Confirm only 5 quotes show at first.
+
+Check that the compact layout still matches previous styling.
+
+“View 5 more”
+
+Click View 5 more → confirm the next batch appears (if available).
+
+Helper text “Up to a 2-hour delay…” is visible.
+
+Fairness deprioritization
+
+In /admin/affiliates, temporarily set one affiliate’s response_rate < 50%.
+
+Submit another intake request → verify that affiliate still appears but slightly lower in the list.
+
+Spotlight badge
+
+In /admin/affiliates, mark an affiliate with < 50 bookings OR join_date < 90 days.
+
+Submit request → verify Spotlight badge appears.
+
+Zero-result compassionate state
+
+Force test: temporarily disable all affiliates or filter results.
+
+Submit request → confirm you see:
+
+Warm message: “We’re sorry—no options yet…”
+
+Yes/No opt-in for affiliate contact with third-party options.
+
+Modify request & selection rules
+
+From quotes page, click Modify request → prefilled form appears.
+
+Save → verify a new version number (N+1) is generated; previous quotes retired.
+
+Select a quote → affiliate name reveals; intake locks from edits.
+
+Ground-included badge
+
+Locate a quote with “Ground included” flag → hover shows tooltip.
+
+Liability disclaimer
+
+Confirm disclaimer text still displays directly under quotes list.
+
+OUTPUT FORMAT
+
+sql
+Copy
+Edit
+=== PHASE 5.B RUNTIME REPORT ===
+1) Fan-out timer stub — PASS/FAIL — note
+2) Initial compact view — PASS/FAIL — note
+3) View 5 more — PASS/FAIL — note
+4) Fairness deprioritization — PASS/FAIL — note
+5) Spotlight badge — PASS/FAIL — note
+6) Zero-result compassionate state — PASS/FAIL — note
+7) Modify & selection rules — PASS/FAIL — note
+8) Ground-included badge — PASS/FAIL — note
+9) Liability disclaimer — PASS/FAIL — note
+READY FOR PHASE 6? (YES/NO)
+Minor issues:
+Once you run this and paste the runtime report here, I can move you straight into Phase 6: Commission Ledger + Weekly ACH Export.
