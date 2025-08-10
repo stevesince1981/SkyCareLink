@@ -599,63 +599,17 @@ def admin_delisted():
         return redirect(url_for('consumer_index'))
     
     delisted_data = load_json_data('data/delisted_affiliates.json', {'delisted': [], 'meta': {}})
-    active_affiliates = get_active_affiliates()
-    return render_template('admin_delisted.html', 
-                         delisted_data=delisted_data,
-                         active_affiliates=active_affiliates)
+    return render_template('admin_delisted.html', delisted_data=delisted_data)
 
 @consumer_app.route('/admin/announcements')
 def admin_announcements():
-    """Admin page for announcement management with EST timezone"""
+    """Admin page for announcement management"""
     if session.get('user_role') != 'admin':
         flash('Admin access required.', 'error')
         return redirect(url_for('consumer_index'))
     
     announcements_data = load_json_data('data/announcements.json', {'announcements': []})
     return render_template('admin_announcements.html', announcements_data=announcements_data)
-
-@consumer_app.route('/admin/announcements', methods=['POST'])
-def admin_announcements_post():
-    """Create or update announcements"""
-    if session.get('user_role') != 'admin':
-        flash('Admin access required.', 'error')
-        return redirect(url_for('consumer_index'))
-    
-    try:
-        action = request.form.get('action', 'create')
-        announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-        
-        if action == 'create':
-            new_announcement = {
-                'id': f"ann_{len(announcements_data['announcements']) + 1:03d}",
-                'message': request.form.get('message', 'MediFly Platform 2.0 launching soon...'),
-                'style': request.form.get('style', 'info'),
-                'start_at': request.form.get('start_at'),
-                'end_at': request.form.get('end_at'),
-                'countdown_target_tz': 'America/New_York',
-                'is_active': True,
-                'created_at': datetime.now().isoformat(),
-                'created_by': session.get('username', 'admin')
-            }
-            announcements_data['announcements'].append(new_announcement)
-            flash('Announcement created successfully.', 'success')
-            
-        elif action == 'toggle':
-            announcement_id = request.form.get('announcement_id')
-            for announcement in announcements_data['announcements']:
-                if announcement['id'] == announcement_id:
-                    announcement['is_active'] = not announcement.get('is_active', True)
-                    status = 'activated' if announcement['is_active'] else 'deactivated'
-                    flash(f'Announcement {status} successfully.', 'success')
-                    break
-        
-        save_json_data('data/announcements.json', announcements_data)
-        return redirect(url_for('admin_announcements'))
-        
-    except Exception as e:
-        logging.error(f"Announcement management error: {e}")
-        flash('Error managing announcement.', 'error')
-        return redirect(url_for('admin_announcements'))
 
 @consumer_app.route('/admin/create_announcement', methods=['POST'])
 def admin_create_announcement():
@@ -734,10 +688,10 @@ def admin_dashboard():
         flash('Admin access required.', 'error')
         return redirect(url_for('consumer_index'))
     
-    # Admin dashboard data with proper currency formatting
+    # Admin dashboard data
     admin_data = {
-        'total_revenue': format_currency(847500),
-        'monthly_revenue': format_currency(127000),
+        'total_revenue': 847500,
+        'monthly_revenue': 127000,
         'total_users': 1247,
         'new_users_week': 89,
         'flight_requests': 342,
@@ -745,10 +699,10 @@ def admin_dashboard():
         'active_quotes': 67,
         'paid_quotes_today': 23,
         'providers': [
-            {'name': 'AeroMed Services', 'flights': 45, 'revenue': format_currency(234500)},
-            {'name': 'SkyLife Medical', 'flights': 38, 'revenue': format_currency(198750)},
-            {'name': 'CriticalCare Air', 'flights': 42, 'revenue': format_currency(215600)},
-            {'name': 'MedTransport Plus', 'flights': 31, 'revenue': format_currency(167200)}
+            {'name': 'AeroMed Services', 'flights': 45, 'revenue': 234500},
+            {'name': 'SkyLife Medical', 'flights': 38, 'revenue': 198750},
+            {'name': 'CriticalCare Air', 'flights': 42, 'revenue': 215600},
+            {'name': 'MedTransport Plus', 'flights': 31, 'revenue': 167200}
         ]
     }
     
@@ -2235,15 +2189,10 @@ def check_modify_permissions(request_id):
     
     return True, "Modification allowed"
 
-# Phase 7.E: Enhanced Currency Formatting
+# Phase 7.C: Enhanced UX Features
 def format_currency(amount):
-    """Format currency with commas and two decimals ($XXX,XXX.XX)"""
-    if amount is None:
-        return "$0.00"
-    try:
-        return f"${float(amount):,.2f}"
-    except (ValueError, TypeError):
-        return "$0.00"
+    """Format currency with two decimals"""
+    return f"${amount:,.2f}"
 
 def clean_display_name(full_name):
     """Strip titles/honorifics from display names"""

@@ -157,18 +157,29 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card transport-type-card" data-type="ground">
+                                <div class="card transport-type-card" data-type="mvp">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-ambulance text-success fa-2x mb-2"></i>
-                                        <h5>Ground</h5>
-                                        <p><small>Ground transport option</small></p>
-                                        <input type="radio" name="transport_type" value="ground">
+                                        <i class="fas fa-star text-warning fa-2x mb-2"></i>
+                                        <h5>MVP Member</h5>
+                                        <p><small>Priority service</small></p>
+                                        <input type="radio" name="transport_type" value="mvp">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-
+                        <!-- MVP Membership Prompt -->
+                        <div class="alert alert-warning mt-3" id="mvpPrompt" style="display: none;">
+                            <h5><i class="fas fa-crown me-2"></i>MVP Membership Benefits</h5>
+                            <p>Join our MVP program for $49/month and get:</p>
+                            <ul>
+                                <li>10% discount on all bookings</li>
+                                <li>Priority booking queue ahead of others</li>
+                                <li>Early access to beta features</li>
+                                <li>Dedicated family advocate</li>
+                            </ul>
+                            <a href="{{ url_for('subscribe', plan='monthly') }}" class="btn btn-warning">Learn More About MVP</a>
+                        </div>
                     </div>
                     
                     <!-- Step 2: Address Validation -->

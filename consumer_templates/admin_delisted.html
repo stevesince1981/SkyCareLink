@@ -100,9 +100,9 @@
                     <label class="form-label">Affiliate ID</label>
                     <select class="form-select" name="affiliate_id" required>
                         <option value="">Select affiliate to delist...</option>
-                        {% for affiliate in active_affiliates %}
-                        <option value="{{ affiliate.id }}">{{ affiliate.name }} ({{ affiliate.id }})</option>
-                        {% endfor %}
+                        <option value="affiliate_1">AirMed Response (affiliate_1)</option>
+                        <option value="affiliate_2">LifeFlight Services (affiliate_2)</option>
+                        <option value="affiliate_3">MedAir Transport (affiliate_3)</option>
                     </select>
                 </div>
                 <div class="col-md-6">

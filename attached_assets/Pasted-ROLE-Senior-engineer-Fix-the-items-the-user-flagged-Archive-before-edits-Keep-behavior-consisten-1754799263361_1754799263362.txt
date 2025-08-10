@@ -1,0 +1,98 @@
+ROLE: Senior engineer. Fix the items the user flagged. Archive before edits. Keep behavior consistent with earlier phases.
+
+TASK LIST
+
+Admin / Delisted page – route + template
+
+Ensure an explicit route exists and renders without 500:
+
+/admin/delisted (list + filters + actions)
+
+If the current template is missing or mismatched:
+
+Create/align a single template at consumer_templates/admin_delisted.html.
+
+The table must show: Name, Delist Date, Reason, Relist Fee Paid (Yes/No), Strikes, and relist action (hidden if lifetime ban).
+
+Hook into the existing delist/relist JSON/logic; fail gracefully if empty.
+
+Admin / Announcements page – route + template
+
+Ensure routes:
+
+GET /admin/announcements (list + create form)
+
+POST /admin/announcements (create/update)
+
+Store announcements in /data/announcements.json with fields:
+message, style, start_at, end_at, countdown_target_tz: "America/New_York", is_active
+
+The site‑wide banner should only render if is_active and now ∈ [start_at, end_at].
+
+Countdown must use EST (America/New_York) for the target AND for display (“DD:HH:MM”).
+
+Banner content: “MediFly Platform 2.0 launching soon…”
+
+Move this entirely into /data/announcements.json.
+
+Remove any hardcoded copies in templates.
+
+Add an Admin action on /admin/announcements to disable (toggle is_active:false) so you can turn it off immediately.
+
+Currency formatting ($XXX,XXX.XX)
+
+Admin dashboard and any totals should always show currency with commas and two decimals.
+
+Implement a single formatting helper and apply it to:
+
+/admin (or /admin/dashboard) cards/rows
+
+Affiliate commissions view
+
+Any list totals on quotes/invoices previews
+
+Scan and fix places that still show raw integers.
+
+Remove “MVP member with priority booking”
+
+On Medical Transport Request page and any other intake variants, remove all “MVP member”/priority booking copy.
+
+Keep a simple, neutral experience.
+
+Unify intake forms (choose pancake‑stack)
+
+Set the “Medical Transport Request” (pancake‑stack) view as canonical: it becomes /intake.
+
+Merge any missing features from the other intake into this one:
+
+Severity 1–3, niches, ground included checkbox, international toggle + regions, same‑day +20% warning, hybrid search with “+ Can’t find it?” manual add, draft auto‑save.
+
+Archive the other intake template(s) under /archive/templates/intake/.
+
+Make sure only one intake route/template is referenced throughout the app and nav.
+
+Trim “From” helper text (overwhelming)
+
+In the canonical intake:
+
+Reduce the helper copy under From to one concise sentence (e.g., “Search a hospital, clinic, airport, or address. Use ‘+ Can’t find it?’ to add manually.”).
+
+Keep “+ Can’t find it?” exactly as is; no change in behavior.
+
+Terminology sanity pass (again)
+
+Replace any lingering “Provider” labels on auth/login and portal headers with “Affiliate” or “Hospital/Clinic” (as appropriate).
+
+Remove titles like “Captain …” from visible names on dashboards.
+
+OUTPUTS
+
+Print: fixed routes/templates for /admin/delisted and /admin/announcements.
+
+Print: banner storage file path and whether the countdown now reads EST.
+
+Print: list of pages updated for currency formatting.
+
+Print: which intake template is now canonical and which files were archived.
+
+End with READY FOR PHASE 7.F.
