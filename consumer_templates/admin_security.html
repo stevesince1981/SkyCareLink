@@ -312,7 +312,7 @@
                                 </button>
                                 <div class="collapse mt-2" id="details-{{ loop.index }}">
                                     <div class="card card-body">
-                                        <pre><code>{{ event.details | tojsonpretty }}</code></pre>
+                                        <pre><code>{{ event.details | tojson(indent=2) }}</code></pre>
                                     </div>
                                 </div>
                                 {% else %}

@@ -95,6 +95,22 @@
       "ip": "172.31.66.130",
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
       "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T06:25:51.912499",
+      "user": "admin",
+      "type": "mfa_failed",
+      "ip": "172.31.66.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T06:26:01.818004",
+      "user": "admin",
+      "type": "mfa_success",
+      "ip": "172.31.66.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
     }
   ]
 }
