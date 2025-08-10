@@ -1881,6 +1881,20 @@ def consumer_intake():
                          equipment_pricing=EQUIPMENT_PRICING,
                          datetime=datetime)
 
+@consumer_app.route('/new-request')
+def consumer_new_request():
+    """New request form - opens the updated intake template"""
+    transport_type = request.args.get('type', 'critical')
+    return render_template('consumer_intake_updated.html', 
+                         transport_type=transport_type,
+                         equipment_pricing=EQUIPMENT_PRICING,
+                         datetime=datetime)
+
+@consumer_app.route('/new-request', methods=['POST'])
+def consumer_new_request_post():
+    """Process new request form - same as intake post"""
+    return consumer_intake_post()
+
 @consumer_app.route('/intake', methods=['POST'])
 def consumer_intake_post():
     """Process intake form with equipment pricing calculations"""
