@@ -1,0 +1,361 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Bubble Migration Status{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Migration Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="fas fa-rocket me-2"></i>Bubble Migration Status</h1>
+                <div class="btn-group">
+                    <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Admin
+                    </a>
+                    <button class="btn btn-info" onclick="exportChecklist()">
+                        <i class="fas fa-download"></i> Export Checklist
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted">HIPAA-compliant migration preparation after 10 bookings</p>
+        </div>
+    </div>
+
+    <!-- Migration Progress -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-{{ 'success' if migration.current_bookings >= migration.migration_threshold else 'warning' }}">
+                <div class="card-body text-center">
+                    <h2 class="text-{{ 'success' if migration.current_bookings >= migration.migration_threshold else 'warning' }}">
+                        {{ migration.current_bookings }}/{{ migration.migration_threshold }}
+                    </h2>
+                    <p class="mb-3">Bookings to Migration Threshold</p>
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar bg-{{ 'success' if migration.current_bookings >= migration.migration_threshold else 'warning' }}" 
+                             style="width: {{ (migration.current_bookings / migration.migration_threshold * 100)|round }}%">
+                            {{ (migration.current_bookings / migration.migration_threshold * 100)|round }}%
+                        </div>
+                    </div>
+                    <span class="badge bg-{{ 'success' if migration.current_bookings >= migration.migration_threshold else 'warning' }} fs-6">
+                        {{ migration.status }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-info-circle me-2"></i>Migration Timeline</h5>
+                    <div class="timeline">
+                        <div class="d-flex mb-3">
+                            <div class="bg-{{ 'success' if migration.current_bookings >= 8 else 'secondary' }} rounded-circle p-2 me-3">
+                                <i class="fas fa-{{ 'check' if migration.current_bookings >= 8 else 'circle' }} text-white"></i>
+                            </div>
+                            <div>
+                                <strong>8 Bookings</strong>
+                                <div class="text-muted">Begin migration preparation</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-3">
+                            <div class="bg-{{ 'success' if migration.current_bookings >= 10 else 'secondary' }} rounded-circle p-2 me-3">
+                                <i class="fas fa-{{ 'check' if migration.current_bookings >= 10 else 'circle' }} text-white"></i>
+                            </div>
+                            <div>
+                                <strong>10 Bookings</strong>
+                                <div class="text-muted">Start Bubble migration</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex mb-3">
+                            <div class="bg-secondary rounded-circle p-2 me-3">
+                                <i class="fas fa-circle text-white"></i>
+                            </div>
+                            <div>
+                                <strong>15 Bookings</strong>
+                                <div class="text-muted">Complete migration & HIPAA audit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Migration Tasks by Category -->
+    {% for category in migration.tasks %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-{{ 'database' if category.category == 'Data Migration' else 'shield-alt' if category.category == 'HIPAA Compliance' else 'cogs' }} me-2"></i>{{ category.category }}</h5>
+                    <span class="badge bg-primary">{{ category.items|length }} tasks</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Priority</th>
+                                    <th>Task</th>
+                                    <th>Status</th>
+                                    <th>Estimated Time</th>
+                                    <th>Dependencies</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in category.items %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if item.priority == 'critical' else 'warning' if item.priority == 'high' else 'info' }}">
+                                            {{ item.priority|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ item.task }}</strong>
+                                        {% if item.priority == 'critical' %}
+                                        <br><small class="text-danger">⚠️ Regulatory requirement</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if item.status == 'completed' else 'warning' if item.status == 'in-progress' else 'secondary' }}">
+                                            {{ item.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if item.priority == 'critical' %}
+                                            2-3 days
+                                        {% elif item.priority == 'high' %}
+                                            1-2 days
+                                        {% else %}
+                                            4-8 hours
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {% if 'Business Associate' in item.task %}
+                                                Legal review required
+                                            {% elif 'data storage' in item.task %}
+                                                BAA completion
+                                            {% elif 'Bubble workspace' in item.task %}
+                                                Account setup
+                                            {% else %}
+                                                None
+                                            {% endif %}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="viewTaskDetails('{{ item.task }}', '{{ category.category }}')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if item.status == 'pending' %}
+                                        <button class="btn btn-outline-success btn-sm" onclick="startTask('{{ item.task }}')">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Migration Resources -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-book me-2"></i>Migration Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action" onclick="openResource('bubble-guide')">
+                            <i class="fas fa-external-link-alt me-2"></i>
+                            Bubble Development Guide
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="openResource('hipaa-compliance')">
+                            <i class="fas fa-file-medical me-2"></i>
+                            HIPAA Compliance Checklist
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="openResource('data-migration')">
+                            <i class="fas fa-database me-2"></i>
+                            Data Migration Best Practices
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="openResource('testing-plan')">
+                            <i class="fas fa-vial me-2"></i>
+                            Testing & Validation Plan
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="openResource('rollback-plan')">
+                            <i class="fas fa-undo me-2"></i>
+                            Rollback Strategy
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-users me-2"></i>Team Assignments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Mike's Tasks</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-circle text-primary me-2"></i>Bubble workspace setup</li>
+                                <li><i class="fas fa-circle text-warning me-2"></i>UI/UX migration</li>
+                                <li><i class="fas fa-circle text-info me-2"></i>Affiliate dashboard</li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <h6>Steve's Tasks</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-circle text-danger me-2"></i>HIPAA compliance</li>
+                                <li><i class="fas fa-circle text-success me-2"></i>Data migration</li>
+                                <li><i class="fas fa-circle text-warning me-2"></i>Security audit</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-outline-primary btn-sm" onclick="assignTask()">
+                            <i class="fas fa-plus"></i> Assign Task
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="scheduleReview()">
+                            <i class="fas fa-calendar"></i> Schedule Review
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-arrow-right me-2"></i>Immediate Next Steps</h5>
+                </div>
+                <div class="card-body">
+                    {% if migration.current_bookings >= 10 %}
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i>Ready for Migration!</h6>
+                        <p>You've reached the 10 booking threshold. Begin migration process immediately.</p>
+                    </div>
+                    {% elif migration.current_bookings >= 8 %}
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-clock me-2"></i>Preparation Phase</h6>
+                        <p>Start preparing migration tasks. You're {{ migration.migration_threshold - migration.current_bookings }} bookings away from migration.</p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Planning Phase</h6>
+                        <p>Continue building your customer base. Migration planning can begin at 8 bookings.</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <h6>This Week</h6>
+                            <ul class="list-unstyled">
+                                <li>✓ Complete Business Associate Agreement</li>
+                                <li>⏳ Set up Bubble workspace</li>
+                                <li>⏳ Begin data mapping</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Next Week</h6>
+                            <ul class="list-unstyled">
+                                <li>⏳ Develop migration scripts</li>
+                                <li>⏳ Security testing</li>
+                                <li>⏳ Create backup procedures</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Following Week</h6>
+                            <ul class="list-unstyled">
+                                <li>⏳ User acceptance testing</li>
+                                <li>⏳ Final HIPAA audit</li>
+                                <li>⏳ Go-live preparation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewTaskDetails(task, category) {
+    const taskDetails = {
+        'Export user session data to structured format': {
+            description: 'Convert current Flask session storage to structured JSON/CSV format for Bubble import',
+            requirements: 'Python scripts, data validation, HIPAA anonymization',
+            timeline: '2-3 days',
+            blockers: 'None'
+        },
+        'Set up Business Associate Agreement with Bubble': {
+            description: 'Legal agreement required for HIPAA compliance when using Bubble for PHI storage',
+            requirements: 'Legal review, Bubble Enterprise plan, signed documentation',
+            timeline: '3-5 business days',
+            blockers: 'Legal team availability'
+        },
+        'Configure Bubble workspace and plan upgrade': {
+            description: 'Set up production Bubble workspace with appropriate plan for medical data',
+            requirements: 'Bubble account, payment setup, workspace configuration',
+            timeline: '1 day',
+            blockers: 'Payment approval'
+        }
+    };
+    
+    const details = taskDetails[task] || {
+        description: 'Task details not available',
+        requirements: 'To be determined',
+        timeline: 'Estimate pending',
+        blockers: 'Under review'
+    };
+    
+    alert(`📋 Task Details: ${task}\n\nCategory: ${category}\n\nDescription: ${details.description}\n\nRequirements: ${details.requirements}\n\nTimeline: ${details.timeline}\n\nBlockers: ${details.blockers}`);
+}
+
+function startTask(task) {
+    alert(`🚀 Starting task: ${task}\n\nTask has been moved to "In Progress" status.\nNotifications sent to assigned team members.\nProgress tracking activated.\n\nEstimated completion will be updated based on actual progress.`);
+}
+
+function exportChecklist() {
+    alert('📥 Exporting migration checklist...\n\nExport includes:\n• All tasks with current status\n• Team assignments\n• Timeline estimates\n• Dependency mapping\n• Progress tracking\n\nFile will be downloaded as Excel spreadsheet.');
+}
+
+function openResource(resource) {
+    const resources = {
+        'bubble-guide': 'Opening Bubble Development Guide...\n\nIncludes:\n• Database design patterns\n• Workflow automation\n• API integrations\n• Security best practices',
+        'hipaa-compliance': 'Opening HIPAA Compliance Checklist...\n\nCovers:\n• Technical safeguards\n• Administrative safeguards\n• Physical safeguards\n• Audit requirements',
+        'data-migration': 'Opening Data Migration Guide...\n\nIncludes:\n• Migration strategies\n• Data validation\n• Rollback procedures\n• Testing protocols',
+        'testing-plan': 'Opening Testing & Validation Plan...\n\nCovers:\n• Unit testing\n• Integration testing\n• User acceptance testing\n• Performance testing',
+        'rollback-plan': 'Opening Rollback Strategy...\n\nIncludes:\n• Risk assessment\n• Rollback triggers\n• Recovery procedures\n• Communication plan'
+    };
+    
+    alert(resources[resource] || 'Resource not available');
+}
+
+function assignTask() {
+    alert('👥 Task Assignment\n\nSelect task to assign:\n• Team member\n• Priority level\n• Due date\n• Dependencies\n\nNotifications will be sent to assigned team members.');
+}
+
+function scheduleReview() {
+    alert('📅 Schedule Migration Review\n\nReview types:\n• Weekly progress review\n• Technical architecture review\n• HIPAA compliance review\n• Go/No-go decision meeting\n\nNext review: August 10, 2025');
+}
+</script>
+{% endblock %}

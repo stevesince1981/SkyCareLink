@@ -21,27 +21,8 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Global Announcement Banners -->
-    {% if active_announcements %}
-        {% for announcement in active_announcements %}
-        <div class="announcement-banner bg-{{ announcement.type or 'info' }} text-white py-2">
-            <div class="container d-flex justify-content-between align-items-center">
-                <div class="announcement-content">
-                    <strong>{{ announcement.title or 'Announcement' }}:</strong>
-                    {{ announcement.message }}
-                    {% if announcement.countdown_target and not announcement.countdown_expired %}
-                        <span class="countdown-timer ms-3" data-target="{{ announcement.countdown_target }}">
-                            <i class="fas fa-clock me-1"></i>{{ announcement.countdown_display }}
-                        </span>
-                    {% elif announcement.countdown_expired %}
-                        <span class="ms-3 text-success"><i class="fas fa-check me-1"></i>We're live!</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    {% endif %}
-
+    <!-- Phase 7.A: Site-wide Announcement Banner -->
+    {% include 'announcement_banner.html' %}
     <!-- Bubble-inspired Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
@@ -63,8 +44,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('consumer_intake') }}">
-                            <i class="fas fa-plus me-1"></i>New Request
+                        <a class="nav-link" href="{{ url_for('consumer_quotes') }}">
+                            <i class="fas fa-clipboard-list me-1"></i>Requests
                         </a>
                     </li>
                     <li class="nav-item">
@@ -325,32 +306,6 @@
         // Process AI command here
         alert('AI Assistant: ' + command);
     }
-    
-    // Live countdown updates for announcement banners
-    function updateCountdowns() {
-        document.querySelectorAll('.countdown-timer').forEach(timer => {
-            const target = timer.getAttribute('data-target');
-            if (!target) return;
-            
-            const targetTime = new Date(target);
-            const now = new Date();
-            const diff = targetTime - now;
-            
-            if (diff > 0) {
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                timer.innerHTML = `<i class="fas fa-clock me-1"></i>${days.toString().padStart(2, '0')}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            } else {
-                timer.innerHTML = `<i class="fas fa-check me-1"></i>We're live!`;
-                timer.classList.add('text-success');
-            }
-        });
-    }
-    
-    // Update countdowns every 60 seconds and on page load
-    setInterval(updateCountdowns, 60000);
-    document.addEventListener('DOMContentLoaded', updateCountdowns);
     </script>
     
     {% block scripts %}{% endblock %}

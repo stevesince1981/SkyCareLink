@@ -10,6 +10,17 @@
       "is_active": true,
       "created_at": "2025-08-10T04:15:00.000000",
       "created_by": "admin"
+    },
+    {
+      "id": "ann_002",
+      "message": "hello world",
+      "style": "info",
+      "start_at": "2025-08-09T23:36",
+      "end_at": "2025-08-09T23:38",
+      "countdown_target": "2025-08-10T23:41",
+      "active": true,
+      "created_at": "2025-08-10T04:36:35.874336",
+      "created_by": "admin"
     }
   ],
   "meta": {

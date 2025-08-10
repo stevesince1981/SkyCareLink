@@ -1,0 +1,143 @@
+<!-- Phase 7.C: Post-Flight Feedback Form (Internal QA) -->
+{% extends "consumer_base.html" %}
+
+{% block title %}Post-Flight Feedback - MediFly{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-star me-2"></i>Post-Flight Feedback</h4>
+                    <small class="text-muted">Internal QA Review - Booking #{{ booking_id }}</small>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('submit_feedback') }}">
+                        <input type="hidden" name="booking_id" value="{{ booking_id }}">
+                        
+                        <!-- Overall Rating -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Overall Service Rating</label>
+                            <div class="rating-stars">
+                                {% for i in range(1, 6) %}
+                                <i class="fas fa-star rating-star" data-rating="{{ i }}" 
+                                   onclick="setRating({{ i }})" 
+                                   style="color: #ddd; cursor: pointer; font-size: 1.5rem; margin-right: 5px;"></i>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="rating" id="rating" required>
+                            <small class="text-muted">Click to rate from 1-5 stars</small>
+                        </div>
+
+                        <!-- Performance Categories -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Primary Issue Category <span class="text-danger">*</span></label>
+                                <select class="form-select" name="primary_category" required>
+                                    <option value="">Select category...</option>
+                                    <option value="arrival_delay">Arrival Delay</option>
+                                    <option value="bedside_care">Bedside Care Quality</option>
+                                    <option value="ground_transfer">Ground Transfer Issues</option>
+                                    <option value="communication">Communication Problems</option>
+                                    <option value="equipment_failure">Equipment/Medical Issues</option>
+                                    <option value="crew_professionalism">Crew Professionalism</option>
+                                    <option value="billing_disputes">Billing/Documentation</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Performance Metrics</label>
+                                <div class="form-text mb-2">
+                                    <strong>Quote Response Time:</strong> 
+                                    <span data-bs-toggle="tooltip" title="Time from request fan-out to first quote received">
+                                        <i class="fas fa-info-circle text-info"></i>
+                                    </span>
+                                    {{ response_time_min }} minutes
+                                </div>
+                                <div class="form-text">
+                                    <strong>Fulfillment Time:</strong>
+                                    <span data-bs-toggle="tooltip" title="Time from booking confirmation to flight completion">
+                                        <i class="fas fa-info-circle text-info"></i>
+                                    </span>
+                                    {{ fulfillment_hours }} hours
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comments -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Additional Comments</label>
+                            <textarea class="form-control" name="comments" rows="4" 
+                                      placeholder="Provide specific details about the service quality, any issues encountered, or commendations..."></textarea>
+                        </div>
+
+                        <!-- Follow-up Actions -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="requires_followup" id="followup">
+                                <label class="form-check-label" for="followup">
+                                    Requires follow-up action with affiliate
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-outline-secondary me-md-2" onclick="history.back()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Rating star functionality
+function setRating(rating) {
+    document.getElementById('rating').value = rating;
+    
+    // Update star display
+    const stars = document.querySelectorAll('.rating-star');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.style.color = '#ffc107';
+        } else {
+            star.style.color = '#ddd';
+        }
+    });
+}
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+
+<style>
+.rating-stars {
+    margin: 10px 0;
+}
+
+.rating-star:hover {
+    transform: scale(1.1);
+    transition: transform 0.1s ease;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.form-label {
+    color: #495057;
+}
+
+.form-select, .form-control {
+    border-radius: 8px;
+}
+</style>
+{% endblock %}

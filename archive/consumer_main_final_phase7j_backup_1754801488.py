@@ -5,13 +5,7 @@ import uuid
 import csv
 from pathlib import Path
 # import requests  # Will install if Google Places API is needed
-from datetime import datetime, timedelta, timezone
-try:
-    from zoneinfo import ZoneInfo
-    EST = ZoneInfo("America/New_York")
-except ImportError:
-    # Fallback for older Python versions
-    EST = timezone(timedelta(hours=-5))
+from datetime import datetime, timedelta
 import random
 from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify, send_file
 
@@ -1114,8 +1108,11 @@ def get_training_limit_status(affiliate_id):
 def get_active_announcements():
     """Get active announcements with EST timezone support"""
     try:
+        from datetime import timezone, timedelta
+        
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
-        now = datetime.now(EST)
+        est = timezone(timedelta(hours=-5))  # EST is UTC-5
+        now = datetime.now(est)
         
         active_announcements = []
         for announcement in announcements_data.get('announcements', []):
@@ -1131,8 +1128,8 @@ def get_active_announcements():
                 start_naive = datetime.fromisoformat(start_str.replace('Z', ''))
                 end_naive = datetime.fromisoformat(end_str.replace('Z', ''))
                 
-                start_at = start_naive.replace(tzinfo=EST)
-                end_at = end_naive.replace(tzinfo=EST)
+                start_at = start_naive.replace(tzinfo=est)
+                end_at = end_naive.replace(tzinfo=est)
                 
                 # Check if current time is within announcement window
                 if start_at <= now <= end_at:
@@ -1140,7 +1137,7 @@ def get_active_announcements():
                     countdown_target = announcement.get('countdown_target')
                     if countdown_target:
                         target_naive = datetime.fromisoformat(countdown_target.replace('Z', ''))
-                        target_dt = target_naive.replace(tzinfo=EST)
+                        target_dt = target_naive.replace(tzinfo=est)
                         
                         time_diff = target_dt - now
                         
@@ -1149,10 +1146,8 @@ def get_active_announcements():
                             hours, remainder = divmod(time_diff.seconds, 3600)
                             minutes, _ = divmod(remainder, 60)
                             announcement['countdown_display'] = f"{days:02d}:{hours:02d}:{minutes:02d}"
-                            announcement['countdown_expired'] = False
                         else:
-                            announcement['countdown_display'] = "We're live!"
-                            announcement['countdown_expired'] = True
+                            announcement['countdown_display'] = "00:00:00"
                     
                     active_announcements.append(announcement)
             except Exception as date_error:
@@ -1164,12 +1159,6 @@ def get_active_announcements():
     except Exception as e:
         logging.error(f"Error getting announcements: {e}")
         return []
-
-# Context processor to inject active announcements into all templates
-@consumer_app.context_processor
-def inject_announcements():
-    """Inject active announcements into all template contexts"""
-    return {'active_announcements': get_active_announcements()}
 
 @consumer_app.route('/api/cancel-request/<request_id>', methods=['POST'])
 def api_cancel_request(request_id):

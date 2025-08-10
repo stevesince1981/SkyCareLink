@@ -1,0 +1,296 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Partnership MOU - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.mou-document {
+    background: white;
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Times New Roman', serif;
+    line-height: 1.8;
+}
+
+.mou-header {
+    text-align: center;
+    border-bottom: 3px solid #007bff;
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+}
+
+.section-header {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-left: 5px solid #007bff;
+    margin: 2rem 0 1rem 0;
+    font-weight: bold;
+}
+
+.signature-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e9ecef;
+}
+
+.download-actions {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+@media print {
+    .download-actions, .navbar, .btn-back {
+        display: none !important;
+    }
+    
+    .mou-document {
+        box-shadow: none;
+        margin: 0;
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{{ url_for('partner_dashboard') }}" class="btn btn-secondary btn-back">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Download Actions -->
+    <div class="download-actions">
+        <h6 class="mb-3">Document Actions</h6>
+        <button class="btn btn-primary btn-sm d-block mb-2" onclick="window.print()">
+            <i class="fas fa-print me-1"></i>Print MOU
+        </button>
+        <button class="btn btn-success btn-sm d-block mb-2" onclick="downloadPDF()">
+            <i class="fas fa-download me-1"></i>Download PDF
+        </button>
+        <button class="btn btn-info btn-sm d-block" onclick="emailMOU()">
+            <i class="fas fa-envelope me-1"></i>Email Copy
+        </button>
+    </div>
+    
+    <!-- MOU Document -->
+    <div class="mou-document">
+        <div class="mou-header">
+            <h1>MEMORANDUM OF UNDERSTANDING</h1>
+            <h3>Medical Transport Partnership Agreement</h3>
+            <p><strong>Between MediFly Corp. and Authorized Transport Providers</strong></p>
+            <p>Effective Date: August 1, 2025</p>
+        </div>
+        
+        <div class="section-header">
+            1. PARTIES TO THE AGREEMENT
+        </div>
+        <p>
+            This Memorandum of Understanding ("MOU") is entered into between <strong>MediFly Corp.</strong>, 
+            a Delaware corporation with principal offices located at 123 Healthcare Plaza, Miami, FL 33101 
+            ("MediFly"), and the authorized medical transport provider ("Provider") as identified in the 
+            signature section below.
+        </p>
+        
+        <div class="section-header">
+            2. PURPOSE AND SCOPE
+        </div>
+        <p>
+            The purpose of this MOU is to establish a collaborative partnership for the provision of 
+            air medical transport services to patients and families in need of critical and non-critical 
+            medical transportation. This agreement defines the operational framework, revenue sharing, 
+            quality standards, and mutual obligations of both parties.
+        </p>
+        
+        <div class="section-header">
+            3. REVENUE SHARING AND COMPENSATION
+        </div>
+        <p><strong>3.1 Revenue Structure:</strong></p>
+        <ul>
+            <li>Standard Providers: 85% of booking value retained by Provider, 15% to MediFly</li>
+            <li>Priority Partners: 90% of booking value retained by Provider, 10% to MediFly</li>
+            <li>Diamond Partners: 92% of booking value retained by Provider, 8% to MediFly</li>
+        </ul>
+        
+        <p><strong>3.2 Additional Fees:</strong></p>
+        <ul>
+            <li>$1,000 non-refundable deposit collected by MediFly per booking</li>
+            <li>Equipment fees (Ventilator +$5K, ECMO +$10K, etc.) passed through to Provider</li>
+            <li>Same-day urgency fees (20% upcharge) shared 50/50 between parties</li>
+        </ul>
+        
+        <p><strong>3.3 Payment Terms:</strong></p>
+        <p>
+            MediFly will remit Provider's share within 48 hours of confirmed transport completion. 
+            All payments will be made via ACH transfer to Provider's designated bank account.
+        </p>
+        
+        <div class="section-header">
+            4. PRIORITY PARTNER BENEFITS
+        </div>
+        <p>Providers may qualify for Priority Partner status by meeting the following criteria:</p>
+        <ul>
+            <li>Maintain 4.5+ star average customer rating</li>
+            <li>Complete 95%+ of accepted bookings</li>
+            <li>Respond to booking requests within 30 minutes</li>
+            <li>Maintain all required certifications and insurance</li>
+        </ul>
+        
+        <p><strong>Priority Partner Benefits include:</strong></p>
+        <ul>
+            <li>Front and center placement in search results</li>
+            <li>Animated priority highlighting with gold border</li>
+            <li>Improved revenue share (90% vs 85%)</li>
+            <li>24/7 priority support line</li>
+            <li>Quarterly performance bonuses</li>
+        </ul>
+        
+        <div class="section-header">
+            5. QUALITY STANDARDS AND COMPLIANCE
+        </div>
+        <p><strong>5.1 Medical Standards:</strong></p>
+        <ul>
+            <li>All aircraft must maintain current medical certification</li>
+            <li>Medical teams must be appropriately certified for transport severity levels</li>
+            <li>Equipment must be regularly inspected and meet industry standards</li>
+            <li>HIPAA compliance is mandatory for all patient data handling</li>
+        </ul>
+        
+        <p><strong>5.2 Safety Requirements:</strong></p>
+        <ul>
+            <li>Current insurance coverage minimum $10M liability</li>
+            <li>FAA Part 135 certification or equivalent</li>
+            <li>Pilots must meet 14 CFR Part 135 experience requirements</li>
+            <li>Regular safety audits and compliance reporting</li>
+        </ul>
+        
+        <div class="section-header">
+            6. CUSTOMER PROTECTION AND PRIVACY
+        </div>
+        <p><strong>6.1 Provider Name Blurring:</strong></p>
+        <p>
+            To ensure fair competition and prevent direct customer contact bypassing the platform, 
+            Provider names will be displayed as "Provider A****", "Provider B****", etc. until 
+            booking confirmation. This protects both customer choice and platform integrity.
+        </p>
+        
+        <p><strong>6.2 Data Protection:</strong></p>
+        <ul>
+            <li>All patient data is transient and automatically purged after 30 days</li>
+            <li>No credit card information is stored on MediFly systems</li>
+            <li>Provider contact information is masked until booking confirmation</li>
+            <li>Session data is encrypted and HIPAA-compliant</li>
+        </ul>
+        
+        <div class="section-header">
+            7. PARTNERSHIP BENEFITS AND SUPPORT
+        </div>
+        <p><strong>7.1 Marketing Support:</strong></p>
+        <ul>
+            <li>Inclusion in MediFly partner directory and promotional materials</li>
+            <li>Access to customer reviews and feedback systems</li>
+            <li>Co-marketing opportunities for qualified partners</li>
+        </ul>
+        
+        <p><strong>7.2 Technology Platform:</strong></p>
+        <ul>
+            <li>Access to MediFly partner dashboard for booking management</li>
+            <li>Real-time notification system for new booking requests</li>
+            <li>Performance analytics and revenue reporting tools</li>
+            <li>Customer communication tools and family update systems</li>
+        </ul>
+        
+        <div class="section-header">
+            8. TERMINATION AND MODIFICATION
+        </div>
+        <p>
+            Either party may terminate this agreement with 30 days written notice. Upon termination, 
+            all pending bookings will be completed under existing terms, and final payments will be 
+            processed within 7 business days.
+        </p>
+        
+        <p>
+            This MOU may be modified only by written agreement signed by both parties. Any changes 
+            to revenue sharing, quality standards, or partnership benefits require 60 days advance notice.
+        </p>
+        
+        <div class="section-header">
+            9. DISPUTE RESOLUTION
+        </div>
+        <p>
+            Any disputes arising under this agreement will be resolved through binding arbitration 
+            in Miami, Florida, under the rules of the American Arbitration Association. Both parties 
+            agree to attempt good-faith mediation before proceeding to arbitration.
+        </p>
+        
+        <div class="signature-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>MediFly Corp.</strong></p>
+                    <br><br>
+                    <div style="border-bottom: 1px solid #000; width: 250px; margin-bottom: 10px;"></div>
+                    <p>
+                        Michael Chen, CEO<br>
+                        Date: _______________
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Transport Provider:</strong></p>
+                    <br><br>
+                    <div style="border-bottom: 1px solid #000; width: 250px; margin-bottom: 10px;"></div>
+                    <p>
+                        Authorized Representative<br>
+                        Date: _______________
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <p><small>
+                This MOU is effective upon execution by both parties and supersedes all previous 
+                agreements between the parties relating to the subject matter hereof.
+            </small></p>
+            <p><strong>Document ID: MOU-2025-001 | Version 3.2 | Last Updated: August 1, 2025</strong></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function downloadPDF() {
+    // In a real implementation, this would generate and download a PDF
+    alert('PDF download functionality would be implemented here with a backend service like WeasyPrint or Puppeteer.');
+    
+    // For demo purposes, trigger print dialog
+    window.print();
+}
+
+function emailMOU() {
+    const email = prompt('Enter email address to send MOU copy:');
+    if (email) {
+        alert(`MOU copy would be sent to ${email}. This would be implemented with an email service like SendGrid or AWS SES.`);
+    }
+}
+
+// Add scroll-to-top functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click tracking for document sections
+    document.querySelectorAll('.section-header').forEach(section => {
+        section.addEventListener('click', function() {
+            console.log('MOU section viewed:', this.textContent);
+        });
+    });
+});
+</script>
+{% endblock %}

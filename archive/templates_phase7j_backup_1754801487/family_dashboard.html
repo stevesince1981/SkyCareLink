@@ -1,0 +1,245 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Family Dashboard - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.family-dashboard {
+    background: linear-gradient(135deg, var(--pastel-blue) 0%, var(--pastel-pink) 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid #e91e63;
+}
+
+.family-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-light);
+}
+
+.support-contact {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-left: 3px solid #28a745;
+}
+
+.family-metric {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e91e63, #ad1457);
+    color: white;
+    margin: 0.5rem;
+}
+
+.comfort-features {
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="family-dashboard">
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-heart text-primary me-3"></i>Welcome, {{ user.name }}</h1>
+                    <p class="lead">Your family-focused medical transport dashboard</p>
+                    <p class="text-muted">We're here to support you and your loved one every step of the way</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="family-metric">
+                        <i class="fas fa-shield-alt fs-3"></i>
+                        <div>Family Protected</div>
+                        <small>HIPAA Compliant</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Your Bookings -->
+            <div class="col-md-8">
+                <div class="family-card">
+                    <h4><i class="fas fa-calendar-alt me-2"></i>Your Family's Medical Transports</h4>
+                    {% if family_bookings %}
+                        {% for booking in family_bookings %}
+                        <div class="support-contact">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ booking.id }}</strong> - {{ booking.date }}
+                                    <br><small class="text-muted">{{ booking.origin }} → {{ booking.destination }}</small>
+                                </div>
+                                <span class="badge bg-success">{{ booking.status }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-heart fs-1 text-muted"></i>
+                            <p class="mt-2">No recent transports</p>
+                            <a href="{{ url_for('intake') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Book a Medical Transport
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Comfort Features -->
+                <div class="comfort-features">
+                    <h5><i class="fas fa-heart me-2"></i>Family Comfort Features</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="support-contact">
+                                <i class="fas fa-user-friends me-2"></i>
+                                <strong>Family Seat Option</strong>
+                                <br><small>Travel with your loved one (+$5,000)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="support-contact">
+                                <i class="fas fa-star me-2"></i>
+                                <strong>VIP Cabin Upgrade</strong>
+                                <br><small>Enhanced comfort & priority care (+$10,000)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support & Resources -->
+            <div class="col-md-4">
+                <div class="family-card">
+                    <h5><i class="fas fa-phone me-2"></i>24/7 Family Support</h5>
+                    <div class="support-contact">
+                        <strong>Emergency Line</strong>
+                        <br>{{ support_contacts.emergency }}
+                        <br><small class="text-muted">Available 24/7</small>
+                    </div>
+                    <div class="support-contact">
+                        <strong>Family Advocate</strong>
+                        <br>{{ support_contacts.family_advocate }}
+                        <br><small class="text-muted">Personal support specialist</small>
+                    </div>
+                    <div class="support-contact">
+                        <strong>Insurance Help</strong>
+                        <br>{{ support_contacts.insurance_help }}
+                        <br><small class="text-muted">Claims & reimbursement</small>
+                    </div>
+                </div>
+
+                <!-- Privacy & Security -->
+                <div class="family-card">
+                    <h5><i class="fas fa-shield-alt me-2"></i>Your Privacy</h5>
+                    <p><small class="text-muted">
+                        Your family's information is protected with HIPAA-compliant security. 
+                        We only store essential booking details temporarily and never share 
+                        personal medical information.
+                    </small></p>
+                    <div class="text-center">
+                        <span class="badge bg-success">HIPAA Protected</span>
+                        <span class="badge bg-info">SSL Encrypted</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="family-card">
+                    <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('intake') }}" class="btn btn-primary">
+                            <i class="fas fa-plane-departure me-2"></i>New Transport
+                        </a>
+                        <button class="btn btn-outline-info" onclick="showEmergencyShare()">
+                            <i class="fas fa-share me-2"></i>Share Updates
+                        </button>
+                        <button class="btn btn-outline-success" onclick="toggleChatbot()">
+                            <i class="fas fa-comments me-2"></i>Family Support Chat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storyboard Integration -->
+        <div class="row">
+            <div class="col-12">
+                <div class="family-card">
+                    <h5><i class="fas fa-chart-line me-2"></i>Family Dashboard Insights</h5>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="family-metric">
+                                <i class="fas fa-heart fs-4"></i>
+                                <div>98%</div>
+                                <small>Family Satisfaction</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="family-metric">
+                                <i class="fas fa-clock fs-4"></i>
+                                <div>4.2 min</div>
+                                <small>Average Response</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="family-metric">
+                                <i class="fas fa-shield-alt fs-4"></i>
+                                <div>100%</div>
+                                <small>Privacy Protected</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="family-metric">
+                                <i class="fas fa-users fs-4"></i>
+                                <div>24/7</div>
+                                <small>Family Support</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="mt-4">
+                    <a href="{{ url_for('secure_logout') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-sign-out-alt me-2"></i>Secure Logout
+                    </a>
+                    <a href="{{ url_for('consumer_index') }}" class="btn btn-outline-primary ms-3">
+                        <i class="fas fa-home me-2"></i>Back to Main Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showEmergencyShare() {
+    alert('Emergency Sharing:\n\n• Instantly notify emergency contacts\n• Share transport status updates\n• Provide real-time location information\n• Connect with family advocates\n\nThis feature helps keep your family informed during critical transport situations.');
+}
+
+function toggleChatbot() {
+    alert('Family Support Chat:\n\n"Hello! I\'m here to help with:\n• Understanding transport options\n• Family accommodation questions\n• Insurance and payment guidance\n• Emotional support resources\n• Real-time updates during transport\n\nHow can I support your family today?"');
+}
+</script>
+{% endblock %}

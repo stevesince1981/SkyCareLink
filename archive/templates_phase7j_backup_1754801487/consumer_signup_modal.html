@@ -1,0 +1,65 @@
+<!-- Signup/Join Modal -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signupModalLabel">
+                    <i class="fas fa-user-plus me-2"></i>Join MediFly
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="signupForm" method="POST" action="{{ url_for('signup_post') }}">
+                    <div class="mb-3">
+                        <label for="signup_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="signup_name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="signup_email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="signup_email" name="email" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="signup_password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="signup_password" name="password" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="signup_phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="signup_phone" name="phone" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="signup_role" class="form-label">Role</label>
+                        <select class="form-select" id="signup_role" name="role" required>
+                            <option value="">Select your role...</option>
+                            <option value="family">Family / Individual</option>
+                            <option value="hospital">Hospital Staff</option>
+                            <option value="affiliate">Affiliate (Air Operator)</option>
+                            <option value="mvp">MVP Early Adopter</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
+                        <label class="form-check-label" for="terms_agree">
+                            I agree to the Terms of Service and Privacy Policy
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="signupForm" class="btn btn-primary">Create Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openSignupModal() {
+    const modal = new bootstrap.Modal(document.getElementById('signupModal'));
+    modal.show();
+}
+</script>

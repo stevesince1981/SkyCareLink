@@ -1,0 +1,403 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Track Your Flight - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.tracking-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.flight-header {
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.virtual-map {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    border-radius: 15px;
+    padding: 3rem;
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 300px;
+}
+
+.us-map-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.flight-path {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #ffeaa7, #fdcb6e, #e17055);
+    transform: translateY(-50%);
+}
+
+.flight-plane {
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: #fff;
+    animation: flyAcrossUS 10s linear infinite;
+    z-index: 10;
+}
+
+@keyframes flyAcrossUS {
+    0% { left: 0%; }
+    25% { left: 25%; top: 45%; }
+    50% { left: 50%; top: 40%; }
+    75% { left: 75%; top: 45%; }
+    100% { left: 100%; top: 50%; }
+}
+
+.map-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.city-label {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    color: #2c3e50;
+    padding: 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.orlando-label {
+    bottom: 20%;
+    left: 70%;
+}
+
+.nyc-label {
+    top: 20%;
+    right: 15%;
+}
+
+.tracking-timeline {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    width: 2px;
+    height: 60px;
+    background: #e9ecef;
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.timeline-icon.completed {
+    background: #28a745;
+}
+
+.timeline-icon.active {
+    background: #007bff;
+    animation: pulse 2s infinite;
+}
+
+.timeline-icon.pending {
+    background: #6c757d;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.weather-panel {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.weather-location {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 10px;
+    margin: 0.5rem;
+}
+
+.delay-prediction {
+    background: linear-gradient(135deg, #ff9f43, #feca57);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.prediction-probability {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.family-updates {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.support-contact {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="tracking-container">
+        <!-- Flight Header -->
+        <div class="flight-header">
+            <h1><i class="fas fa-route me-2"></i>Flight Tracking</h1>
+            <h3>{{ quote.provider_name }}</h3>
+            <p class="mb-0">{{ patient_data.origin }} → {{ patient_data.destination }}</p>
+        </div>
+
+        <!-- Virtual Map -->
+        <div class="virtual-map">
+            <h4 class="text-white text-center mb-4">
+                <i class="fas fa-map me-2"></i>Live Flight Path Simulation
+            </h4>
+            
+            <div class="us-map-container">
+                <div class="flight-path"></div>
+                <div class="flight-plane">
+                    <i class="fas fa-plane"></i>
+                </div>
+                
+                <div class="map-labels">
+                    <div class="city-label orlando-label">
+                        <i class="fas fa-map-marker-alt me-1"></i>Orlando, FL
+                    </div>
+                    <div class="city-label nyc-label">
+                        <i class="fas fa-map-marker-alt me-1"></i>New York, NY
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-3 text-white">
+                <p><i class="fas fa-info-circle me-2"></i>Real-time flight simulation - Florida to New York route</p>
+            </div>
+        </div>
+
+        <!-- AI Delay Prediction -->
+        <div class="delay-prediction">
+            <h4><i class="fas fa-brain me-2"></i>AI Delay Prediction</h4>
+            <div class="prediction-probability">{{ delay_prediction.probability }}%</div>
+            <p class="lead">Chance of {{ delay_prediction.potential_delay }} delay</p>
+            <p><strong>Reason:</strong> {{ delay_prediction.reason }}</p>
+            <p><strong>Mitigation:</strong> {{ delay_prediction.alternatives }}</p>
+            
+            {% if delay_prediction.probability > 20 %}
+            <div class="alert alert-warning mt-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Potential delay alert:</strong> Alternatives being prepared. You'll be notified immediately of any changes.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tracking Timeline -->
+        <div class="tracking-timeline">
+            <h4><i class="fas fa-clock me-2"></i>Flight Progress</h4>
+            
+            {% for stage in tracking_stages %}
+            <div class="timeline-item">
+                <div class="timeline-icon {{ stage.status }}">
+                    <i class="fas fa-{{ stage.icon }}"></i>
+                </div>
+                <div class="timeline-content">
+                    <h6 class="mb-1">{{ stage.stage }}</h6>
+                    <small class="text-muted">{{ stage.time }}</small>
+                    {% if stage.status == 'active' %}
+                    <span class="badge bg-primary ms-2">In Progress</span>
+                    {% elif stage.status == 'completed' %}
+                    <span class="badge bg-success ms-2">Completed</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Weather Conditions -->
+        <div class="weather-panel">
+            <h4 class="text-center mb-4">
+                <i class="fas fa-cloud-sun me-2"></i>Weather Conditions
+            </h4>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="weather-location">
+                        <h6>Origin</h6>
+                        <p class="mb-1"><strong>{{ weather_data.origin_weather.condition }}</strong></p>
+                        <p class="mb-1">{{ weather_data.origin_weather.temp }}°F</p>
+                        <p class="mb-0">Wind: {{ weather_data.origin_weather.wind }}</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="weather-location">
+                        <h6>Route</h6>
+                        <p class="mb-0">{{ weather_data.route_weather }}</p>
+                        <div class="mt-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <small class="text-success">Clear for flight</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="weather-location">
+                        <h6>Destination</h6>
+                        <p class="mb-1"><strong>{{ weather_data.destination_weather.condition }}</strong></p>
+                        <p class="mb-1">{{ weather_data.destination_weather.temp }}°F</p>
+                        <p class="mb-0">Wind: {{ weather_data.destination_weather.wind }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-sync-alt me-1"></i>Weather data updates every 15 minutes
+                </small>
+            </div>
+        </div>
+
+        <!-- Family Updates -->
+        <div class="family-updates">
+            <h4><i class="fas fa-heart me-2"></i>Family Communication Timeline</h4>
+            <p><strong>Real-time updates for {{ session.contact_name or 'family' }}:</strong></p>
+            
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <strong>10:00 AM:</strong> Booking confirmed - medical team briefed
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-clock text-warning me-2"></i>
+                    <strong>10:30 AM:</strong> Aircraft preparation underway
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    <strong>11:00 AM:</strong> Medical team conducting final briefing
+                </li>
+                <li class="mb-0 text-muted">
+                    <i class="fas fa-bell me-2"></i>
+                    Next update expected at departure (estimated 11:30 AM)
+                </li>
+            </ul>
+        </div>
+
+        <!-- 24/7 Support -->
+        <div class="support-contact">
+            <h4><i class="fas fa-headset me-2"></i>24/7 Family Support</h4>
+            <p>Our dedicated advocate team is standing by for any questions or concerns</p>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <a href="tel:+1-800-MEDFLY" class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-phone me-2"></i>Call Support
+                    </a>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <a href="sms:+1-800-MEDFLY" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-sms me-2"></i>Text Updates
+                    </a>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>MVP Member Benefit:</strong> You have access to priority support and dedicated advocacy throughout your transport.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update tracking status simulation
+function updateTrackingStatus() {
+    // In production, this would poll the actual tracking API
+    console.log('Tracking status updated');
+}
+
+// Simulate real-time updates every 30 seconds
+setInterval(updateTrackingStatus, 30000);
+
+// Weather update simulation
+function updateWeather() {
+    console.log('Weather data refreshed from OpenWeatherMap API');
+}
+
+setInterval(updateWeather, 900000); // Every 15 minutes
+
+// Family notification simulation
+function sendFamilyUpdate(message) {
+    console.log(`FAMILY UPDATE SENT: ${message}`);
+    // In production, integrate with Twilio/SendGrid
+}
+
+// Simulate sending updates
+setTimeout(() => sendFamilyUpdate('Departure confirmed - aircraft airborne'), 1800000); // 30 minutes
+</script>
+{% endblock %}

@@ -9,6 +9,15 @@
       "notes": "Repeated failures to meet response time requirements",
       "relisted_at": null,
       "relist_fee_paid": false
+    },
+    {
+      "id": "delist_002",
+      "affiliate_id": "affiliate_1",
+      "reason": null,
+      "strikes": 1,
+      "delisted_at": "2025-08-10T04:35:25.119090",
+      "delisted_by": "admin",
+      "lifetime_ban": false
     }
   ],
   "meta": {
@@ -17,7 +26,7 @@
     "preset_reasons": [
       "Unpaid affiliate fee/commission",
       "False licensing attestation (Part 135)",
-      "Service misrepresentation", 
+      "Service misrepresentation",
       "Quality/SLA failure",
       "Other (notes required)"
     ],

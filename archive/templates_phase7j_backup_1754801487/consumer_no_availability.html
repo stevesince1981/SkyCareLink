@@ -1,0 +1,151 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}No Availability - MediFly{% endblock %}
+
+{% block head %}
+<style>
+.no-availability-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.compassionate-message {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.heart-icon {
+    font-size: 4rem;
+    color: #e74c3c;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+}
+
+.alternatives-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-top: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.alternative-option {
+    padding: 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.alternative-option:hover {
+    border-color: #007bff;
+    background: #f8f9ff;
+}
+
+.search-modification {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="no-availability-container">
+        <div class="compassionate-message">
+            <div class="heart-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            
+            <h2 class="mb-4">We're Sorry</h2>
+            <p class="lead mb-4">
+                No options are available through our preferred partners at this time for transport from 
+                <strong>{{ patient_data.origin }}</strong> to <strong>{{ patient_data.destination }}</strong>.
+            </p>
+            
+            <p class="mb-4">
+                Please modify your search or check back soon—we're here to help with alternatives.
+            </p>
+            
+            <div class="search-modification">
+                <h5><i class="fas fa-search me-2"></i>Try Modifying Your Search</h5>
+                <p class="mb-3">Sometimes small changes can open up new options:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-calendar me-2"></i>Adjust your preferred dates</li>
+                    <li><i class="fas fa-map-marker-alt me-2"></i>Consider nearby airports</li>
+                    <li><i class="fas fa-clock me-2"></i>Check different time frames</li>
+                </ul>
+                <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>Modify Search
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alternative Options -->
+    <div class="alternatives-section">
+        <h3 class="text-center mb-4">
+            <i class="fas fa-road me-2"></i>Alternative Transport Options
+        </h3>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="alternative-option">
+                    <h5><i class="fas fa-ambulance me-2"></i>Ground Medical Transport</h5>
+                    <p>Professional ground ambulance services with medical staff for shorter distances or when air transport isn't available.</p>
+                    <a href="#" class="btn btn-outline-primary">Explore Ground Options</a>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="alternative-option">
+                    <h5><i class="fas fa-train me-2"></i>Medical Rail Transport</h5>
+                    <p>Specialized medical train services for specific routes, offering comfort and medical support during transit.</p>
+                    <a href="#" class="btn btn-outline-primary">Check Rail Options</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <div class="alert alert-info">
+                <h5><i class="fas fa-phone me-2"></i>Need Personal Assistance?</h5>
+                <p class="mb-2">Our team is standing by to help find solutions for your specific situation.</p>
+                <div>
+                    <a href="tel:+1-800-MEDFLY" class="btn btn-success me-2">
+                        <i class="fas fa-phone me-1"></i>Call Now
+                    </a>
+                    <a href="mailto:support@medifly.com" class="btn btn-outline-success">
+                        <i class="fas fa-envelope me-1"></i>Email Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- International Support Note -->
+    {% if 'pakistan' in patient_data.destination.lower() or 'international' in patient_data.destination.lower() %}
+    <div class="alert alert-warning mt-4">
+        <h5><i class="fas fa-globe me-2"></i>International Transport Notice</h5>
+        <p class="mb-2">
+            International medical transport requires specialized coordination and may have limited availability. 
+            Our team can manually research additional options for routes like <strong>{{ patient_data.origin }}</strong> to <strong>{{ patient_data.destination }}</strong>.
+        </p>
+        <p class="mb-0">
+            <strong>What we're doing:</strong> We're actively reaching out to our international partner network for alternative solutions.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

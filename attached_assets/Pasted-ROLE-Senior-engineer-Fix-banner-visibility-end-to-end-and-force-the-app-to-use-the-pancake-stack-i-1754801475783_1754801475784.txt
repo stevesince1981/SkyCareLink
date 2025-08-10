@@ -1,0 +1,52 @@
+ROLE: Senior engineer. Fix banner visibility end‑to‑end and force the app to use the pancake‑stack intake everywhere. Archive before edits. No schema changes.
+
+TASKS
+
+Announcements: render pipeline (not just storage)
+
+Add a context processor or before_request hook that loads only active announcements from /data/announcements.json (filters: is_active == true and now ∈ [start_at, end_at], using America/New_York).
+
+Inject a list like active_announcements into every template render.
+
+In your base layout (e.g., consumer_base.html), right under the <body> tag, render active banners:
+
+For each active item: show message + (if set) a live countdown using the EST target.
+
+Ensure there are no hardcoded banners left in any template; banners must come only from active_announcements.
+
+Guard against empty/invalid JSON gracefully (render nothing, no errors).
+
+Announcements: timezone correctness
+
+Use the platform’s proper timezone library (e.g., zoneinfo.ZoneInfo("America/New_York") if available; fallback to pytz if not).
+
+Normalize start_at, end_at, and countdown_target to aware datetimes in EST.
+
+The countdown should compute against the EST “now” and display DD:HH:MM updating every second.
+
+If target is past, auto‑switch the banner to “We’re live!” (or simply hide the countdown).
+
+Enforce pancake‑stack intake (route + links)
+
+Confirm /intake renders the pancake‑stack template (the one you approved).
+
+Remove/disable any older intake route or template references so nothing else can render.
+
+Update all links/buttons (nav, “+ New Request”, CTA buttons) to point to /intake.
+
+If there are multiple base layouts (e.g., consumer vs generic), ensure they all route to the same canonical intake.
+
+Trim helper text (keep from previous decision)
+
+Keep the concise helper beneath From:
+“Search a hospital, clinic, airport, or address. Use ‘+ Can’t find it?’ to add manually.”
+
+Outputs
+
+Print where the context processor/before_request was added.
+
+Print which base template now renders active_announcements.
+
+List any routes/templates archived or unlinked for the old intake.
+
+End with: READY FOR PHASE 7.J.
