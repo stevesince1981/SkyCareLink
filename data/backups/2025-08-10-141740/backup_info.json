@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-08-10T14:17:40.765745",
+  "backup_dir": "data/backups/2025-08-10-141740",
+  "files_backed_up": [
+    "security_log.json",
+    "rate_limits.json",
+    "user_settings.json",
+    "config.json",
+    "error_log.json",
+    "manifest.json",
+    "invoices"
+  ]
+}

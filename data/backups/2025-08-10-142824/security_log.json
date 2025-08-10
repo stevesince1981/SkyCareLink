@@ -204,15 +204,6 @@
         "anomaly_detected": false,
         "risk_factors": []
       }
-    },
-    {
-      "timestamp": "2025-08-10T14:28:48.142325",
-      "action": "demo_reset",
-      "user": "system",
-      "actions": [
-        "Cleared session data",
-        "Reset training mode flag"
-      ]
     }
   ]
 }

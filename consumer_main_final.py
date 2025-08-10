@@ -2044,6 +2044,12 @@ def healthcheck():
         log_error("healthcheck_failed", str(e))
         return jsonify({"ok": False, "error": str(e)}), 500
 
+@consumer_app.route('/test-error')
+def test_error():
+    """Test route to generate a harmless error for testing error logging"""
+    log_error("test_error_triggered", "This is a test error for Phase 9.B verification")
+    raise Exception("Test error for Phase 9.B - error logging verification")
+
 @consumer_app.route('/admin/backup', methods=['POST'])
 def admin_backup():
     """Admin endpoint to trigger backup"""
@@ -2057,7 +2063,7 @@ def admin_backup():
     else:
         flash(f'Backup failed: {result["error"]}', 'error')
     
-    return redirect(url_for('admin_dashboard_enhanced'))
+    return redirect(url_for('admin_dashboard'))
 
 @consumer_app.route('/admin/reset-demo', methods=['POST'])
 def admin_reset_demo():
@@ -2072,7 +2078,7 @@ def admin_reset_demo():
     else:
         flash(f'Demo reset failed: {result["error"]}', 'error')
     
-    return redirect(url_for('admin_dashboard_enhanced'))
+    return redirect(url_for('admin_dashboard'))
 
 @consumer_app.route('/quotes')
 def consumer_quotes():

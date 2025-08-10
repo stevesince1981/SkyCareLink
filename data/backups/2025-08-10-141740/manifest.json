@@ -1,0 +1,25 @@
+{
+  "generated": "2025-08-10T14:12:00Z",
+  "routes_count": 45,
+  "templates_active": [
+    "consumer_templates/index.html",
+    "consumer_templates/consumer_base.html",
+    "consumer_templates/admin_security.html",
+    "consumer_templates/admin_dashboard_enhanced.html",
+    "consumer_templates/consumer_quotes_phase5a.html",
+    "consumer_templates/mfa_verify.html",
+    "consumer_templates/password_reset.html"
+  ],
+  "archived_files": [
+    "archive/templates/index_old.html",
+    "archive/templates/consumer_index*.html",
+    "archive/phase5a-backup/",
+    "archive/templates_phase7*_backup/"
+  ],
+  "flags_status": {
+    "training_mode": false,
+    "email_enabled": false,
+    "sms_enabled": false
+  },
+  "environment": "staging"
+}

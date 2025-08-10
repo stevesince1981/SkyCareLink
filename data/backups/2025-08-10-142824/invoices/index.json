@@ -1,0 +1,51 @@
+{
+  "invoices": [
+    {
+      "affiliate_id": "affiliate_1",
+      "invoice_week": "2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:07:07.099026",
+      "total_usd": 11240
+    },
+    {
+      "affiliate_id": "affiliate",
+      "invoice_week": "1_2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:14:55.448464",
+      "total_usd": 7400,
+      "csv_file": "data/invoices/affiliate_1_2025-W32.csv",
+      "html_file": "data/invoices/affiliate_1_2025-W32.html"
+    },
+    {
+      "affiliate_id": "affiliate",
+      "invoice_week": "2_2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:14:55.449531",
+      "total_usd": 7650,
+      "csv_file": "data/invoices/affiliate_2_2025-W32.csv",
+      "html_file": "data/invoices/affiliate_2_2025-W32.html"
+    },
+    {
+      "affiliate_id": "affiliate",
+      "invoice_week": "3_2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:14:55.450414",
+      "total_usd": 6240,
+      "csv_file": "data/invoices/affiliate_3_2025-W32.csv",
+      "html_file": "data/invoices/affiliate_3_2025-W32.html"
+    }
+  ],
+  "meta": {
+    "version": 1,
+    "created_at": "2025-08-10T02:44:00Z",
+    "last_updated": "2025-08-10T03:24:27.268680",
+    "invoice_week_format": "Sunday-Saturday",
+    "ach_remit_info": {
+      "bank_name": "MediFly Business Bank",
+      "routing_number": "021000021",
+      "account_number": "123456789",
+      "reference_format": "MEDFLY-{affiliate_id}-{invoice_week}"
+    },
+    "from_email": "invoices@medifly.com"
+  }
+}

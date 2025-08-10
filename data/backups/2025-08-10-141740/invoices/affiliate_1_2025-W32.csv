@@ -1,0 +1,4 @@
+booking_id,completed_at,base_amount_usd,effective_percent,commission_amount_usd
+phase6-test-001,2025-08-10T03:06:30.909268,125000,4.0%,5000
+qa-test-001,2025-08-10T03:14:42.612503,25000,4.0%,1000
+qa-test-003,2025-08-10T03:14:44.764237,35000,4.0%,1400

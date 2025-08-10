@@ -1,0 +1,8 @@
+{
+  "env": "staging",
+  "flags": {
+    "training_mode": false,
+    "email_enabled": false,
+    "sms_enabled": false
+  }
+}
