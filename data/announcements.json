@@ -1,6 +1,7 @@
 {
   "announcements": [
     {
+      "id": "ann_001",
       "message": "System maintenance scheduled for tonight 11 PM - 2 AM EST. All transport requests will be processed normally.",
       "style": "info",
       "is_active": true,

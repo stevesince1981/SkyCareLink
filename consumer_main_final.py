@@ -709,7 +709,8 @@ def admin_announcements_update(announcement_id):
         announcements_data = load_json_data('data/announcements.json', {'announcements': []})
         
         for announcement in announcements_data['announcements']:
-            if announcement['id'] == announcement_id:
+            announcement_real_id = announcement.get('id', 'unknown')
+            if announcement_real_id == announcement_id:
                 # Update fields
                 announcement['message'] = request.form.get('message', announcement.get('message', '')).strip()
                 announcement['style'] = request.form.get('style', announcement.get('style', 'info'))
