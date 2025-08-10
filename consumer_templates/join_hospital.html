@@ -1,24 +1,277 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Join as Hospital/Clinic - MediFly{% endblock %}
+{% block title %}Hospital/Clinic Registration - MediFly{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h2 class="mb-4"><i class="fas fa-hospital me-2"></i>Join as Hospital/Clinic</h2>
-                    <p class="lead text-muted">Register your healthcare facility with MediFly</p>
-                    <div class="alert alert-info">
-                        <strong>Note:</strong> Signup form TBD.
-                    </div>
-                    <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Home
-                    </a>
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-hospital me-3"></i>
+                    Join as Hospital/Clinic
+                </h1>
+                <p class="lead text-muted">
+                    Connect your facility to our medical transport network
+                </p>
+            </div>
+
+            <!-- Membership Benefits -->
+            <div class="card border-success mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-gift me-2"></i>Membership Benefits
+                    </h4>
                 </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Free for 1 year</strong> post-launch
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>+1 year</strong> after 5 successful referrals
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Free for life</strong> after referral completes flight
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Priority booking</strong> for urgent transports
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Bulk pricing</strong> for multiple bookings
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Dedicated support</strong> team
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Information -->
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Pricing:</strong> Free for 1 year, then $199.99/year with auto-renewal. 
+                30-day cancellation notice required. Referral bonuses can extend or eliminate fees.
+            </div>
+
+            <!-- Registration Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Facility Registration</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('join_hospital') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="facilityName" class="form-label">Facility Name *</label>
+                                <input type="text" class="form-control" id="facilityName" name="facility_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="facilityType" class="form-label">Facility Type</label>
+                                <select class="form-select" id="facilityType" name="facility_type">
+                                    <option value="hospital">Hospital</option>
+                                    <option value="clinic">Clinic</option>
+                                    <option value="urgent_care">Urgent Care Center</option>
+                                    <option value="nursing_home">Nursing Home</option>
+                                    <option value="rehabilitation">Rehabilitation Center</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="contactName" class="form-label">Primary Contact Name *</label>
+                                <input type="text" class="form-control" id="contactName" name="contact_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="contactTitle" class="form-label">Contact Title</label>
+                                <input type="text" class="form-control" id="contactTitle" name="contact_title" 
+                                       placeholder="e.g., Transport Coordinator, Nurse Manager">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Facility Address *</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required 
+                                      placeholder="Full address including city, state, and ZIP code"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bedCount" class="form-label">Bed Count</label>
+                                <input type="number" class="form-control" id="bedCount" name="bed_count" min="1">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="specialties" class="form-label">Medical Specialties</label>
+                                <select class="form-select" id="specialties" name="specialties" multiple>
+                                    <option value="emergency">Emergency Medicine</option>
+                                    <option value="cardiac">Cardiac Care</option>
+                                    <option value="trauma">Trauma Center</option>
+                                    <option value="neonatal">Neonatal/Pediatric</option>
+                                    <option value="neurological">Neurological</option>
+                                    <option value="oncology">Oncology</option>
+                                    <option value="orthopedic">Orthopedic</option>
+                                    <option value="general">General Medicine</option>
+                                </select>
+                                <div class="form-text">Hold Ctrl/Cmd to select multiple</div>
+                            </div>
+                        </div>
+
+                        <!-- Referral Section -->
+                        <div class="card bg-light mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-users me-2"></i>Referral Program
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="referralCode" class="form-label">Referral Code (Optional)</label>
+                                    <input type="text" class="form-control" id="referralCode" name="referral_code" 
+                                           placeholder="Enter referral code from another hospital/clinic">
+                                    <div class="form-text">
+                                        If you were referred by another facility, enter their code here. 
+                                        They'll receive rewards when you join!
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-success">
+                                    <strong>Earn Rewards:</strong> Refer other facilities and earn:
+                                    <ul class="mb-0 mt-2">
+                                        <li>+1 year free membership after 5 successful referrals</li>
+                                        <li>Free membership for life when any referral completes their first flight</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="traumaCenter">
+                                    <label class="form-check-label" for="traumaCenter">
+                                        Designated Trauma Center
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="criticalAccess">
+                                    <label class="form-check-label" for="criticalAccess">
+                                        Critical Access Hospital
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="termsAgreement" required>
+                                <label class="form-check-label" for="termsAgreement">
+                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and 
+                                    <a href="#" target="_blank">Provider Agreement</a> *
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hipaaConsent" required>
+                                <label class="form-check-label" for="hipaaConsent">
+                                    I acknowledge the <a href="#" target="_blank">HIPAA Business Associate Agreement</a> 
+                                    and consent to secure data handling *
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-hospital-alt me-2"></i>
+                                Register Facility - Free for 1 Year
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="mt-4 text-center">
+                <p class="text-muted">
+                    Questions about registration? Contact our team at 
+                    <a href="mailto:hospitals@medifly.com">hospitals@medifly.com</a> 
+                    or call <strong>(555) 123-4567</strong>
+                </p>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('form');
+    const requiredCheckboxes = ['termsAgreement', 'hipaaConsent'];
+    
+    form.addEventListener('submit', function(e) {
+        let valid = true;
+        
+        requiredCheckboxes.forEach(id => {
+            const checkbox = document.getElementById(id);
+            if (!checkbox.checked) {
+                valid = false;
+                checkbox.focus();
+            }
+        });
+        
+        if (!valid) {
+            e.preventDefault();
+            alert('Please agree to all required terms and conditions.');
+        }
+    });
+    
+    // Phone number formatting
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length >= 6) {
+            value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6, 10);
+        } else if (value.length >= 3) {
+            value = value.substring(0, 3) + '-' + value.substring(3);
+        }
+        this.value = value;
+    });
+    
+    // Referral code validation
+    const referralInput = document.getElementById('referralCode');
+    referralInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+});
+</script>
 {% endblock %}

@@ -54,6 +54,8 @@ class Affiliate(db.Model):
     avg_response_time_minutes = Column(Integer, default=0)
     response_rate_30day = Column(Float, default=0.0)  # 0.0-1.0
     is_spotlight = Column(Boolean, default=False)  # <50 bookings or <90 days
+    offers_concierge = Column(Boolean, default=False)  # Concierge service provider
+    referral_code = Column(String(20), unique=True, nullable=True)  # For referral tracking
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     is_demo_data = Column(Boolean, default=False)
     

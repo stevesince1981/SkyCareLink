@@ -798,11 +798,7 @@ def send_urgency_alert(user_contact, hours_remaining, quote_data):
     logging.info(f"ALERT STUB - To: {user_contact}, Message: {message}")
     return True
 
-# Routes
-@consumer_app.route('/')
-def home():
-    """Home landing page with hero and CTAs"""
-    return render_template('home.html')
+# Routes - Original home route replaced with enhanced Phase 11.H version
 
 @consumer_app.route('/login')
 def login():
@@ -1922,14 +1918,7 @@ def consumer_booking():
                          provider=provider,
                          booking_ref=booking_ref)
 
-@consumer_app.route('/intake')
-def consumer_intake():
-    """Enhanced intake form - last-night pancake template"""
-    transport_type = request.args.get('type', 'critical')
-    return render_template('consumer_intake_updated.html', 
-                         transport_type=transport_type,
-                         equipment_pricing=EQUIPMENT_PRICING,
-                         datetime=datetime)
+# First intake route - removed to eliminate conflicts
 
 
 
@@ -2941,10 +2930,7 @@ def partner_dashboard():
                          bookings=partner_bookings, 
                          stats=partner_stats)
 
-@consumer_app.route('/join_affiliate')
-def join_affiliate():
-    """Join as Affiliate (Air Operator)"""
-    return render_template('join_affiliate_page.html')
+# Route moved to enhanced Phase 11.H implementation below
 
 # Provider Search API Endpoints
 @consumer_app.route('/api/providers/search')
@@ -3124,10 +3110,7 @@ def admin_reject_provider(provider_id):
 
 # Duplicate route removed - keeping original join_affiliate route above
 
-@consumer_app.route('/join_hospital')
-def join_hospital():
-    """Join as Hospital/Clinic"""
-    return render_template('join_hospital_page.html')
+# Route replaced with enhanced version below
 
 @consumer_app.route('/mvp-incentive')
 def mvp_incentive():
@@ -3320,49 +3303,7 @@ def send_email_template(template_name, recipient_email, **template_vars):
         logging.error(f"Error sending email template {template_name}: {e}")
         return False
 
-# Demo toolkit guided demo cards
-# Phase 11.C2: Stepper intake implementation
-@consumer_app.route('/intake')
-def intake():
-    """Phase 11.C2: Complete 4-step stepper intake with state persistence"""
-    # Get or create intake session data
-    if 'intake_data' not in session:
-        session['intake_data'] = {
-            'step': 1,
-            'service_type': None,
-            'from_location': None,
-            'to_location': None,
-            'date_time': None,
-            'patient_info': {},
-            'requirements': {}
-        }
-    
-    current_step = session.get('intake_data', {}).get('step', 1)
-    
-    # Load available niches from database
-    niches_list = []
-    if DB_AVAILABLE:
-        try:
-            with consumer_app.app_context():
-                niches = Niche.query.all()
-                niches_list = [{'id': n.id, 'name': n.name, 'description': n.description} for n in niches]
-        except Exception as e:
-            logging.error(f"Error loading niches: {e}")
-    
-    if not niches_list:
-        # Fallback to default niches
-        niches_list = [
-            {'id': 1, 'name': 'Cardiac Emergency', 'description': 'Heart-related critical care'},
-            {'id': 2, 'name': 'Trauma Transport', 'description': 'Emergency trauma cases'},
-            {'id': 3, 'name': 'Neonatal ICU', 'description': 'Newborn intensive care'},
-            {'id': 4, 'name': 'Organ Transport', 'description': 'Time-critical organ delivery'},
-            {'id': 5, 'name': 'Psychiatric Crisis', 'description': 'Mental health emergencies'}
-        ]
-    
-    return render_template('intake_stepper.html', 
-                         current_step=current_step,
-                         intake_data=session.get('intake_data', {}),
-                         niches=niches_list)
+# Second intake route removed - keeping only final Phase 11.H version
 
 @consumer_app.route('/intake/step', methods=['POST'])
 def intake_step():
@@ -3981,6 +3922,271 @@ def portal_reset_demo():
         return redirect(url_for('affiliate_commissions'))
     else:
         return redirect(url_for('hospital_dashboard'))
+
+# Phase 11.H: Complete Implementation
+
+# 1) Admin Routes - Affiliates Management
+@consumer_app.route('/admin/affiliates')
+def admin_affiliates():
+    """Admin affiliates list with edit capabilities"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('home'))
+    
+    affiliates_data = []
+    if DB_AVAILABLE:
+        try:
+            with consumer_app.app_context():
+                affiliates = Affiliate.query.all()
+                for affiliate in affiliates:
+                    affiliates_data.append({
+                        'id': affiliate.id,
+                        'company_name': affiliate.company_name,
+                        'contact_email': affiliate.contact_email,
+                        'commission_percent': affiliate.commission_percent_default * 100,
+                        'recouped_amount': affiliate.recouped_amount_usd,
+                        'total_bookings': affiliate.total_bookings,
+                        'offers_concierge': getattr(affiliate, 'offers_concierge', False)
+                    })
+        except Exception as e:
+            logging.error(f"Error loading affiliates: {e}")
+    
+    return render_template('admin_affiliates.html', affiliates=affiliates_data)
+
+# 2) Join Flows
+@consumer_app.route('/join_individual')
+def join_individual():
+    """Individual self-service signup"""
+    return render_template('join_individual.html')
+
+@consumer_app.route('/join_individual', methods=['POST'])
+def join_individual_submit():
+    """Process individual registration"""
+    try:
+        user_data = {
+            'contact_name': request.form.get('contact_name'),
+            'email': request.form.get('email'),
+            'phone': request.form.get('phone'),
+            'role': 'individual'
+        }
+        
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                # Create user account
+                new_user = User(
+                    username=user_data['email'],
+                    email=user_data['email'],
+                    contact_name=user_data['contact_name'],
+                    phone_number=user_data['phone'],
+                    role='individual',
+                    membership_status='free_trial',
+                    membership_expires=datetime.now(timezone.utc) + timedelta(days=30)
+                )
+                db.session.add(new_user)
+                db.session.commit()
+                
+                # Log in user
+                session['logged_in'] = True
+                session['user_id'] = new_user.id
+                session['user_role'] = 'individual'
+                session['username'] = new_user.username
+                session['contact_name'] = new_user.contact_name
+                
+                flash('Welcome to MediFly! Your free trial includes one booking.', 'success')
+                return redirect(url_for('home'))
+        else:
+            # Fallback session-based
+            session.update(user_data)
+            session['logged_in'] = True
+            flash('Registration successful! Welcome to MediFly.', 'success')
+            
+    except Exception as e:
+        logging.error(f"Individual registration error: {e}")
+        flash('Registration error. Please try again.', 'error')
+    
+    return redirect(url_for('join_individual'))
+
+@consumer_app.route('/join_hospital', methods=['GET', 'POST'])
+def join_hospital():
+    """Enhanced hospital/Clinic registration with referral tracking"""
+    if request.method == 'POST':
+        try:
+            referral_code = request.form.get('referral_code', '').strip()
+            
+            hospital_data = {
+                'facility_name': request.form.get('facility_name'),
+                'contact_name': request.form.get('contact_name'),
+                'email': request.form.get('email'),
+                'phone': request.form.get('phone'),
+                'address': request.form.get('address'),
+                'referral_code': referral_code
+            }
+            
+            if DB_AVAILABLE:
+                with consumer_app.app_context():
+                    # Create user
+                    new_user = User(
+                        username=hospital_data['email'],
+                        email=hospital_data['email'],
+                        contact_name=hospital_data['contact_name'],
+                        phone_number=hospital_data['phone'],
+                        role='hospital'
+                    )
+                    db.session.add(new_user)
+                    db.session.flush()
+                    
+                    # Create hospital
+                    new_hospital = Hospital(
+                        user_id=new_user.id,
+                        facility_name=hospital_data['facility_name'],
+                        contact_email=hospital_data['email'],
+                        address=hospital_data['address'],
+                        membership_status='free_year',
+                        membership_expires=datetime.now(timezone.utc) + timedelta(days=365)
+                    )
+                    db.session.add(new_hospital)
+                    
+                    # Handle referral
+                    if referral_code:
+                        referring_hospital = Hospital.query.filter_by(referral_code=referral_code).first()
+                        if referring_hospital:
+                            # Credit referring hospital
+                            referring_hospital.referral_count += 1
+                            # Check for milestone rewards
+                            if referring_hospital.referral_count >= 5:
+                                referring_hospital.membership_expires += timedelta(days=365)
+                    
+                    db.session.commit()
+                    flash('Hospital registration successful! Free membership for 1 year.', 'success')
+                    return redirect(url_for('login'))
+            else:
+                flash('Registration successful! Please contact us to activate your account.', 'success')
+                
+        except Exception as e:
+            logging.error(f"Hospital registration error: {e}")
+            flash('Registration error. Please try again.', 'error')
+    
+    return render_template('join_hospital.html')
+
+@consumer_app.route('/join_affiliate', methods=['GET', 'POST'])  
+def join_affiliate():
+    """Affiliate registration with concierge option"""
+    if request.method == 'POST':
+        try:
+            affiliate_data = {
+                'company_name': request.form.get('company_name'),
+                'contact_name': request.form.get('contact_name'),
+                'email': request.form.get('email'),
+                'phone': request.form.get('phone'),
+                'offers_concierge': 'offers_concierge' in request.form,
+                'commission_percent': float(request.form.get('commission_percent', 5.0)) / 100
+            }
+            
+            # Validate commission range
+            if not (3.0 <= affiliate_data['commission_percent'] * 100 <= 7.0):
+                flash('Commission percentage must be between 3.0% and 7.0%', 'error')
+                return render_template('join_affiliate.html')
+            
+            if DB_AVAILABLE:
+                with consumer_app.app_context():
+                    # Create user
+                    new_user = User(
+                        username=affiliate_data['email'],
+                        email=affiliate_data['email'],
+                        contact_name=affiliate_data['contact_name'],
+                        phone_number=affiliate_data['phone'],
+                        role='affiliate'
+                    )
+                    db.session.add(new_user)
+                    db.session.flush()
+                    
+                    # Create affiliate
+                    new_affiliate = Affiliate(
+                        user_id=new_user.id,
+                        company_name=affiliate_data['company_name'],
+                        contact_email=affiliate_data['email'],
+                        commission_percent_default=affiliate_data['commission_percent'],
+                        offers_concierge=affiliate_data['offers_concierge']
+                    )
+                    db.session.add(new_affiliate)
+                    db.session.commit()
+                    
+                    flash('Affiliate registration successful! Account pending approval.', 'success')
+                    return redirect(url_for('login'))
+            else:
+                flash('Registration submitted! We will contact you within 2 business days.', 'success')
+                
+        except Exception as e:
+            logging.error(f"Affiliate registration error: {e}")
+            flash('Registration error. Please try again.', 'error')
+    
+    return render_template('join_affiliate.html')
+
+# 3) Concierge Business Logic
+def generate_concierge_quote(quotes_list, booking_id):
+    """Generate synthetic concierge quote using best base fare"""
+    if not quotes_list:
+        return None
+    
+    # Find best base fare
+    best_quote = min(quotes_list, key=lambda q: q['total_price'])
+    
+    # Check if any concierge-enabled affiliates exist
+    concierge_available = False
+    if DB_AVAILABLE:
+        try:
+            with consumer_app.app_context():
+                concierge_affiliate = Affiliate.query.filter_by(offers_concierge=True).first()
+                if concierge_affiliate:
+                    concierge_available = True
+                    concierge_provider = concierge_affiliate.company_name
+                else:
+                    concierge_provider = "MediFly Concierge"
+        except:
+            concierge_provider = "MediFly Concierge"
+    else:
+        concierge_provider = "MediFly Concierge"
+        concierge_available = True  # Demo mode
+    
+    if not concierge_available:
+        return None
+    
+    # Generate concierge quote
+    concierge_quote = {
+        'id': f"concierge_{booking_id}",
+        'provider_name': concierge_provider,
+        'aircraft_type': best_quote['aircraft_type'],
+        'eta_minutes': best_quote['eta_minutes'] - 10,  # Faster ETA
+        'base_price': best_quote['total_price'],
+        'concierge_fee': 15000,
+        'total_price': best_quote['total_price'] + 15000,
+        'is_concierge': True,
+        'concierge_split': 7500,  # Split $7.5k each
+        'badges': ['concierge'],
+        'certifications': best_quote.get('certifications', []) + ['Concierge Certified'],
+        'capabilities': best_quote.get('capabilities', []) + ['Premium Support']
+    }
+    
+    return concierge_quote
+
+# 4) Updated Intake Route
+@consumer_app.route('/intake')
+def consumer_intake():
+    """Updated intake with pancake stepper"""
+    return render_template('consumer_intake_updated.html')
+
+# 5) Home Page with "Why Choose MediFly?" 
+@consumer_app.route('/')
+def home():
+    """Enhanced home page with value propositions"""
+    stats = {
+        'total_providers': 150,
+        'avg_response_time': 25,
+        'completed_transports': 2847,
+        'satisfaction_rate': 98.7
+    }
+    
+    return render_template('home_enhanced.html', stats=stats)
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

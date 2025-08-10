@@ -1,0 +1,122 @@
+PHASE 11.H — APPLY (Admin nav, Concierge business rules, Join flows, Intake stepper fix, Home copy, Cleanup)
+ROLE: Senior engineer. No code in this message—just what I’ll execute. You can paste this whole block into Replit AI to run.
+
+1) Admin navigation & locations
+Add an Admin menu (or expand the dashboard cards) that links to:
+
+Affiliates (/admin/affiliates) → list + edit fee % (3–7%), recoup progress, strikes.
+
+Analytics → Affiliates (/admin/analytics/affiliates) → flights per provider table (fee %, recoup remaining, flights, response rate, spotlight flag) with sorting + drill‑down.
+
+Demo Tools (/admin/demo) → Create Guided Demo, Granular Reset dialog.
+
+Invoices (/admin/invoices) → existing management page.
+
+Announcements (/admin/announcements) → existing CRUD.
+
+Ensure these pages actually exist (create if missing) and remove modal popups that block real navigation.
+
+2) Concierge option (final business logic & UI)
+Add an “Offers Concierge” checkbox on Affiliate profiles (Admin‑only).
+
+On quotes page:
+
+Identify the best base fare among returned quotes (e.g., Affiliate A=$25k).
+
+If any Concierge‑enabled affiliate exists, generate a synthetic Concierge quote using that affiliate at best_base + $15,000 (e.g., Affiliate D = $40k).
+
+Display a “Concierge” badge (replace “Spotlight” text where this applies; Spotlight remains its own badge for new affiliates). Tooltip explains: “$15,000 premium concierge support; split $7,500 each; base 5% still applies.”
+
+On confirm:
+
+Show Concierge add‑on line item (+$15,000). Commission remains on base fare only.
+
+Revenue split: ledger records $7,500 to us and $7,500 to Concierge affiliate; our 1% payback logic will also note the amount credited toward $25k (on base commission and the add‑on if you want that too—per your note, I’ll apply the 1% credit on base commissions and show the credit logic against the add‑on separately in dashboards so it’s crystal clear).
+
+Add filters in Admin → Invoices/Commissions to show Concierge add‑on splits and their statuses.
+
+3) Join flows, referrals, and memberships
+Create pages:
+
+/join_affiliate (existing) → confirm wording, add “Offers Concierge” checkbox, fee % default field (3–7%).
+
+/join_hospital (existing) → referral field (code or emails), show free 1 year post‑launch, +1 year after 5 joined referrals; free for life after a referral completes a flight.
+
+/join_individual → quick self‑service signup (no fee unless attempting a 2nd booking → $19.99/mo, min 12 months).
+
+Add referral tracking:
+
+Hospitals/Clinics get a unique referral code + dashboard tile showing joined referrals count and milestones (5/10/…).
+
+When any referred org completes a flight, mark “Free for Life”.
+
+Add membership management:
+
+Individuals: if they start a second booking, prompt to subscribe ($19.99/mo) with terms.
+
+Hospitals/Clinics: $199.99/year after free year; auto‑renew; 30‑day cancellation flow with a background task to finalize on the correct date + reminder emails + an optional “10% to stay” offer.
+
+Add countdown widget on their profile: “87 days left—renew now for 10% off.”
+
+4) Intake (fix to your exact stepper)
+Use archive/templates/intake/index_pancake_duplicate.html as the canonical intake; move it to consumer_templates/consumer_intake_updated.html.
+
+Remove MVP language entirely.
+
+Change Severity to 1–3 (green/yellow/red) with your tooltips:
+
+1 = minor/stable; 2 = moderate/monitoring; 3 = critical (ventilator/incubator).
+
+Ensure step order is: Service → From/To → Date/Time (+same‑day warning +20% confirm) → Patient (age band, severity 1–3, niches, regions, ground included).
+
+Add the pancake “shrink” animation (the selected step compresses to a slim panel as you advance; prior steps clickable to jump back; state persists quietly).
+
+Force account login at submit: viewing is open, but before we fan‑out to affiliates, we require a quick account (Individual/Hospital/Affiliate). Minimal fields; saves the draft and returns to quotes after login.
+
+5) Home page copy (“Why Choose MediFly?”)
+Add a prominent section on Home:
+
+Largest network claim (neutral, positive tone).
+
+Trust & compliance: “All air operators in our network confirm Part 135 compliance; immediate delist + audit for dishonesty; periodic license checks.”
+
+Seamless ground: “Ground ambulance to/from both sides included where available.”
+
+Fast quotes: “Most quotes in 15–60 minutes; fair‑distribution to responsive partners.”
+
+Data privacy: minimal PHI; HIPAA‑minded handling; no card storage.
+
+6) Admin panels hardening (Quote & Payment)
+Make sure Quote Management (open requests, view quotes, reveal/lock selection) and Payment Management (invoices by week, Mark Paid with remittance ref) load without 500s and use the new currency formatter everywhere.
+
+7) Portal demo scoping & banners
+With Dummy ON, Affiliate and Hospital portals show only their org’s demo rows + a tiny banner “Showing demo data for this organization.”
+
+8) Cleanup (declutter)
+Archive these to /archive/:
+
+Any intake variants other than consumer_intake_updated.html.
+
+Old homepages that don’t extend consumer_base.html.
+
+Legacy request routes/templates; keep 301s to /intake.
+
+Update admin-dashboard and navbar so all new admin destinations are navigable, and remove dead buttons (e.g., the old announcements modal trigger).
+
+Outputs after apply
+
+Admin nav now shows: Affiliates, Analytics → Affiliates, Demo Tools, Invoices, Announcements.
+
+/intake now renders the pancake stepper with shrink animation; severity 1–3; no MVP.
+
+Concierge: synthetic quote appears when Concierge providers exist; confirm shows add‑on line item; ledger shows the $7.5k/$7.5k split and payback credits as specified.
+
+Join flows: /join_affiliate, /join_hospital, /join_individual active with referral rules and membership logic.
+
+Home page “Why Choose MediFly?” section present.
+
+All admin panels open without 500s.
+
+Portals show scoped demo with banner.
+
+Legacy clutter archived.
