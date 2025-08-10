@@ -1,0 +1,131 @@
+ROLE: You are a strict repo auditor. Do not modify files. Produce a precise PASS/FAIL report and exact file/line refs for anything missing.
+
+SCOPE & DEFINITIONS
+
+Active launcher must be main.py importing consumer_main_final.py as: from consumer_main_final import consumer_app as app.
+
+Only one active launcher in root: main.py (plus consumer_main_final.py as the app).
+
+Correct archive path is /archive/... (note: sometimes a misspelled /archieve/... was used).
+
+Terminology: Affiliate = air operator; Hospital/Clinic = requester/customer. UI must not say “Provider” for these roles.
+
+Liability text must appear on four screens: Intake, Quotes, Confirm, Footer.
+
+Accept any of these exact lines (case-insensitive match OK):
+
+MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+
+MediFly aggregates requests/quotes; all service delivery, licensing, safety, and liability remain with the Affiliate; availability not guaranteed.
+
+Training/Dummy mode visuals must include:
+
+Site-wide banner: TRAINING MODE — DUMMY DATA
+
+Per-row “Dummy” tag on lists (requests/quotes/bookings)
+
+(We’re only verifying presence of labels/strings here.)
+
+Join routes must exist and be linked in nav:
+
+/join_affiliate and /join_hospital
+
+Draft UX must include:
+
+“Draft” badge/label
+
+“Modify request” control present on pre-selection requests
+
+TASKS (READ‑ONLY)
+
+Print a tree (paths only) for:
+
+Root: main.py, consumer_main_final.py, any *_main*.py, *_app*.py, app.py
+
+/templates/ and /consumer_templates/ (HTML filenames only)
+
+/static/ and /consumer_static/ (top-level CSS/JS filenames)
+
+/archive/ and /archieve/ (if exists)
+
+Verify launcher chain:
+
+Confirm main.py exists and contains from consumer_main_final import consumer_app as app
+
+Confirm consumer_main_final.py exists and defines a Flask app named consumer_app
+
+List any extra launchers still outside /archive/entrypoints/
+
+Terminology scan (UI text only; do not change):
+
+Find any occurrences of the word Provider in:
+
+All templates (templates/, consumer_templates/)
+
+JS (static/, consumer_static/)
+
+Demo/seed files (e.g., DEMO_USERS or similar)
+
+For each match, print: FILE:LINE | …snippet…
+
+Exclude cases where it’s clearly part of a generic sentence not labeling roles (note in report if ambiguous)
+
+Liability presence (four screens):
+
+Identify which templates render: Intake, Quotes, Confirm, Footer/Base
+
+For each, search for either accepted liability line (see above)
+
+Report PASS/FAIL per screen with the file path; if FAIL, suggest the nearest line number where it should go
+
+Training/Dummy visuals:
+
+Search for banner text TRAINING MODE — DUMMY DATA
+
+Search for per-row Dummy tag in list templates
+
+Report files/lines found; if missing, list which templates lack labels
+
+Join routes and nav:
+
+Search Python files for route handlers to /join_affiliate and /join_hospital
+
+Search templates for nav/landing links pointing to those routes
+
+Report PASS/FAIL and file paths
+
+Draft UX:
+
+Search for Draft badge/label in templates
+
+Search for Modify or Modify request control in quotes/request templates
+
+Report PASS/FAIL with file paths
+
+Archive path sanity:
+
+If any files were placed under /archieve/…, list them and recommend moving to /archive/… (do not move in this phase)
+
+OUTPUT FORMAT
+
+Begin with: === AUDIT 2 REPORT (READ‑ONLY) ===
+
+Sections:
+
+ENTRYPOINTS: PASS/FAIL + list
+
+TERMINOLOGY: PASS/FAIL + occurrences table
+
+LIABILITY (Intake/Quotes/Confirm/Footer): PASS/FAIL per screen + file paths
+
+TRAINING VISUALS: PASS/FAIL + file paths
+
+JOIN ROUTES & NAV: PASS/FAIL + file paths
+
+DRAFT UX: PASS/FAIL + file paths
+
+ARCHIVE PATHS: findings (archive vs archieve)
+
+End with: === READY FOR PHASE 2.B APPLY? (YES/NO) ===
+
+If NO, list the minimal edits required before apply (bullet list, file:line guidance).
