@@ -154,6 +154,32 @@
         </div>
     </div>
 
+    <!-- Database Status & Dummy Data Toggle -->
+    <div class="card mb-4" id="databaseCard">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5><i class="fas fa-database me-2"></i>Database Management</h5>
+            <span class="badge bg-success" id="dbStatus">PostgreSQL Connected</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="mb-2"><strong>Dummy Data Toggle</strong></p>
+                    <p class="text-muted small">Load/Remove 10 demo bookings with quotes and commissions for testing</p>
+                    <div id="dummyDataStatus" class="mb-3">
+                        <span class="text-muted">Loading database status...</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <form method="POST" action="{{ url_for('admin_dummy_toggle') }}" id="dummyToggleForm">
+                        <button type="submit" class="btn btn-outline-primary" id="dummyToggleBtn">
+                            <i class="fas fa-sync-alt me-1"></i>Toggle Dummy Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <!-- User Management -->
         <div class="col-md-6">
@@ -344,6 +370,52 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Admin dashboard loaded');
     console.log('Total revenue:', {{ admin_data.total_revenue }});
     console.log('Active users:', {{ admin_data.total_users }});
+    
+    // Load database status
+    loadDatabaseStatus();
 });
+
+// Load database status
+async function loadDatabaseStatus() {
+    try {
+        const response = await fetch('/admin/db/status');
+        const data = await response.json();
+        
+        const statusEl = document.getElementById('dummyDataStatus');
+        const toggleBtn = document.getElementById('dummyToggleBtn');
+        const dbStatusBadge = document.getElementById('dbStatus');
+        
+        if (data.database_available) {
+            dbStatusBadge.className = 'badge bg-success';
+            dbStatusBadge.textContent = 'PostgreSQL Connected';
+            
+            const counts = data.dummy_data_counts;
+            const hasDummy = data.has_dummy_data;
+            
+            statusEl.innerHTML = `
+                <div class="small">
+                    <strong>Current Data:</strong><br>
+                    📊 Bookings: ${counts.bookings} | 💰 Commissions: ${counts.commissions}<br>
+                    🏥 Hospitals: ${counts.hospitals} | 🤝 Affiliates: ${counts.affiliates}<br>
+                    🎯 Niches Seeded: ${data.niches_seeded}
+                </div>
+            `;
+            
+            toggleBtn.innerHTML = hasDummy ? 
+                '<i class="fas fa-trash me-1"></i>Remove Dummy Data' :
+                '<i class="fas fa-plus me-1"></i>Load Dummy Data';
+            toggleBtn.className = hasDummy ? 'btn btn-outline-danger' : 'btn btn-outline-success';
+        } else {
+            dbStatusBadge.className = 'badge bg-warning';
+            dbStatusBadge.textContent = 'Database Unavailable';
+            statusEl.innerHTML = '<span class="text-warning">Database not available</span>';
+            toggleBtn.disabled = true;
+        }
+    } catch (error) {
+        console.error('Failed to load database status:', error);
+        document.getElementById('dummyDataStatus').innerHTML = 
+            '<span class="text-danger">Failed to load status</span>';
+    }
+}
 </script>
 {% endblock %}

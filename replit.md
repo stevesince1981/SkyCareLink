@@ -6,13 +6,13 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 10.A Completed - Aug 10, 2025)
-- **Post-Launch Housekeeping**: Implemented demo toolkit with guided demo creation (5 realistic cases) and reset functionality
-- **Analytics Roll-up**: Added monthly analytics dashboard with CSV export capability
-- **Email Templates**: Created HTML email templates for affiliate welcome, hospital welcome, invoices, and security alerts
-- **Error Pages**: Custom 404/500 pages with friendly messaging and navigation
-- **Admin Tools**: Quick actions bar with Generate Invoices, Reset Demo, Monthly Roll-up, Security Log, and Announcements
-- **Accessibility**: Added aria-labels, viewport meta tag, and performance optimizations with deferred JS loading
+## Recent Changes (Phase 11.A Completed - Aug 10, 2025)
+- **Database Implementation**: Full SQLAlchemy + Alembic integration with PostgreSQL backend
+- **Core Models**: Users, Niches, Affiliates, Hospitals, Bookings, Quotes, Commissions, AffiliateNiches, Announcements, SecurityEvents
+- **Data Seeding**: Idempotent seeding for 5 medical transport niches and demo data generation
+- **Admin Database Controls**: Live dummy data toggle with real-time status display and database health monitoring
+- **Migration System**: Alembic migration '18c5a519f952_core_tables' successfully applied
+- **Preserved JSON Flows**: Existing session-based functionality maintained alongside new database features
 
 ## System Architecture
 
@@ -26,7 +26,7 @@ Preferred communication style: Simple, everyday language.
 ### Technical Implementations
 - **Web Framework**: Flask with session-based state management.
 - **Authentication**: Simplified session-based, role-based authentication (Family, Hospital, Provider, MVP, Admin) with role-specific dashboards. Demo login credentials provided.
-- **Data Handling**: Session-based temporary storage; intentionally database-free for demonstration. In-memory dictionaries for mock provider data and tracking stages.
+- **Data Handling**: Hybrid approach combining session-based temporary storage for demo flows with PostgreSQL database for persistent data (users, bookings, commissions, analytics).
 - **Search**: Hybrid provider search system incorporating internal cache, Google Places integration stub, and manual fallback.
 - **Commission System**: JSON-based ledger for booking commission tracking (4%/5% tiers), affiliate recoup tracking, and weekly invoice generation (CSV/HTML export).
 - **Transport Types**: Critical (same-day, 20% upcharge), Non-Critical, and MVP Membership options.

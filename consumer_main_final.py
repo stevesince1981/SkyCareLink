@@ -22,6 +22,20 @@ from flask import Flask, render_template, request, session, redirect, url_for, f
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
+# Database integration
+try:
+    from app import db
+    from models import (
+        User, Niche, Affiliate, Hospital, Booking, Quote, Commission,
+        AffiliateNiche, Announcement, SecurityEvent
+    )
+    from seed_data import seed_dummy_data, remove_dummy_data, get_dummy_data_status
+    DB_AVAILABLE = True
+    print("✓ Database components loaded successfully")
+except ImportError as e:
+    print(f"⚠ Database not available: {e}")
+    DB_AVAILABLE = False
+
 # Create Flask app
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static', static_url_path='/consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
@@ -3263,6 +3277,71 @@ def demo_guided():
         return render_template('demo_guided.html', 
                              demo_cards=demo_cards.get(user_role, []),
                              user_role=user_role)
+    
+    return redirect(url_for('home'))
+
+# Phase 11.A: Database Dummy Data Toggle
+@consumer_app.route('/admin/dummy/toggle', methods=['POST'])
+def admin_dummy_toggle():
+    """Toggle dummy data in database"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required', 'error')
+        return redirect(url_for('consumer_login'))
+    
+    if not DB_AVAILABLE:
+        flash('Database not available', 'error')
+        return redirect(url_for('admin_dashboard'))
+    
+    try:
+        current_status = get_dummy_data_status()
+        has_dummy_data = current_status['bookings'] > 0
+        
+        if has_dummy_data:
+            # Remove dummy data
+            remove_dummy_data()
+            flash('Dummy data removed from database', 'success')
+            logger.info(f"Admin {session.get('username')} removed database dummy data")
+        else:
+            # Add dummy data
+            seed_dummy_data()
+            flash('Dummy data loaded into database', 'success')
+            logger.info(f"Admin {session.get('username')} added database dummy data")
+        
+        return redirect(url_for('admin_dashboard'))
+        
+    except Exception as e:
+        logger.error(f"Error toggling dummy data: {e}")
+        flash(f'Error toggling dummy data: {str(e)}', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@consumer_app.route('/admin/db/status')
+def admin_db_status():
+    """Get database status"""
+    if session.get('user_role') != 'admin':
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    if not DB_AVAILABLE:
+        return jsonify({
+            'database_available': False,
+            'message': 'Database not configured'
+        })
+    
+    try:
+        status = get_dummy_data_status()
+        niches_count = Niche.query.count() if DB_AVAILABLE else 0
+        
+        return jsonify({
+            'database_available': True,
+            'dummy_data_counts': status,
+            'niches_seeded': niches_count,
+            'has_dummy_data': status['bookings'] > 0
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'database_available': False,
+            'error': str(e)
+        })
 
 # Phase 6.A: Test Commission Recording (for demonstration)
 @consumer_app.route('/test-commission')
