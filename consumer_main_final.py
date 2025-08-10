@@ -1177,10 +1177,10 @@ def get_active_announcements():
                 # Active filter: now_est ∈ [start_at_est, end_at_est] && is_active == True
                 if start_at <= now <= end_at:
                     # Calculate countdown if target is set
-                    countdown_target = announcement.get('countdown_target', '').strip()
-                    if countdown_target:
+                    countdown_target = announcement.get('countdown_target') or ''
+                    if countdown_target and str(countdown_target).strip():
                         try:
-                            target_naive = datetime.fromisoformat(countdown_target.replace('Z', '').split('.')[0])
+                            target_naive = datetime.fromisoformat(str(countdown_target).replace('Z', '').split('.')[0])
                             target_dt = target_naive.replace(tzinfo=EST)
                             
                             time_diff = target_dt - now

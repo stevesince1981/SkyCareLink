@@ -157,18 +157,29 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card transport-type-card" data-type="ground">
+                                <div class="card transport-type-card" data-type="mvp">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-ambulance text-success fa-2x mb-2"></i>
-                                        <h5>Ground</h5>
-                                        <p><small>Ground transport option</small></p>
-                                        <input type="radio" name="transport_type" value="ground">
+                                        <i class="fas fa-star text-warning fa-2x mb-2"></i>
+                                        <h5>MVP Member</h5>
+                                        <p><small>Priority service</small></p>
+                                        <input type="radio" name="transport_type" value="mvp">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-
+                        <!-- MVP Membership Prompt -->
+                        <div class="alert alert-warning mt-3" id="mvpPrompt" style="display: none;">
+                            <h5><i class="fas fa-crown me-2"></i>MVP Membership Benefits</h5>
+                            <p>Join our MVP program for $49/month and get:</p>
+                            <ul>
+                                <li>10% discount on all bookings</li>
+                                <li>Priority booking queue ahead of others</li>
+                                <li>Early access to beta features</li>
+                                <li>Dedicated family advocate</li>
+                            </ul>
+                            <a href="{{ url_for('mvp_incentive') }}" class="btn btn-warning">Learn More About MVP</a>
+                        </div>
                     </div>
                     
                     <!-- Step 2: Address Validation -->
@@ -187,9 +198,6 @@
                                            value="{% if request.args.get('prefill') == 'orlando-nyc' %}Orlando International Airport{% endif %}"
                                            required>
                                     <div class="address-suggestions" id="originSuggestions"></div>
-                                    <small class="text-muted mt-1">
-                                        <i class="fas fa-search me-1"></i>Internal database checked first, then Google Places
-                                    </small>
                                 </div>
                                 <small class="text-muted">
                                     <i class="fas fa-info-circle me-1"></i>
@@ -204,45 +212,18 @@
                                            value="{% if request.args.get('prefill') == 'orlando-nyc' %}LaGuardia Airport, NYC{% endif %}"
                                            required>
                                     <div class="address-suggestions" id="destinationSuggestions"></div>
-                                    <small class="text-muted mt-1">
-                                        <a href="#" class="text-decoration-none" onclick="showManualEntry('destination')">
-                                            <i class="fas fa-plus me-1"></i>Can't find it? Add manually
-                                        </a>
-                                    </small>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-8 mb-3">
-                                <label for="patient_name" class="form-label">Patient Name</label>
-                                <input type="text" class="form-control" id="patient_name" name="patient_name" 
-                                       placeholder="First and last name" required>
-                                <small class="text-muted">
-                                    <i class="fas fa-shield-alt me-1"></i>
-                                    All patient information is handled securely per HIPAA guidelines
-                                </small>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="patient_age" class="form-label">Approximate Age</label>
-                                <input type="number" class="form-control" id="patient_age" name="patient_age" 
-                                       placeholder="Age" min="0" max="120" required>
-                                <small class="text-muted">Helps determine medical equipment needs</small>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3" id="passportField" style="display: none;">
-                            <div class="alert alert-warning">
-                                <i class="fas fa-passport me-2"></i>
-                                <strong>International Transport Detected:</strong> 
-                                Please confirm the patient has a valid passport for international travel.
-                                <div class="form-check mt-2">
-                                    <input class="form-check-input" type="checkbox" id="passport_confirmed" name="passport_confirmed">
-                                    <label class="form-check-label" for="passport_confirmed">
-                                        Patient has valid passport for international travel
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="patient_name" class="form-label">Patient Name</label>
+                            <input type="text" class="form-control" id="patient_name" name="patient_name" 
+                                   placeholder="First and last name" required>
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                All patient information is handled securely per HIPAA guidelines
+                            </small>
                         </div>
                     </div>
                     
@@ -335,41 +316,6 @@
                             <strong>Note:</strong> If the provider deems additional life-saving equipment necessary, 
                             you'll be notified and given the option to approve before the flight.
                         </div>
-                        
-                        <!-- Family Seating Options -->
-                        <div class="mt-4">
-                            <h5>
-                                <i class="fas fa-users me-2"></i>Family Seating Options
-                            </h5>
-                            <p class="text-muted">Additional seats for family members (based on aircraft capacity)</p>
-                            
-                            <div class="family-seat-options">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="family_seats" id="noFamilySeats" value="0" checked>
-                                    <label class="form-check-label" for="noFamilySeats">
-                                        <strong>No additional family seats</strong>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="family_seats" id="oneFamilySeat" value="1">
-                                    <label class="form-check-label" for="oneFamilySeat">
-                                        <strong>+1 Family Seat (+$5,000)</strong> <small class="text-muted">Available on most aircraft</small>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="family_seats" id="twoFamilySeats" value="2">
-                                    <label class="form-check-label" for="twoFamilySeats">
-                                        <strong>+2 Family Seats (+$10,000)</strong> <small class="text-muted">Large aircraft only</small>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="family_seats" id="threeFamilySeats" value="3">
-                                    <label class="form-check-label" for="threeFamilySeats">
-                                        <strong>+3 Family Seats (+$15,000)</strong> <small class="text-muted">Charter jets only</small>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     
                     <!-- Step 5: Date/Time -->
@@ -439,49 +385,12 @@
 let currentStep = 1;
 const totalSteps = 5;
 
-// Enhanced address suggestions (Google Places API stub)
+// Address suggestions (Google Places API stub)
 const addressSuggestions = {
-    'orlando': [
-        'Orlando International Airport (MCO) - Orlando, FL',
-        'Orlando Regional Medical Center - 1414 Kuhl Ave, Orlando, FL',
-        'AdventHealth Orlando - 601 E Rollins St, Orlando, FL',
-        'Orlando Executive Airport (ORL) - Orlando, FL',
-        'Florida Hospital East Orlando - 7727 Lake Underhill Rd, Orlando, FL'
-    ],
-    'nyc': [
-        'LaGuardia Airport (LGA) - Queens, NY',
-        'JFK International Airport (JFK) - Queens, NY', 
-        'Newark Liberty Airport (EWR) - Newark, NJ',
-        'Mount Sinai Hospital - 1 Gustave L. Levy Pl, New York, NY',
-        'NewYork-Presbyterian Hospital - 525 E 68th St, New York, NY',
-        'Teterboro Airport (TEB) - Teterboro, NJ'
-    ],
-    'miami': [
-        'Miami International Airport (MIA) - Miami, FL',
-        'Jackson Memorial Hospital - 1611 NW 12th Ave, Miami, FL',
-        'Baptist Hospital of Miami - 8900 N Kendall Dr, Miami, FL',
-        'Opa-locka Executive Airport (OPF) - Miami, FL',
-        'University of Miami Hospital - 1400 NW 12th Ave, Miami, FL'
-    ],
-    'hospital': [
-        'Orlando Regional Medical Center - Orlando, FL',
-        'Tampa General Hospital - Tampa, FL', 
-        'Baptist Health Jacksonville - Jacksonville, FL',
-        'Mayo Clinic Florida - Jacksonville, FL',
-        'Florida Hospital Tampa - Tampa, FL'
-    ],
-    'boston': [
-        'Logan International Airport (BOS) - Boston, MA',
-        'Massachusetts General Hospital - 55 Fruit St, Boston, MA',
-        'Brigham and Women\'s Hospital - 75 Francis St, Boston, MA',
-        'Hanscom Field (BED) - Bedford, MA'
-    ],
-    'atlanta': [
-        'Hartsfield-Jackson Atlanta Airport (ATL) - Atlanta, GA',
-        'Emory University Hospital - 1364 Clifton Rd NE, Atlanta, GA',
-        'Grady Memorial Hospital - 80 Jesse Hill Jr Dr SE, Atlanta, GA',
-        'DeKalb-Peachtree Airport (PDK) - Atlanta, GA'
-    ]
+    'orlando': ['Orlando International Airport', 'Orlando Regional Medical Center', 'AdventHealth Orlando'],
+    'nyc': ['LaGuardia Airport, NYC', 'JFK Airport, NYC', 'Mount Sinai Hospital, NYC'],
+    'miami': ['Miami International Airport', 'Jackson Memorial Hospital', 'Baptist Hospital Miami'],
+    'hospital': ['Orlando Regional Medical Center', 'Tampa General Hospital', 'Baptist Health Jacksonville']
 };
 
 function changeStep(direction) {
@@ -543,218 +452,8 @@ function updateStepIndicator() {
     }
 }
 
-// Hybrid Provider Search System - Phase 4.A
-function setupProviderSearch() {
-    const originInput = document.getElementById('origin');
-    const destinationInput = document.getElementById('destination');
-    
-    // Add search functionality to origin input
-    if (originInput) {
-        let searchTimeout;
-        originInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const query = this.value.trim();
-            
-            if (query.length >= 2) {
-                searchTimeout = setTimeout(() => {
-                    searchProviders(query, 'originSuggestions');
-                }, 300);
-            } else {
-                document.getElementById('originSuggestions').innerHTML = '';
-            }
-        });
-    }
-    
-    // Add search functionality to destination input
-    if (destinationInput) {
-        let searchTimeout;
-        destinationInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const query = this.value.trim();
-            
-            if (query.length >= 2) {
-                searchTimeout = setTimeout(() => {
-                    searchProviders(query, 'destinationSuggestions');
-                }, 300);
-            } else {
-                document.getElementById('destinationSuggestions').innerHTML = '';
-            }
-        });
-    }
-}
-
-async function searchProviders(query, containerId) {
-    try {
-        const response = await fetch(`/api/providers/search?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
-        
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
-        
-        if (data.results && data.results.length > 0) {
-            const sourceLabel = data.source === 'internal' ? 'Internal Database' : 
-                               data.source === 'google' ? 'Google Places' : 'Search Results';
-            
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'search-header';
-            headerDiv.innerHTML = `<small class="text-primary"><i class="fas fa-database me-1"></i>${sourceLabel}</small>`;
-            container.appendChild(headerDiv);
-            
-            data.results.forEach(provider => {
-                const suggestionDiv = document.createElement('div');
-                suggestionDiv.className = 'address-suggestion';
-                suggestionDiv.innerHTML = `
-                    <strong>${provider.name}</strong><br>
-                    <small class="text-muted">${provider.address}</small>
-                    <span class="badge bg-secondary ms-2">${provider.type}</span>
-                `;
-                
-                suggestionDiv.addEventListener('click', () => {
-                    // Set the input value
-                    const input = containerId.includes('origin') ? 
-                        document.getElementById('origin') : 
-                        document.getElementById('destination');
-                    input.value = `${provider.name} - ${provider.address}`;
-                    
-                    // Record the selection for metrics
-                    recordProviderSelection(provider);
-                    
-                    // Clear suggestions
-                    container.innerHTML = '';
-                });
-                
-                container.appendChild(suggestionDiv);
-            });
-        } else {
-            // Show manual entry option
-            const manualDiv = document.createElement('div');
-            manualDiv.className = 'manual-entry-prompt text-center p-3';
-            manualDiv.innerHTML = `
-                <small class="text-muted">No matches found</small><br>
-                <a href="#" class="text-decoration-none" onclick="showManualEntry('${containerId}')">
-                    <i class="fas fa-plus me-1"></i>Add manually for admin approval
-                </a>
-            `;
-            container.appendChild(manualDiv);
-        }
-    } catch (error) {
-        console.error('Provider search error:', error);
-    }
-}
-
-async function recordProviderSelection(provider) {
-    try {
-        await fetch('/api/providers/select', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                provider_id: provider.id,
-                source: provider.source
-            })
-        });
-    } catch (error) {
-        console.error('Failed to record provider selection:', error);
-    }
-}
-
-function showManualEntry(containerId) {
-    const fieldType = containerId.includes('origin') ? 'origin' : 'destination';
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.id = 'manualEntryModal';
-    modal.innerHTML = `
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Location</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="manualEntryForm">
-                        <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-control" id="manualName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Address</label>
-                            <input type="text" class="form-control" id="manualAddress" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Type</label>
-                            <select class="form-control" id="manualType">
-                                <option value="hospital">Hospital</option>
-                                <option value="clinic">Clinic</option>
-                                <option value="airport">Airport</option>
-                                <option value="address">Address</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitManualEntry('${fieldType}')">Submit for Approval</button>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    
-    const bootstrapModal = new bootstrap.Modal(modal);
-    bootstrapModal.show();
-    
-    modal.addEventListener('hidden.bs.modal', () => {
-        document.body.removeChild(modal);
-    });
-}
-
-async function submitManualEntry(fieldType) {
-    const name = document.getElementById('manualName').value.trim();
-    const address = document.getElementById('manualAddress').value.trim();
-    const type = document.getElementById('manualType').value;
-    
-    if (!name || !address) {
-        alert('Please fill in all required fields.');
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/providers/manual', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name, address, type })
-        });
-        
-        const data = await response.json();
-        
-        if (data.ok) {
-            // Set the input value
-            const input = fieldType === 'origin' ? 
-                document.getElementById('origin') : 
-                document.getElementById('destination');
-            input.value = `${name} - ${address}`;
-            
-            // Close modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('manualEntryModal'));
-            modal.hide();
-            
-            alert('Location submitted for admin approval and temporarily added to your form.');
-        } else {
-            alert('Error: ' + data.error);
-        }
-    } catch (error) {
-        console.error('Manual entry error:', error);
-        alert('Failed to submit manual entry. Please try again.');
-    }
-}
-
 // Equipment selection
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize provider search
-    setupProviderSearch();
     // Equipment options
     document.querySelectorAll('.equipment-option').forEach(option => {
         option.addEventListener('click', function() {
