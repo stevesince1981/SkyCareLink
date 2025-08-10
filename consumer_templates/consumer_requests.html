@@ -248,7 +248,7 @@
 </div>
 
 <!-- Include the enhanced pancake form modal -->
-{% include 'consumer_index_enhanced.html' %}
+<!-- Consumer index enhanced template removed -->
 {% endblock %}
 
 {% block scripts %}
@@ -260,7 +260,7 @@ function modifyCurrentRequest() {
     // Pre-populate form with existing data
     if (patientData.transport_type) {
         // This will trigger the pancake modal with preserved data
-        window.location.href = '{{ url_for("consumer_index") }}?modify=true&preserve_data=true';
+        window.location.href = '{{ url_for("consumer_intake") }}?modify=true&preserve_data=true';
     }
 }
 
