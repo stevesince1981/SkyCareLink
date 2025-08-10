@@ -1,6 +1,6 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Professional Transport Quotes - MediFly{% endblock %}
+{% block title %}Transport Quotes{% if is_training_mode %} - {{ training_label }}{% endif %} - MediFly{% endblock %}
 
 {% block head %}
 <style>
@@ -347,8 +347,13 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 offset-lg-2 text-center">
+                {% if is_training_mode %}
+                <div class="alert alert-warning mb-3" style="background: rgba(255,193,7,0.9); border: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i><strong>{{ training_label }}</strong>
+                </div>
+                {% endif %}
                 <h1><i class="fas fa-calculator me-2"></i>Transport Quotes</h1>
-                <p class="mb-0">Professional medical aviation providers ready to serve you</p>
+                <p class="mb-0">Certified medical aviation affiliates ready to serve you</p>
             </div>
         </div>
     </div>
@@ -396,13 +401,19 @@
     </div>
     {% endif %}
 
+    <!-- Liability Disclaimer -->
+    <div class="alert alert-info mb-4" style="border-left: 5px solid #17a2b8;">
+        <h6><i class="fas fa-info-circle me-2"></i>Important Disclaimer</h6>
+        <p class="mb-0"><small>MediFly aggregates requests/quotes; all service delivery, licensing, safety, and liability remain with the Affiliate; availability not guaranteed.</small></p>
+    </div>
+
     <!-- Loading State -->
     {% if not quotes %}
     <div class="loading-quotes">
         <div class="loading-spinner"></div>
-        <h4>Searching Professional Providers</h4>
-        <p>We're contacting certified medical aviation providers in your area...</p>
-        <small class="text-muted">New quotes arrive every 15 seconds</small>
+        <h4>Searching Certified Affiliates</h4>
+        <p>We're contacting certified medical aviation affiliates in your area...</p>
+        <small class="text-muted">New quotes arrive every {% if is_training_mode %}{{ training_config.auto_quote_delay }}{% else %}15{% endif %} seconds</small>
     </div>
     {% endif %}
 
@@ -419,9 +430,12 @@
             
             <div class="quote-header">
                 <div class="provider-info">
+                    {% if quote.is_training %}
+                    <div class="badge bg-warning text-dark mb-2">TRAINING DATA</div>
+                    {% endif %}
                     <div class="provider-name">
                         {% if session.get('user_role') == 'mvp' %}
-                            {{ quote.name }}
+                            {{ quote.affiliate_name }}
                         {% else %}
                             Provider {{ quote.name[:1] }}****
                         {% endif %}
