@@ -6,6 +6,33 @@
       "status": "issued",
       "issued_at": "2025-08-10T03:07:07.099026",
       "total_usd": 11240
+    },
+    {
+      "affiliate_id": "affiliate",
+      "invoice_week": "1_2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:14:55.448464",
+      "total_usd": 7400,
+      "csv_file": "data/invoices/affiliate_1_2025-W32.csv",
+      "html_file": "data/invoices/affiliate_1_2025-W32.html"
+    },
+    {
+      "affiliate_id": "affiliate",
+      "invoice_week": "2_2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:14:55.449531",
+      "total_usd": 7650,
+      "csv_file": "data/invoices/affiliate_2_2025-W32.csv",
+      "html_file": "data/invoices/affiliate_2_2025-W32.html"
+    },
+    {
+      "affiliate_id": "affiliate",
+      "invoice_week": "3_2025-W32",
+      "status": "issued",
+      "issued_at": "2025-08-10T03:14:55.450414",
+      "total_usd": 6240,
+      "csv_file": "data/invoices/affiliate_3_2025-W32.csv",
+      "html_file": "data/invoices/affiliate_3_2025-W32.html"
     }
   ]
 }

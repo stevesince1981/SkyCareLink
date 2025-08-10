@@ -1216,9 +1216,10 @@ def generate_invoice_csv(filename, entries):
 def generate_invoice_html(filename, affiliate_id, invoice_week, entries, total_commission):
     """Generate HTML invoice"""
     try:
-        # Get week date range
+        # Get week date range (Sunday-Saturday)
         year, week_num = invoice_week.split('-W')
-        week_start = datetime.strptime(f"{year}-W{week_num}-0", "%Y-W%W-%w")
+        jan_4 = datetime(int(year), 1, 4)
+        week_start = jan_4 + timedelta(days=(int(week_num)-1)*7 - jan_4.weekday())
         week_end = week_start + timedelta(days=6)
         
         due_date = datetime.now() + timedelta(days=COMMISSION_CONFIG['invoice_net_days'])
