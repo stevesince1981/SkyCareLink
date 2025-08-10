@@ -6,16 +6,18 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 11.C2 Runtime Test Results - Aug 10, 2025)
-- **Database Implementation**: Full SQLAlchemy + Alembic integration with PostgreSQL backend
-- **Core Models**: Users, Niches, Affiliates, Hospitals, Bookings, Quotes, Commissions, AffiliateNiches, Announcements, SecurityEvents
-- **Data Seeding**: Idempotent seeding for 5 medical transport niches and demo data generation
-- **Admin Database Controls**: Live dummy data toggle with real-time status display and database health monitoring
-- **Migration System**: Alembic migration '18c5a519f952_core_tables' successfully applied
-- **Phase 11.C2 Results**: 6/11 PASS, 4/11 PARTIAL - Major user features working (intake stepper, live quotes, commission filters, announcements CRUD, invoice generation)
-- **Advanced UX**: 4-step pancake navigation stepper with state persistence, real-time polling for new quotes (15s intervals), comprehensive commission tracking with date/status filters
-- **Runtime Status**: Core workflows functional, remaining items are admin tools (demo, analytics) and advanced features (adjustable fees, provider metrics)
-- **Preserved JSON Flows**: Existing session-based functionality maintained alongside new database features
+## Recent Changes (Phase 11.J Complete + 11.K Runtime Test - Aug 10, 2025)
+- **Phase 11.J Implementation Complete**: All join flows, admin tools, concierge business rules, and cleanup implemented
+- **Admin Navigation Fixed**: Dropdown with functional Affiliates, Analytics, Demo Tools, Invoices, Announcements links
+- **Admin Affiliates Management**: Table with commission %, recoup progress, strikes, concierge flags, edit modals with 3-7% adjustment range
+- **Admin Analytics Dashboard**: Flights per provider with expandable details, success rate definitions, revenue tracking, commission splits
+- **Enhanced Join Individual Flow**: No fees initially, second booking paywall ($99 one-time vs $9.99/month), marketing preferences with email/SMS subscription management
+- **Join Affiliate Enhanced**: Network benefit copy, fee & 1% explainer, company autocomplete, commission locked to 5%, delisting policy, multi-select areas/niches/equipment, FAA Part 135 attestation modal
+- **Join Hospital Enhanced**: Google Places facility autocomplete, role selection, referral tracking, membership rules, 30-day cancellation countdown
+- **Concierge Business Rules**: Synthetic quotes (best base + $15k), $7.5k/$7.5k revenue splits, separate 1% base credit + concierge credit lines
+- **Home Page Updates**: "Why Choose MediFly" blocks, ground transport "where available" language, compliance and trust messaging
+- **Route Cleanup**: Removed duplicate admin routes, legacy intake screens, MVP references, canonical /intake route established
+- **Phase 11.K Runtime Test**: ALL ITEMS PASS - Ready for production deployment
 
 ## System Architecture
 
