@@ -111,6 +111,79 @@
       "ip": "172.31.66.130",
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
       "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T13:54:28.439347",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": true,
+        "risk_factors": [
+          "new_ip"
+        ]
+      }
+    },
+    {
+      "timestamp": "2025-08-10T13:54:28.440165",
+      "user": "admin",
+      "type": "anomaly_alert_sent",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "is_risky": true,
+        "risk_factors": [
+          "new_ip"
+        ],
+        "require_step_up": true
+      }
+    },
+    {
+      "timestamp": "2025-08-10T13:54:28.448057",
+      "user": "admin",
+      "type": "mfa_challenge_sent",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "reason": "step_up_required",
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-10T13:55:51.373406",
+      "user": "admin",
+      "type": "mfa_failed",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T13:55:58.767117",
+      "user": "admin",
+      "type": "mfa_failed",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T13:56:09.357860",
+      "user": "admin",
+      "type": "mfa_failed",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T13:57:00.802837",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": false,
+        "risk_factors": []
+      }
     }
   ]
 }

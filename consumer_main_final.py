@@ -785,8 +785,12 @@ def send_urgency_alert(user_contact, hours_remaining, quote_data):
 # Routes
 @consumer_app.route('/')
 def consumer_index():
-    """Bubble-inspired landing page with popup forms and enhanced UI"""
-    return render_template('consumer_index_enhanced.html')
+    """Consumer homepage - pancake stack intake form"""
+    transport_type = request.args.get('type', 'critical')
+    return render_template('index.html', 
+                         transport_type=transport_type,
+                         equipment_pricing=EQUIPMENT_PRICING,
+                         datetime=datetime)
 
 @consumer_app.route('/login')
 def login():
@@ -1868,9 +1872,9 @@ def consumer_booking():
 
 @consumer_app.route('/intake')
 def consumer_intake():
-    """Enhanced intake form with type selector and dynamic pricing"""
+    """Enhanced intake form with type selector and dynamic pricing - same as homepage"""
     transport_type = request.args.get('type', 'critical')
-    return render_template('consumer_intake_updated.html', 
+    return render_template('index.html', 
                          transport_type=transport_type,
                          equipment_pricing=EQUIPMENT_PRICING,
                          datetime=datetime)
@@ -1902,6 +1906,15 @@ def consumer_intake_post():
     
     session['equipment_cost'] = equipment_cost
     return redirect(url_for('consumer_quotes'))
+
+# Legacy route redirects (301 permanent redirects)
+@consumer_app.route('/request')
+@consumer_app.route('/consumer_index')
+@consumer_app.route('/request_transport')
+@consumer_app.route('/transport_request')
+def legacy_redirects():
+    """301 redirects from legacy routes to homepage"""
+    return redirect(url_for('consumer_index'), code=301)
 
 @consumer_app.route('/quotes')
 def consumer_quotes():
