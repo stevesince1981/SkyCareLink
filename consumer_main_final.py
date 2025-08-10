@@ -1055,7 +1055,7 @@ def admin_security():
     }
     
     # Get unique event types for filter dropdown
-    event_types = list(set(e['type'] for e in security_log['events']))
+    event_types = list(set(e.get('type', 'unknown') for e in security_log['events']))
     event_types.sort()
     
     return render_template('admin_security.html', 

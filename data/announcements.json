@@ -21,19 +21,19 @@
       "created_at": "2025-08-10T05:17:33.897645",
       "created_by": "admin",
       "is_active": false,
-      "updated_at": "2025-08-10T05:52:16.372031"
+      "updated_at": "2025-08-10T19:22:54.221689"
     },
     {
       "id": "f0500f49-b6aa-4cb6-b076-c4437bd6b10e",
       "message": "coming soon",
       "style": "info",
-      "is_active": true,
+      "is_active": false,
       "start_at": "2025-08-09T00:33",
       "end_at": "2025-08-17T00:33",
       "countdown_target": null,
       "countdown_target_tz": "America/New_York",
       "created_at": "2025-08-10T05:33:31.542070",
-      "updated_at": "2025-08-10T05:52:20.762994"
+      "updated_at": "2025-08-10T19:22:37.801040"
     },
     {
       "id": "dc9c51f1-3ce9-403a-ba0b-2a09ce2877ad",
@@ -45,7 +45,7 @@
       "countdown_target": null,
       "countdown_target_tz": "America/New_York",
       "created_at": "2025-08-10T05:40:51.055876",
-      "updated_at": "2025-08-10T05:48:23.170768"
+      "updated_at": "2025-08-10T19:22:44.324236"
     }
   ]
 }
