@@ -84,10 +84,30 @@
                         </a>
                     </li>
                     {% if session.get('user_role') == 'admin' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
-                            <i class="fas fa-chart-line me-1"></i>Admin Dashboard
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cog me-1"></i>Admin
                         </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                <i class="fas fa-chart-line me-2"></i>Dashboard
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_affiliates') }}">
+                                <i class="fas fa-users me-2"></i>Affiliates
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_analytics_affiliates') }}">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_demo') }}">
+                                <i class="fas fa-tools me-2"></i>Demo Tools
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_invoices') }}">
+                                <i class="fas fa-file-invoice me-2"></i>Invoices
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_announcements') }}">
+                                <i class="fas fa-bullhorn me-2"></i>Announcements
+                            </a></li>
+                        </ul>
                     </li>
                     {% endif %}
                     {% if session.get('logged_in') %}

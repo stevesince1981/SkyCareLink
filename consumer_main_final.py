@@ -4169,11 +4169,31 @@ def generate_concierge_quote(quotes_list, booking_id):
     
     return concierge_quote
 
-# 4) Updated Intake Route
+# Legacy route redirects - Phase 11.I
+@consumer_app.route('/request')
+def legacy_request():
+    """301 redirect legacy /request to canonical intake"""
+    return redirect(url_for('consumer_intake'), code=301)
+
+@consumer_app.route('/consumer_index')
+def legacy_consumer_index():
+    """301 redirect legacy /consumer_index to canonical intake"""
+    return redirect(url_for('consumer_intake'), code=301)
+
+@consumer_app.route('/request_transport')
+def legacy_request_transport():
+    """301 redirect legacy /request_transport to canonical intake"""
+    return redirect(url_for('consumer_intake'), code=301)
+
+# 4) Canonical Intake Route
 @consumer_app.route('/intake')
 def consumer_intake():
-    """Updated intake with pancake stepper"""
-    return render_template('consumer_intake_updated.html')
+    """Canonical intake stepper - Phase 11.I hotfix"""
+    transport_type = request.args.get('type', 'critical')
+    return render_template('consumer_intake_updated.html', 
+                         transport_type=transport_type,
+                         equipment_pricing=EQUIPMENT_PRICING,
+                         datetime=datetime)
 
 # 5) Home Page with "Why Choose MediFly?" 
 @consumer_app.route('/')

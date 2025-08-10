@@ -1501,6 +1501,25 @@
         "reason": "ip_rate_limit",
         "attempts": 5
       }
+    },
+    {
+      "timestamp": "2025-08-10T20:21:33.730120",
+      "user": "admin",
+      "type": "logout",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-10T21:08:12.137272",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.83.130",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": false,
+        "risk_factors": []
+      }
     }
   ]
 }
