@@ -3028,6 +3028,11 @@ def join_hospital():
     """Join as Hospital/Clinic"""
     return render_template('join_hospital_page.html')
 
+@consumer_app.route('/mvp-incentive')
+def mvp_incentive():
+    """MVP Incentive Program placeholder page"""
+    return render_template('mvp_incentive.html')
+
 # Phase 6.A: Test Commission Recording (for demonstration)
 @consumer_app.route('/test-commission')
 def test_commission():

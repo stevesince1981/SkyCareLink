@@ -1,0 +1,43 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}MVP Incentive Program - MediFly{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h1 class="h4 mb-2">
+                    <i class="fas fa-star text-warning me-2"></i>MVP Incentive Program
+                </h1>
+                <p class="text-muted">Enhanced benefits for our most valued partners</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Program Status:</strong> Currently under development
+                    </div>
+                    
+                    <h5>Planned MVP Benefits</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Priority booking status</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Reduced commission rates</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Dedicated account management</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Advanced analytics dashboard</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Early access to new features</li>
+                    </ul>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Contact us to learn about MVP eligibility requirements</p>
+                        <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Request Form
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+PHASE 9.F — APPLY: Unify Home Layout + url_for Links + MVP Incentive Route
+ROLE: Senior engineer. Archive before edits. No schema changes.
+
+WHAT TO FIX (based on your diag)
+
+Home template is standalone → must extend consumer_base.html.
+
+Home uses hardcoded links (/) → replace with url_for(...).
+
+consumer_intake_updated.html references missing mvp_incentive route → add stub route/template (or remove reference if not needed).
+
+1) Home template → use base layout
+Identify the active home template rendered by / (likely templates/index.html).
+
+Archive the current standalone file to /archive/templates/home_standalone.html.
+
+Create a new templates/index.html that extends the shared base:
+
+jinja
+Copy
+Edit
+{% extends "consumer_base.html" %}
+{% block title %}Home — MediFly{% endblock %}
+{% block content %}
+  <section class="container py-4">
+    <div class="mb-3">
+      <h1 class="h3">MediFly</h1>
+      <p class="text-muted">Join the largest network of health providers and air transportation companies!</p>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-primary" href="{{ url_for('intake') }}">New Request</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('join_affiliate') }}">Join as Affiliate</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('join_hospital') }}">Join as Hospital/Clinic</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('login') }}">Log in</a>
+    </div>
+  </section>
+{% endblock %}
+Ensure navbar/brand comes from consumer_base.html. Brand link should point to url_for('home') or /.
+
+2) Replace hardcoded links with url_for(...)
+In home template and base/navbar:
+
+Brand: href="{{ url_for('home') }}" (or / if your route is named differently).
+
+New Request: href="{{ url_for('intake') }}"
+
+Join: href="{{ url_for('join_affiliate') }}", href="{{ url_for('join_hospital') }}"
+
+Login: href="{{ url_for('login') }}"
+
+In any other templates with “New Request” / “+ New Request” / “Start a request”, ensure url_for('intake').
+
+3) Add/stub the missing mvp_incentive route (or remove reference)
+In your active app file (where routes live), add a minimal stub so templates don’t 500:
+
+python
+Copy
+Edit
+@consumer_app.route('/mvp-incentive')
+def mvp_incentive():
+    # Simple placeholder page; can be replaced later
+    return render_template('mvp_incentive.html')
+Create consumer_templates/mvp_incentive.html:
+
+jinja
+Copy
+Edit
+{% extends "consumer_base.html" %}
+{% block title %}MVP Incentive{% endblock %}
+{% block content %}
+  <section class="container py-4">
+    <h1 class="h4 mb-2">MVP Incentive (Placeholder)</h1>
+    <p class="text-muted">This section has been deferred. No MVP priority program is currently offered.</p>
+  </section>
+{% endblock %}
+If you prefer to remove the reference instead: strip any links/buttons to mvp_incentive from consumer_intake_updated.html. (But stubbing is safer/quick.)
+
+4) /intake route → confirm pancake template
+Ensure the /intake route renders consumer_intake_updated.html specifically:
+
+python
+Copy
+Edit
+@consumer_app.route('/intake')
+def intake():
+    return render_template('consumer_intake_updated.html')
+Remove/disable any duplicate /intake routes.
+
+(Optional for verification) Add a tiny admin‑only badge at the top of consumer_intake_updated.html:
+<!-- DEBUG: consumer_intake_updated.html -->
+
+5) Output summary
+Print:
+
+HOME: now extends consumer_base.html (templates/index.html)
+
+LINKS: replaced hardcoded paths with url_for(...)
+
+ROUTE: /mvp-incentive stub added (mvp_incentive.html)
+
+INTAKE: /intake → consumer_intake_updated.html
+
+ARCHIVED: /archive/templates/home_standalone.html
+
+End with: READY FOR 9.G RUNTIME TEST

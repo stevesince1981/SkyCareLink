@@ -1,237 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediFly - Air Medical Transport Services</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-blue: #1976d2;
-            --secondary-blue: #42a5f5;
-            --accent-red: #f44336;
-            --success-green: #4caf50;
-            --warning-orange: #ff9800;
-        }
+{% extends "consumer_base.html" %}
 
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-            color: white;
-            padding: 5rem 0;
-            text-align: center;
-        }
+{% block title %}Home — MediFly{% endblock %}
 
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
+{% block head %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+    margin-top: -1rem; /* Offset container margin */
+}
 
-        .hero-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 3rem;
-            opacity: 0.9;
-        }
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
 
-        .cta-button {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 25px;
-            margin: 0 1rem;
-            transition: all 0.3s ease;
-        }
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+}
 
-        .cta-primary {
-            background: var(--accent-red);
-            border: none;
-            color: white;
-        }
+.cta-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 20px;
+    margin: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
 
-        .cta-primary:hover {
-            background: #d32f2f;
-            transform: translateY(-2px);
-        }
+.cta-primary {
+    background: var(--accent-red, #f44336);
+    border: none;
+    color: white;
+}
 
-        .cta-secondary {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-        }
+.cta-primary:hover {
+    background: #d32f2f;
+    color: white;
+    transform: translateY(-2px);
+}
 
-        .cta-secondary:hover {
-            background: white;
-            color: var(--primary-blue);
-        }
+.cta-secondary {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+}
 
-        .features-section {
-            padding: 4rem 0;
-            background: #f8f9fa;
-        }
+.cta-secondary:hover {
+    background: white;
+    color: var(--primary-blue, #1976d2);
+}
 
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            height: 100%;
-            transition: transform 0.3s ease;
-        }
+.features-section {
+    padding: 3rem 0;
+    background: #f8f9fa;
+}
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
+.feature-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.3s ease;
+}
 
-        .feature-icon {
-            font-size: 3rem;
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-        }
+.feature-card:hover {
+    transform: translateY(-5px);
+}
 
-        .stats-section {
-            background: var(--primary-blue);
-            color: white;
-            padding: 3rem 0;
-        }
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--primary-blue, #1976d2);
+    margin-bottom: 1rem;
+}
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            display: block;
-        }
+.stats-section {
+    background: var(--primary-blue, #1976d2);
+    color: white;
+    padding: 2.5rem 0;
+}
 
-        .stat-label {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--primary-blue);">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-helicopter me-2"></i>MediFly
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">
+            <i class="fas fa-helicopter me-3"></i>MediFly
+        </h1>
+        <p class="hero-subtitle">
+            Fast, Safe, Professional Air Medical Transport Services<br>
+            When Every Second Counts, We're Ready to Fly
+        </p>
+        <div class="hero-ctas">
+            <a href="{{ url_for('consumer_intake') }}" class="btn cta-button cta-primary">
+                <i class="fas fa-plus me-2"></i>New Request
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/intake">Request Transport</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
-                    </li>
-                </ul>
+            <a href="{{ url_for('join_affiliate') }}" class="btn cta-button cta-secondary">
+                <i class="fas fa-handshake me-2"></i>Join as Affiliate
+            </a>
+            <a href="{{ url_for('join_hospital') }}" class="btn cta-button cta-secondary">
+                <i class="fas fa-hospital me-2"></i>Join as Hospital/Clinic
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col">
+                <h2>Why Choose MediFly?</h2>
+                <p class="text-muted">Professional air medical transport with nationwide coverage</p>
             </div>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <h1 class="hero-title">
-                <i class="fas fa-helicopter me-3"></i>MediFly
-            </h1>
-            <p class="hero-subtitle">
-                Fast, Safe, Professional Air Medical Transport Services<br>
-                When Every Second Counts, We're Ready to Fly
-            </p>
-            <div class="hero-ctas">
-                <a href="/intake" class="btn cta-button cta-primary">
-                    <i class="fas fa-plus me-2"></i>New Request
-                </a>
-                <a href="/join_affiliate" class="btn cta-button cta-secondary">
-                    <i class="fas fa-handshake me-2"></i>Join as Affiliate
-                </a>
-                <a href="/join_hospital" class="btn cta-button cta-secondary">
-                    <i class="fas fa-hospital me-2"></i>Join as Hospital/Clinic
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features-section">
-        <div class="container">
-            <div class="row text-center mb-5">
-                <div class="col">
-                    <h2>Why Choose MediFly?</h2>
-                    <p class="text-muted">Professional air medical transport with nationwide coverage</p>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <i class="fas fa-clock feature-icon"></i>
+                    <h4>24/7 Availability</h4>
+                    <p>Round-the-clock emergency response with rapid deployment capabilities</p>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="feature-card">
-                        <i class="fas fa-clock feature-icon"></i>
-                        <h4>24/7 Availability</h4>
-                        <p>Round-the-clock emergency response with rapid deployment capabilities</p>
-                    </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                    <h4>HIPAA Compliant</h4>
+                    <p>Secure, encrypted patient data handling with full privacy protection</p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="feature-card">
-                        <i class="fas fa-shield-alt feature-icon"></i>
-                        <h4>HIPAA Compliant</h4>
-                        <p>Secure, encrypted patient data handling with full privacy protection</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="feature-card">
-                        <i class="fas fa-network-wired feature-icon"></i>
-                        <h4>Provider Network</h4>
-                        <p>Extensive network of certified air medical transport providers</p>
-                    </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <i class="fas fa-network-wired feature-icon"></i>
+                    <h4>Provider Network</h4>
+                    <p>Extensive network of certified air medical transport providers</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-3">
-                    <span class="stat-number">1,247</span>
-                    <span class="stat-label">Successful Transports</span>
-                </div>
-                <div class="col-md-3">
-                    <span class="stat-number">156</span>
-                    <span class="stat-label">Partner Providers</span>
-                </div>
-                <div class="col-md-3">
-                    <span class="stat-number">24/7</span>
-                    <span class="stat-label">Emergency Response</span>
-                </div>
-                <div class="col-md-3">
-                    <span class="stat-number">50</span>
-                    <span class="stat-label">States Covered</span>
-                </div>
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3">
+                <span class="stat-number">1,247</span>
+                <span class="stat-label">Successful Transports</span>
+            </div>
+            <div class="col-md-3">
+                <span class="stat-number">156</span>
+                <span class="stat-label">Partner Providers</span>
+            </div>
+            <div class="col-md-3">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Emergency Response</span>
+            </div>
+            <div class="col-md-3">
+                <span class="stat-number">50</span>
+                <span class="stat-label">States Covered</span>
             </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5><i class="fas fa-helicopter me-2"></i>MediFly</h5>
-                    <p>Professional air medical transport services nationwide</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p>&copy; 2025 MediFly. All rights reserved.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </div>
+</section>
+{% endblock %}
