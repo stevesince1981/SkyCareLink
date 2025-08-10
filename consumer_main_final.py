@@ -870,7 +870,7 @@ def login_post():
             elif user['role'] == 'admin':
                 return redirect(url_for('admin_dashboard'))
             elif user['role'] == 'hospital':
-                return redirect(url_for('consumer_requests'))
+                return redirect(url_for('consumer_requests_phase12'))
             else:
                 return redirect(url_for('home'))
     else:
@@ -4199,15 +4199,67 @@ def admin_analytics_affiliates():
     
     return render_template('admin_analytics_affiliates.html', analytics=analytics_data)
 
-# 5) Canonical Intake Route
+# 5) Phase 12.A: Brand-new Canonical Intake Route + Submission
 @consumer_app.route('/intake')
 def consumer_intake():
-    """Canonical intake stepper - Phase 11.I hotfix"""
-    transport_type = request.args.get('type', 'critical')
-    return render_template('consumer_intake_updated.html', 
-                         transport_type=transport_type,
-                         equipment_pricing=EQUIPMENT_PRICING,
-                         datetime=datetime)
+    """Phase 12.A: Brand-new 5-step pancake intake stepper"""
+    from datetime import date
+    today = date.today().isoformat()
+    return render_template('intake_pancake_phase12.html', today=today)
+
+@consumer_app.route('/intake/submit', methods=['POST'])
+def intake_submit():
+    """Phase 12.A: Handle intake submission with anti-abuse measures"""
+    try:
+        data = request.get_json()
+        
+        # Phase 12.A: Anti-abuse rate limiting check
+        client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        if not check_rate_limit(client_ip):
+            return jsonify({
+                'success': False,
+                'message': 'Rate limit exceeded. Please wait before submitting another request.',
+                'rate_limited': True
+            }), 429
+        
+        # Phase 12.A: Check if user is logged in
+        if not session.get('logged_in'):
+            # Save draft and redirect to login
+            session['intake_draft'] = data
+            return jsonify({
+                'success': True,
+                'requires_auth': True,
+                'login_url': url_for('login') + '?return_to=intake_submit'
+            })
+        
+        # Phase 12.A: Fair-use policy check for logged-in users
+        user_id = session.get('user_id')
+        if user_id and not check_fair_use_policy(user_id):
+            return jsonify({
+                'success': False,
+                'message': 'Fair-use policy triggered. A $49 refundable deposit is required.',
+                'requires_deposit': True,
+                'deposit_amount': 49
+            })
+        
+        # Process the intake request
+        request_id = create_transport_request(data)
+        
+        # Clear draft
+        session.pop('intake_draft', None)
+        
+        return jsonify({
+            'success': True,
+            'request_id': request_id,
+            'quotes_url': url_for('consumer_quotes_phase12', request_id=request_id)
+        })
+        
+    except Exception as e:
+        logging.error(f"Intake submission error: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error processing request. Please try again.'
+        }), 500
 
 # 5) Home Page with "Why Choose MediFly?" 
 @consumer_app.route('/')
@@ -4221,6 +4273,345 @@ def home():
     }
     
     return render_template('home_enhanced.html', stats=stats)
+
+# Phase 12.A: Anti-abuse and fair-use helper functions
+def check_rate_limit(ip_address):
+    """Check rate limiting: 5 requests per hour per IP"""
+    import time
+    from collections import defaultdict
+    
+    # Simple in-memory rate limiting (production would use Redis)
+    if not hasattr(check_rate_limit, 'requests'):
+        check_rate_limit.requests = defaultdict(list)
+    
+    now = time.time()
+    hour_ago = now - 3600
+    
+    # Clean old requests
+    check_rate_limit.requests[ip_address] = [
+        req_time for req_time in check_rate_limit.requests[ip_address] 
+        if req_time > hour_ago
+    ]
+    
+    # Check limit
+    if len(check_rate_limit.requests[ip_address]) >= 5:
+        return False
+    
+    # Add current request
+    check_rate_limit.requests[ip_address].append(now)
+    return True
+
+def check_fair_use_policy(user_id):
+    """Check fair-use: 3 no-booking quote rounds in 14 days"""
+    # Simplified check - production would query database
+    user_key = f"user_{user_id}_quotes"
+    
+    if not hasattr(check_fair_use_policy, 'user_quotes'):
+        check_fair_use_policy.user_quotes = defaultdict(int)
+    
+    # For demo purposes, allow first 3 quote rounds
+    if check_fair_use_policy.user_quotes[user_key] < 3:
+        check_fair_use_policy.user_quotes[user_key] += 1
+        return True
+    
+    return False
+
+def create_transport_request(data):
+    """Create a new transport request from intake data"""
+    import uuid
+    request_id = str(uuid.uuid4())[:8]
+    
+    # Calculate pricing with same-day surcharge
+    base_price = 45000  # Base price for demo
+    equipment_cost = 0
+    
+    if data.get('equipment'):
+        equipment_pricing = {
+            'ventilator': 15000,
+            'ecmo': 25000,
+            'balloon_pump': 12000,
+            'iv_pumps': 3000,
+            'cardiac_monitor': 5000,
+            'transport_incubator': 8000
+        }
+        equipment_cost = sum(equipment_pricing.get(eq, 0) for eq in data.get('equipment', []))
+    
+    total_price = base_price + equipment_cost
+    
+    # Phase 12.A: Same-day +20% surcharge
+    if data.get('same_day_urgent'):
+        total_price = int(total_price * 1.2)
+    
+    # Store request data
+    request_data = {
+        'request_id': request_id,
+        'user_id': session.get('user_id'),
+        'timestamp': datetime.now().isoformat(),
+        'transport_type': data.get('transport_type'),
+        'severity_level': data.get('severity_level'),
+        'from_facility': data.get('from_facility'),
+        'to_facility': data.get('to_facility'),
+        'from_address': data.get('from_address'),
+        'to_address': data.get('to_address'),
+        'patient_name': data.get('patient_name'),
+        'patient_age_band': data.get('patient_age_band'),
+        'equipment': data.get('equipment', []),
+        'medical_info': data.get('medical_info'),
+        'preferred_date': data.get('preferred_date'),
+        'preferred_time': data.get('preferred_time'),
+        'same_day_urgent': data.get('same_day_urgent', False),
+        'base_price': base_price,
+        'equipment_cost': equipment_cost,
+        'total_price': total_price,
+        'status': 'pending_quotes'
+    }
+    
+    # Store in session for demo (production would save to database)
+    if 'transport_requests' not in session:
+        session['transport_requests'] = {}
+    session['transport_requests'][request_id] = request_data
+    
+    return request_id
+
+@consumer_app.route('/quotes/<request_id>')
+def consumer_quotes_phase12(request_id):
+    """Phase 12.A: Enhanced quotes page with Concierge badge and unmasking"""
+    # Get request data
+    request_data = session.get('transport_requests', {}).get(request_id)
+    if not request_data:
+        flash('Request not found.', 'error')
+        return redirect(url_for('consumer_intake'))
+    
+    # Generate Phase 12.A compliant quotes with dummy pricing band ($20k-$72k)
+    quotes = generate_dummy_quotes(request_data)
+    
+    return render_template('consumer_quotes_phase12.html', 
+                         quotes=quotes, 
+                         request=request_data)
+
+def generate_dummy_quotes(request_data):
+    """Phase 12.A: Generate quotes with constrained pricing ($20k-$72k) and Concierge options"""
+    import random
+    
+    # Phase 12.A: Dummy pricing band constraint
+    base_prices = [22000, 28000, 35000, 42000, 48000, 55000, 62000, 68000]
+    
+    # Check if any Concierge-enabled affiliate exists (for demo, assume 1 exists)
+    has_concierge_provider = True
+    
+    quotes = []
+    
+    # Generate 3-5 regular quotes
+    for i in range(random.randint(3, 5)):
+        base_fare = random.choice(base_prices)
+        equipment_cost = request_data.get('equipment_cost', 0)
+        same_day_surcharge = 0
+        
+        if request_data.get('same_day_urgent'):
+            same_day_surcharge = int((base_fare + equipment_cost) * 0.2)
+        
+        total_price = base_fare + equipment_cost + same_day_surcharge
+        
+        # Ensure within Phase 12.A pricing band
+        total_price = max(20000, min(72000, total_price))
+        
+        quotes.append({
+            'id': f'quote_{i+1}',
+            'provider_name': f'AirMed Provider {i+1}',
+            'masked_name': f'Provider {chr(65+i)}**',  # A**, B**, etc.
+            'aircraft_type': random.choice(['King Air 350', 'Citation CJ3', 'Learjet 45']),
+            'eta': f'{random.randint(2, 8)} hours',
+            'base_fare': base_fare,
+            'equipment_cost': equipment_cost,
+            'concierge_addon': 0,
+            'same_day_surcharge': same_day_surcharge,
+            'total_price': total_price,
+            'capabilities': random.sample([
+                'Critical Care Certified',
+                'Pediatric Specialist',
+                'ECMO Capable',
+                '24/7 Availability',
+                'Weather Certified',
+                'International Flights'
+            ], 3),
+            'is_concierge': False,
+            'confirmed': False,
+            'booking_code': None
+        })
+    
+    # Phase 12.A: Add Concierge quote if provider exists
+    if has_concierge_provider:
+        # Find best base fare and add $15k
+        best_base = min(q['base_fare'] for q in quotes)
+        concierge_base = best_base
+        concierge_addon = 15000
+        equipment_cost = request_data.get('equipment_cost', 0)
+        same_day_surcharge = 0
+        
+        if request_data.get('same_day_urgent'):
+            same_day_surcharge = int((concierge_base + equipment_cost) * 0.2)
+        
+        concierge_total = concierge_base + equipment_cost + concierge_addon + same_day_surcharge
+        
+        quotes.append({
+            'id': 'quote_concierge',
+            'provider_name': 'MediFly Concierge',
+            'masked_name': 'Concierge**',
+            'aircraft_type': 'Premium Fleet',
+            'eta': '1-2 hours',
+            'base_fare': concierge_base,
+            'equipment_cost': equipment_cost,
+            'concierge_addon': concierge_addon,
+            'same_day_surcharge': same_day_surcharge,
+            'total_price': concierge_total,
+            'capabilities': [
+                'White Glove Service',
+                'Priority Dispatch',
+                'Dedicated Coordinator',
+                'Premium Aircraft',
+                'VIP Treatment'
+            ],
+            'is_concierge': True,
+            'confirmed': False,
+            'booking_code': None
+        })
+    
+    return quotes
+
+@consumer_app.route('/quotes/poll')
+def quotes_poll():
+    """Phase 12.A: Poll for new quotes (15-second intervals)"""
+    request_id = request.args.get('request_id')
+    
+    # Simulate new quote availability (random chance)
+    import random
+    has_new_quotes = random.random() < 0.1  # 10% chance of new quote
+    
+    return jsonify({
+        'new_quotes': has_new_quotes,
+        'count': random.randint(1, 2) if has_new_quotes else 0
+    })
+
+@consumer_app.route('/quotes/select', methods=['POST'])
+def quotes_select():
+    """Phase 12.A: Handle affiliate selection with booking code generation"""
+    try:
+        data = request.get_json()
+        quote_id = data.get('quote_id')
+        request_id = data.get('request_id')
+        
+        # Generate booking code
+        import string, random
+        booking_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        
+        # Update quote status (in production, save to database)
+        # For demo, we'll store in session
+        if 'quote_selections' not in session:
+            session['quote_selections'] = {}
+        
+        session['quote_selections'][quote_id] = {
+            'booking_code': booking_code,
+            'selected_at': datetime.now().isoformat(),
+            'request_id': request_id,
+            'status': 'pending_confirmation'
+        }
+        
+        # In production, send email/SMS to user and affiliate
+        logging.info(f"Booking code {booking_code} issued for quote {quote_id}")
+        
+        return jsonify({
+            'success': True,
+            'booking_code': booking_code,
+            'message': 'Booking code issued successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Quote selection error: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error processing selection'
+        }), 500
+
+@consumer_app.route('/requests')
+def consumer_requests_phase12():
+    """Phase 12.A: Compact requests screen with New Quote indicators"""
+    # Get user's transport requests
+    user_requests = session.get('transport_requests', {})
+    
+    requests_list = []
+    for request_id, req_data in user_requests.items():
+        # Calculate elapsed time
+        from datetime import datetime
+        created_time = datetime.fromisoformat(req_data['timestamp'])
+        elapsed_minutes = int((datetime.now() - created_time).total_seconds() / 60)
+        
+        # Mock quote data for display
+        import random
+        quote_count = random.randint(0, 5) if req_data['status'] != 'pending_quotes' else random.randint(0, 3)
+        
+        # Status mapping
+        status_mapping = {
+            'pending_quotes': {'label': 'Pending Quotes', 'color': 'warning'},
+            'quotes_received': {'label': 'Quotes Available', 'color': 'success'},
+            'confirmed': {'label': 'Confirmed', 'color': 'primary'},
+            'completed': {'label': 'Completed', 'color': 'success'},
+            'cancelled': {'label': 'Cancelled', 'color': 'danger'}
+        }
+        
+        status_info = status_mapping.get(req_data['status'], {'label': 'Unknown', 'color': 'secondary'})
+        
+        requests_list.append({
+            'request_id': request_id,
+            'from_facility': req_data['from_facility'],
+            'to_facility': req_data['to_facility'],
+            'patient_name': req_data['patient_name'],
+            'patient_age_band': req_data['patient_age_band'],
+            'transport_type': req_data['transport_type'],
+            'severity_level': req_data['severity_level'],
+            'status': req_data['status'],
+            'status_label': status_info['label'],
+            'status_color': status_info['color'],
+            'quote_count': quote_count,
+            'min_price': random.randint(20000, 40000) if quote_count > 0 else 0,
+            'max_price': random.randint(50000, 72000) if quote_count > 0 else 0,
+            'timestamp': req_data['timestamp'],
+            'created_date': created_time.strftime('%m/%d/%Y'),
+            'created_time': created_time.strftime('%I:%M %p'),
+            'elapsed_time': f"{elapsed_minutes}m ago" if elapsed_minutes < 60 else f"{elapsed_minutes//60}h {elapsed_minutes%60}m ago",
+            'has_new_quotes': random.random() < 0.3 if req_data['status'] == 'pending_quotes' else False
+        })
+    
+    # Calculate summary statistics
+    summary = {
+        'total_requests': len(requests_list),
+        'pending_requests': len([r for r in requests_list if r['status'] == 'pending_quotes']),
+        'completed_requests': len([r for r in requests_list if r['status'] == 'completed']),
+        'avg_quote_price': sum(r['min_price'] for r in requests_list if r['quote_count'] > 0) // max(1, sum(1 for r in requests_list if r['quote_count'] > 0))
+    }
+    
+    return render_template('consumer_requests_phase12.html', 
+                         requests=requests_list, 
+                         summary=summary)
+
+# Phase 12.A: Database models for anti-abuse system
+if DB_AVAILABLE:
+    class AbuseFlags(db.Model):
+        """Phase 12.A: Anti-abuse tracking table"""
+        id = db.Column(db.Integer, primary_key=True)
+        ip_address = db.Column(db.String(45), nullable=False)  # IPv6 support
+        device_fingerprint = db.Column(db.String(256))
+        email = db.Column(db.String(120))
+        user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+        abuse_type = db.Column(db.String(50), nullable=False)  # 'rate_limit', 'fair_use', 'suspicious'
+        incident_count = db.Column(db.Integer, default=1)
+        first_incident = db.Column(db.DateTime, default=datetime.utcnow)
+        last_incident = db.Column(db.DateTime, default=datetime.utcnow)
+        is_blocked = db.Column(db.Boolean, default=False)
+        admin_notes = db.Column(db.Text)
+        created_at = db.Column(db.DateTime, default=datetime.utcnow)
+        
+        def __repr__(self):
+            return f'<AbuseFlags {self.ip_address} - {self.abuse_type}>'
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

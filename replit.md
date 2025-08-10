@@ -6,18 +6,16 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 11.J Complete + 11.K Runtime Test - Aug 10, 2025)
-- **Phase 11.J Implementation Complete**: All join flows, admin tools, concierge business rules, and cleanup implemented
-- **Admin Navigation Fixed**: Dropdown with functional Affiliates, Analytics, Demo Tools, Invoices, Announcements links
-- **Admin Affiliates Management**: Table with commission %, recoup progress, strikes, concierge flags, edit modals with 3-7% adjustment range
-- **Admin Analytics Dashboard**: Flights per provider with expandable details, success rate definitions, revenue tracking, commission splits
-- **Enhanced Join Individual Flow**: No fees initially, second booking paywall ($99 one-time vs $9.99/month), marketing preferences with email/SMS subscription management
-- **Join Affiliate Enhanced**: Network benefit copy, fee & 1% explainer, company autocomplete, commission locked to 5%, delisting policy, multi-select areas/niches/equipment, FAA Part 135 attestation modal
-- **Join Hospital Enhanced**: Google Places facility autocomplete, role selection, referral tracking, membership rules, 30-day cancellation countdown
-- **Concierge Business Rules**: Synthetic quotes (best base + $15k), $7.5k/$7.5k revenue splits, separate 1% base credit + concierge credit lines
-- **Home Page Updates**: "Why Choose MediFly" blocks, ground transport "where available" language, compliance and trust messaging
-- **Route Cleanup**: Removed duplicate admin routes, legacy intake screens, MVP references, canonical /intake route established
-- **Phase 11.K Runtime Test**: ALL ITEMS PASS - Ready for production deployment
+## Recent Changes (Phase 12.A Complete - Rebuilt Intake + Anti-abuse - Aug 10, 2025)
+- **Phase 12.A Brand-New Intake**: Complete 5-step pancake stepper with smooth animations, clickable previous steps, state preservation, auto-equipment suggestions
+- **Enhanced Quotes System**: Concierge badge (not "Spotlight"), $20k-$72k dummy pricing band, provider masking until confirmation, booking code generation
+- **Anti-abuse Measures**: Rate limiting (5 requests/hour per IP), fair-use policy (3 no-booking rounds in 14 days), $49 refundable deposit system
+- **Compact Requests Screen**: Tighter rows, "New Quote" polling indicators, elapsed timers for pending requests, touch-friendly design
+- **AI Support Bot**: Role-based FAQ system (Affiliate/Hospital/Individual), guided Q&A with expandable answers, escalation to contact
+- **Same-day Surcharge**: +20% pricing for urgent requests, displayed as line item in quotes breakdown
+- **Booking Code System**: Affiliate selection generates alphanumeric codes, email/SMS notifications (stubbed), intake form locking
+- **Provider Unmasking**: Identity hidden until affiliate confirms with payment, updated selection dialog copy
+- **Concierge Revenue Split**: $7.5k/$7.5k transparent splits, separate credit lines for base vs concierge commissions
 
 ## System Architecture
 

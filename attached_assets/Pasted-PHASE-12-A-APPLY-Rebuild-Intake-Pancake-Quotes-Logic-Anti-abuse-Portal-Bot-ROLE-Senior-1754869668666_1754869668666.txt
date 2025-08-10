@@ -1,0 +1,149 @@
+PHASE 12.A — APPLY: Rebuild Intake “Pancake” + Quotes Logic + Anti‑abuse + Portal & Bot
+ROLE: Senior engineer. Archive before edits. Replace the current intake with a brand‑new, 5‑step pancake flow exactly as specified. Also fix quotes/unmasking, concierge badge, dummy pricing, provider team oversight, request list spacing, and add a guided bot.
+
+1) Brand‑new Intake Stepper (pancake) — exact UX
+Route: /intake (canonical)
+
+Steps & behavior
+
+Service Select
+
+“Type of transport”: Critical / Scheduled (industry standard wording)
+
+Next → current panel shrinks (compressed “pancake”), next panel expands
+
+Previous pancakes are clickable; jumping back preserves state
+
+Patient Severity Level
+
+Three large smooth buttons:
+
+Level 1 — Stable Routine Care (Routine transfers, non‑urgent procedures)
+
+Level 2 — Moderate — Monitoring Needed (Requires monitoring, some intervention)
+
+Level 3 — Critical — Life Support (Ventilator, ECMO, critical interventions)
+
+On select, auto‑suggest equipment for Levels 2–3 (user can unselect later)
+
+Next → shrink pancake
+
+Location
+
+“Where do you need transport?”
+
+From: hospital/clinic name + address (city/state)
+
+To: same fields
+
+Google Places autocomplete with “+ Can’t find it?” manual add; fills street/city/state/zip
+
+Preferred Date & Time (dropdown timepicker)
+
+Same‑day urgent checkbox → shows “+20% urgency” note; this surcharge must carry into quotes math
+
+Next → shrink pancake
+
+Patient Info
+
+Patient name
+
+Age band (Under 1, 1–12, 13–17, 18–64, 65+) — no DOB collected
+
+Required medical equipment (if known) — multi‑select; auto‑preselected from severity; user can unselect
+
+Additional medical information (textarea): helper text
+“Diagnosis, special requirements, allergies, or other relevant medical information — do not include PII/PHI.”
+
+Next → shrink pancake
+
+Review & Submit
+
+Read‑only review of all steps; acknowledge checkbox (“I confirm these details are accurate to the best of my knowledge.”)
+
+Submit Request
+
+If not logged in, intercept here → “Login or Create Account” (Individual / Hospital/Clinic / Affiliate)
+Save the full draft; after successful auth, return to Review and allow submit.
+
+Other
+
+Quiet autosave on blur/step change; no toast spam.
+
+Keyboard and mobile friendly; smooth animations.
+
+Replace any “MVP” language; severity is 1–3 only.
+
+2) Quotes page — Concierge + unmasking rules + dummy pricing band
+Concierge badge (not “Spotlight”)
+
+Show Concierge pill on synthetic concierge quote when at least one Concierge‑enabled affiliate exists.
+
+Price = best base fare + $15,000; badge tooltip explains split ($7.5k / $7.5k) and that base 5% applies only to base fare; 1% recoup credit applies to base commission + show separate concierge credit line for transparency in dashboards.
+
+Dummy pricing band
+
+For training/dummy quotes, constrain totals to $20,000–$72,000 (before same‑day +20%).
+
+Unmask AFTER affiliate confirms
+
+Selection dialog changes to:
+“Request Affiliate 2** for your transport?** A booking code will be issued to you and the affiliate. Your request will be sent for confirmation. Provider identity remains hidden until affiliate confirms with partial or full payment.”
+
+On Select:
+
+Generate a Quote Code (short alphanumeric).
+
+Send code to the user via email/SMS and to the affiliate (stubbed now).
+
+Lock intake edits.
+
+Affiliate portal gets a “Confirm Booking” button for pending selections; on confirm:
+
+We unmask provider to the user and move to confirmation/payment instructions.
+
+Same‑day +20%
+
+If same‑day box checked in intake, add +20% to quote totals; display the surcharge as a line item.
+
+3) Anti‑abuse & fair‑use policy
+Rate‑limit:
+
+Per IP: 5 requests/hour (configurable).
+
+Per account: 3 “no‑booking” quote rounds allowed in any rolling 14 days; on the 4th, require a $49 refundable deposit (refunded on any booking within 30 days).
+
+CAPTCHA on submit for logged‑out users (turns off after account creation/MFA).
+
+Blacklist/denylist:
+
+Maintain an AbuseFlags table with IP/device fingerprint/email; auto‑escalate on rapid repeats; hard block after clear abuse. Admin can unban.
+
+Copy: Add a short fair‑use note beneath Submit: “To keep the network responsive for real patients, excessive quote‑only activity may require a small refundable deposit.”
+
+4) Requests screen — tighter rows & “New Quote” indicator
+Make “Previous Requests” compact (denser than default table, still touch‑friendly).
+
+Keep elapsed timer for pending.
+
+Show “New quote available” badge on polling (15s). Clear on view.
+
+5) Provider (Affiliate) portal — team oversight
+Affiliates can invite/approve team members.
+
+Role = Owner (full) / Team Member (quote & case work, no financials).
+
+Team sees all org requests; owner can reassign cases across members.
+
+6) AI Support Assistant (guided Q&A)
+Add chat launcher (“Hi—how can I help? Are you an Affiliate, Hospital/Clinic, or Individual?”).
+
+Pre‑built FAQs per role (industry standard language), e.g.:
+
+Affiliate: “How do commissions work (5% with 1% credit)?”, “Concierge add‑on?”, “Delist rules”, “How do I confirm a booking?”, “How is same‑day priced?”, “How to toggle training data?”
+
+Hospital/Clinic: “How fast do quotes arrive?”, “Ground included where available?”, “How do referrals work?”, “Free year and extension rules?”, “What info is required?”
+
+Individual: “What’s the process?”, “Fees for second booking?”, “How to cancel subscription?”, “What data do you store?”
+
+The bot presents buttons for common intents and expands answers inline; escalates to contact if needed.

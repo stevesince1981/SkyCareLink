@@ -1,0 +1,988 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}New Request - MediFly{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Phase 12.A: Brand-new 5-step pancake intake stepper -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold text-primary mb-2">
+                    <i class="fas fa-helicopter me-3"></i>New Transport Request
+                </h1>
+                <p class="lead text-muted">Professional air medical transport coordination</p>
+            </div>
+
+            <!-- Phase 12.A: Pancake Progress Stepper -->
+            <div class="pancake-stepper mb-4" id="pancakeContainer">
+                <div class="pancake-step active" data-step="1" id="pancake-1">
+                    <div class="pancake-header" onclick="jumpToStep(1)">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Service Select</div>
+                        <div class="step-summary" id="summary-1" style="display: none;"></div>
+                    </div>
+                    <div class="pancake-content" id="content-1">
+                        <h4 class="mb-3">Type of transport</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="service-card" data-type="critical" onclick="selectService('critical')">
+                                    <div class="service-icon text-danger">
+                                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                    </div>
+                                    <h5>Critical</h5>
+                                    <p class="text-muted">Emergency transport with time-sensitive medical needs</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="service-card" data-type="scheduled" onclick="selectService('scheduled')">
+                                    <div class="service-icon text-primary">
+                                        <i class="fas fa-calendar-alt fa-2x"></i>
+                                    </div>
+                                    <h5>Scheduled</h5>
+                                    <p class="text-muted">Planned transport for procedures or transfers</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="transport_type" name="transport_type" value="">
+                    </div>
+                </div>
+
+                <div class="pancake-step" data-step="2" id="pancake-2">
+                    <div class="pancake-header" onclick="jumpToStep(2)">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Patient Severity Level</div>
+                        <div class="step-summary" id="summary-2" style="display: none;"></div>
+                    </div>
+                    <div class="pancake-content" id="content-2">
+                        <h4 class="mb-3">Patient condition severity</h4>
+                        <div class="severity-buttons">
+                            <div class="severity-btn" data-level="1" onclick="selectSeverity(1)">
+                                <div class="severity-number bg-success">1</div>
+                                <div class="severity-info">
+                                    <h5>Stable Routine Care</h5>
+                                    <p>Routine transfers, non-urgent procedures</p>
+                                </div>
+                            </div>
+                            <div class="severity-btn" data-level="2" onclick="selectSeverity(2)">
+                                <div class="severity-number bg-warning">2</div>
+                                <div class="severity-info">
+                                    <h5>Moderate — Monitoring Needed</h5>
+                                    <p>Requires monitoring, some intervention</p>
+                                </div>
+                            </div>
+                            <div class="severity-btn" data-level="3" onclick="selectSeverity(3)">
+                                <div class="severity-number bg-danger">3</div>
+                                <div class="severity-info">
+                                    <h5>Critical — Life Support</h5>
+                                    <p>Ventilator, ECMO, critical interventions</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="severity_level" name="severity_level" value="">
+                        
+                        <!-- Auto-suggested equipment preview -->
+                        <div id="suggested-equipment" class="mt-3" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Auto-suggested equipment:</strong> <span id="equipment-suggestions"></span>
+                                <br><small>You can modify these selections in the next step.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pancake-step" data-step="3" id="pancake-3">
+                    <div class="pancake-header" onclick="jumpToStep(3)">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Location</div>
+                        <div class="step-summary" id="summary-3" style="display: none;"></div>
+                    </div>
+                    <div class="pancake-content" id="content-3">
+                        <h4 class="mb-3">Where do you need transport?</h4>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6>From:</h6>
+                                <div class="location-input-group">
+                                    <input type="text" class="form-control mb-2" id="from_facility" name="from_facility" 
+                                           placeholder="Hospital/clinic name" autocomplete="off">
+                                    <input type="text" class="form-control" id="from_address" name="from_address" 
+                                           placeholder="Address (city, state)" autocomplete="off">
+                                    <small class="form-text">
+                                        <a href="#" onclick="showManualAdd('from')">+ Can't find it?</a>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>To:</h6>
+                                <div class="location-input-group">
+                                    <input type="text" class="form-control mb-2" id="to_facility" name="to_facility" 
+                                           placeholder="Hospital/clinic name" autocomplete="off">
+                                    <input type="text" class="form-control" id="to_address" name="to_address" 
+                                           placeholder="Address (city, state)" autocomplete="off">
+                                    <small class="form-text">
+                                        <a href="#" onclick="showManualAdd('to')">+ Can't find it?</a>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Date</label>
+                                <input type="date" class="form-control" id="preferred_date" name="preferred_date" 
+                                       min="{{ today }}" value="{{ today }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Time</label>
+                                <select class="form-select" id="preferred_time" name="preferred_time">
+                                    <option value="">Select time</option>
+                                    <option value="asap">ASAP</option>
+                                    <option value="morning">Morning (6-12 PM)</option>
+                                    <option value="afternoon">Afternoon (12-6 PM)</option>
+                                    <option value="evening">Evening (6-11 PM)</option>
+                                    <option value="overnight">Overnight (11 PM-6 AM)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="same_day_urgent" name="same_day_urgent">
+                            <label class="form-check-label fw-bold" for="same_day_urgent">
+                                Same-day urgent transport <span class="text-warning">+20% urgency surcharge</span>
+                            </label>
+                            <div class="form-text">Immediate dispatch for same-day requests</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pancake-step" data-step="4" id="pancake-4">
+                    <div class="pancake-header" onclick="jumpToStep(4)">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Patient Info</div>
+                        <div class="step-summary" id="summary-4" style="display: none;"></div>
+                    </div>
+                    <div class="pancake-content" id="content-4">
+                        <h4 class="mb-3">Patient information</h4>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Patient name</label>
+                                <input type="text" class="form-control" id="patient_name" name="patient_name" 
+                                       placeholder="Full name">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Age band</label>
+                                <select class="form-select" id="patient_age_band" name="patient_age_band">
+                                    <option value="">Select age band</option>
+                                    <option value="under_1">Under 1</option>
+                                    <option value="1_12">1-12</option>
+                                    <option value="13_17">13-17</option>
+                                    <option value="18_64">18-64</option>
+                                    <option value="65_plus">65+</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Required medical equipment (if known)</label>
+                            <div class="equipment-grid" id="equipment-selection">
+                                <!-- Equipment options populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Additional medical information</label>
+                            <textarea class="form-control" id="medical_info" name="medical_info" rows="4"
+                                      placeholder="Diagnosis, special requirements, allergies, or other relevant medical information — do not include PII/PHI."></textarea>
+                            <div class="form-text">This helps providers prepare appropriate equipment and staff</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pancake-step" data-step="5" id="pancake-5">
+                    <div class="pancake-header" onclick="jumpToStep(5)">
+                        <div class="step-number">5</div>
+                        <div class="step-title">Review & Submit</div>
+                        <div class="step-summary" id="summary-5" style="display: none;"></div>
+                    </div>
+                    <div class="pancake-content" id="content-5">
+                        <h4 class="mb-3">Review your request</h4>
+                        
+                        <div class="review-card">
+                            <div id="review-summary">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirm_accuracy" name="confirm_accuracy" required>
+                            <label class="form-check-label" for="confirm_accuracy">
+                                I confirm these details are accurate to the best of my knowledge.
+                            </label>
+                        </div>
+
+                        <!-- Phase 12.A: Fair-use policy note -->
+                        <div class="alert alert-light border text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                To keep the network responsive for real patients, excessive quote-only activity may require a small refundable deposit.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="pancake-navigation">
+                <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">
+                    <i class="fas fa-arrow-left me-2"></i>Previous
+                </button>
+                <button type="button" class="btn btn-primary ms-auto" id="nextBtn" onclick="nextStep()">
+                    Next<i class="fas fa-arrow-right ms-2"></i>
+                </button>
+                <button type="button" class="btn btn-success ms-auto" id="submitBtn" onclick="submitRequest()" style="display: none;">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Request
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Phase 12.A: AI Support Assistant -->
+<div class="chat-launcher" id="chatLauncher" onclick="toggleBot()">
+    <i class="fas fa-comments"></i>
+</div>
+
+<div class="bot-modal" id="botModal" style="display: none;">
+    <div class="bot-content">
+        <div class="bot-header">
+            <h5><i class="fas fa-robot me-2"></i>MediFly Assistant</h5>
+            <button class="btn-close" onclick="toggleBot()"></button>
+        </div>
+        <div class="bot-body" id="botBody">
+            <div class="bot-message">
+                <p>Hi! How can I help? Are you an:</p>
+                <div class="bot-buttons">
+                    <button class="btn btn-outline-primary btn-sm" onclick="setBotRole('affiliate')">Affiliate</button>
+                    <button class="btn btn-outline-primary btn-sm" onclick="setBotRole('hospital')">Hospital/Clinic</button>
+                    <button class="btn btn-outline-primary btn-sm" onclick="setBotRole('individual')">Individual</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Phase 12.A: Pancake Stepper Styles */
+.pancake-stepper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.pancake-step {
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.pancake-step:last-child {
+    border-bottom: none;
+}
+
+.pancake-step.compressed {
+    max-height: 60px;
+    overflow: hidden;
+}
+
+.pancake-step.active {
+    background: #f8f9ff;
+}
+
+.pancake-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.pancake-header:hover {
+    background: rgba(13, 110, 253, 0.05);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.pancake-step.active .step-number {
+    background: #0d6efd;
+    color: white;
+}
+
+.pancake-step.completed .step-number {
+    background: #198754;
+    color: white;
+}
+
+.step-title {
+    font-weight: 600;
+    color: #495057;
+    flex-grow: 1;
+}
+
+.step-summary {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-left: auto;
+}
+
+.pancake-content {
+    padding: 1.5rem;
+    background: white;
+}
+
+.pancake-step.compressed .pancake-content {
+    display: none;
+}
+
+/* Service Selection Cards */
+.service-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.service-card:hover {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
+}
+
+.service-card.selected {
+    border-color: #0d6efd;
+    background: #f8f9ff;
+}
+
+.service-icon {
+    margin-bottom: 1rem;
+}
+
+/* Severity Buttons */
+.severity-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.severity-btn {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.severity-btn:hover {
+    border-color: #0d6efd;
+    background: #f8f9ff;
+}
+
+.severity-btn.selected {
+    border-color: #0d6efd;
+    background: #f8f9ff;
+}
+
+.severity-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.severity-info h5 {
+    margin: 0 0 0.5rem 0;
+    color: #212529;
+}
+
+.severity-info p {
+    margin: 0;
+    color: #6c757d;
+}
+
+/* Location inputs */
+.location-input-group input {
+    transition: border-color 0.2s ease;
+}
+
+.location-input-group input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Equipment grid */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.equipment-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.equipment-item:hover {
+    background: #f8f9fa;
+    border-color: #0d6efd;
+}
+
+.equipment-item input[type="checkbox"] {
+    margin-right: 0.75rem;
+}
+
+/* Review card */
+.review-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Navigation */
+.pancake-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+}
+
+/* Bot styles */
+.chat-launcher {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(13, 110, 253, 0.3);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.chat-launcher:hover {
+    transform: scale(1.1);
+}
+
+.bot-modal {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 350px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    z-index: 1001;
+}
+
+.bot-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bot-body {
+    padding: 1.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.bot-message {
+    margin-bottom: 1rem;
+}
+
+.bot-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bot-buttons .btn {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .severity-buttons {
+        gap: 0.75rem;
+    }
+    
+    .severity-btn {
+        padding: 1rem;
+    }
+    
+    .severity-number {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+        margin-right: 1rem;
+    }
+    
+    .bot-modal {
+        width: calc(100vw - 40px);
+        right: 20px;
+    }
+}
+</style>
+
+<script>
+// Phase 12.A: Pancake Stepper Logic
+let currentStep = 1;
+const totalSteps = 5;
+let formData = {};
+
+// Equipment pricing and suggestions
+const equipmentOptions = {
+    'ventilator': { name: 'Ventilator', price: 15000, levels: [2, 3] },
+    'ecmo': { name: 'ECMO', price: 25000, levels: [3] },
+    'balloon_pump': { name: 'Balloon Pump', price: 12000, levels: [2, 3] },
+    'iv_pumps': { name: 'IV Pumps', price: 3000, levels: [2, 3] },
+    'cardiac_monitor': { name: 'Cardiac Monitor', price: 5000, levels: [2, 3] },
+    'transport_incubator': { name: 'Transport Incubator', price: 8000, levels: [2, 3] }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEquipmentGrid();
+    setupAutoSave();
+    loadSavedData();
+});
+
+function selectService(type) {
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+    
+    formData.transport_type = type;
+    document.getElementById('transport_type').value = type;
+    updateSummary(1, type === 'critical' ? 'Critical Transport' : 'Scheduled Transport');
+    
+    autoSave();
+}
+
+function selectSeverity(level) {
+    document.querySelectorAll('.severity-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    document.querySelector(`[data-level="${level}"]`).classList.add('selected');
+    
+    formData.severity_level = level;
+    document.getElementById('severity_level').value = level;
+    
+    // Auto-suggest equipment for levels 2-3
+    if (level >= 2) {
+        const suggestions = Object.entries(equipmentOptions)
+            .filter(([key, eq]) => eq.levels.includes(level))
+            .map(([key, eq]) => eq.name);
+        
+        document.getElementById('suggested-equipment').style.display = 'block';
+        document.getElementById('equipment-suggestions').textContent = suggestions.join(', ');
+        
+        // Pre-select equipment
+        formData.suggested_equipment = Object.keys(equipmentOptions)
+            .filter(key => equipmentOptions[key].levels.includes(level));
+    } else {
+        document.getElementById('suggested-equipment').style.display = 'none';
+        formData.suggested_equipment = [];
+    }
+    
+    const severityNames = { 1: 'Stable Routine', 2: 'Moderate', 3: 'Critical' };
+    updateSummary(2, `Level ${level} - ${severityNames[level]}`);
+    
+    autoSave();
+}
+
+function initializeEquipmentGrid() {
+    const grid = document.getElementById('equipment-selection');
+    grid.innerHTML = '';
+    
+    Object.entries(equipmentOptions).forEach(([key, equipment]) => {
+        const item = document.createElement('div');
+        item.className = 'equipment-item';
+        item.innerHTML = `
+            <input type="checkbox" id="eq_${key}" name="equipment" value="${key}" 
+                   onchange="updateEquipment()">
+            <label for="eq_${key}">
+                <strong>${equipment.name}</strong>
+                <div class="text-muted small">+$${equipment.price.toLocaleString()}</div>
+            </label>
+        `;
+        grid.appendChild(item);
+    });
+}
+
+function updateEquipment() {
+    const selected = Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
+        .map(cb => cb.value);
+    formData.equipment = selected;
+    autoSave();
+}
+
+function jumpToStep(step) {
+    if (step <= currentStep || (step === currentStep + 1 && validateCurrentStep())) {
+        goToStep(step);
+    }
+}
+
+function nextStep() {
+    if (validateCurrentStep()) {
+        goToStep(currentStep + 1);
+    }
+}
+
+function previousStep() {
+    if (currentStep > 1) {
+        goToStep(currentStep - 1);
+    }
+}
+
+function goToStep(step) {
+    // Compress current step
+    const currentPancake = document.getElementById(`pancake-${currentStep}`);
+    currentPancake.classList.remove('active');
+    currentPancake.classList.add('compressed', 'completed');
+    
+    // Expand target step
+    const targetPancake = document.getElementById(`pancake-${step}`);
+    targetPancake.classList.remove('compressed', 'completed');
+    targetPancake.classList.add('active');
+    
+    currentStep = step;
+    updateNavigation();
+    
+    if (step === 4) {
+        preselectEquipment();
+    }
+    
+    if (step === 5) {
+        updateReviewSummary();
+    }
+}
+
+function validateCurrentStep() {
+    switch (currentStep) {
+        case 1:
+            return formData.transport_type !== undefined;
+        case 2:
+            return formData.severity_level !== undefined;
+        case 3:
+            const fromFacility = document.getElementById('from_facility').value;
+            const toFacility = document.getElementById('to_facility').value;
+            const fromAddress = document.getElementById('from_address').value;
+            const toAddress = document.getElementById('to_address').value;
+            
+            if (fromFacility && toFacility && fromAddress && toAddress) {
+                formData.from_facility = fromFacility;
+                formData.to_facility = toFacility;
+                formData.from_address = fromAddress;
+                formData.to_address = toAddress;
+                formData.preferred_date = document.getElementById('preferred_date').value;
+                formData.preferred_time = document.getElementById('preferred_time').value;
+                formData.same_day_urgent = document.getElementById('same_day_urgent').checked;
+                
+                updateSummary(3, `${fromFacility} → ${toFacility}`);
+                return true;
+            }
+            return false;
+        case 4:
+            const patientName = document.getElementById('patient_name').value;
+            const ageBand = document.getElementById('patient_age_band').value;
+            
+            if (patientName && ageBand) {
+                formData.patient_name = patientName;
+                formData.patient_age_band = ageBand;
+                formData.medical_info = document.getElementById('medical_info').value;
+                
+                updateSummary(4, `${patientName} (${ageBand.replace('_', '-')})`);
+                return true;
+            }
+            return false;
+        case 5:
+            return document.getElementById('confirm_accuracy').checked;
+    }
+    return true;
+}
+
+function preselectEquipment() {
+    if (formData.suggested_equipment) {
+        formData.suggested_equipment.forEach(equipmentKey => {
+            const checkbox = document.getElementById(`eq_${equipmentKey}`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+        updateEquipment();
+    }
+}
+
+function updateNavigation() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+    
+    if (currentStep === totalSteps) {
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'block';
+    } else {
+        nextBtn.style.display = 'block';
+        submitBtn.style.display = 'none';
+    }
+}
+
+function updateSummary(step, text) {
+    const summary = document.getElementById(`summary-${step}`);
+    summary.textContent = text;
+    summary.style.display = 'block';
+}
+
+function updateReviewSummary() {
+    const reviewDiv = document.getElementById('review-summary');
+    
+    const ageBandLabels = {
+        'under_1': 'Under 1',
+        '1_12': '1-12',
+        '13_17': '13-17', 
+        '18_64': '18-64',
+        '65_plus': '65+'
+    };
+    
+    const severityLabels = {
+        1: 'Level 1 - Stable Routine Care',
+        2: 'Level 2 - Moderate',
+        3: 'Level 3 - Critical'
+    };
+    
+    const selectedEquipment = formData.equipment || [];
+    const equipmentList = selectedEquipment.map(key => equipmentOptions[key]?.name || key).join(', ');
+    
+    reviewDiv.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Transport Type:</h6>
+                <p>${formData.transport_type === 'critical' ? 'Critical' : 'Scheduled'}</p>
+                
+                <h6>Patient Severity:</h6>
+                <p>${severityLabels[formData.severity_level]}</p>
+                
+                <h6>Patient:</h6>
+                <p>${formData.patient_name} (${ageBandLabels[formData.patient_age_band]})</p>
+                
+                <h6>Equipment:</h6>
+                <p>${equipmentList || 'None specified'}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>From:</h6>
+                <p>${formData.from_facility}<br>${formData.from_address}</p>
+                
+                <h6>To:</h6>
+                <p>${formData.to_facility}<br>${formData.to_address}</p>
+                
+                <h6>When:</h6>
+                <p>${formData.preferred_date} ${formData.preferred_time || ''}</p>
+                ${formData.same_day_urgent ? '<p class="text-warning"><strong>Same-day urgent (+20%)</strong></p>' : ''}
+                
+                <h6>Medical Info:</h6>
+                <p>${formData.medical_info || 'None provided'}</p>
+            </div>
+        </div>
+    `;
+}
+
+function autoSave() {
+    // Quiet autosave - no toast spam
+    sessionStorage.setItem('mediflyIntakeDraft', JSON.stringify(formData));
+}
+
+function loadSavedData() {
+    const saved = sessionStorage.getItem('mediflyIntakeDraft');
+    if (saved) {
+        formData = JSON.parse(saved);
+        // Restore form state if needed
+    }
+}
+
+function setupAutoSave() {
+    // Auto-save on blur for all form inputs
+    document.addEventListener('blur', autoSave, true);
+}
+
+async function submitRequest() {
+    if (!validateCurrentStep()) {
+        alert('Please confirm the accuracy of your information.');
+        return;
+    }
+    
+    // Collect all form data
+    const submitData = {
+        ...formData,
+        confirm_accuracy: true,
+        timestamp: new Date().toISOString()
+    };
+    
+    try {
+        const response = await fetch('/intake/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(submitData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            if (result.requires_auth) {
+                // Redirect to login with draft saved
+                window.location.href = result.login_url;
+            } else {
+                // Redirect to quotes page
+                window.location.href = result.quotes_url;
+            }
+        } else {
+            alert('Error submitting request: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Submit error:', error);
+        alert('Error submitting request. Please try again.');
+    }
+}
+
+// Phase 12.A: AI Support Bot
+let botRole = '';
+
+function toggleBot() {
+    const modal = document.getElementById('botModal');
+    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+}
+
+function setBotRole(role) {
+    botRole = role;
+    showBotFAQs(role);
+}
+
+function showBotFAQs(role) {
+    const botBody = document.getElementById('botBody');
+    
+    const faqs = {
+        affiliate: [
+            'How do commissions work (5% with 1% credit)?',
+            'Concierge add-on?',
+            'Delist rules',
+            'How do I confirm a booking?',
+            'How is same-day priced?',
+            'How to toggle training data?'
+        ],
+        hospital: [
+            'How fast do quotes arrive?',
+            'Ground included where available?',
+            'How do referrals work?',
+            'Free year and extension rules?',
+            'What info is required?'
+        ],
+        individual: [
+            "What's the process?",
+            'Fees for second booking?',
+            'How to cancel subscription?',
+            'What data do you store?'
+        ]
+    };
+    
+    const roleLabels = {
+        affiliate: 'Affiliate',
+        hospital: 'Hospital/Clinic',
+        individual: 'Individual'
+    };
+    
+    botBody.innerHTML = `
+        <div class="bot-message">
+            <p><strong>${roleLabels[role]} FAQs:</strong></p>
+            <div class="bot-buttons">
+                ${faqs[role].map(faq => 
+                    `<button class="btn btn-outline-secondary btn-sm" onclick="showBotAnswer('${faq}')">${faq}</button>`
+                ).join('')}
+            </div>
+            <hr>
+            <button class="btn btn-primary btn-sm" onclick="contactSupport()">Contact Support</button>
+        </div>
+    `;
+}
+
+function showBotAnswer(question) {
+    const answers = {
+        'How do commissions work (5% with 1% credit)?': 'Affiliates earn 5% commission on completed bookings. The 1% credit helps offset network fees and platform costs. Credits accumulate and are applied to your monthly invoice.',
+        'Concierge add-on?': 'Concierge service adds $15,000 to base fare. Revenue split: $7.5k to MediFly, $7.5k to affiliate. Base 5% commission applies only to base fare, plus separate concierge credit line.',
+        'How fast do quotes arrive?': 'Most quotes arrive within 15-60 minutes. Critical requests may receive faster responses. You\'ll be notified via email/SMS when new quotes are available.',
+        "What's the process?": 'Submit request → Receive quotes → Compare providers → Select and confirm booking → Coordinate transport details → Complete transport.',
+        'Fees for second booking?': 'First booking is free. Second booking requires either $99 one-time fee (lifetime access) or $9.99/month (1-year minimum, 30-day cancellation window).',
+        'What data do you store?': 'We store minimal data: contact info, booking history, preferences. No PHI/PII in medical notes. All data is HIPAA-compliant and encrypted.'
+    };
+    
+    const answer = answers[question] || 'Please contact support for detailed information about this topic.';
+    
+    const botBody = document.getElementById('botBody');
+    botBody.innerHTML += `
+        <div class="bot-message">
+            <p><strong>Q:</strong> ${question}</p>
+            <p><strong>A:</strong> ${answer}</p>
+            <hr>
+            <button class="btn btn-outline-primary btn-sm" onclick="setBotRole('${botRole}')">← Back to FAQs</button>
+        </div>
+    `;
+    
+    botBody.scrollTop = botBody.scrollHeight;
+}
+
+function contactSupport() {
+    alert('Support Contact:\nEmail: support@medifly.com\nPhone: 1-800-MEDIFLY\nLive chat available 24/7');
+}
+</script>
+{% endblock %}

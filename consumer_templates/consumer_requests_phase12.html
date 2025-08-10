@@ -1,0 +1,446 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Previous Requests - MediFly{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Phase 12.A: Compact requests screen with "New Quote" indicators -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-history me-2"></i>Previous Requests
+                </h1>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshRequests()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                    <a href="/intake" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>New Request
+                    </a>
+                </div>
+            </div>
+
+            <!-- Phase 12.A: Compact, tighter rows table -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0 requests-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Route</th>
+                                    <th>Patient</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Quotes</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in requests %}
+                                <tr class="{{ 'table-warning' if req.status == 'pending_quotes' else '' }}">
+                                    <td>
+                                        <span class="fw-bold text-monospace">{{ req.request_id }}</span>
+                                        {% if req.has_new_quotes %}
+                                        <span class="badge bg-success ms-2 pulse-animation">
+                                            <i class="fas fa-bell me-1"></i>New Quote
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="route-info">
+                                            <small class="text-muted d-block">{{ req.from_facility }}</small>
+                                            <i class="fas fa-arrow-down text-muted small"></i>
+                                            <small class="text-muted d-block">{{ req.to_facility }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>{{ req.patient_name }}</div>
+                                        <small class="text-muted">{{ req.patient_age_band.replace('_', '-') }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if req.transport_type == 'critical' else 'primary' }}">
+                                            {{ req.transport_type.title() }}
+                                        </span>
+                                        <div class="severity-indicator">
+                                            <small class="text-muted">Level {{ req.severity_level }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge badge bg-{{ req.status_color }}">
+                                            {{ req.status_label }}
+                                        </span>
+                                        {% if req.status == 'pending_quotes' %}
+                                        <div class="elapsed-timer" data-created="{{ req.timestamp }}">
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>
+                                                <span class="timer-text">{{ req.elapsed_time }}</span>
+                                            </small>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="quote-count">
+                                            <span class="fw-bold">{{ req.quote_count }}</span> quotes
+                                            {% if req.quote_count > 0 %}
+                                            <div class="price-range">
+                                                <small class="text-muted">${{ "{:,}".format(req.min_price) }} - ${{ "{:,}".format(req.max_price) }}</small>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="created-info">
+                                            <div>{{ req.created_date }}</div>
+                                            <small class="text-muted">{{ req.created_time }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group-sm" role="group">
+                                            {% if req.quote_count > 0 %}
+                                            <a href="/quotes/{{ req.request_id }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </a>
+                                            {% else %}
+                                            <button class="btn btn-sm btn-outline-secondary" disabled>
+                                                <i class="fas fa-clock me-1"></i>Waiting
+                                            </button>
+                                            {% endif %}
+                                            
+                                            <div class="dropdown d-inline">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li><a class="dropdown-item" href="/requests/{{ req.request_id }}/details">
+                                                        <i class="fas fa-info me-2"></i>Details</a></li>
+                                                    <li><a class="dropdown-item" href="/requests/{{ req.request_id }}/edit">
+                                                        <i class="fas fa-edit me-2"></i>Edit</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="#" onclick="cancelRequest('{{ req.request_id }}')">
+                                                        <i class="fas fa-times me-2"></i>Cancel</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty state -->
+            {% if not requests %}
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-file-medical fa-3x text-muted"></i>
+                </div>
+                <h4>No transport requests yet</h4>
+                <p class="text-muted">Start by creating your first transport request.</p>
+                <a href="/intake" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create New Request
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Summary statistics -->
+            {% if requests %}
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ summary.total_requests }}</div>
+                        <div class="stat-label">Total Requests</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ summary.pending_requests }}</div>
+                        <div class="stat-label">Pending Quotes</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ summary.completed_requests }}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">${{ "{:,}".format(summary.avg_quote_price) }}</div>
+                        <div class="stat-label">Avg Quote Price</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+/* Phase 12.A: Compact, dense table styling */
+.requests-table {
+    font-size: 0.9rem;
+}
+
+.requests-table td {
+    padding: 0.75rem 0.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.requests-table th {
+    padding: 1rem 0.5rem;
+    font-weight: 600;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.requests-table tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+.route-info {
+    min-width: 120px;
+    font-size: 0.8rem;
+}
+
+.route-info small {
+    line-height: 1.2;
+}
+
+.severity-indicator {
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.elapsed-timer {
+    margin-top: 4px;
+    font-size: 0.75rem;
+}
+
+.timer-text {
+    font-family: monospace;
+}
+
+.quote-count {
+    text-align: center;
+}
+
+.price-range {
+    margin-top: 2px;
+    font-size: 0.75rem;
+}
+
+.created-info {
+    font-size: 0.8rem;
+    min-width: 80px;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Pulse animation for new quote indicator */
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Statistics cards */
+.stat-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0d6efd;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .requests-table {
+        font-size: 0.8rem;
+    }
+    
+    .requests-table td,
+    .requests-table th {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .route-info {
+        min-width: 80px;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+/* Touch-friendly despite being compact */
+@media (hover: none) {
+    .requests-table tbody tr {
+        background-color: white;
+    }
+    
+    .requests-table td {
+        padding: 1rem 0.5rem;
+    }
+}
+</style>
+
+<script>
+// Phase 12.A: Enhanced requests functionality with polling
+document.addEventListener('DOMContentLoaded', function() {
+    startElapsedTimers();
+    startNewQuotePolling();
+});
+
+function startElapsedTimers() {
+    // Update elapsed timers for pending requests
+    const timers = document.querySelectorAll('.elapsed-timer');
+    
+    function updateTimers() {
+        timers.forEach(timer => {
+            const createdTime = new Date(timer.dataset.created);
+            const now = new Date();
+            const elapsed = Math.floor((now - createdTime) / 1000 / 60); // minutes
+            
+            const timerText = timer.querySelector('.timer-text');
+            if (elapsed < 60) {
+                timerText.textContent = `${elapsed}m ago`;
+            } else {
+                const hours = Math.floor(elapsed / 60);
+                const minutes = elapsed % 60;
+                timerText.textContent = `${hours}h ${minutes}m ago`;
+            }
+        });
+    }
+    
+    updateTimers();
+    setInterval(updateTimers, 60000); // Update every minute
+}
+
+function startNewQuotePolling() {
+    // Check for new quotes every 15 seconds
+    setInterval(function() {
+        checkForNewQuotes();
+    }, 15000);
+}
+
+function checkForNewQuotes() {
+    const pendingRequests = document.querySelectorAll('tr[data-status="pending_quotes"]');
+    
+    pendingRequests.forEach(row => {
+        const requestId = row.dataset.requestId;
+        if (requestId) {
+            fetch(`/quotes/poll?request_id=${requestId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.new_quotes) {
+                        showNewQuoteBadge(requestId);
+                    }
+                })
+                .catch(error => console.error('Polling error:', error));
+        }
+    });
+}
+
+function showNewQuoteBadge(requestId) {
+    const row = document.querySelector(`tr[data-request-id="${requestId}"]`);
+    if (row) {
+        const requestIdCell = row.querySelector('td:first-child');
+        const existingBadge = requestIdCell.querySelector('.badge');
+        
+        if (!existingBadge) {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-success ms-2 pulse-animation';
+            badge.innerHTML = '<i class="fas fa-bell me-1"></i>New Quote';
+            requestIdCell.appendChild(badge);
+        }
+    }
+}
+
+function refreshRequests() {
+    window.location.reload();
+}
+
+function cancelRequest(requestId) {
+    if (confirm('Are you sure you want to cancel this transport request?')) {
+        fetch(`/requests/${requestId}/cancel`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error canceling request: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Cancel error:', error);
+            alert('Error canceling request. Please try again.');
+        });
+    }
+}
+
+// Clear new quote badges when viewing
+function clearNewQuoteBadge(requestId) {
+    const badge = document.querySelector(`[data-request-id="${requestId}"] .badge.pulse-animation`);
+    if (badge) {
+        badge.remove();
+    }
+}
+</script>
+{% endblock %}

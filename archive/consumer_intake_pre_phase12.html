@@ -1,0 +1,575 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Medical Transport Request - MediFly{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Progress Bar Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="progress-stepper">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Service</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Location</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Patient</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Review</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="intakeForm" method="post" action="{{ url_for('consumer_intake_post') }}">
+        <!-- Step 1: Service Selection -->
+        <div class="step-content active" id="step-1">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="h3 mb-4 text-center">What type of transport do you need?</h2>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="service-card" data-type="critical">
+                                <i class="fas fa-ambulance fa-3x text-danger mb-3"></i>
+                                <h4>Critical Transport</h4>
+                                <p class="text-muted">Emergency same-day transport with advanced life support</p>
+                                <div class="severity-badges">
+                                    <span class="badge bg-danger">Severity 1-3</span>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">20% upcharge for same-day</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="service-card" data-type="scheduled">
+                                <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
+                                <h4>Scheduled Transport</h4>
+                                <p class="text-muted">Planned medical transport with advance booking</p>
+                                <div class="severity-badges">
+                                    <span class="badge bg-primary">Severity 1-2</span>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-success">Best pricing available</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- MVP membership block removed per Phase 11.I -->
+                    </div>
+                    
+                    <!-- Severity Level Selection -->
+                    <div class="mt-4" id="severity-selection" style="display: none;">
+                        <h5 class="mb-3">Patient Severity Level</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="severity-card" data-severity="1">
+                                    <div class="severity-level">Level 1</div>
+                                    <div class="severity-desc">Stable - Routine care</div>
+                                    <div class="severity-examples">
+                                        <small>Routine transfers, non-urgent procedures</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="severity-card" data-severity="2">
+                                    <div class="severity-level">Level 2</div>
+                                    <div class="severity-desc">Moderate - Monitoring needed</div>
+                                    <div class="severity-examples">
+                                        <small>Requires monitoring, some intervention</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="severity-card" data-severity="3">
+                                    <div class="severity-level">Level 3</div>
+                                    <div class="severity-desc">Critical - Life support</div>
+                                    <div class="severity-examples">
+                                        <small>Ventilator, ECMO, critical interventions</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="transport_type" id="transport_type">
+                    <input type="hidden" name="severity" id="severity" value="1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Location Details -->
+        <div class="step-content" id="step-2">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="h3 mb-4 text-center">Where do you need transport?</h2>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label for="origin" class="form-label">From (Current Location) *</label>
+                            <input type="text" class="form-control form-control-lg" id="origin" name="origin" required
+                                   placeholder="Hospital, address, or city">
+                            <div class="form-text">Enter hospital name, full address, or city</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="destination" class="form-label">To (Destination) *</label>
+                            <input type="text" class="form-control form-control-lg" id="destination" name="destination" required
+                                   placeholder="Hospital, address, or city">
+                            <div class="form-text">Destination hospital or medical facility</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4 mt-3">
+                        <div class="col-md-6">
+                            <label for="date_time" class="form-label">Preferred Date & Time</label>
+                            <input type="datetime-local" class="form-control" id="date_time" name="date_time"
+                                   min="{{ datetime.now().strftime('%Y-%m-%dT%H:%M') }}">
+                            <div class="form-text">Leave blank for ASAP transport</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check form-check-lg mt-4">
+                                <input class="form-check-input" type="checkbox" id="same_day" name="same_day">
+                                <label class="form-check-label" for="same_day">
+                                    <strong>Same-day transport needed</strong>
+                                    <div class="text-muted small">20% upcharge applies</div>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check form-check-lg mt-3">
+                                <input class="form-check-input" type="checkbox" id="passport_confirmed" name="passport_confirmed">
+                                <label class="form-check-label" for="passport_confirmed">
+                                    <strong>International travel confirmed</strong>
+                                    <div class="text-muted small">Patient has valid passport/documentation</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Patient Information -->
+        <div class="step-content" id="step-3">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="h3 mb-4 text-center">Tell us about the patient</h2>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label for="patient_name" class="form-label">Patient Name *</label>
+                            <input type="text" class="form-control" id="patient_name" name="patient_name" required
+                                   placeholder="Full name">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="patient_age" class="form-label">Age *</label>
+                            <input type="number" class="form-control" id="patient_age" name="patient_age" required
+                                   min="0" max="120" placeholder="Years">
+                        </div>
+                    </div>
+                    
+                    <!-- Equipment Selection -->
+                    <div class="mt-4">
+                        <h5 class="mb-3">Required Medical Equipment</h5>
+                        <div class="row g-3">
+                            {% for equipment, price in equipment_pricing.items() %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="form-check equipment-check">
+                                    <input class="form-check-input" type="checkbox" name="equipment" 
+                                           value="{{ equipment }}" id="eq_{{ equipment }}">
+                                    <label class="form-check-label" for="eq_{{ equipment }}">
+                                        <strong>{{ equipment.replace('_', ' ').title() }}</strong>
+                                        <div class="text-muted small">${{ "{:,}".format(price) }} additional</div>
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="additional_notes" class="form-label">Additional Medical Information</label>
+                        <textarea class="form-control" id="additional_notes" name="additional_notes" rows="4"
+                                  placeholder="Diagnosis, special requirements, allergies, or other relevant medical information..."></textarea>
+                        <div class="form-text">This helps providers prepare appropriate equipment and staff</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Review & Submit -->
+        <div class="step-content" id="step-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="h3 mb-4 text-center">Review Your Request</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="review-summary">
+                                <!-- Summary will be populated by JavaScript -->
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6>Next Steps:</h6>
+                                <ol class="mb-0">
+                                    <li>Submit your request to our provider network</li>
+                                    <li>Receive quotes within 15-60 minutes</li>
+                                    <li>Compare providers and select your preferred option</li>
+                                    <li>Confirm booking and coordinate transport details</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" id="prev-btn" style="display: none;">
+                        <i class="fas fa-arrow-left me-2"></i>Previous
+                    </button>
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-primary" id="next-btn">
+                            Next<i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                        <button type="submit" class="btn btn-success" id="submit-btn" style="display: none;">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Request
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+.progress-stepper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.progress-stepper::before {
+    content: '';
+    position: absolute;
+    top: 25px;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    min-width: 120px;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+    background: #0d6efd;
+    color: white;
+}
+
+.step.completed .step-number {
+    background: #198754;
+    color: white;
+}
+
+.step-title {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+.step.active .step-title {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.step-content {
+    display: none;
+    min-height: 400px;
+}
+
+.step-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.service-card, .severity-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.service-card:hover, .severity-card:hover {
+    border-color: #0d6efd;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.service-card.selected, .severity-card.selected {
+    border-color: #0d6efd;
+    background: #f8f9ff;
+}
+
+.severity-level {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.severity-desc {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.severity-examples {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.equipment-check {
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.equipment-check:hover {
+    background: #f8f9fa;
+    border-color: #0d6efd;
+}
+
+.form-check-input:checked + .form-check-label {
+    color: #0d6efd;
+}
+
+@media (max-width: 768px) {
+    .progress-stepper {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .step {
+        min-width: 80px;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 1;
+    const totalSteps = 4;
+    
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Service type selection
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            const type = this.dataset.type;
+            document.getElementById('transport_type').value = type;
+            
+            // Show severity selection for critical and scheduled
+            const severitySelection = document.getElementById('severity-selection');
+            if (type === 'critical' || type === 'scheduled') {
+                severitySelection.style.display = 'block';
+            } else {
+                severitySelection.style.display = 'none';
+            }
+        });
+    });
+    
+    // Severity level selection
+    document.querySelectorAll('.severity-card').forEach(card => {
+        card.addEventListener('click', function() {
+            document.querySelectorAll('.severity-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            const severity = this.dataset.severity;
+            document.getElementById('severity').value = severity;
+        });
+    });
+    
+    // Navigation
+    nextBtn.addEventListener('click', function() {
+        if (validateStep(currentStep)) {
+            goToStep(currentStep + 1);
+        }
+    });
+    
+    prevBtn.addEventListener('click', function() {
+        goToStep(currentStep - 1);
+    });
+    
+    function goToStep(step) {
+        if (step < 1 || step > totalSteps) return;
+        
+        // Hide current step
+        document.querySelector(`#step-${currentStep}`).classList.remove('active');
+        document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+        
+        // Mark completed steps
+        if (step > currentStep) {
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('completed');
+        } else {
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('completed');
+        }
+        
+        currentStep = step;
+        
+        // Show new step
+        document.querySelector(`#step-${currentStep}`).classList.add('active');
+        document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+        
+        // Update buttons
+        prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+        
+        if (currentStep === totalSteps) {
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+            updateReviewSummary();
+        } else {
+            nextBtn.style.display = 'block';
+            submitBtn.style.display = 'none';
+        }
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function validateStep(step) {
+        switch(step) {
+            case 1:
+                const transportType = document.getElementById('transport_type').value;
+                if (!transportType) {
+                    alert('Please select a transport type');
+                    return false;
+                }
+                if ((transportType === 'critical' || transportType === 'scheduled') && 
+                    !document.querySelector('.severity-card.selected')) {
+                    alert('Please select a severity level');
+                    return false;
+                }
+                return true;
+                
+            case 2:
+                const origin = document.getElementById('origin').value.trim();
+                const destination = document.getElementById('destination').value.trim();
+                if (!origin || !destination) {
+                    alert('Please enter both origin and destination locations');
+                    return false;
+                }
+                return true;
+                
+            case 3:
+                const patientName = document.getElementById('patient_name').value.trim();
+                const patientAge = document.getElementById('patient_age').value;
+                if (!patientName || !patientAge) {
+                    alert('Please enter patient name and age');
+                    return false;
+                }
+                return true;
+                
+            default:
+                return true;
+        }
+    }
+    
+    function updateReviewSummary() {
+        const transportType = document.getElementById('transport_type').value;
+        const severity = document.getElementById('severity').value;
+        const origin = document.getElementById('origin').value;
+        const destination = document.getElementById('destination').value;
+        const patientName = document.getElementById('patient_name').value;
+        const patientAge = document.getElementById('patient_age').value;
+        const selectedEquipment = Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
+            .map(input => input.value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()));
+        
+        const summary = `
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h6>Service Details</h6>
+                    <p><strong>Type:</strong> ${transportType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                    <p><strong>Severity Level:</strong> ${severity}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Transport Route</h6>
+                    <p><strong>From:</strong> ${origin}</p>
+                    <p><strong>To:</strong> ${destination}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Patient Information</h6>
+                    <p><strong>Name:</strong> ${patientName}</p>
+                    <p><strong>Age:</strong> ${patientAge} years</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Medical Equipment</h6>
+                    ${selectedEquipment.length ? 
+                        `<ul class="mb-0">${selectedEquipment.map(eq => `<li>${eq}</li>`).join('')}</ul>` : 
+                        '<p class="text-muted">None selected</p>'
+                    }
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('review-summary').innerHTML = summary;
+    }
+    
+    // Initialize
+    goToStep(1);
+});
+</script>
+{% endblock %}
