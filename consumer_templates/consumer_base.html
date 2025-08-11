@@ -382,7 +382,7 @@
         if (!chatArea) {
             chatArea = document.createElement('div');
             chatArea.id = 'aiChatArea';
-            chatArea.style.cssText = 'max-height: 400px; overflow-y: auto; padding: 12px; background: white; border-radius: 8px; margin-bottom: 12px; border: 1px solid #ddd;';
+            chatArea.style.cssText = 'max-height: 250px; overflow-y: auto; padding: 8px; background: white; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd;';
             const aiBody = panel.querySelector('.ai-body');
             if (aiBody) {
                 aiBody.insertBefore(chatArea, aiBody.firstChild);
@@ -394,7 +394,7 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = 'ai-message';
         messageDiv.style.cssText = 'background: #f8f9fa; padding: 8px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #007bff;';
-        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 4px; font-size: 0.8rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.3; white-space: pre-line; font-size: 0.75rem;">${message}</div>`;
+        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 3px; font-size: 0.65rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.2; white-space: pre-line; font-size: 0.6rem;">${message}</div>`;
         chatArea.appendChild(messageDiv);
         
         const optionsDiv = document.createElement('div');
@@ -409,7 +409,7 @@
         buttonOptions.forEach(option => {
             const button = document.createElement('button');
             button.className = 'btn btn-outline-primary';
-            button.style.cssText = 'font-size: 0.7rem; padding: 8px 4px; height: 50px; line-height: 1.2; display: flex; align-items: center; justify-content: center; text-align: center;';
+            button.style.cssText = 'font-size: 0.6rem; padding: 6px 3px; height: 40px; line-height: 1.1; display: flex; align-items: center; justify-content: center; text-align: center;';
             button.innerHTML = option.text;
             button.onclick = () => handleAIResponse(option.value);
             optionsDiv.appendChild(button);
@@ -569,8 +569,8 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         // Add response message with smaller text
         const messageDiv = document.createElement('div');
         messageDiv.className = 'ai-message';
-        messageDiv.style.cssText = 'background: #f8f9fa; padding: 8px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #007bff;';
-        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 4px; font-size: 0.8rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.3; white-space: pre-line; font-size: 0.75rem;">${message || 'No message provided'}</div>`;
+        messageDiv.style.cssText = 'background: #f8f9fa; padding: 6px; border-radius: 4px; margin-bottom: 6px; border-left: 2px solid #007bff;';
+        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 3px; font-size: 0.65rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.2; white-space: pre-line; font-size: 0.6rem;">${message || 'No message provided'}</div>`;
         
         chatArea.appendChild(messageDiv);
         
@@ -585,7 +585,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
                 
                 const button = document.createElement('button');
                 button.className = 'btn btn-outline-primary me-2 mb-2';
-                button.style.cssText = 'font-size: 0.7rem; padding: 4px 8px; min-height: 28px; min-width: 120px;';
+                button.style.cssText = 'font-size: 0.6rem; padding: 3px 6px; min-height: 24px; min-width: 100px;';
                 button.textContent = option;
                 button.onclick = () => {
                     handleAIResponse(option);
@@ -599,10 +599,10 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         // Add floating navigation controls - only one set at bottom
         if (isNewSection && aiState.userType) {
             const floatingControls = document.createElement('div');
-            floatingControls.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 8px 0; border-top: 1px solid #eee; margin-top: 8px; text-align: center;';
+            floatingControls.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 6px 0; border-top: 1px solid #eee; margin-top: 6px; text-align: center;';
             floatingControls.innerHTML = `
-                <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.7rem; padding: 4px 8px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
-                <button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();" style="font-size: 0.7rem; padding: 4px 8px;"><i class="fas fa-redo me-1"></i>Start Over</button>
+                <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.6rem; padding: 3px 6px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
+                <button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();" style="font-size: 0.6rem; padding: 3px 6px;"><i class="fas fa-redo me-1"></i>Start Over</button>
             `;
             chatArea.appendChild(floatingControls);
         }
@@ -624,8 +624,8 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         const chatArea = document.getElementById('aiChatArea');
         if (chatArea) {
             const questionDiv = document.createElement('div');
-            questionDiv.style.cssText = 'background: #e3f2fd; padding: 6px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid #2196f3;';
-            questionDiv.innerHTML = `<div style="color: #1976d2; font-weight: bold; font-size: 0.7rem;">${question}</div>`;
+            questionDiv.style.cssText = 'background: #e3f2fd; padding: 4px; border-radius: 4px; margin-bottom: 4px; border-left: 2px solid #2196f3;';
+            questionDiv.innerHTML = `<div style="color: #1976d2; font-weight: bold; font-size: 0.6rem;">${question}</div>`;
             chatArea.appendChild(questionDiv);
         }
     }
