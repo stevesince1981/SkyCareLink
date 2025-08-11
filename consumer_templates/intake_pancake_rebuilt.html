@@ -1084,7 +1084,7 @@ document.getElementById('intakeForm').addEventListener('submit', function(e) {
     formData.append('current_step', currentStep);
     
     // Submit the form
-    fetch('{{ url_for("consumer_intake_pancake") }}', {
+    fetch('{{ url_for("intake_submit") }}', {
         method: 'POST',
         body: formData
     })

@@ -57,6 +57,14 @@
                             </label>
                         </div>
                         
+                        <!-- Required Confirmations -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="pricing_understood" name="pricing_understood" required>
+                            <label class="form-check-label" for="pricing_understood">
+                                I understand the pricing structure: first booking free, subsequent bookings require payment or lifetime access *
+                            </label>
+                        </div>
+
                         <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="terms_accepted" name="terms_accepted" required>
                             <label class="form-check-label" for="terms_accepted">
@@ -64,18 +72,26 @@
                             </label>
                         </div>
                         
-                        <!-- Phase 12.C: Fee structure information -->
+                        <!-- Referral Information Section -->
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-users me-2"></i>Referral Program</h6>
+                            <div class="mb-3">
+                                <label for="referral_code" class="form-label">Referral Code (Optional)</label>
+                                <input type="text" class="form-control" id="referral_code" name="referral_code" 
+                                       placeholder="Enter referral code if you have one">
+                                <small class="text-muted">Enter a referral code to benefit both you and your referrer</small>
+                            </div>
+                        </div>
+
+                        <!-- Pricing Structure & Referral Benefits -->
                         <div class="alert alert-info">
-                            <h6><i class="fas fa-info-circle me-2"></i>Pricing Structure</h6>
-                            <ul class="mb-0">
-                                <li><strong>First booking:</strong> Free (standard transport quotes)</li>
-                                <li><strong>Subsequent bookings:</strong> Choose one of:
-                                    <ul>
-                                        <li>$99 one-time lifetime access</li>
-                                        <li>$9.99/month (12-month minimum, 30-day cancellation window)</li>
-                                    </ul>
-                                </li>
+                            <h6><i class="fas fa-dollar-sign me-2"></i>Pricing Structure & Referral Benefits</h6>
+                            <ul class="mb-2">
+                                <li><strong>First booking:</strong> Always free (standard transport quotes)</li>
+                                <li><strong>Subsequent bookings:</strong> $99 one-time lifetime access OR $9.99/month</li>
+                                <li><strong>Referral Bonus:</strong> When someone you refer completes their first paid booking, you get lifetime access for free!</li>
                             </ul>
+                            <p class="mb-0"><strong>Your Referral Code:</strong> Will be generated after account creation</p>
                         </div>
                         
                         <button type="submit" class="btn btn-primary btn-lg w-100">

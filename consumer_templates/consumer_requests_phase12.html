@@ -25,48 +25,45 @@
             <div class="card">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0 requests-table">
+                        <table class="table table-sm table-hover mb-0 requests-table" style="font-size: 0.9rem;">
                             <thead class="table-light">
-                                <tr>
-                                    <th>Request ID</th>
-                                    <th>Route</th>
-                                    <th>Patient</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>Quotes</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
+                                <tr style="height: 2.5rem;">
+                                    <th style="padding: 0.4rem 0.8rem;">Request ID</th>
+                                    <th style="padding: 0.4rem 0.8rem;">Route</th>
+                                    <th style="padding: 0.4rem 0.8rem;">Patient</th>
+                                    <th style="padding: 0.4rem 0.8rem;">Type</th>
+                                    <th style="padding: 0.4rem 0.8rem;">Status</th>
+                                    <th style="padding: 0.4rem 0.8rem;">Quotes</th>
+                                    <th style="padding: 0.4rem 0.8rem;">Created</th>
+                                    <th style="padding: 0.4rem 0.8rem;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for req in requests %}
-                                <tr class="{{ 'table-warning' if req.status == 'pending_quotes' else '' }}">
-                                    <td>
-                                        <span class="fw-bold text-monospace">{{ req.request_id }}</span>
+                                <tr class="{{ 'table-warning' if req.status == 'pending_quotes' else '' }}" style="height: 3rem;">
+                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
+                                        <span class="fw-bold text-monospace" style="font-size: 0.85rem;">{{ req.request_id }}</span>
                                         {% if req.has_new_quotes %}
-                                        <span class="badge bg-success ms-2 pulse-animation">
-                                            <i class="fas fa-bell me-1"></i>New Quote
-                                        </span>
+                                        <span class="badge bg-success ms-1 pulse-animation" style="font-size: 0.7rem;">New Quote</span>
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        <div class="route-info">
-                                            <small class="text-muted d-block">{{ req.from_facility }}</small>
-                                            <i class="fas fa-arrow-down text-muted small"></i>
-                                            <small class="text-muted d-block">{{ req.to_facility }}</small>
+                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
+                                        <div style="line-height: 1.2;">
+                                            <div style="font-size: 0.8rem;">{{ req.from_facility }}</div>
+                                            <div style="font-size: 0.8rem; color: #6c757d;">→ {{ req.to_facility }}</div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div>{{ req.patient_name }}</div>
-                                        <small class="text-muted">{{ req.patient_age_band.replace('_', '-') }}</small>
+                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
+                                        <div style="line-height: 1.2;">
+                                            <div style="font-size: 0.85rem;">{{ req.patient_name }}</div>
+                                            <small class="text-muted">{{ req.patient_age_band.replace('_', '-') }}</small>
+                                        </div>
                                     </td>
-                                    <td>
-                                        <span class="badge bg-{{ 'danger' if req.transport_type == 'critical' else 'primary' }}">
+                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
+                                        <span class="badge bg-{{ 'danger' if req.transport_type == 'critical' else 'primary' }}" style="font-size: 0.7rem;">
                                             {{ req.transport_type.title() }}
                                         </span>
-                                        <div class="severity-indicator">
-                                            <small class="text-muted">Level {{ req.severity_level }}</small>
-                                        </div>
+                                        <div><small class="text-muted">Level {{ req.severity_level }}</small></div>
                                     </td>
                                     <td>
                                         <span class="status-badge badge bg-{{ req.status_color }}">

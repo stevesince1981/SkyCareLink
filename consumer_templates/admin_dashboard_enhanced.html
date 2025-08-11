@@ -133,9 +133,9 @@
     <!-- Revenue & Analytics Stats -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-value">{{ admin_data.total_revenue }}</div>
+            <div class="stat-value">${{ admin_data.total_revenue }}</div>
             <div class="stat-label">Total Revenue</div>
-            <div class="stat-change positive">+{{ admin_data.monthly_revenue }} This Month</div>
+            <div class="stat-change positive">+${{ admin_data.monthly_revenue }} This Month</div>
         </div>
         <div class="stat-card">
             <div class="stat-value">{{ admin_data.total_users }}</div>
@@ -193,7 +193,7 @@
                             <strong>Reset Passwords</strong>
                             <br><small class="text-muted">Bulk password reset for users</small>
                         </div>
-                        <button class="action-btn btn-reset" onclick="managePasswords()">Manage</button>
+                        <a href="{{ url_for('admin_security') }}" class="action-btn btn-reset">Manage</a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
@@ -214,7 +214,7 @@
                             <strong>Admin Controls</strong>
                             <br><small class="text-muted">Grant administrative privileges</small>
                         </div>
-                        <button class="action-btn btn-admin" onclick="grantAdminAccess()">Grant Access</button>
+                        <a href="{{ url_for('admin_security') }}" class="action-btn btn-admin">Grant Access</a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>

@@ -1470,8 +1470,8 @@ def admin_dashboard():
     
     # Admin dashboard data with proper currency formatting
     admin_data = {
-        'total_revenue': format_currency(847500),
-        'monthly_revenue': format_currency(127000),
+        'total_revenue': '847,500',
+        'monthly_revenue': '127,000',
         'total_users': 1247,
         'new_users_week': 89,
         'flight_requests': 342,
@@ -1479,10 +1479,10 @@ def admin_dashboard():
         'active_quotes': 67,
         'paid_quotes_today': 23,
         'providers': [
-            {'name': 'AeroMed Services', 'flights': 45, 'revenue': format_currency(234500)},
-            {'name': 'SkyLife Medical', 'flights': 38, 'revenue': format_currency(198750)},
-            {'name': 'CriticalCare Air', 'flights': 42, 'revenue': format_currency(215600)},
-            {'name': 'MedTransport Plus', 'flights': 31, 'revenue': format_currency(167200)}
+            {'name': 'AeroMed Services', 'flights': 45, 'revenue': '$234,500'},
+            {'name': 'SkyLife Medical', 'flights': 38, 'revenue': '$198,750'},
+            {'name': 'CriticalCare Air', 'flights': 42, 'revenue': '$215,600'},
+            {'name': 'MedTransport Plus', 'flights': 31, 'revenue': '$167,200'}
         ]
     }
     
