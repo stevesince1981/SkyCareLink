@@ -3,12 +3,13 @@
     "affiliate": {
       "known_ips": [
         "172.31.66.130",
-        "172.31.83.130"
+        "172.31.83.130",
+        "172.31.96.226"
       ],
       "known_user_agents": [
         "7ddeda88"
       ],
-      "last_login": "2025-08-10T16:48:08.976207",
+      "last_login": "2025-08-11T00:42:20.331902",
       "mfa_enabled": false
     },
     "admin": {
@@ -20,6 +21,16 @@
         "7ddeda88"
       ],
       "last_login": "2025-08-10T21:08:12.131476",
+      "mfa_enabled": false
+    },
+    "family": {
+      "known_ips": [
+        "172.31.96.226"
+      ],
+      "known_user_agents": [
+        "7ddeda88"
+      ],
+      "last_login": "2025-08-11T00:40:02.548018",
       "mfa_enabled": false
     }
   }

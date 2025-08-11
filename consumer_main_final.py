@@ -79,13 +79,17 @@ MEDFLY_CONFIG = {
     'sendgrid_api_key': os.environ.get("SENDGRID_API_KEY", "demo-key")
 }
 
-# Phase 6.A: Commission Configuration
+# Phase 12.C: Enhanced Commission Configuration with canonical math
 COMMISSION_CONFIG = {
-    'base_rate': 0.04,  # 4% until $25k recoup threshold
+    'base_rate': 0.04,  # 4% until $25k recoup threshold (effective billed to affiliate)
     'tier_2_rate': 0.05,  # 5% after $25k recoup threshold
     'recoup_threshold_usd': 25000,
-    'recoup_rate': 0.01,  # 1% added to recoup when under threshold
-    'invoice_net_days': 7  # NET 7 payment terms
+    'recoup_rate': 0.01,  # 1% recoup credit (reduces remaining to $25k; funded from margin)
+    'invoice_net_days': 7,  # NET 7 payment terms
+    'concierge_addon': 15000,  # $15k concierge add-on
+    'concierge_split_us': 7500,  # $7.5k to us
+    'concierge_split_affiliate': 7500,  # $7.5k to affiliate
+    'same_day_surcharge_rate': 0.20  # 20% same-day surcharge
 }
 
 # Phase 7.A: Operational Controls Configuration
@@ -2903,6 +2907,12 @@ def ai_command():
     
     return jsonify(response)
 
+# Phase 12.C: Quote code generation
+def generate_quote_code():
+    """Generate short alphanumeric quote code"""
+    chars = string.ascii_uppercase + string.digits
+    return ''.join(secrets.choice(chars) for _ in range(6))
+
 # Partner Dashboard (for providers)
 @consumer_app.route('/partner_dashboard')
 def partner_dashboard():
@@ -3890,57 +3900,76 @@ def portal_reset_demo():
 # Original Phase 11.H admin_affiliates - replaced with enhanced Phase 11.J version
 
 # 2) Join Flows - Phase 11.J Enhanced
-@consumer_app.route('/join_individual')
+@consumer_app.route('/join_individual', methods=['GET', 'POST'])
 def join_individual():
-    """Phase 11.J: Individual self-service signup with enhanced pricing model"""
-    return render_template('join_individual_phase11j.html')
-
-@consumer_app.route('/join_individual', methods=['POST'])
-def join_individual_submit():
-    """Process individual registration"""
+    """Phase 12.C: Individual registration endpoint"""
+    if request.method == 'GET':
+        return render_template('join_individual.html')
+    
+    # Process individual registration - Phase 12.C
     try:
-        user_data = {
-            'contact_name': request.form.get('contact_name'),
-            'email': request.form.get('email'),
-            'phone': request.form.get('phone'),
-            'role': 'individual'
-        }
+        first_name = request.form.get('first_name', '').strip()
+        last_name = request.form.get('last_name', '').strip()
+        email = request.form.get('email', '').strip()
+        mobile_phone = request.form.get('mobile_phone', '').strip()
+        password = request.form.get('password', '')
+        marketing_opt_in = bool(request.form.get('marketing_opt_in'))
+        
+        # Validate required fields - Phase 12.C: no DOB, email required, 1 required mobile phone
+        if not all([first_name, last_name, email, mobile_phone, password]):
+            flash('All required fields must be filled', 'error')
+            return render_template('join_individual.html')
         
         if DB_AVAILABLE:
             with consumer_app.app_context():
-                # Create user account
-                new_user = User(
-                    username=user_data['email'],
-                    email=user_data['email'],
-                    contact_name=user_data['contact_name'],
-                    phone_number=user_data['phone'],
+                existing_user = User.query.filter_by(email=email).first()
+                if existing_user:
+                    flash('An account with this email already exists', 'error')
+                    return render_template('join_individual.html')
+                
+                # Create new individual user
+                user = User(
+                    username=email,
+                    email=email,
+                    contact_name=f"{first_name} {last_name}",
+                    phone_number=mobile_phone,
                     role='individual',
+                    password_hash=generate_password_hash(password),
+                    marketing_opt_in=marketing_opt_in,
                     membership_status='free_trial',
-                    membership_expires=datetime.now(timezone.utc) + timedelta(days=30)
+                    membership_expires=datetime.now(timezone.utc) + timedelta(days=30),
+                    created_at=datetime.now(timezone.utc)
                 )
-                db.session.add(new_user)
+                
+                db.session.add(user)
                 db.session.commit()
                 
-                # Log in user
+                # Auto-login
                 session['logged_in'] = True
-                session['user_id'] = new_user.id
+                session['user_id'] = user.id
                 session['user_role'] = 'individual'
-                session['username'] = new_user.username
-                session['contact_name'] = new_user.contact_name
+                session['username'] = user.username
+                session['contact_name'] = user.contact_name
                 
-                flash('Welcome to MediFly! Your free trial includes one booking.', 'success')
+                flash('Individual account created successfully! First booking is free.', 'success')
                 return redirect(url_for('home'))
         else:
             # Fallback session-based
-            session.update(user_data)
-            session['logged_in'] = True
-            flash('Registration successful! Welcome to MediFly.', 'success')
-            
+            session.update({
+                'logged_in': True,
+                'user_role': 'individual',
+                'contact_name': f"{first_name} {last_name}",
+                'email': email,
+                'phone': mobile_phone
+            })
+            flash('Individual account created successfully!', 'success')
+            return redirect(url_for('home'))
+        
     except Exception as e:
         logging.error(f"Individual registration error: {e}")
-        flash('Registration error. Please try again.', 'error')
+        flash('Registration failed. Please try again.', 'error')
     
-    return redirect(url_for('join_individual'))
+    return render_template('join_individual.html')
 
 @consumer_app.route('/join_hospital', methods=['GET', 'POST'])
 def join_hospital():
@@ -4003,6 +4032,8 @@ def join_hospital():
             flash('Registration error. Please try again.', 'error')
     
     return render_template('join_hospital.html')
+
+# Route removed to fix duplicate mapping
 
 @consumer_app.route('/join_affiliate', methods=['GET', 'POST'])  
 def join_affiliate():

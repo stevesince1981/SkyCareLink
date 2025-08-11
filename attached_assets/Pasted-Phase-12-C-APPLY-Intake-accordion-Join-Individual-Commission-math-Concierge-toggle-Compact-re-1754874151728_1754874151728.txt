@@ -1,0 +1,149 @@
+Phase 12.C — APPLY: Intake accordion, Join-Individual, Commission math, Concierge toggle, Compact requests
+ROLE: Senior engineer. Archive before edits. No schema changes besides a safe boolean fix if needed.
+
+A) Intake “pancake” = true accordion (one open at a time)
+Symptoms: All steps expanded; Next button out of view; doesn’t shrink.
+Fix
+
+Convert stepper to an accordion with exactly one open panel.
+
+On Next/Back, close current, open target, and scroll into view.
+
+Persist state (session/localStorage). After login, return to Review with all fields intact.
+
+Add small step header chips showing a summary (e.g., “Critical • L3 • MCO → LGA • Today 14:30 • Same‑day +20%”).
+
+Keep severity 1–3 and auto‑suggest equipment for 2–3 (user can unselect).
+
+Deliverable: /intake opens with Step 1 only; navigating collapses previous steps and keeps CTA in view.
+
+B) Join menu: “Join as Individual”
+Symptoms: Missing.
+Fix
+
+Add Join → Individual in the header menu linking to /join_individual.
+
+Ensure /join_individual enforces: no DOB, 1 required mobile phone, email required, opt‑in marketing checkbox, fee gate on second booking ($99 one‑time or $9.99/mo, 12‑mo min, 30‑day cancel in portal).
+
+Deliverable: Join dropdown shows Affiliate / Hospital/Clinic / Individual and routes work.
+
+C) Affiliate edit view: “Offers Concierge” checkbox not reflecting
+Symptoms: View shows Concierge, Edit not checked.
+Fix
+
+Bind the edit form to the DB value (affiliates.offers_concierge) not any cached JSON/session.
+
+Normalize boolean coercion (accept "true"/"on"/1).
+
+On save, persist; re-open edit should show the box checked.
+
+Deliverable: Toggle reflects true state in View and Edit consistently.
+
+D) Commission math (and Weekly Summary expanders)
+Symptoms: Numbers look off; weekly section not expandable.
+Fix
+
+Canonical math (apply everywhere):
+
+Base fare: P_base.
+
+Same‑day surcharge: +20% when selected ⇒ P_billable = P_base * 1.20.
+
+Before recoup (<$25,000):
+
+Gross rate = profile default (usually 5%).
+
+Effective billed to affiliate = 4% of P_billable.
+
+Recoup credit = 1% of P_billable (reduces remaining to $25k; funded from our margin).
+
+After recoup (≥$25,000):
+
+Effective = default commission % (usually 5%) of P_billable.
+
+No 1% credit.
+
+Concierge add‑on: + $15,000
+
+Split: $7,500 us / $7,500 concierge affiliate.
+
+No commission computed on this add‑on.
+
+Concierge credit toward recoup: apply up to 1% of P_billable extra credit if remaining_to_25k > 0 (funded from our $7,500 share); show as a separate line (“Concierge credit applied”).
+
+Weekly Commission Summary:
+
+Each week row gets a ± expander showing per‑booking lines: date, base fare, same‑day flag, effective %, commission amount, recoup credit, concierge split (if any).
+
+Currency formatting: $XXX,XXX.XX everywhere; no double-formatting.
+
+Deliverable: Weekly summary expandable with correct math in Admin and Affiliate portals.
+
+E) Quotes list: show Concierge (not “Spotlight”) + Quote Code + unmasking rule
+Symptoms: Badge says Spotlight; selection doesn’t behave; still unmasking too early.
+Fix
+
+Replace Concierge‑eligible quote badge text to “Concierge” with tooltip (explainer).
+
+Dummy pricing range enforced: $20k–$72k (before same‑day).
+
+On Select:
+
+Generate and display a Quote Code (short alphanumeric).
+
+Status = “Awaiting affiliate confirmation”.
+
+Do not unmask until the affiliate clicks “Confirm Booking” in their portal (partial/full payment workflow later).
+
+Lock request edits; allow Cancel request (with confirmation).
+
+Apply +20% line to totals when same‑day selected.
+
+Deliverable: Concierge present; selection produces a Quote Code; unmask happens only after affiliate confirms.
+
+F) Requests screen spacing (denser)
+Symptoms: Too airy; can’t scan many rows.
+Fix
+
+Reduce vertical padding and line-height; compact card/list style while keeping touch targets ~40–44px min height.
+
+Keep “New quote available” badge; clears on visit.
+
+Deliverable: You can see more rows per screen; badges behave.
+
+G) Affiliate team oversight
+Fix
+
+Owner can invite Team Member (email).
+
+Team Member can see all org requests; Owner can reassign cases to a member.
+
+Add “Assignee” column + filter.
+
+Deliverable: Affiliate portal shows org‑wide visibility with assignment controls.
+
+H) Anti‑abuse gates (simulate deposit + admin override)
+Fix
+
+Enforce per‑IP and per‑account thresholds: on 4th no‑booking round in 14 days, show $49 refundable deposit modal (simulated Stripe).
+
+Admin can override gate per user in Security/Abuse panel.
+
+CAPTCHA on anon submits.
+
+Deliverable: Gate triggers; admin override works.
+
+I) Home copy: “where available” language
+Fix
+
+Change line to:
+“Ground ambulance to/from both sides included where available to ensure seamless handoffs.”
+
+Deliverable: Updated home copy displayed.
+
+J) Tests/guards (light)
+Add a sanity check util that recalculates commission math from stored fields and flags mismatches (visible badge in admin).
+
+Add unit tests for: pre‑recoup booking, post‑recoup booking, concierge add‑on, same‑day surcharge, and mixed-week summaries.
+
+Deliverable: Admin can spot math inconsistencies quickly; test stubs green.

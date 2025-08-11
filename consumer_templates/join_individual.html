@@ -1,196 +1,92 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Individual Membership - MediFly{% endblock %}
+{% block title %}Join as Individual - MediFly{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="text-center mb-5">
-                <h1 class="display-5 fw-bold text-primary mb-3">
-                    <i class="fas fa-user-plus me-3"></i>
-                    Individual Membership
-                </h1>
-                <p class="lead text-muted">
-                    Quick self-service signup with flexible membership options
-                </p>
-            </div>
-
-            <!-- Membership Benefits -->
-            <div class="card border-primary mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="card-title mb-0">
-                        <i class="fas fa-star me-2"></i>Membership Benefits
-                    </h4>
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3><i class="fas fa-user me-2"></i>Join as Individual</h3>
+                    <p class="mb-0">Personal medical transport access</p>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <i class="fas fa-check text-success me-2"></i>
-                                    <strong>First booking free</strong> - Try our service risk-free
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check text-success me-2"></i>
-                                    <strong>Priority booking</strong> - Skip the queue for urgent needs
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check text-success me-2"></i>
-                                    <strong>Member pricing</strong> - Exclusive rates on all transports
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <i class="fas fa-check text-success me-2"></i>
-                                    <strong>24/7 support</strong> - Round-the-clock assistance
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check text-success me-2"></i>
-                                    <strong>Digital records</strong> - Secure access to transport history
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check text-success me-2"></i>
-                                    <strong>Family coverage</strong> - Add family members to your account
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pricing Information -->
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                <strong>Pricing:</strong> First booking is free! After that, only $19.99/month (minimum 12 months) 
-                for unlimited access to our network. Cancel anytime after your commitment period.
-            </div>
-
-            <!-- Registration Form -->
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">Sign Up Today</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post" action="{{ url_for('join_individual_submit') }}">
+                    <!-- Phase 12.C: Individual registration form -->
+                    <form method="POST" action="/join_individual" id="individualForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="contactName" class="form-label">Full Name *</label>
-                                <input type="text" class="form-control" id="contactName" name="contact_name" required>
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">Email Address *</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Phone Number *</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="dateOfBirth" name="date_of_birth">
-                                <div class="form-text">Optional, helps us provide age-appropriate care</div>
-                            </div>
-                        </div>
-
                         <div class="mb-3">
-                            <label for="emergencyContact" class="form-label">Emergency Contact</label>
-                            <input type="text" class="form-control" id="emergencyContact" name="emergency_contact" 
-                                   placeholder="Name and phone number">
-                            <div class="form-text">Optional but recommended for emergency situations</div>
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <small class="text-muted">Required for booking confirmations and updates</small>
                         </div>
-
+                        
                         <div class="mb-3">
-                            <label for="medicalConditions" class="form-label">Known Medical Conditions</label>
-                            <textarea class="form-control" id="medicalConditions" name="medical_conditions" rows="3" 
-                                      placeholder="Any chronic conditions, allergies, or special medical needs..."></textarea>
-                            <div class="form-text">This information helps our providers prepare for your transport</div>
+                            <label for="mobile_phone" class="form-label">Mobile Phone *</label>
+                            <input type="tel" class="form-control" id="mobile_phone" name="mobile_phone" required 
+                                   placeholder="(555) 123-4567">
+                            <small class="text-muted">Required for urgent transport communications</small>
                         </div>
-
+                        
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="termsAgreement" required>
-                                <label class="form-check-label" for="termsAgreement">
-                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and 
-                                    <a href="#" target="_blank">Privacy Policy</a> *
-                                </label>
-                            </div>
+                            <label for="password" class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" required minlength="8">
                         </div>
-
+                        
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="marketingConsent">
-                                <label class="form-check-label" for="marketingConsent">
-                                    I would like to receive updates about new services and special offers
-                                </label>
-                            </div>
+                            <label for="confirm_password" class="form-label">Confirm Password *</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
                         </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-user-check me-2"></i>
-                                Create My Account - Free Trial
-                            </button>
+                        
+                        <!-- Phase 12.C: No DOB field for individuals -->
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="marketing_opt_in" name="marketing_opt_in">
+                            <label class="form-check-label" for="marketing_opt_in">
+                                I would like to receive updates about new features and medical transport tips
+                            </label>
                         </div>
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms_accepted" name="terms_accepted" required>
+                            <label class="form-check-label" for="terms_accepted">
+                                I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a> *
+                            </label>
+                        </div>
+                        
+                        <!-- Phase 12.C: Fee structure information -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Pricing Structure</h6>
+                            <ul class="mb-0">
+                                <li><strong>First booking:</strong> Free (standard transport quotes)</li>
+                                <li><strong>Subsequent bookings:</strong> Choose one of:
+                                    <ul>
+                                        <li>$99 one-time lifetime access</li>
+                                        <li>$9.99/month (12-month minimum, 30-day cancellation window)</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-user-plus me-2"></i>Create Individual Account
+                        </button>
                     </form>
                 </div>
-            </div>
-
-            <!-- FAQ Section -->
-            <div class="mt-5">
-                <h4 class="mb-3">Frequently Asked Questions</h4>
-                <div class="accordion" id="faqAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="faq1">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#collapse1">
-                                What happens after my first free booking?
-                            </button>
-                        </h2>
-                        <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                After your first booking, you'll be prompted to subscribe to our membership 
-                                at $19.99/month (minimum 12 months). This gives you unlimited access to our 
-                                network with member pricing and priority booking.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="faq2">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#collapse2">
-                                Can I cancel my membership?
-                            </button>
-                        </h2>
-                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Yes! You can cancel anytime after your 12-month commitment period. 
-                                We'll provide 30 days notice before your next billing cycle.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="faq3">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                    data-bs-target="#collapse3">
-                                Is my medical information secure?
-                            </button>
-                        </h2>
-                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Absolutely. We follow HIPAA guidelines and collect minimal PHI. 
-                                Your medical information is encrypted and only shared with transport 
-                                providers when necessary for your care.
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-footer text-center">
+                    <small class="text-muted">
+                        Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+                    </small>
                 </div>
             </div>
         </div>
@@ -198,30 +94,15 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Form validation
-    const form = document.querySelector('form');
-    const termsCheckbox = document.getElementById('termsAgreement');
+document.getElementById('individualForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
     
-    form.addEventListener('submit', function(e) {
-        if (!termsCheckbox.checked) {
-            e.preventDefault();
-            alert('Please agree to the Terms of Service and Privacy Policy to continue.');
-            termsCheckbox.focus();
-        }
-    });
-    
-    // Phone number formatting
-    const phoneInput = document.getElementById('phone');
-    phoneInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        if (value.length >= 6) {
-            value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6, 10);
-        } else if (value.length >= 3) {
-            value = value.substring(0, 3) + '-' + value.substring(3);
-        }
-        this.value = value;
-    });
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match');
+        return false;
+    }
 });
 </script>
 {% endblock %}
