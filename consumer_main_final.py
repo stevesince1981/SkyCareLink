@@ -1309,8 +1309,41 @@ def consumer_requests():
 
 @consumer_app.route('/portal-views')
 def portal_views():
-    """Portal dashboard views without login requirement"""
-    return render_template('portal_views.html')
+    """Enhanced Portal dashboard with user management and expandable analytics"""
+    user_role = session.get('user_role', 'family')
+    
+    # Demo user data for management interface
+    demo_users = [
+        {
+            'id': 1, 'name': 'Sarah Chen', 'email': 'sarah.chen@airmedpartners.com', 'company': 'AirMed Partners',
+            'role': 'affiliate', 'role_display': 'Affiliate', 'role_color': 'info',
+            'sub_role': 'PowerUser', 'permissions': ['Manage Team', 'View Analytics', 'Edit Profiles'],
+            'is_active': True, 'last_active': '2 hours ago'
+        },
+        {
+            'id': 2, 'name': 'Dr. Michael Rodriguez', 'email': 'mrodriguez@citymedical.org', 'company': 'City Medical Center',
+            'role': 'hospital', 'role_display': 'Hospital', 'role_color': 'success',
+            'sub_role': 'PowerUser', 'permissions': ['Request Transport', 'Manage Staff', 'View Reports'],
+            'is_active': True, 'last_active': '1 hour ago'
+        },
+        {
+            'id': 3, 'name': 'Jennifer Walsh', 'email': 'jennifer@medevacsolutions.com', 'company': 'MedEvac Solutions',
+            'role': 'affiliate', 'role_display': 'Affiliate', 'role_color': 'info',
+            'sub_role': 'TeamUser', 'permissions': ['View Bookings'],
+            'is_active': True, 'last_active': '30 minutes ago'
+        },
+        {
+            'id': 4, 'name': 'Emily Johnson', 'email': 'emily.johnson@gmail.com', 'company': '',
+            'role': 'family', 'role_display': 'Individual', 'role_color': 'primary',
+            'sub_role': 'TeamUser', 'permissions': ['Request Transport'],
+            'is_active': False, 'last_active': '3 days ago'
+        }
+    ]
+    
+    return render_template('portal_views.html', 
+                         user_role=user_role,
+                         users=demo_users,
+                         current_user_name=session.get('username', 'Portal User'))
 
 @consumer_app.route('/admin/delisted')
 def admin_delisted():
@@ -4601,6 +4634,146 @@ def admin_analytics_affiliates():
     ]
     
     return render_template('admin_analytics_affiliates.html', analytics=analytics_data)
+
+
+
+@consumer_app.route('/user-management')
+def user_management():
+    """User Management Interface"""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    # Check if user has permission to manage users
+    user_role = session.get('user_role')
+    if user_role not in ['admin', 'affiliate', 'hospital'] and session.get('user_sub_role') != 'PowerUser':
+        flash('Access denied. PowerUser role required for user management.', 'error')
+        return redirect(url_for('portal_views'))
+    
+    # Demo user data
+    demo_users = [
+        {
+            'id': 1, 'name': 'Sarah Chen', 'email': 'sarah.chen@airmedpartners.com', 'company': 'AirMed Partners',
+            'role': 'affiliate', 'role_display': 'Affiliate', 'role_color': 'info',
+            'sub_role': 'PowerUser', 'permissions': ['Manage Team', 'View Analytics', 'Edit Profiles'],
+            'is_active': True, 'last_active': '2 hours ago'
+        },
+        {
+            'id': 2, 'name': 'Dr. Michael Rodriguez', 'email': 'mrodriguez@citymedical.org', 'company': 'City Medical Center',
+            'role': 'hospital', 'role_display': 'Hospital', 'role_color': 'success',
+            'sub_role': 'PowerUser', 'permissions': ['Request Transport', 'Manage Staff', 'View Reports'],
+            'is_active': True, 'last_active': '1 hour ago'
+        },
+        {
+            'id': 3, 'name': 'Jennifer Walsh', 'email': 'jennifer@medevacsolutions.com', 'company': 'MedEvac Solutions',
+            'role': 'affiliate', 'role_display': 'Affiliate', 'role_color': 'info',
+            'sub_role': 'TeamUser', 'permissions': ['View Bookings'],
+            'is_active': True, 'last_active': '30 minutes ago'
+        },
+        {
+            'id': 4, 'name': 'Emily Johnson', 'email': 'emily.johnson@gmail.com', 'company': '',
+            'role': 'family', 'role_display': 'Individual', 'role_color': 'primary',
+            'sub_role': 'TeamUser', 'permissions': ['Request Transport'],
+            'is_active': False, 'last_active': '3 days ago'
+        }
+    ]
+    
+    return render_template('user_management.html', users=demo_users)
+
+# User Management API Routes
+@consumer_app.route('/api/users/update-subrole', methods=['POST'])
+def api_update_user_subrole():
+    """Update user sub-role (PowerUser/TeamUser)"""
+    if not session.get('logged_in'):
+        return jsonify({'success': False, 'error': 'Authentication required'})
+    
+    # Check permissions
+    user_role = session.get('user_role')
+    if user_role not in ['admin'] and session.get('user_sub_role') != 'PowerUser':
+        return jsonify({'success': False, 'error': 'Insufficient permissions'})
+    
+    try:
+        data = request.get_json()
+        user_id = data['user_id']
+        new_sub_role = data['sub_role']
+        
+        # In production, update database
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                user = User.query.get(user_id)
+                if user:
+                    user.sub_role = new_sub_role
+                    db.session.commit()
+        
+        return jsonify({'success': True, 'message': f'User sub-role updated to {new_sub_role}'})
+    
+    except Exception as e:
+        logging.error(f"Error updating user sub-role: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@consumer_app.route('/api/users/update-status', methods=['POST'])
+def api_update_user_status():
+    """Activate/Deactivate user"""
+    if not session.get('logged_in'):
+        return jsonify({'success': False, 'error': 'Authentication required'})
+    
+    # Check permissions
+    user_role = session.get('user_role')
+    if user_role not in ['admin'] and session.get('user_sub_role') != 'PowerUser':
+        return jsonify({'success': False, 'error': 'Insufficient permissions'})
+    
+    try:
+        data = request.get_json()
+        user_id = data['user_id']
+        is_active = data['is_active']
+        
+        # In production, update database
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                user = User.query.get(user_id)
+                if user:
+                    user.is_active = is_active
+                    db.session.commit()
+        
+        return jsonify({'success': True, 'message': f'User {"activated" if is_active else "deactivated"} successfully'})
+    
+    except Exception as e:
+        logging.error(f"Error updating user status: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@consumer_app.route('/api/users/create', methods=['POST'])
+def api_create_user():
+    """Create new user"""
+    if not session.get('logged_in'):
+        return jsonify({'success': False, 'error': 'Authentication required'})
+    
+    # Check permissions
+    user_role = session.get('user_role')
+    if user_role not in ['admin'] and session.get('user_sub_role') != 'PowerUser':
+        return jsonify({'success': False, 'error': 'Insufficient permissions'})
+    
+    try:
+        data = request.get_json()
+        
+        # In production, create user in database
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                new_user = User(
+                    username=data['email'],
+                    email=data['email'],
+                    role=data['role'],
+                    sub_role=data['sub_role'],
+                    contact_name=data['name'],
+                    phone_number=data.get('phone', ''),
+                    is_active=True
+                )
+                db.session.add(new_user)
+                db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'User created successfully'})
+    
+    except Exception as e:
+        logging.error(f"Error creating user: {e}")
+        return jsonify({'success': False, 'error': str(e)})
 
 # 5) Phase 12.A: Brand-new Canonical Intake Route + Submission
 @consumer_app.route('/intake')

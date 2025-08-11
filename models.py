@@ -16,6 +16,8 @@ class User(db.Model):
     email = Column(String(120), unique=True, nullable=False)
     password_hash = Column(String(256))
     role = Column(String(20), nullable=False, default='family')  # family, hospital, provider, affiliate, admin, mvp
+    sub_role = Column(String(20), default='TeamUser')  # PowerUser, TeamUser
+    permissions = Column(JSON, default=lambda: {})  # Detailed permissions
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     is_active = Column(Boolean, default=True)
     
@@ -48,6 +50,8 @@ class Affiliate(db.Model):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     company_name = Column(String(200), nullable=False)
     contact_email = Column(String(120), nullable=False)
+    phone_number = Column(String(20))
+    contact_name = Column(String(100))
     recouped_amount_usd = Column(Float, default=0.0)
     commission_percent_default = Column(Float, default=0.05)  # 3-7% range, adjustable by admin
     total_bookings = Column(Integer, default=0)

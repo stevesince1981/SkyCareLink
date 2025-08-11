@@ -6,7 +6,7 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 12.C Comprehensive Updates Complete - Aug 11, 2025)
+## Recent Changes (Phase 12.E User Management & Portal Enhancement Complete - Aug 11, 2025)
 - **MVP Membership Removal**: Completely eliminated all MVP membership references from intake forms, service selection, and throughout the application
 - **Intake Form Enhancements**: Fixed 415 error for form submissions, updated severity levels to "Level 1-3" format, equal-sized boxes (180px height, centered)
 - **Hospital Autofill System**: Implemented comprehensive hospital/clinic database with 30+ major medical centers, real-time search with debouncing for From/To locations
@@ -17,6 +17,10 @@ Preferred communication style: Simple, everyday language.
 - **Technical Improvements**: Enhanced JSON/form data handling, hospital search API endpoint, modal integration for legal documents
 - **State Management**: Dual storage (session + localStorage), form restoration after login flow, enhanced auto-save on all input changes
 - **Provider Masking Logic**: Identity remains hidden until affiliate payment confirmation, booking code generation with preview display
+- **User Management System**: Comprehensive role-based permissions for Affiliate, Hospital, Individual, and Admin accounts with PowerUser/TeamUser hierarchy
+- **Portal Enhancement**: Expandable analytics cards with +/- controls, date-based filtering (day/week/month/year/custom), search capabilities, and revenue tracking
+- **Team Management**: Owner/member permission system with promotion/demotion capabilities between PowerUser and TeamUser roles
+- **Anti-Abuse System**: Enhanced deposit modal with admin override functionality and fair-use policy enforcement
 
 ## System Architecture
 
@@ -29,7 +33,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Technical Implementations
 - **Web Framework**: Flask with session-based state management.
-- **Authentication**: Simplified session-based, role-based authentication (Family, Hospital, Provider, MVP, Admin) with role-specific dashboards. Demo login credentials provided.
+- **Authentication**: Comprehensive role-based authentication (Family, Hospital, Provider, Affiliate, Admin) with PowerUser/TeamUser sub-role hierarchy, role-specific dashboards, and team management capabilities. Demo login credentials provided.
 - **Data Handling**: Hybrid approach combining session-based temporary storage for demo flows with PostgreSQL database for persistent data (users, bookings, commissions, analytics).
 - **Search**: Hybrid provider search system incorporating internal cache, Google Places integration stub, and manual fallback.
 - **Commission System**: JSON-based ledger for booking commission tracking (4%/5% tiers), affiliate recoup tracking, and weekly invoice generation (CSV/HTML export).
