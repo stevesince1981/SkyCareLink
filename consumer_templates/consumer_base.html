@@ -372,11 +372,45 @@
         aiState.conversationStarted = true;
         const message = "Hello! I'm your MediFly transport assistant. I'm here to guide you through our medical air transport services with personalized information based on your needs.\n\nTo provide the most relevant assistance, could you please tell me which category best describes you?\n\n• Individual/Family Member - Seeking transport for a loved one\n• Hospital/Clinic - Medical facility needing transport coordination\n• Affiliate Provider - Transport company interested in partnership\n\nPlease select your category to continue.";
         
-        showAIResponse(message, [
-            'Individual/Family Member',
-            'Hospital/Clinic', 
-            'Affiliate Provider'
-        ]);
+        // Create uniform sized buttons for user types
+        const panel = document.getElementById('aiChatPanel');
+        if (panel.style.display === 'none' || panel.style.display === '') {
+            panel.style.display = 'block';
+        }
+        
+        let chatArea = document.getElementById('aiChatArea');
+        if (!chatArea) {
+            chatArea = document.createElement('div');
+            chatArea.id = 'aiChatArea';
+            chatArea.style.cssText = 'max-height: 400px; overflow-y: auto; padding: 12px; background: white; border-radius: 8px; margin-bottom: 12px; border: 1px solid #ddd;';
+            const aiBody = panel.querySelector('.ai-body');
+            if (aiBody) {
+                aiBody.insertBefore(chatArea, aiBody.firstChild);
+            }
+        }
+        
+        chatArea.innerHTML = '';
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'ai-message';
+        messageDiv.style.cssText = 'background: #f8f9fa; padding: 8px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #007bff;';
+        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 4px; font-size: 0.8rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.3; white-space: pre-line; font-size: 0.75rem;">${message}</div>`;
+        chatArea.appendChild(messageDiv);
+        
+        const optionsDiv = document.createElement('div');
+        optionsDiv.style.cssText = 'margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;';
+        
+        ['Individual/Family Member', 'Hospital/Clinic', 'Affiliate Provider'].forEach(option => {
+            const button = document.createElement('button');
+            button.className = 'btn btn-outline-primary';
+            button.style.cssText = 'font-size: 0.7rem; padding: 8px 4px; height: 45px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+            button.textContent = option;
+            button.onclick = () => handleAIResponse(option);
+            optionsDiv.appendChild(button);
+        });
+        
+        chatArea.appendChild(optionsDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
     }
 
     function handleAIResponse(command) {
@@ -529,27 +563,33 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             }
         }
         
-        // Add response message
+        // Add response message with smaller text
         const messageDiv = document.createElement('div');
-        messageDiv.style.cssText = 'background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #007bff;';
-        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 8px;">MediFly Assistant</div><div style="line-height: 1.5; white-space: pre-line;">${message || 'No message provided'}</div>`;
+        messageDiv.className = 'ai-message';
+        messageDiv.style.cssText = 'background: #f8f9fa; padding: 8px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #007bff;';
+        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 4px; font-size: 0.8rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.3; white-space: pre-line; font-size: 0.75rem;">${message || 'No message provided'}</div>`;
         
         chatArea.appendChild(messageDiv);
         
         // Add option buttons if provided
         if (options.length > 0) {
             const optionsDiv = document.createElement('div');
-            optionsDiv.style.cssText = 'margin-top: 15px; margin-bottom: 10px;';
+            optionsDiv.style.cssText = 'margin-top: 10px; margin-bottom: 8px;';
             
             options.forEach(option => {
                 const button = document.createElement('button');
-                button.className = 'btn btn-outline-primary btn-sm me-2 mb-2';
+                button.className = 'btn btn-outline-primary me-2 mb-2';
+                button.style.cssText = 'font-size: 0.7rem; padding: 4px 8px; min-height: 28px; min-width: 120px;';
                 button.textContent = option;
                 button.onclick = () => {
                     if (option === 'Start Over') {
                         aiState = { userType: null, conversationStarted: false };
                         startAIConversation();
                     } else {
+                        // Show selected question first, then response
+                        if (aiState.userType && !['Start Over'].includes(option)) {
+                            showSelectedQuestion(option);
+                        }
                         handleAIResponse(option);
                     }
                 };
@@ -559,16 +599,57 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             chatArea.appendChild(optionsDiv);
         }
         
-        // Add floating "Start Over" button for easy access
+        // Add floating controls for text size and navigation
         if (isNewSection && aiState.userType) {
-            const floatingStartOver = document.createElement('div');
-            floatingStartOver.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 10px 0; border-top: 1px solid #eee; margin-top: 10px; text-align: center;';
-            floatingStartOver.innerHTML = '<button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();"><i class="fas fa-redo me-1"></i>Start Over</button>';
-            chatArea.appendChild(floatingStartOver);
+            const floatingControls = document.createElement('div');
+            floatingControls.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 8px 0; border-top: 1px solid #eee; margin-top: 8px; text-align: center; display: flex; justify-content: space-between; align-items: center;';
+            floatingControls.innerHTML = `
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
+                    <button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-redo me-1"></i>Start Over</button>
+                </div>
+                <div>
+                    <button class="btn btn-outline-dark btn-sm me-1" onclick="adjustTextSize(-0.05)" style="font-size: 0.6rem; padding: 2px 4px;">A-</button>
+                    <button class="btn btn-outline-dark btn-sm" onclick="adjustTextSize(0.05)" style="font-size: 0.6rem; padding: 2px 4px;">A+</button>
+                </div>
+            `;
+            chatArea.appendChild(floatingControls);
         }
         
         // Scroll to bottom
         chatArea.scrollTop = chatArea.scrollHeight;
+    }
+    
+    // Text size adjustment function
+    function adjustTextSize(increment) {
+        const messages = document.querySelectorAll('.ai-message-text');
+        messages.forEach(msg => {
+            const currentSize = parseFloat(window.getComputedStyle(msg).fontSize);
+            const newSize = Math.max(0.6, Math.min(1.2, currentSize + increment));
+            msg.style.fontSize = newSize + 'rem';
+        });
+    }
+    
+    // Go back function
+    function goBackInConversation() {
+        if (aiState.userType) {
+            // Go back to user type questions
+            showUserTypeQuestions(aiState.userType);
+        } else {
+            // Go back to start
+            startAIConversation();
+        }
+    }
+    
+    // Show selected question function
+    function showSelectedQuestion(question) {
+        const chatArea = document.getElementById('aiChatArea');
+        if (chatArea) {
+            const questionDiv = document.createElement('div');
+            questionDiv.style.cssText = 'background: #e3f2fd; padding: 6px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid #2196f3;';
+            questionDiv.innerHTML = `<div style="color: #1976d2; font-weight: bold; font-size: 0.7rem;">${question}</div>`;
+            chatArea.appendChild(questionDiv);
+        }
     }
     
     // Live countdown updates for announcement banners
