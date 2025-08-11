@@ -396,9 +396,13 @@
         console.log("AI Debug - Command:", command);
         console.log("AI Debug - Response Found:", response ? "YES" : "NO");
         
-        if (response) {
+        if (response && response !== "conversation_restart") {
             showAIResponse(response, getQuestionsForUserType(aiState.userType));
+        } else if (response === "conversation_restart") {
+            aiState = { userType: null, conversationStarted: false };
+            startAIConversation();
         } else {
+            console.log("AI Debug - No response found, showing fallback");
             showAIResponse('I can help with any questions about MediFly transport services. Please select from the options below:', getQuestionsForUserType(aiState.userType));
         }
     }
@@ -493,8 +497,12 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
     }
 
     function showAIResponse(message, options = []) {
+        console.log("AI Debug - showAIResponse called with message:", message ? "YES" : "NO");
+        console.log("AI Debug - Message length:", message ? message.length : 0);
+        console.log("AI Debug - Options count:", options.length);
+        
         const panel = document.getElementById('aiChatPanel');
-        if (panel.style.display === 'none') {
+        if (panel.style.display === 'none' || panel.style.display === '') {
             panel.style.display = 'block';
         }
         
@@ -504,13 +512,16 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             chatArea = document.createElement('div');
             chatArea.id = 'aiChatArea';
             chatArea.style.cssText = 'max-height: 400px; overflow-y: auto; padding: 15px; background: white; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;';
-            panel.querySelector('.ai-body').insertBefore(chatArea, panel.querySelector('.ai-body').firstChild);
+            const aiBody = panel.querySelector('.ai-body');
+            if (aiBody) {
+                aiBody.insertBefore(chatArea, aiBody.firstChild);
+            }
         }
         
         // Add response message
         const messageDiv = document.createElement('div');
         messageDiv.style.cssText = 'background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #007bff;';
-        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 8px;">MediFly Assistant</div><div style="line-height: 1.5; white-space: pre-line;">${message}</div>`;
+        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 8px;">MediFly Assistant</div><div style="line-height: 1.5; white-space: pre-line;">${message || 'No message provided'}</div>`;
         
         // Clear previous content and add new message
         chatArea.innerHTML = '';

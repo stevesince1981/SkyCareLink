@@ -188,7 +188,10 @@
                     
                     <div class="request-detail">
                         <strong>Patient:</strong><br>
-                        {{ request.patient_name }} ({{ request.patient_age_band.replace('_', '-') }})
+                        {{ request.patient_name }}
+                        {% if request.patient_age_band %}
+                            ({{ request.patient_age_band.replace('_', '-') }})
+                        {% endif %}
                     </div>
                     
                     {% if request.equipment %}
