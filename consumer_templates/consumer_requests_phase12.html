@@ -21,99 +21,81 @@
                 </div>
             </div>
 
-            <!-- Phase 12.A: Compact, tighter rows table -->
-            <div class="card">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0 requests-table" style="font-size: 0.85rem;">
-                            <thead class="table-dark">
-                                <tr style="height: 2rem;">
-                                    <th style="padding: 0.3rem 0.5rem; width: 12%;">Request ID</th>
-                                    <th style="padding: 0.3rem 0.5rem; width: 25%;">Route</th>
-                                    <th style="padding: 0.3rem 0.5rem; width: 15%;">Patient</th>
-                                    <th style="padding: 0.3rem 0.5rem; width: 12%;">Type/Level</th>
-                                    <th style="padding: 0.3rem 0.5rem; width: 10%;">Status</th>
-                                    <th style="padding: 0.3rem 0.5rem; width: 8%;">Quotes</th>
-                                    <th style="padding: 0.3rem 0.5rem; width: 10%;">Created</th>
-                                    <th style="padding: 0.3rem 0.5rem; width: 8%;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for req in requests %}
-                                <tr class="{{ 'table-warning' if req.status == 'pending_quotes' else '' }}" style="height: 2.5rem;">
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        <span class="fw-bold text-monospace" style="font-size: 0.75rem;">{{ req.request_id[:8] }}</span>
-                                        {% if req.has_new_quotes %}
-                                        <br><span class="badge bg-success pulse-animation" style="font-size: 0.6rem;">New</span>
-                                        {% endif %}
-                                    </td>
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        <div style="line-height: 1.1;">
-                                            <div style="font-size: 0.75rem; font-weight: 500;">{{ req.from_facility[:20] }}</div>
-                                            <div style="font-size: 0.75rem; color: #6c757d;">→ {{ req.to_facility[:20] }}</div>
-                                        </div>
-                                    </td>
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        <div style="line-height: 1.1;">
-                                            <div style="font-size: 0.75rem; font-weight: 500;">{{ req.patient_name[:15] }}</div>
-                                            {% if req.patient_age_band %}
-                                            <small class="text-muted" style="font-size: 0.7rem;">{{ req.patient_age_band.replace('_', '-') }}</small>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        <div style="line-height: 1.1;">
-                                            <span class="badge bg-{{ 'danger' if req.transport_type == 'critical' else 'primary' }}" style="font-size: 0.6rem;">
-                                                {{ req.transport_type[:4].title() }}
-                                            </span>
-                                            <br><small class="text-muted" style="font-size: 0.7rem;">L{{ req.severity_level }}</small>
-                                        </div>
-                                    </td>
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        <div style="line-height: 1.1;">
-                                            <span class="badge bg-{{ req.status_color }}" style="font-size: 0.6rem;">
-                                                {{ req.status_label[:8] }}
-                                            </span>
-                                            {% if req.status == 'pending_quotes' %}
-                                            <br><small class="text-muted" style="font-size: 0.65rem;">
-                                                <i class="fas fa-clock"></i> {{ req.elapsed_time }}
-                                            </small>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        <div style="line-height: 1.1; text-align: center;">
-                                            <span class="fw-bold" style="font-size: 0.8rem;">{{ req.quote_count }}</span>
-                                            {% if req.quote_count > 0 %}
-                                            <br><small class="text-muted" style="font-size: 0.65rem;">
-                                                ${{ "{:,}".format(req.min_price//1000) }}k-{{ "{:,}".format(req.max_price//1000) }}k
-                                            </small>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        <div style="line-height: 1.1;">
-                                            <div style="font-size: 0.7rem;">{{ req.created_date }}</div>
-                                            <small class="text-muted" style="font-size: 0.65rem;">{{ req.created_time }}</small>
-                                        </div>
-                                    </td>
-                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
-                                        {% if req.quote_count > 0 %}
-                                        <a href="/quotes/{{ req.request_id }}" class="btn btn-sm btn-primary" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        {% else %}
-                                        <button class="btn btn-sm btn-outline-secondary" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;" disabled>
-                                            <i class="fas fa-clock"></i>
-                                        </button>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+            <!-- Card-based layout matching user screenshot -->
+            <div class="requests-container">
+                {% for req in requests %}
+                <div class="request-card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="route-info">
+                            <i class="fas fa-plane text-info me-2"></i>
+                            <strong>{{ req.from_facility }} → {{ req.to_facility }}</strong>
+                        </div>
+                        <div class="status-badge">
+                            <span class="badge bg-{{ req.status_color }}">{{ req.status_label }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-3">
+                        <div class="request-details-row">
+                            <div class="detail-col">
+                                <div class="detail-header">Patient Name</div>
+                                <div class="detail-value">{{ req.patient_name }}</div>
+                            </div>
+                            <div class="detail-col">
+                                <div class="detail-header">Transport Type</div>
+                                <div class="detail-value">{{ req.transport_type.title() }}</div>
+                            </div>
+                            <div class="detail-col">
+                                <div class="detail-header">Total Cost</div>
+                                <div class="detail-value text-success">
+                                    {% if req.quote_count > 0 %}
+                                    ${{ "{:,}".format(req.max_price) }}
+                                    {% else %}
+                                    Pending
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="detail-col">
+                                <div class="detail-header">Selected Provider</div>
+                                <div class="detail-value">
+                                    {% if req.status == 'completed' %}
+                                    Provider {{ req.patient_name[0] }}****
+                                    {% else %}
+                                    Not Selected
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions mt-3 d-flex justify-content-between">
+                            <div class="action-status">
+                                {% if req.status == 'completed' %}
+                                <span class="text-success"><i class="fas fa-check-circle me-1"></i>Transport Completed</span>
+                                {% elif req.quote_count > 0 %}
+                                <span class="text-info"><i class="fas fa-clock me-1"></i>{{ req.quote_count }} quotes available</span>
+                                {% else %}
+                                <span class="text-muted"><i class="fas fa-hourglass-half me-1"></i>Awaiting quotes</span>
+                                {% endif %}
+                            </div>
+                            <div class="action-buttons">
+                                {% if req.status == 'completed' %}
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-receipt me-1"></i>View Receipt
+                                </button>
+                                {% elif req.quote_count > 0 %}
+                                <a href="/quotes/{{ req.request_id }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View Quotes
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer text-muted small">
+                        {{ req.status_label }} {{ req.elapsed_time }}
                     </div>
                 </div>
+                {% endfor %}
             </div>
 
             <!-- Empty state -->
@@ -164,45 +146,82 @@
 </div>
 
 <style>
-/* Phase 12.B Fix: Excel-style compact rows */
-.requests-table {
-    font-size: 0.85rem;
+/* Card-based layout matching user screenshot */
+.requests-container {
+    max-width: 100%;
 }
 
-.requests-table td {
-    padding: 0.4rem 0.5rem; /* Much tighter like Excel */
-    vertical-align: middle;
-    border-bottom: 1px solid #f0f0f0;
-    line-height: 1.2;
+.request-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s ease;
 }
 
-.requests-table th {
-    padding: 0.6rem 0.5rem;
-    font-weight: 600;
+.request-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.request-card .card-header {
     background: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-    font-size: 0.8rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 12px 16px;
+    border-radius: 8px 8px 0 0;
+}
+
+.request-card .card-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    padding: 8px 16px;
+    border-radius: 0 0 8px 8px;
+}
+
+.route-info {
+    font-size: 1rem;
+    color: #4a90e2;
+}
+
+.request-details-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.detail-col {
+    text-align: center;
+}
+
+.detail-header {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.requests-table tbody tr:hover {
-    background-color: #f8f9fa;
-    transition: background-color 0.2s ease;
+.detail-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
 }
 
-.route-info {
-    min-width: 120px;
-    font-size: 0.8rem;
+.card-actions {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
+    margin-top: 16px;
 }
 
-.route-info small {
-    line-height: 1.2;
+.action-status {
+    display: flex;
+    align-items: center;
 }
 
-.severity-indicator {
-    font-size: 0.75rem;
-    margin-top: 2px;
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
 }
 
 .status-badge {
