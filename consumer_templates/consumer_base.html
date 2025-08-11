@@ -431,12 +431,9 @@
         console.log("AI Debug - Response Found:", response ? "YES" : "NO");
         
         if (response && response !== "conversation_restart") {
-            // Clear chat area and show focused response
-            const chatArea = document.getElementById('aiChatArea');
-            if (chatArea) {
-                chatArea.innerHTML = '';
-            }
-            showAIResponse(response, getQuestionsForUserType(aiState.userType), true);
+            // Show question first, then response below
+            showSelectedQuestion(command);
+            showAIResponse(response, [], true);
         } else if (response === "conversation_restart") {
             aiState = { userType: null, conversationStarted: false };
             startAIConversation();
@@ -586,10 +583,6 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
                         aiState = { userType: null, conversationStarted: false };
                         startAIConversation();
                     } else {
-                        // Show selected question first, then response
-                        if (aiState.userType && !['Start Over'].includes(option)) {
-                            showSelectedQuestion(option);
-                        }
                         handleAIResponse(option);
                     }
                 };
@@ -599,19 +592,13 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             chatArea.appendChild(optionsDiv);
         }
         
-        // Add floating controls for text size and navigation
+        // Add floating navigation controls (removed text size controls)
         if (isNewSection && aiState.userType) {
             const floatingControls = document.createElement('div');
-            floatingControls.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 8px 0; border-top: 1px solid #eee; margin-top: 8px; text-align: center; display: flex; justify-content: space-between; align-items: center;';
+            floatingControls.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 8px 0; border-top: 1px solid #eee; margin-top: 8px; text-align: center;';
             floatingControls.innerHTML = `
-                <div>
-                    <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
-                    <button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-redo me-1"></i>Start Over</button>
-                </div>
-                <div>
-                    <button class="btn btn-outline-dark btn-sm me-1" onclick="adjustTextSize(-0.05)" style="font-size: 0.6rem; padding: 2px 4px;">A-</button>
-                    <button class="btn btn-outline-dark btn-sm" onclick="adjustTextSize(0.05)" style="font-size: 0.6rem; padding: 2px 4px;">A+</button>
-                </div>
+                <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
+                <button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-redo me-1"></i>Start Over</button>
             `;
             chatArea.appendChild(floatingControls);
         }
@@ -620,25 +607,12 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         chatArea.scrollTop = chatArea.scrollHeight;
     }
     
-    // Text size adjustment function
-    function adjustTextSize(increment) {
-        const messages = document.querySelectorAll('.ai-message-text');
-        messages.forEach(msg => {
-            const currentSize = parseFloat(window.getComputedStyle(msg).fontSize);
-            const newSize = Math.max(0.6, Math.min(1.2, currentSize + increment));
-            msg.style.fontSize = newSize + 'rem';
-        });
-    }
+
     
-    // Go back function
+    // Go back function - always go back to initial screen
     function goBackInConversation() {
-        if (aiState.userType) {
-            // Go back to user type questions
-            showUserTypeQuestions(aiState.userType);
-        } else {
-            // Go back to start
-            startAIConversation();
-        }
+        aiState = { userType: null, conversationStarted: false };
+        startAIConversation();
     }
     
     // Show selected question function
