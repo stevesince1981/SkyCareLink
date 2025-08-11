@@ -25,102 +25,88 @@
             <div class="card">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0 requests-table" style="font-size: 0.9rem;">
-                            <thead class="table-light">
-                                <tr style="height: 2.5rem;">
-                                    <th style="padding: 0.4rem 0.8rem;">Request ID</th>
-                                    <th style="padding: 0.4rem 0.8rem;">Route</th>
-                                    <th style="padding: 0.4rem 0.8rem;">Patient</th>
-                                    <th style="padding: 0.4rem 0.8rem;">Type</th>
-                                    <th style="padding: 0.4rem 0.8rem;">Status</th>
-                                    <th style="padding: 0.4rem 0.8rem;">Quotes</th>
-                                    <th style="padding: 0.4rem 0.8rem;">Created</th>
-                                    <th style="padding: 0.4rem 0.8rem;">Actions</th>
+                        <table class="table table-sm table-hover mb-0 requests-table" style="font-size: 0.85rem;">
+                            <thead class="table-dark">
+                                <tr style="height: 2rem;">
+                                    <th style="padding: 0.3rem 0.5rem; width: 12%;">Request ID</th>
+                                    <th style="padding: 0.3rem 0.5rem; width: 25%;">Route</th>
+                                    <th style="padding: 0.3rem 0.5rem; width: 15%;">Patient</th>
+                                    <th style="padding: 0.3rem 0.5rem; width: 12%;">Type/Level</th>
+                                    <th style="padding: 0.3rem 0.5rem; width: 10%;">Status</th>
+                                    <th style="padding: 0.3rem 0.5rem; width: 8%;">Quotes</th>
+                                    <th style="padding: 0.3rem 0.5rem; width: 10%;">Created</th>
+                                    <th style="padding: 0.3rem 0.5rem; width: 8%;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for req in requests %}
-                                <tr class="{{ 'table-warning' if req.status == 'pending_quotes' else '' }}" style="height: 3rem;">
-                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
-                                        <span class="fw-bold text-monospace" style="font-size: 0.85rem;">{{ req.request_id }}</span>
+                                <tr class="{{ 'table-warning' if req.status == 'pending_quotes' else '' }}" style="height: 2.5rem;">
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        <span class="fw-bold text-monospace" style="font-size: 0.75rem;">{{ req.request_id[:8] }}</span>
                                         {% if req.has_new_quotes %}
-                                        <span class="badge bg-success ms-1 pulse-animation" style="font-size: 0.7rem;">New Quote</span>
+                                        <br><span class="badge bg-success pulse-animation" style="font-size: 0.6rem;">New</span>
                                         {% endif %}
                                     </td>
-                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
-                                        <div style="line-height: 1.2;">
-                                            <div style="font-size: 0.8rem;">{{ req.from_facility }}</div>
-                                            <div style="font-size: 0.8rem; color: #6c757d;">→ {{ req.to_facility }}</div>
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        <div style="line-height: 1.1;">
+                                            <div style="font-size: 0.75rem; font-weight: 500;">{{ req.from_facility[:20] }}</div>
+                                            <div style="font-size: 0.75rem; color: #6c757d;">→ {{ req.to_facility[:20] }}</div>
                                         </div>
                                     </td>
-                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
-                                        <div style="line-height: 1.2;">
-                                            <div style="font-size: 0.85rem;">{{ req.patient_name }}</div>
-                                            <small class="text-muted">{{ req.patient_age_band.replace('_', '-') }}</small>
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        <div style="line-height: 1.1;">
+                                            <div style="font-size: 0.75rem; font-weight: 500;">{{ req.patient_name[:15] }}</div>
+                                            {% if req.patient_age_band %}
+                                            <small class="text-muted" style="font-size: 0.7rem;">{{ req.patient_age_band.replace('_', '-') }}</small>
+                                            {% endif %}
                                         </div>
                                     </td>
-                                    <td style="padding: 0.4rem 0.8rem; vertical-align: middle;">
-                                        <span class="badge bg-{{ 'danger' if req.transport_type == 'critical' else 'primary' }}" style="font-size: 0.7rem;">
-                                            {{ req.transport_type.title() }}
-                                        </span>
-                                        <div><small class="text-muted">Level {{ req.severity_level }}</small></div>
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        <div style="line-height: 1.1;">
+                                            <span class="badge bg-{{ 'danger' if req.transport_type == 'critical' else 'primary' }}" style="font-size: 0.6rem;">
+                                                {{ req.transport_type[:4].title() }}
+                                            </span>
+                                            <br><small class="text-muted" style="font-size: 0.7rem;">L{{ req.severity_level }}</small>
+                                        </div>
                                     </td>
-                                    <td>
-                                        <span class="status-badge badge bg-{{ req.status_color }}">
-                                            {{ req.status_label }}
-                                        </span>
-                                        {% if req.status == 'pending_quotes' %}
-                                        <div class="elapsed-timer" data-created="{{ req.timestamp }}">
-                                            <small class="text-muted">
-                                                <i class="fas fa-clock me-1"></i>
-                                                <span class="timer-text">{{ req.elapsed_time }}</span>
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        <div style="line-height: 1.1;">
+                                            <span class="badge bg-{{ req.status_color }}" style="font-size: 0.6rem;">
+                                                {{ req.status_label[:8] }}
+                                            </span>
+                                            {% if req.status == 'pending_quotes' %}
+                                            <br><small class="text-muted" style="font-size: 0.65rem;">
+                                                <i class="fas fa-clock"></i> {{ req.elapsed_time }}
                                             </small>
+                                            {% endif %}
                                         </div>
+                                    </td>
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        <div style="line-height: 1.1; text-align: center;">
+                                            <span class="fw-bold" style="font-size: 0.8rem;">{{ req.quote_count }}</span>
+                                            {% if req.quote_count > 0 %}
+                                            <br><small class="text-muted" style="font-size: 0.65rem;">
+                                                ${{ "{:,}".format(req.min_price//1000) }}k-{{ "{:,}".format(req.max_price//1000) }}k
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        <div style="line-height: 1.1;">
+                                            <div style="font-size: 0.7rem;">{{ req.created_date }}</div>
+                                            <small class="text-muted" style="font-size: 0.65rem;">{{ req.created_time }}</small>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 0.3rem 0.5rem; vertical-align: middle;">
+                                        {% if req.quote_count > 0 %}
+                                        <a href="/quotes/{{ req.request_id }}" class="btn btn-sm btn-primary" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% else %}
+                                        <button class="btn btn-sm btn-outline-secondary" style="font-size: 0.7rem; padding: 0.2rem 0.4rem;" disabled>
+                                            <i class="fas fa-clock"></i>
+                                        </button>
                                         {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="quote-count">
-                                            <span class="fw-bold">{{ req.quote_count }}</span> quotes
-                                            {% if req.quote_count > 0 %}
-                                            <div class="price-range">
-                                                <small class="text-muted">${{ "{:,}".format(req.min_price) }} - ${{ "{:,}".format(req.max_price) }}</small>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="created-info">
-                                            <div>{{ req.created_date }}</div>
-                                            <small class="text-muted">{{ req.created_time }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group-sm" role="group">
-                                            {% if req.quote_count > 0 %}
-                                            <a href="/quotes/{{ req.request_id }}" class="btn btn-sm btn-primary">
-                                                <i class="fas fa-eye me-1"></i>View
-                                            </a>
-                                            {% else %}
-                                            <button class="btn btn-sm btn-outline-secondary" disabled>
-                                                <i class="fas fa-clock me-1"></i>Waiting
-                                            </button>
-                                            {% endif %}
-                                            
-                                            <div class="dropdown d-inline">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                                    <i class="fas fa-ellipsis-h"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li><a class="dropdown-item" href="/requests/{{ req.request_id }}/details">
-                                                        <i class="fas fa-info me-2"></i>Details</a></li>
-                                                    <li><a class="dropdown-item" href="/requests/{{ req.request_id }}/edit">
-                                                        <i class="fas fa-edit me-2"></i>Edit</a></li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item text-danger" href="#" onclick="cancelRequest('{{ req.request_id }}')">
-                                                        <i class="fas fa-times me-2"></i>Cancel</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
