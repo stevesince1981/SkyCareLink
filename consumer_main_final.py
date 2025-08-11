@@ -4852,6 +4852,52 @@ def consumer_requests_phase12():
     # Get user's transport requests
     user_requests = session.get('transport_requests', {})
     
+    # Phase 12.C: Add sample data for demo purposes if no requests exist
+    if not user_requests:
+        from datetime import datetime, timedelta
+        import random
+        
+        sample_requests = {
+            'req_001': {
+                'request_id': 'req_001',
+                'timestamp': (datetime.now() - timedelta(hours=2)).isoformat(),
+                'transport_type': 'critical',
+                'severity_level': 3,
+                'from_facility': 'Johns Hopkins Hospital',
+                'to_facility': 'Mayo Clinic Rochester',
+                'patient_name': 'John Smith',
+                'patient_age_band': '45-64',
+                'status': 'pending_quotes',
+                'equipment': ['ventilator', 'cardiac_monitor']
+            },
+            'req_002': {
+                'request_id': 'req_002', 
+                'timestamp': (datetime.now() - timedelta(hours=6)).isoformat(),
+                'transport_type': 'scheduled',
+                'severity_level': 2,
+                'from_facility': 'Cleveland Clinic',
+                'to_facility': 'UCSF Medical Center',
+                'patient_name': 'Sarah Johnson',
+                'patient_age_band': '25-44',
+                'status': 'quotes_received',
+                'equipment': ['iv_pumps']
+            },
+            'req_003': {
+                'request_id': 'req_003',
+                'timestamp': (datetime.now() - timedelta(days=1)).isoformat(),
+                'transport_type': 'critical',
+                'severity_level': 1,
+                'from_facility': 'Mass General Hospital',
+                'to_facility': 'UCLA Medical Center',
+                'patient_name': 'Robert Davis',
+                'patient_age_band': '65+',
+                'status': 'completed',
+                'equipment': ['transport_incubator']
+            }
+        }
+        user_requests = sample_requests
+        session['transport_requests'] = user_requests
+    
     requests_list = []
     for request_id, req_data in user_requests.items():
         # Calculate elapsed time
