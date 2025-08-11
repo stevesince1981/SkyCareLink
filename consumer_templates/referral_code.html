@@ -1,0 +1,111 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Referral Code - MediFly{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-share me-2"></i>Your Referral Code
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if referral_code %}
+                    <div class="text-center mb-4">
+                        <div class="referral-code-display">
+                            <label class="form-label">Your Referral Code:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control form-control-lg text-center fw-bold" 
+                                       value="{{ referral_code }}" readonly id="referralCodeInput">
+                                <button class="btn btn-outline-secondary" type="button" onclick="copyReferralCode()">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>How it works:</h6>
+                        <ul class="mb-0">
+                            <li>Share your referral code with friends and family</li>
+                            <li>They receive priority booking and preferred rates</li>
+                            <li>You earn credits for successful referrals</li>
+                            <li>Track your referral earnings in your dashboard</li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <div class="text-center">
+                        <p class="text-muted mb-4">Generate your unique referral code to start earning credits</p>
+                        <form method="POST">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>Generate Referral Code
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Add Referral Section -->
+                    <hr class="my-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Have a referral code?</h6>
+                            <form id="addReferralForm">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Enter referral code" 
+                                           name="referral_code" required>
+                                    <button type="submit" class="btn btn-outline-primary">Add</button>
+                                </div>
+                            </form>
+                        </div>
+                        {% if session.get('referred_by') %}
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <small>Referred by: <strong>{{ session.get('referred_by') }}</strong></small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyReferralCode() {
+    const input = document.getElementById('referralCodeInput');
+    input.select();
+    document.execCommand('copy');
+    
+    const button = event.target.closest('button');
+    const originalIcon = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i>';
+    
+    setTimeout(() => {
+        button.innerHTML = originalIcon;
+    }, 2000);
+}
+
+document.getElementById('addReferralForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/add_referral', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+});
+</script>
+{% endblock %}

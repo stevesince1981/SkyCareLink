@@ -2872,38 +2872,213 @@ def admin_fee_adjustment_post():
     
     return redirect(url_for('admin_fee_adjustment'))
 
-# AI Command Processing and Chat Integration
+# Anti-abuse Admin Controls
+@consumer_app.route('/admin/anti_abuse_settings')
+def admin_anti_abuse_settings():
+    """Admin controls for anti-abuse system"""
+    if session.get('user_role') != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('home'))
+    
+    current_deposit = MEDFLY_CONFIG.get('anti_abuse_deposit', 99)
+    
+    return render_template('admin_anti_abuse.html', 
+                         current_deposit=current_deposit,
+                         failed_logins=get_recent_security_events())
+
+@consumer_app.route('/admin/update_anti_abuse', methods=['POST'])
+def admin_update_anti_abuse():
+    """Update anti-abuse settings"""
+    if session.get('user_role') != 'admin':
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+    
+    new_deposit = request.form.get('deposit_amount', type=int)
+    if new_deposit and new_deposit > 0:
+        MEDFLY_CONFIG['anti_abuse_deposit'] = new_deposit
+        flash(f'Anti-abuse deposit updated to ${new_deposit}', 'success')
+        logging.info(f"ADMIN: Anti-abuse deposit updated to ${new_deposit} by {session.get('contact_name', 'admin')}")
+    
+    return redirect(url_for('admin_anti_abuse_settings'))
+
+@consumer_app.route('/admin/clear_abuse_flag', methods=['POST'])
+def admin_clear_abuse_flag():
+    """Admin override to clear abuse flags"""
+    if session.get('user_role') != 'admin':
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+    
+    user_id = request.form.get('user_id')
+    # Clear abuse flags for user
+    session.pop(f'abuse_flags_{user_id}', None)
+    session.pop(f'quote_count_{user_id}', None)
+    
+    flash('Anti-abuse flags cleared for user', 'success')
+    logging.info(f"ADMIN: Abuse flags cleared for {user_id} by {session.get('contact_name', 'admin')}")
+    
+    return redirect(url_for('admin_anti_abuse_settings'))
+
+# Admin Login-As-User and Enhanced Portal Views
+@consumer_app.route('/admin/login_as_user', methods=['POST'])
+def admin_login_as_user():
+    """Admin feature to login as any user for debugging"""
+    if session.get('user_role') != 'admin':
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+    
+    target_user = request.form.get('target_user')
+    target_role = request.form.get('target_role', 'individual')
+    
+    # Store original admin session
+    session['original_admin'] = {
+        'username': session.get('username'),
+        'contact_name': session.get('contact_name'),
+        'login_time': datetime.now().isoformat()
+    }
+    
+    # Switch to target user
+    session['username'] = target_user
+    session['user_role'] = target_role
+    session['contact_name'] = f"Admin as {target_user}"
+    session['admin_impersonation'] = True
+    
+    logging.info(f"ADMIN IMPERSONATION: {session['original_admin']['username']} logged in as {target_user} ({target_role})")
+    
+    flash(f'Now viewing as {target_user} ({target_role})', 'info')
+    return redirect(url_for('portal_views'))
+
+@consumer_app.route('/admin/exit_impersonation')
+def admin_exit_impersonation():
+    """Exit admin impersonation mode"""
+    if not session.get('admin_impersonation'):
+        return redirect(url_for('home'))
+    
+    original_admin = session.get('original_admin', {})
+    
+    # Restore original admin session
+    session['username'] = original_admin.get('username')
+    session['user_role'] = 'admin'
+    session['contact_name'] = original_admin.get('contact_name')
+    session.pop('admin_impersonation', None)
+    session.pop('original_admin', None)
+    
+    flash('Returned to admin view', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+# Enhanced Referral Code System
+@consumer_app.route('/referral_code', methods=['GET', 'POST'])
+def referral_code():
+    """Generate and manage referral codes for individuals"""
+    if not session.get('logged_in'):
+        flash('Please login to access referral codes', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        # Generate new referral code
+        referral_code = f"MF{secrets.randbelow(999999):06d}"
+        session['user_referral_code'] = referral_code
+        
+        flash(f'Your referral code: {referral_code}', 'success')
+        logging.info(f"Referral code generated for {session.get('username')}: {referral_code}")
+    
+    return render_template('referral_code.html', 
+                         referral_code=session.get('user_referral_code'))
+
+@consumer_app.route('/add_referral', methods=['POST'])
+def add_referral():
+    """Add referral code to existing account"""
+    if not session.get('logged_in'):
+        return jsonify({'success': False, 'error': 'Login required'}), 403
+    
+    referral_code = request.form.get('referral_code', '').strip().upper()
+    
+    if referral_code:
+        session['referred_by'] = referral_code
+        flash('Referral code added to your account', 'success')
+        logging.info(f"Referral code {referral_code} added to {session.get('username')}")
+        return jsonify({'success': True, 'message': 'Referral code added'})
+    
+    return jsonify({'success': False, 'error': 'Invalid referral code'})
+
+def get_recent_security_events():
+    """Get recent security events including failed logins"""
+    return [
+        {'timestamp': '2025-08-11 01:15:30', 'event': 'failed_login', 'user': 'user@example.com', 'ip': '192.168.1.100'},
+        {'timestamp': '2025-08-11 01:10:15', 'event': 'mfa_failure', 'user': 'admin@demo.com', 'ip': '172.31.96.226'},
+        {'timestamp': '2025-08-11 00:45:22', 'event': 'anomaly_alert', 'user': 'affiliate_user', 'ip': '10.0.0.1'},
+        {'timestamp': '2025-08-11 00:30:10', 'event': 'abuse_trigger', 'user': 'test@demo.com', 'ip': '192.168.1.50'}
+    ]
+
+# Enhanced AI Bot with Industry-Standard FAQ
 @consumer_app.route('/ai_command', methods=['POST'])
 def ai_command():
-    """Process AI commands for smart form filling"""
+    """Enhanced AI bot with predetermined FAQ responses"""
     command = request.form.get('command', '').lower()
-    response = {'status': 'success', 'suggestions': {}}
+    user_type = request.form.get('user_type', '').lower()
     
-    # AI command patterns (stub implementation)
-    if 'grandma' in command and 'orlando' in command and 'nyc' in command:
+    response = {'status': 'success', 'message': '', 'suggestions': {}}
+    
+    # Determine user type from context or ask
+    if not user_type:
+        if any(word in command for word in ['affiliate', 'partner', 'provider']):
+            user_type = 'affiliate'
+        elif any(word in command for word in ['hospital', 'clinic', 'medical facility']):
+            user_type = 'hospital'
+        elif any(word in command for word in ['individual', 'family', 'patient']):
+            user_type = 'individual'
+        else:
+            response['message'] = "Hi, how can I help you today? Are you an affiliate partner, hospital/clinic, or individual?"
+            response['options'] = ['Affiliate Partner', 'Hospital/Clinic', 'Individual/Family']
+            return jsonify(response)
+    
+    # Affiliate FAQ responses
+    if user_type == 'affiliate':
+        if any(word in command for word in ['commission', 'payment', 'earnings']):
+            response['message'] = "Commission structure: 4% until $25k recoup threshold, then 5%. You receive 1% recoup credit until threshold is met. Payments are NET 7 terms."
+        elif any(word in command for word in ['concierge', 'premium']):
+            response['message'] = "Concierge service: $15k add-on split 50/50 ($7.5k to you, $7.5k to us). Premium white-glove experience with dedicated coordination."
+        elif any(word in command for word in ['license', 'compliance', 'part 135']):
+            response['message'] = "All affiliates must maintain valid FAA Part 135 certification. We perform periodic license verification and immediate delist for non-compliance."
+        else:
+            response['message'] = "Common affiliate questions: Commission structure, Concierge services, License requirements, Booking assignments, Payment terms"
+    
+    # Hospital/Clinic FAQ responses
+    elif user_type == 'hospital':
+        if any(word in command for word in ['pricing', 'cost', 'quote']):
+            response['message'] = "Transport pricing ranges $20k-$72k base fare. Same-day critical transport includes 20% surcharge. Equipment costs additional. No upfront fees."
+        elif any(word in command for word in ['time', 'how long', 'response']):
+            response['message'] = "Quote responses typically within 15-60 minutes. Critical transports prioritized. Real-time tracking available once flight is confirmed."
+        elif any(word in command for word in ['equipment', 'medical']):
+            response['message'] = "Available equipment: Ventilator ($5k), ECMO ($10k), Incubator ($3k), IV pumps, monitors. Custom equipment requests accommodated."
+        else:
+            response['message'] = "Common hospital questions: Pricing structure, Response times, Medical equipment, Insurance coordination, Emergency procedures"
+    
+    # Individual/Family FAQ responses
+    elif user_type == 'individual':
+        if any(word in command for word in ['cost', 'payment', 'afford']):
+            response['message'] = "We work with responsible financial sponsors offering reasonable rates (not high-interest TV ads). Financing options available during quote review."
+        elif any(word in command for word in ['expect', 'process', 'first time']):
+            response['message'] = "What to expect: 1) Submit request, 2) Receive quotes in 15-60 min, 3) Select provider, 4) Coordinate with medical team, 5) Real-time flight tracking."
+        elif any(word in command for word in ['insurance', 'coverage']):
+            response['message'] = "Many insurance plans cover medical air transport. We assist with pre-authorization and claims processing. Coverage varies by policy."
+        elif any(word in command for word in ['prepare', 'checklist']):
+            response['message'] = "Preparation checklist: Medical records, insurance cards, medications list, personal items, emergency contacts. Our team guides you through each step."
+        else:
+            response['message'] = "Helpful topics: Cost & financing, What to expect, Insurance coverage, Preparation checklist, Family accommodations"
+    
+    # General transport planning
+    if any(word in command for word in ['grandma', 'elderly']):
         response['suggestions'] = {
-            'origin': 'Orlando International Airport (MCO)',
-            'destination': 'LaGuardia Airport (LGA)',
             'transport_type': 'non-critical',
             'equipment': ['oxygen', 'escort'],
-            'message': 'I suggest comfortable transport with oxygen support and medical escort for elderly patient.'
+            'message': 'For elderly patients, consider oxygen support and medical escort for comfort.'
         }
-    elif 'emergency' in command or 'urgent' in command:
+    elif any(word in command for word in ['emergency', 'urgent', 'critical']):
         response['suggestions'] = {
             'transport_type': 'critical',
             'same_day': True,
-            'message': 'Emergency transport recommended with same-day priority.'
+            'message': 'Emergency transport with same-day priority recommended.'
         }
-    elif 'family' in command:
-        response['suggestions'] = {
-            'equipment': ['escort'],
-            'message': 'Family accommodation options available.'
-        }
-    else:
-        response = {
-            'status': 'info',
-            'message': 'Try commands like: "Help me build a flight for grandma from Orlando to NYC" or "Emergency transport needed"'
-        }
+    
+    if not response['message']:
+        response['message'] = "How can I assist you today? I can help with transport planning, pricing questions, or process guidance."
     
     return jsonify(response)
 
@@ -4183,7 +4358,7 @@ def admin_affiliates():
     if not affiliates_list:
         # Fallback demo data
         affiliates_list = [
-            {'id': 1, 'name': 'AirMed Partners', 'default_commission': 5.0, 'recoup_remaining': 22500, 'strikes': 0, 'offers_concierge': True, 'total_bookings': 15},
+            {'id': 1, 'name': 'AirMed Partners', 'default_commission': 5.0, 'recoup_remaining': 22500, 'strikes': 0, 'offers_concierge': session.get('affiliate_001_concierge', True), 'total_bookings': 15},
             {'id': 2, 'name': 'Guardian Flight', 'default_commission': 5.0, 'recoup_remaining': 18000, 'strikes': 1, 'offers_concierge': False, 'total_bookings': 28},
             {'id': 3, 'name': 'MedEvac Solutions', 'default_commission': 5.0, 'recoup_remaining': 25000, 'strikes': 0, 'offers_concierge': True, 'total_bookings': 0},
         ]

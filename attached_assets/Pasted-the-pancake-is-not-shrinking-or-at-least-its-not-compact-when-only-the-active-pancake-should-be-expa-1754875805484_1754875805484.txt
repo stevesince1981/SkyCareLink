@@ -1,0 +1,16 @@
+the pancake is not shrinking or at least its not compact when only the active pancake should be expanded. right now everything is expanded with the next button out of view
+affiliates screeen, when i go to the view it shows concierge but when i click edit , concierge is not checked. 
+affiliates portal - here and everywhere else, make sure the math is correct. 
+requests screen is not tight. 
+
+Portal-Views
+this almost shouldn't show unless you are logged in. Pending how you are logged in, it will display the specific user type dashboard. what is displayed in the admin portal view is slightly different from the admin-dashboard. maybe merge what each has to make it workable. 
+additionally, the admin should be able to login as any user on the fly to see what they see as an admin user to make necessary changes or see errors that they might be experiencing. this access should be timestamped just like their access. 
+in admin view, there is user management with admin controls (unsure the purpose of this) and partner control (unsure of this)
+make sure everything in the portal-view is workable and displays data correctly. 
+AI bot not functional yet. I want it to offer predetermined questions that someone might have. Hi, how can i help you. Are you an affiliate or hospital/clinic or individual? and then run through all the possible questions/answers for each. use industry standard language and it should be amazing. 
+AI for indidvidual - provide helpful tips (what to expect, what you might need to plan for, help them through this unexpected process)
+-we don't have any credit card or loan services options -  do something with our responsible financial sponsers (we don't want 50% rates like you see on TV) - have appropriate language on the quote sumbit page or on the my request for finance options
+on our admin-dashboard (i'd also like to see the funds per mike/steve/business on the split we previously agreed upon to show where we are at. i want this for day/week/month/year and custom dates)
+individual should have referral code option too. 
+individual and hospital/clinic should be able to add referral codes post account creation 

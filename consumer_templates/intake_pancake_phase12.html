@@ -455,6 +455,21 @@
     display: none;
 }
 
+.pancake-step.collapsed {
+    min-height: 60px !important;
+    max-height: 60px !important;
+    overflow: hidden;
+}
+
+.pancake-step.collapsed .pancake-content {
+    display: none !important;
+}
+
+.pancake-step.active {
+    min-height: auto;
+    max-height: none;
+}
+
 /* Service Selection Cards */
 .service-card {
     border: 2px solid #e9ecef;
@@ -812,6 +827,7 @@ function goToStep(step) {
         } else {
             // Future steps - collapsed but not marked complete
             pancake.classList.remove('active', 'compressed', 'completed');
+            pancake.classList.add('collapsed');
             if (stepContent) stepContent.style.display = 'none';
         }
     });
