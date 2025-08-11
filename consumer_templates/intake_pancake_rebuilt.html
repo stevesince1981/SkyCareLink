@@ -1,0 +1,1118 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Medical Transport Request - MediFly{% endblock %}
+
+{% block content %}
+<style>
+/* Enhanced Pancake Stepper Styles */
+.pancake-stack {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.pancake-step {
+    border: 2px solid #e3f2fd;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.pancake-step.active {
+    border-color: #1976d2;
+    box-shadow: 0 4px 16px rgba(25,118,210,0.2);
+}
+
+.pancake-step.completed {
+    border-color: #4caf50;
+    background: #f8fff8;
+}
+
+.pancake-step.collapsed {
+    border-color: #e0e0e0;
+    background: #fafafa;
+}
+
+.pancake-header {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.pancake-step.active .pancake-header {
+    border-bottom-color: #e3f2fd;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3f9ff 100%);
+}
+
+.pancake-step.completed .pancake-header {
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+}
+
+.pancake-step.collapsed .pancake-header {
+    background: #f5f5f5;
+}
+
+.pancake-content {
+    padding: 1.5rem;
+    display: none;
+}
+
+.pancake-step.active .pancake-content {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #1976d2;
+    color: white;
+    font-weight: bold;
+    margin-right: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.pancake-step.completed .step-number {
+    background: #4caf50;
+}
+
+.pancake-step.collapsed .step-number {
+    background: #9e9e9e;
+}
+
+.pancake-icon {
+    transition: transform 0.3s ease;
+}
+
+.pancake-step.active .pancake-icon {
+    transform: rotate(180deg);
+}
+
+.service-card, .severity-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.service-card:hover, .severity-card:hover {
+    border-color: #1976d2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.service-card.selected, .severity-card.selected {
+    border-color: #1976d2;
+    background: #e3f2fd;
+    transform: translateY(-2px);
+}
+
+.severity-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.severity-card {
+    flex: 1;
+    min-height: 140px;
+}
+
+.pancake-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.family-seat-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.5rem;
+}
+
+.seat-counter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.seat-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    background: #1976d2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.seat-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.mfa-requirement {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.equipment-item {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.equipment-item:hover {
+    border-color: #1976d2;
+    background: #f8f9fa;
+}
+
+.equipment-item.selected {
+    border-color: #1976d2;
+    background: #e3f2fd;
+}
+
+.equipment-description {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+</style>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- MFA Requirement Notice -->
+                    {% if not session.get('logged_in') %}
+                    <div class="mfa-requirement">
+                        <h6><i class="fas fa-shield-alt me-2"></i>Security Requirements</h6>
+                        <p class="mb-2">To submit a quote request, you must:</p>
+                        <ul class="mb-2">
+                            <li>Create a verified account with email and phone confirmation</li>
+                            <li>Complete multi-factor authentication (MFA)</li>
+                            <li>Agree to $99 fee for excessive quote requests (4+ quotes)</li>
+                        </ul>
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Login/Register Now</a>
+                        <span class="text-muted ms-2">or continue to save your progress</span>
+                    </div>
+                    {% endif %}
+
+                    <form id="intakeForm" method="POST">
+                        <div class="pancake-stack">
+                            
+                            <!-- Step 1: Service Type Selection -->
+                            <div class="pancake-step active" id="step-1" data-step="1">
+                                <div class="pancake-header" onclick="toggleStep(1)">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <span class="step-number">1</span>
+                                            Service Type Selection
+                                            <span class="completion-status ms-2"></span>
+                                        </h5>
+                                        <i class="fas fa-chevron-down pancake-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="pancake-content">
+                                    <p class="text-muted mb-3">Select the type of medical transport service you need</p>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="service-card" data-service="critical" onclick="selectService('critical')">
+                                                <div class="service-icon mb-2">
+                                                    <i class="fas fa-exclamation-triangle text-danger fa-2x"></i>
+                                                </div>
+                                                <h6>Critical Transport</h6>
+                                                <p class="small text-muted">Immediate, life-threatening situations</p>
+                                                <span class="badge bg-danger">Same-day +20%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="service-card" data-service="non-critical" onclick="selectService('non-critical')">
+                                                <div class="service-icon mb-2">
+                                                    <i class="fas fa-calendar-alt text-primary fa-2x"></i>
+                                                </div>
+                                                <h6>Scheduled Transport</h6>
+                                                <p class="small text-muted">Planned medical transfers</p>
+                                                <span class="badge bg-primary">Standard rates</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="service-card" data-service="mvp" onclick="selectService('mvp')">
+                                                <div class="service-icon mb-2">
+                                                    <i class="fas fa-crown text-warning fa-2x"></i>
+                                                </div>
+                                                <h6>MVP Membership</h6>
+                                                <p class="small text-muted">Premium service package</p>
+                                                <span class="badge bg-warning">Exclusive</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pancake-navigation">
+                                        <div></div>
+                                        <button type="button" class="btn btn-primary" id="nextStep1" onclick="nextStep()" disabled>
+                                            Next: Patient Severity <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Patient Severity Level -->
+                            <div class="pancake-step" id="step-2" data-step="2">
+                                <div class="pancake-header" onclick="toggleStep(2)">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <span class="step-number">2</span>
+                                            Patient Severity Level
+                                            <span class="completion-status ms-2"></span>
+                                        </h5>
+                                        <i class="fas fa-chevron-down pancake-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="pancake-content">
+                                    <p class="text-muted mb-3">Select the patient's medical condition severity level</p>
+                                    <div class="severity-row">
+                                        <div class="severity-card" data-severity="low" onclick="selectSeverity('low')">
+                                            <i class="fas fa-user text-success fa-2x mb-2"></i>
+                                            <h6>Low Severity</h6>
+                                            <p class="small text-muted">Stable condition, routine transport</p>
+                                            <span class="badge bg-success">Standard equipment</span>
+                                        </div>
+                                        <div class="severity-card" data-severity="medium" onclick="selectSeverity('medium')">
+                                            <i class="fas fa-heartbeat text-warning fa-2x mb-2"></i>
+                                            <h6>Medium Severity</h6>
+                                            <p class="small text-muted">Monitoring required, stable but complex</p>
+                                            <span class="badge bg-warning">Enhanced monitoring</span>
+                                        </div>
+                                        <div class="severity-card" data-severity="high" onclick="selectSeverity('high')">
+                                            <i class="fas fa-ambulance text-danger fa-2x mb-2"></i>
+                                            <h6>High Severity</h6>
+                                            <p class="small text-muted">Critical condition, intensive care</p>
+                                            <span class="badge bg-danger">Full life support</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pancake-navigation">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                            <i class="fas fa-arrow-left me-2"></i>Back
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="nextStep2" onclick="nextStep()" disabled>
+                                            Next: Locations <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Location Details -->
+                            <div class="pancake-step" id="step-3" data-step="3">
+                                <div class="pancake-header" onclick="toggleStep(3)">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <span class="step-number">3</span>
+                                            Location Details
+                                            <span class="completion-status ms-2"></span>
+                                        </h5>
+                                        <i class="fas fa-chevron-down pancake-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="pancake-content">
+                                    <div class="row g-4">
+                                        <!-- From Location -->
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="fas fa-map-marker-alt me-2"></i>From Location
+                                            </h6>
+                                            <div class="mb-3">
+                                                <label class="form-label">Hospital/Facility Name</label>
+                                                <input type="text" class="form-control" name="from_hospital" id="fromHospital" 
+                                                       placeholder="Enter hospital or facility name">
+                                                <div class="form-text">Start typing for suggestions</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Address</label>
+                                                <input type="text" class="form-control" name="from_address" id="fromAddress" 
+                                                       placeholder="Street address">
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-8">
+                                                    <label class="form-label">City</label>
+                                                    <input type="text" class="form-control" name="from_city" id="fromCity" 
+                                                           placeholder="City">
+                                                </div>
+                                                <div class="col-4">
+                                                    <label class="form-label">State</label>
+                                                    <select class="form-select" name="from_state" id="fromState">
+                                                        <option value="">State</option>
+                                                        <!-- US States will be populated -->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- To Location -->
+                                        <div class="col-md-6">
+                                            <h6 class="text-success mb-3">
+                                                <i class="fas fa-map-marker-alt me-2"></i>To Location
+                                            </h6>
+                                            <div class="mb-3">
+                                                <label class="form-label">Hospital/Facility Name</label>
+                                                <input type="text" class="form-control" name="to_hospital" id="toHospital" 
+                                                       placeholder="Enter destination hospital">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Address</label>
+                                                <input type="text" class="form-control" name="to_address" id="toAddress" 
+                                                       placeholder="Street address">
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-8">
+                                                    <label class="form-label">City</label>
+                                                    <input type="text" class="form-control" name="to_city" id="toCity" 
+                                                           placeholder="City">
+                                                </div>
+                                                <div class="col-4">
+                                                    <label class="form-label">State</label>
+                                                    <select class="form-select" name="to_state" id="toState">
+                                                        <option value="">State</option>
+                                                        <!-- US States will be populated -->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Preferred Time -->
+                                    <div class="row g-3 mt-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Preferred Transport Time</label>
+                                            <select class="form-select" name="preferred_time" id="preferredTime">
+                                                <option value="">Select preferred time</option>
+                                                <option value="flexible">Flexible</option>
+                                                <option value="morning">Morning (6 AM - 12 PM)</option>
+                                                <option value="afternoon">Afternoon (12 PM - 6 PM)</option>
+                                                <option value="evening">Evening (6 PM - 12 AM)</option>
+                                                <option value="overnight">Overnight (12 AM - 6 AM)</option>
+                                                <option value="asap">ASAP</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Family Seating Requirements</label>
+                                            <div class="family-seat-selector">
+                                                <span class="me-2">Additional family seats:</span>
+                                                <div class="seat-counter">
+                                                    <button type="button" class="seat-btn" onclick="adjustFamilySeats(-1)" id="seatMinus">-</button>
+                                                    <span class="mx-2 fw-bold" id="familySeatsCount">0</span>
+                                                    <button type="button" class="seat-btn" onclick="adjustFamilySeats(1)" id="seatPlus">+</button>
+                                                </div>
+                                                <small class="text-muted ms-2">(Up to 3 seats)</small>
+                                            </div>
+                                            <div class="form-text">Most aircraft can accommodate 1-3 additional passengers</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pancake-navigation">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                            <i class="fas fa-arrow-left me-2"></i>Back
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="nextStep3" onclick="nextStep()" disabled>
+                                            Next: Patient Info <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Patient Information -->
+                            <div class="pancake-step" id="step-4" data-step="4">
+                                <div class="pancake-header" onclick="toggleStep(4)">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <span class="step-number">4</span>
+                                            Patient Information
+                                            <span class="completion-status ms-2"></span>
+                                        </h5>
+                                        <i class="fas fa-chevron-down pancake-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="pancake-content">
+                                    <div class="row g-3">
+                                        <!-- Patient Name -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">Patient First Name</label>
+                                            <input type="text" class="form-control" name="patient_first_name" id="patientFirstName" 
+                                                   placeholder="First name" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Patient Last Name</label>
+                                            <input type="text" class="form-control" name="patient_last_name" id="patientLastName" 
+                                                   placeholder="Last name" required>
+                                        </div>
+
+                                        <!-- Gender -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Gender</label>
+                                            <select class="form-select" name="patient_gender" id="patientGender" required>
+                                                <option value="">Select gender</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="unknown">Unknown</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Age Range -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Age Range</label>
+                                            <select class="form-select" name="patient_age_range" id="patientAgeRange">
+                                                <option value="">Select age range</option>
+                                                <option value="newborn">Newborn (0-1 month)</option>
+                                                <option value="infant">Infant (1-12 months)</option>
+                                                <option value="toddler">Toddler (1-3 years)</option>
+                                                <option value="child">Child (4-12 years)</option>
+                                                <option value="teen">Teen (13-17 years)</option>
+                                                <option value="adult">Adult (18-64 years)</option>
+                                                <option value="senior">Senior (65+ years)</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Weight Range -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Weight Range</label>
+                                            <select class="form-select" name="patient_weight" id="patientWeight">
+                                                <option value="">Select weight range</option>
+                                                <option value="under-50">Under 50 lbs</option>
+                                                <option value="50-100">50-100 lbs</option>
+                                                <option value="100-150">100-150 lbs</option>
+                                                <option value="150-200">150-200 lbs</option>
+                                                <option value="200-250">200-250 lbs</option>
+                                                <option value="250-300">250-300 lbs</option>
+                                                <option value="over-300">Over 300 lbs</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Medical Equipment -->
+                                    <div class="mt-4">
+                                        <h6 class="mb-3">
+                                            <i class="fas fa-medical-case me-2"></i>Required Medical Equipment
+                                            <small class="text-muted">(Select all that apply)</small>
+                                        </h6>
+                                        <div class="equipment-grid" id="equipmentGrid">
+                                            <!-- Equipment options will be populated based on severity -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Niche Markets -->
+                                    <div class="mt-4">
+                                        <h6 class="mb-3">
+                                            <i class="fas fa-tags me-2"></i>Specialized Care Needs
+                                            <small class="text-muted">(Select if applicable)</small>
+                                        </h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="pediatric" id="nichePediatric">
+                                                    <label class="form-check-label" for="nichePediatric">Pediatric</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="nicu" id="nicheNicu">
+                                                    <label class="form-check-label" for="nicheNicu">NICU</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="cardiac" id="nicheCardiac">
+                                                    <label class="form-check-label" for="nicheCardiac">Cardiac</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="neurological" id="nicheNeurological">
+                                                    <label class="form-check-label" for="nicheNeurological">Neurological</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="trauma" id="nicheTrauma">
+                                                    <label class="form-check-label" for="nicheTrauma">Trauma</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="transplant" id="nicheTransplant">
+                                                    <label class="form-check-label" for="nicheTransplant">Organ Transport</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="bariatric" id="nicheBariatric">
+                                                    <label class="form-check-label" for="nicheBariatric">Bariatric</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="infectious" id="nicheInfectious">
+                                                    <label class="form-check-label" for="nicheInfectious">Infectious Disease</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Additional Information -->
+                                    <div class="mt-4">
+                                        <label class="form-label">
+                                            Additional Medical Information
+                                            <small class="text-muted">(No PII/PHI - Personally Identifiable Information / Protected Health Information)</small>
+                                        </label>
+                                        <textarea class="form-control" name="additional_info" id="additionalInfo" rows="3" 
+                                                  placeholder="Brief description of medical needs, special requirements, or concerns (avoid patient names, dates of birth, SSN, etc.)"></textarea>
+                                    </div>
+                                    
+                                    <div class="pancake-navigation">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                            <i class="fas fa-arrow-left me-2"></i>Back
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="nextStep4" onclick="nextStep()" disabled>
+                                            Next: Review & Submit <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 5: Review and Submit -->
+                            <div class="pancake-step" id="step-5" data-step="5">
+                                <div class="pancake-header" onclick="toggleStep(5)">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <span class="step-number">5</span>
+                                            Review & Submit
+                                            <span class="completion-status ms-2"></span>
+                                        </h5>
+                                        <i class="fas fa-chevron-down pancake-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="pancake-content">
+                                    <div id="reviewSummary">
+                                        <!-- Review content will be populated dynamically -->
+                                    </div>
+
+                                    <!-- Disclaimers -->
+                                    <div class="alert alert-warning mt-4">
+                                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Important Disclaimers</h6>
+                                        <ul class="mb-0 small">
+                                            <li>All quotes are estimates and final pricing may vary based on actual requirements</li>
+                                            <li>Family seating is subject to aircraft availability and weight limitations</li>
+                                            <li>Medical equipment availability confirmed at time of booking</li>
+                                            <li>Same-day transport subject to provider availability and weather conditions</li>
+                                            <li>Excessive quote requests (4+) incur a $99 processing fee</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Terms Agreement -->
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                        <label class="form-check-label" for="agreeTerms">
+                                            I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="pancake-navigation">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                            <i class="fas fa-arrow-left me-2"></i>Back
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg" id="submitRequest" disabled>
+                                            <i class="fas fa-paper-plane me-2"></i>Submit Quote Request
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Enhanced Pancake Stepper JavaScript
+let currentStep = 1;
+let formData = {};
+let familySeats = 0;
+
+// US States data
+const US_STATES = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+];
+
+// Medical equipment data
+const MEDICAL_EQUIPMENT = {
+    basic: [
+        { id: 'oxygen', name: 'Oxygen Supply', description: 'Basic oxygen therapy for respiratory support', cost: 0 },
+        { id: 'monitor', name: 'Basic Monitor', description: 'Vital signs monitoring during transport', cost: 0 },
+        { id: 'stretcher', name: 'Medical Stretcher', description: 'Standard patient transport stretcher', cost: 0 }
+    ],
+    intermediate: [
+        { id: 'oxygen', name: 'Oxygen Supply', description: 'Basic oxygen therapy for respiratory support', cost: 0 },
+        { id: 'cardiac_monitor', name: 'Cardiac Monitor', description: 'Advanced heart rhythm and vital signs monitoring', cost: 0 },
+        { id: 'iv_pump', name: 'IV Pump', description: 'Intravenous medication delivery system', cost: 0 },
+        { id: 'suction', name: 'Suction Unit', description: 'Airway clearance and secretion management', cost: 0 },
+        { id: 'transport_vent', name: 'Transport Ventilator', description: 'Mechanical breathing support during transport', cost: 0 }
+    ],
+    advanced: [
+        { id: 'oxygen', name: 'Oxygen Supply', description: 'Basic oxygen therapy for respiratory support', cost: 0 },
+        { id: 'ventilator', name: 'Advanced Ventilator', description: 'Full mechanical ventilation with multiple modes', cost: 0 },
+        { id: 'cardiac_monitor', name: 'Cardiac Monitor', description: 'Advanced heart rhythm and vital signs monitoring', cost: 0 },
+        { id: 'defibrillator', name: 'Defibrillator', description: 'Emergency cardiac rhythm correction device', cost: 0 },
+        { id: 'balloon_pump', name: 'Balloon Pump', description: 'Intra-aortic balloon pump for cardiac support', cost: 0 },
+        { id: 'ecmo', name: 'ECMO', description: 'Extracorporeal membrane oxygenation for critical life support', cost: 0 },
+        { id: 'iv_pump', name: 'IV Pump', description: 'Intravenous medication delivery system', cost: 0 },
+        { id: 'suction', name: 'Suction Unit', description: 'Airway clearance and secretion management', cost: 0 },
+        { id: 'incubator', name: 'Transport Incubator', description: 'Neonatal intensive care transport unit', cost: 0 }
+    ]
+};
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    populateStates();
+    restoreFormData();
+    updateStepValidation();
+    
+    // Auto-save form data on input changes
+    document.getElementById('intakeForm').addEventListener('input', saveFormData);
+    document.getElementById('intakeForm').addEventListener('change', saveFormData);
+    
+    console.log('Enhanced MediFly Pancake Stepper Loaded');
+});
+
+// Populate state dropdowns
+function populateStates() {
+    const fromState = document.getElementById('fromState');
+    const toState = document.getElementById('toState');
+    
+    US_STATES.forEach(state => {
+        fromState.innerHTML += `<option value="${state}">${state}</option>`;
+        toState.innerHTML += `<option value="${state}">${state}</option>`;
+    });
+}
+
+// Service selection
+function selectService(serviceType) {
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    document.querySelector(`[data-service="${serviceType}"]`).classList.add('selected');
+    formData.serviceType = serviceType;
+    
+    updateStepValidation();
+    saveFormData();
+}
+
+// Severity selection
+function selectSeverity(severity) {
+    document.querySelectorAll('.severity-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    document.querySelector(`[data-severity="${severity}"]`).classList.add('selected');
+    formData.severity = severity;
+    
+    // Auto-populate equipment based on severity
+    populateEquipment(severity);
+    
+    updateStepValidation();
+    saveFormData();
+}
+
+// Populate equipment based on severity
+function populateEquipment(severity) {
+    const equipmentGrid = document.getElementById('equipmentGrid');
+    let equipmentList = [];
+    
+    switch(severity) {
+        case 'low':
+            equipmentList = MEDICAL_EQUIPMENT.basic;
+            break;
+        case 'medium':
+            equipmentList = MEDICAL_EQUIPMENT.intermediate;
+            break;
+        case 'high':
+            equipmentList = MEDICAL_EQUIPMENT.advanced;
+            break;
+    }
+    
+    equipmentGrid.innerHTML = '';
+    
+    equipmentList.forEach(equipment => {
+        const equipmentItem = document.createElement('div');
+        equipmentItem.className = 'equipment-item';
+        equipmentItem.setAttribute('data-equipment', equipment.id);
+        equipmentItem.onclick = () => toggleEquipment(equipment.id);
+        
+        equipmentItem.innerHTML = `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="eq_${equipment.id}" name="equipment" value="${equipment.id}">
+                <label class="form-check-label" for="eq_${equipment.id}">
+                    <strong>${equipment.name}</strong>
+                    <div class="equipment-description">${equipment.description}</div>
+                </label>
+            </div>
+        `;
+        
+        equipmentGrid.appendChild(equipmentItem);
+    });
+    
+    // Auto-select basic equipment for medium/high severity
+    if (severity === 'medium' || severity === 'high') {
+        ['oxygen', 'cardiac_monitor'].forEach(eqId => {
+            const checkbox = document.getElementById(`eq_${eqId}`);
+            if (checkbox) {
+                checkbox.checked = true;
+                document.querySelector(`[data-equipment="${eqId}"]`).classList.add('selected');
+            }
+        });
+    }
+    
+    if (severity === 'high') {
+        const ventilatorCheckbox = document.getElementById('eq_ventilator');
+        if (ventilatorCheckbox) {
+            ventilatorCheckbox.checked = true;
+            document.querySelector('[data-equipment="ventilator"]').classList.add('selected');
+        }
+    }
+}
+
+// Toggle equipment selection
+function toggleEquipment(equipmentId) {
+    const checkbox = document.getElementById(`eq_${equipmentId}`);
+    const item = document.querySelector(`[data-equipment="${equipmentId}"]`);
+    
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        item.classList.add('selected');
+    } else {
+        item.classList.remove('selected');
+    }
+    
+    saveFormData();
+}
+
+// Family seats adjustment
+function adjustFamilySeats(change) {
+    const newCount = familySeats + change;
+    
+    if (newCount >= 0 && newCount <= 3) {
+        familySeats = newCount;
+        document.getElementById('familySeatsCount').textContent = familySeats;
+        formData.familySeats = familySeats;
+        
+        // Update button states
+        document.getElementById('seatMinus').disabled = familySeats === 0;
+        document.getElementById('seatPlus').disabled = familySeats === 3;
+        
+        saveFormData();
+    }
+}
+
+// Step navigation
+function nextStep() {
+    if (currentStep < 5 && validateCurrentStep()) {
+        // Mark current step as completed
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        currentStepElement.classList.remove('active');
+        currentStepElement.classList.add('completed');
+        
+        // Move to next step
+        currentStep++;
+        const nextStepElement = document.getElementById(`step-${currentStep}`);
+        nextStepElement.classList.add('active');
+        
+        // Scroll to new step
+        nextStepElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        updateStepValidation();
+        saveFormData();
+    }
+}
+
+function prevStep() {
+    if (currentStep > 1) {
+        // Mark current step as inactive
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        currentStepElement.classList.remove('active');
+        
+        // Move to previous step
+        currentStep--;
+        const prevStepElement = document.getElementById(`step-${currentStep}`);
+        prevStepElement.classList.remove('completed');
+        prevStepElement.classList.add('active');
+        
+        // Scroll to previous step
+        prevStepElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        updateStepValidation();
+    }
+}
+
+// Toggle step (for manual navigation)
+function toggleStep(stepNumber) {
+    if (stepNumber <= currentStep || isStepCompleted(stepNumber - 1)) {
+        // Allow navigation to current step or completed previous steps
+        document.getElementById(`step-${currentStep}`).classList.remove('active');
+        
+        currentStep = stepNumber;
+        const targetStep = document.getElementById(`step-${currentStep}`);
+        targetStep.classList.add('active');
+        targetStep.classList.remove('completed');
+        
+        updateStepValidation();
+    }
+}
+
+// Validate current step
+function validateCurrentStep() {
+    switch(currentStep) {
+        case 1:
+            return formData.serviceType;
+        case 2:
+            return formData.severity;
+        case 3:
+            return document.getElementById('fromHospital').value && 
+                   document.getElementById('toHospital').value &&
+                   document.getElementById('fromCity').value &&
+                   document.getElementById('toCity').value &&
+                   document.getElementById('fromState').value &&
+                   document.getElementById('toState').value;
+        case 4:
+            return document.getElementById('patientFirstName').value &&
+                   document.getElementById('patientLastName').value &&
+                   document.getElementById('patientGender').value;
+        case 5:
+            return document.getElementById('agreeTerms').checked;
+        default:
+            return true;
+    }
+}
+
+// Update step validation and button states
+function updateStepValidation() {
+    // Update next buttons
+    for (let i = 1; i <= 4; i++) {
+        const nextButton = document.getElementById(`nextStep${i}`);
+        if (nextButton && currentStep === i) {
+            nextButton.disabled = !validateCurrentStep();
+        }
+    }
+    
+    // Update submit button
+    const submitButton = document.getElementById('submitRequest');
+    if (submitButton && currentStep === 5) {
+        submitButton.disabled = !validateCurrentStep();
+    }
+    
+    // Update step completion indicators
+    updateStepIndicators();
+}
+
+// Update step visual indicators
+function updateStepIndicators() {
+    for (let i = 1; i <= 5; i++) {
+        const stepElement = document.getElementById(`step-${i}`);
+        const completionStatus = stepElement.querySelector('.completion-status');
+        
+        if (i < currentStep) {
+            completionStatus.innerHTML = '<i class="fas fa-check text-success"></i>';
+        } else if (i === currentStep) {
+            completionStatus.innerHTML = '<i class="fas fa-edit text-primary"></i>';
+        } else {
+            completionStatus.innerHTML = '';
+        }
+    }
+}
+
+// Check if step is completed
+function isStepCompleted(stepNumber) {
+    return stepNumber < currentStep;
+}
+
+// Save form data to localStorage
+function saveFormData() {
+    try {
+        // Collect current form values
+        const form = document.getElementById('intakeForm');
+        const formDataNew = new FormData(form);
+        
+        // Convert to object
+        const dataObject = {};
+        for (let [key, value] of formDataNew.entries()) {
+            if (dataObject[key]) {
+                // Handle multiple values (like checkboxes)
+                if (Array.isArray(dataObject[key])) {
+                    dataObject[key].push(value);
+                } else {
+                    dataObject[key] = [dataObject[key], value];
+                }
+            } else {
+                dataObject[key] = value;
+            }
+        }
+        
+        // Add non-form data
+        dataObject.currentStep = currentStep;
+        dataObject.familySeats = familySeats;
+        dataObject.serviceType = formData.serviceType;
+        dataObject.severity = formData.severity;
+        
+        localStorage.setItem('mediflyIntakeData', JSON.stringify(dataObject));
+        console.log('Form data saved to localStorage');
+    } catch (error) {
+        console.error('Error saving form data:', error);
+    }
+}
+
+// Restore form data from localStorage
+function restoreFormData() {
+    try {
+        const savedData = localStorage.getItem('mediflyIntakeData');
+        if (savedData) {
+            const dataObject = JSON.parse(savedData);
+            
+            // Restore form values
+            Object.entries(dataObject).forEach(([key, value]) => {
+                const element = document.querySelector(`[name="${key}"]`);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = Array.isArray(value) ? value.includes(element.value) : value === element.value;
+                    } else {
+                        element.value = value;
+                    }
+                }
+            });
+            
+            // Restore special data
+            if (dataObject.familySeats) {
+                familySeats = parseInt(dataObject.familySeats);
+                document.getElementById('familySeatsCount').textContent = familySeats;
+            }
+            
+            if (dataObject.serviceType) {
+                formData.serviceType = dataObject.serviceType;
+                const serviceCard = document.querySelector(`[data-service="${dataObject.serviceType}"]`);
+                if (serviceCard) serviceCard.classList.add('selected');
+            }
+            
+            if (dataObject.severity) {
+                formData.severity = dataObject.severity;
+                const severityCard = document.querySelector(`[data-severity="${dataObject.severity}"]`);
+                if (severityCard) severityCard.classList.add('selected');
+                populateEquipment(dataObject.severity);
+            }
+            
+            console.log('Form data restored from localStorage');
+        }
+    } catch (error) {
+        console.error('Error restoring form data:', error);
+    }
+}
+
+// Form submission
+document.getElementById('intakeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (!validateCurrentStep()) {
+        alert('Please complete all required fields before submitting.');
+        return;
+    }
+    
+    // Check if user is logged in for MFA requirement
+    {% if not session.get('logged_in') %}
+    if (confirm('You must be logged in with verified email and phone to submit a quote request. Would you like to login now?')) {
+        window.location.href = '{{ url_for("login") }}';
+        return;
+    } else {
+        return;
+    }
+    {% endif %}
+    
+    // Prepare form data for submission
+    const formData = new FormData(this);
+    formData.append('family_seats', familySeats);
+    formData.append('current_step', currentStep);
+    
+    // Submit the form
+    fetch('{{ url_for("consumer_intake_pancake") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Clear saved data
+            localStorage.removeItem('mediflyIntakeData');
+            
+            // Redirect to quotes page
+            window.location.href = data.redirect_url;
+        } else {
+            alert(data.message || 'An error occurred. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Submission error:', error);
+        alert('An error occurred while submitting your request. Please try again.');
+    });
+});
+
+// Update validation on input changes
+document.addEventListener('input', updateStepValidation);
+document.addEventListener('change', updateStepValidation);
+
+// Initialize family seat controls
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('seatMinus').disabled = true;
+});
+</script>
+{% endblock %}

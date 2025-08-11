@@ -295,13 +295,44 @@ def generate_mock_quotes(request_data, affiliate_count=None):
         if request_data.get('subscription_discount'):
             total_cost = int(total_cost * 0.9)
         
+        # Add family seating costs with aircraft-specific availability
+        family_seats = session.get('patient_data', {}).get('family_seats', 0)
+        family_availability_message = ""
+        family_cost = 0
+        
+        aircraft_type = random.choice(['Learjet 60', 'Citation X', 'King Air 350', 'Hawker 400XP', 'Beechcraft 1900', 'Cessna Citation', 'MD 902 Helicopter', 'Bell 429 Helicopter'])
+        
+        if family_seats > 0:
+            aircraft_capacity = {
+                'Learjet 60': 3, 'Citation X': 2, 'King Air 350': 3,
+                'Hawker 400XP': 2, 'Beechcraft 1900': 1, 'Cessna Citation': 1,
+                'MD 902 Helicopter': 0, 'Bell 429 Helicopter': 0
+            }
+            
+            max_seats = aircraft_capacity.get(aircraft_type, 1)
+            available_seats = min(family_seats, max_seats)
+            
+            if max_seats == 0:
+                family_availability_message = "No family seating on helicopter aircraft"
+            elif available_seats < family_seats:
+                family_cost = available_seats * 500
+                family_availability_message = f"Limited to {available_seats} seat{'s' if available_seats != 1 else ''} (requested {family_seats})"
+            else:
+                family_cost = available_seats * 500
+                family_availability_message = f"{available_seats} family seat{'s' if available_seats != 1 else ''} (+${family_cost:,})"
+        
+        total_cost += family_cost
+        
         quote = {
             'affiliate_id': f"affiliate_{i+1}",
             'affiliate_name': affiliate['name'],
-            'aircraft_type': random.choice(['King Air 350', 'Citation CJ3', 'Learjet 45', 'Beechcraft Premier']),
+            'aircraft_type': aircraft_type,
             'total_cost': total_cost,
             'base_cost': affiliate['base_price'],
             'equipment_cost': equipment_cost,
+            'family_cost': family_cost,
+            'family_seats_requested': family_seats,
+            'family_availability_message': family_availability_message,
             'eta_minutes': random.randint(45, 120),
             'capabilities': affiliate['capabilities'],
             'ground_included': affiliate['ground_included'],
@@ -3063,22 +3094,41 @@ def ai_command():
         else:
             response['message'] = "Helpful topics: Cost & financing, What to expect, Insurance coverage, Preparation checklist, Family accommodations"
     
-    # General transport planning
+    # Enhanced transport planning with form suggestions
     if any(word in command for word in ['grandma', 'elderly']):
         response['suggestions'] = {
             'transport_type': 'non-critical',
             'equipment': ['oxygen', 'escort'],
-            'message': 'For elderly patients, consider oxygen support and medical escort for comfort.'
+            'family_seats': 1,
+            'message': 'For elderly patients, I recommend oxygen support, medical escort, and one family seat for comfort.'
         }
     elif any(word in command for word in ['emergency', 'urgent', 'critical']):
         response['suggestions'] = {
             'transport_type': 'critical',
             'same_day': True,
-            'message': 'Emergency transport with same-day priority recommended.'
+            'equipment': ['ventilator', 'cardiac_monitor'],
+            'message': 'Emergency transport with same-day priority. I suggest critical care equipment.'
+        }
+    elif any(word in command for word in ['family', 'accompany', 'together']):
+        response['suggestions'] = {
+            'family_seats': 2,
+            'message': 'Family accommodation available. Most aircraft can accommodate 1-3 additional passengers.'
+        }
+    elif any(word in command for word in ['cardiac', 'heart']):
+        response['suggestions'] = {
+            'equipment': ['cardiac_monitor', 'defibrillator', 'balloon_pump'],
+            'transport_type': 'critical',
+            'message': 'Cardiac patients need specialized monitoring equipment and critical transport priority.'
+        }
+    elif any(word in command for word in ['nicu', 'baby', 'infant', 'newborn']):
+        response['suggestions'] = {
+            'equipment': ['incubator', 'ventilator', 'iv_pump'],
+            'transport_type': 'critical',
+            'message': 'NICU transport requires specialized incubator and life support equipment.'
         }
     
     if not response['message']:
-        response['message'] = "How can I assist you today? I can help with transport planning, pricing questions, or process guidance."
+        response['message'] = "How can I assist you today? I can help with transport planning, pricing questions, equipment recommendations, or process guidance."
     
     return jsonify(response)
 
@@ -4411,7 +4461,10 @@ def consumer_intake():
     """Phase 12.A: Brand-new 5-step pancake intake stepper"""
     from datetime import date
     today = date.today().isoformat()
-    return render_template('intake_pancake_phase12.html', today=today)
+    return render_template('intake_pancake_rebuilt.html', 
+                         today=today,
+                         user_role=session.get('user_role', 'Family'),
+                         logged_in=session.get('logged_in', False))
 
 @consumer_app.route('/intake/submit', methods=['POST'])
 def intake_submit():
@@ -4448,16 +4501,52 @@ def intake_submit():
                 'deposit_amount': 49
             })
         
+        # Enhanced patient data with family seating and rebuilt form structure
+        family_seats = int(data.get('family_seats', 0))
+        patient_first_name = data.get('patient_first_name', '')
+        patient_last_name = data.get('patient_last_name', '')
+        patient_full_name = f"{patient_first_name} {patient_last_name}".strip()
+        
+        # Store comprehensive patient data in session
+        session['patient_data'] = {
+            'patient_name': patient_full_name,
+            'patient_first_name': patient_first_name,
+            'patient_last_name': patient_last_name,
+            'patient_gender': data.get('patient_gender', ''),
+            'patient_age_range': data.get('patient_age_range', ''),
+            'patient_weight': data.get('patient_weight', ''),
+            'origin': data.get('from_hospital', ''),
+            'origin_address': data.get('from_address', ''),
+            'origin_city': data.get('from_city', ''),
+            'origin_state': data.get('from_state', ''),
+            'destination': data.get('to_hospital', ''),
+            'destination_address': data.get('to_address', ''),
+            'destination_city': data.get('to_city', ''),
+            'destination_state': data.get('to_state', ''),
+            'equipment': data.get('equipment', []),
+            'transport_type': data.get('serviceType', 'non-critical'),
+            'severity_level': data.get('severity', 'medium'),
+            'same_day': data.get('serviceType') == 'critical',
+            'additional_info': data.get('additional_info', ''),
+            'preferred_time': data.get('preferred_time', ''),
+            'family_seats': family_seats,
+            'distance_miles': random.randint(50, 500),  # Simulated
+            'niche_markets': data.get('niche_markets', [])
+        }
+        
         # Process the intake request
-        request_id = create_transport_request(data)
+        request_id = create_transport_request(session['patient_data'])
         
         # Clear draft
         session.pop('intake_draft', None)
         
+        # Generate quote session
+        generate_quote_session()
+        
         return jsonify({
             'success': True,
             'request_id': request_id,
-            'quotes_url': url_for('consumer_quotes_phase12', request_id=request_id)
+            'redirect_url': url_for('consumer_quotes_phase12')
         })
         
     except Exception as e:
