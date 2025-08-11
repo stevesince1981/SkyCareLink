@@ -6,16 +6,15 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 12.A Complete - Rebuilt Intake + Anti-abuse - Aug 10, 2025)
-- **Phase 12.A Brand-New Intake**: Complete 5-step pancake stepper with smooth animations, clickable previous steps, state preservation, auto-equipment suggestions
-- **Enhanced Quotes System**: Concierge badge (not "Spotlight"), $20k-$72k dummy pricing band, provider masking until confirmation, booking code generation
-- **Anti-abuse Measures**: Rate limiting (5 requests/hour per IP), fair-use policy (3 no-booking rounds in 14 days), $49 refundable deposit system
-- **Compact Requests Screen**: Tighter rows, "New Quote" polling indicators, elapsed timers for pending requests, touch-friendly design
-- **AI Support Bot**: Role-based FAQ system (Affiliate/Hospital/Individual), guided Q&A with expandable answers, escalation to contact
-- **Same-day Surcharge**: +20% pricing for urgent requests, displayed as line item in quotes breakdown
-- **Booking Code System**: Affiliate selection generates alphanumeric codes, email/SMS notifications (stubbed), intake form locking
-- **Provider Unmasking**: Identity hidden until affiliate confirms with payment, updated selection dialog copy
-- **Concierge Revenue Split**: $7.5k/$7.5k transparent splits, separate credit lines for base vs concierge commissions
+## Recent Changes (Phase 12.B Runtime Fixes Complete - Aug 11, 2025)
+- **Phase 12.B Runtime Fixes**: Enhanced pancake intake with accordion-style step transitions, clickable completed steps, improved state preservation with localStorage redundancy
+- **Anti-abuse Enhancements**: 4th quote triggers $49 deposit modal, per-IP rate limiting (5/minute), simulated payment processing, admin override capability
+- **Quotes System Refinements**: Strict $20k-$72k pricing constraint, Concierge = lowest base + $15k exactly, enhanced affiliate selection modal with quote code preview
+- **Requests Screen Polish**: Excel-style compact rows (0.4rem padding), "New Quote" badge auto-clearing, 15s polling maintained for real-time updates
+- **Address Input Improvements**: Manual address modal for "Can't find it?" cases, enhanced form validation, tooltip for same-day surcharge explanation
+- **State Management**: Dual storage (session + localStorage), form restoration after login flow, enhanced auto-save on all input changes
+- **Provider Masking Logic**: Identity remains hidden until affiliate payment confirmation, booking code generation with preview display
+- **AI Support Bot**: Industry-standard FAQ responses for Affiliates/Hospitals/Individuals, clear escalation paths to contact support
 
 ## System Architecture
 

@@ -3,9 +3,10 @@
     {
       "affiliate_id": "affiliate_1",
       "invoice_week": "2025-W32",
-      "status": "issued",
+      "status": "paid",
       "issued_at": "2025-08-10T03:07:07.099026",
-      "total_usd": 11240
+      "total_usd": 11240,
+      "paid_at": "2025-08-11T00:26:41.170219"
     },
     {
       "affiliate_id": "affiliate",

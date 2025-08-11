@@ -181,23 +181,24 @@
 </div>
 
 <style>
-/* Phase 12.A: Compact, dense table styling */
+/* Phase 12.B Fix: Excel-style compact rows */
 .requests-table {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .requests-table td {
-    padding: 0.75rem 0.5rem;
+    padding: 0.4rem 0.5rem; /* Much tighter like Excel */
     vertical-align: middle;
     border-bottom: 1px solid #f0f0f0;
+    line-height: 1.2;
 }
 
 .requests-table th {
-    padding: 1rem 0.5rem;
+    padding: 0.6rem 0.5rem;
     font-weight: 600;
     background: #f8f9fa;
     border-bottom: 2px solid #dee2e6;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }

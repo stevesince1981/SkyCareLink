@@ -250,6 +250,88 @@
     </div>
 </div>
 
+<!-- Phase 12.B Fix: $49 Deposit Modal -->
+<div class="modal fade" id="depositModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fair-Use Deposit Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Multiple quote requests detected</strong>
+                </div>
+                <p>To keep our network responsive for urgent medical transports, we require a small refundable deposit after multiple quote requests without booking.</p>
+                
+                <div class="deposit-details bg-light p-3 rounded mb-3">
+                    <h6>Deposit Details:</h6>
+                    <ul class="mb-0">
+                        <li><strong>Amount:</strong> $49 (fully refundable)</li>
+                        <li><strong>Refund:</strong> Automatic upon booking or 30 days</li>
+                        <li><strong>Purpose:</strong> Prevent quote farming, prioritize real patients</li>
+                    </ul>
+                </div>
+                
+                <p class="small text-muted">This policy helps us maintain quality service for life-critical transports.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="proceedWithDeposit()">
+                    <i class="fas fa-credit-card me-2"></i>Pay $49 Deposit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Phase 12.B Fix: Manual Address Modal -->
+<div class="modal fade" id="manualAddressModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Enter Address Manually</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="manualAddressForm">
+                    <div class="form-group mb-3">
+                        <label for="manual_street" class="form-label">Street Address</label>
+                        <input type="text" id="manual_street" class="form-control" placeholder="123 Main Street">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="manual_city" class="form-label">City</label>
+                                <input type="text" id="manual_city" class="form-control" placeholder="City">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label for="manual_state" class="form-label">State</label>
+                                <input type="text" id="manual_state" class="form-control" placeholder="ST" maxlength="2">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label for="manual_zip" class="form-label">ZIP</label>
+                                <input type="text" id="manual_zip" class="form-control" placeholder="12345">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveManualAddress()">
+                    <i class="fas fa-save me-2"></i>Save Address
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Phase 12.A: AI Support Assistant -->
 <div class="chat-launcher" id="chatLauncher" onclick="toggleBot()">
     <i class="fas fa-comments"></i>
@@ -591,7 +673,7 @@ const equipmentOptions = {
 document.addEventListener('DOMContentLoaded', function() {
     initializeEquipmentGrid();
     setupAutoSave();
-    loadSavedData();
+    restoreFormState(); // Phase 12.B: Use enhanced restore function
 });
 
 function selectService(type) {
@@ -604,7 +686,7 @@ function selectService(type) {
     document.getElementById('transport_type').value = type;
     updateSummary(1, type === 'critical' ? 'Critical Transport' : 'Scheduled Transport');
     
-    autoSave();
+    saveFormState();
 }
 
 function selectSeverity(level) {
@@ -636,7 +718,7 @@ function selectSeverity(level) {
     const severityNames = { 1: 'Stable Routine', 2: 'Moderate', 3: 'Critical' };
     updateSummary(2, `Level ${level} - ${severityNames[level]}`);
     
-    autoSave();
+    saveFormState();
 }
 
 function initializeEquipmentGrid() {
@@ -662,7 +744,7 @@ function updateEquipment() {
     const selected = Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
         .map(cb => cb.value);
     formData.equipment = selected;
-    autoSave();
+    saveFormState();
 }
 
 function jumpToStep(step) {
@@ -684,15 +766,40 @@ function previousStep() {
 }
 
 function goToStep(step) {
-    // Compress current step
-    const currentPancake = document.getElementById(`pancake-${currentStep}`);
-    currentPancake.classList.remove('active');
-    currentPancake.classList.add('compressed', 'completed');
+    // Phase 12.B Fix: Enhanced accordion-style transitions
+    const allPancakes = document.querySelectorAll('.pancake-step');
     
-    // Expand target step
-    const targetPancake = document.getElementById(`pancake-${step}`);
-    targetPancake.classList.remove('compressed', 'completed');
-    targetPancake.classList.add('active');
+    allPancakes.forEach((pancake, index) => {
+        const stepNum = index + 1;
+        const stepContent = pancake.querySelector('.step-content');
+        const stepHeader = pancake.querySelector('.step-header');
+        
+        if (stepNum < step) {
+            // Completed steps - collapse to titled bar
+            pancake.classList.add('compressed', 'completed');
+            pancake.classList.remove('active');
+            if (stepContent) stepContent.style.display = 'none';
+            if (stepHeader) {
+                stepHeader.style.cursor = 'pointer';
+                stepHeader.classList.add('clickable-header');
+                stepHeader.onclick = () => jumpToStep(stepNum);
+            }
+        } else if (stepNum === step) {
+            // Active step - full expansion
+            pancake.classList.add('active');
+            pancake.classList.remove('compressed', 'completed');
+            if (stepContent) stepContent.style.display = 'block';
+            if (stepHeader) {
+                stepHeader.style.cursor = 'default';
+                stepHeader.classList.remove('clickable-header');
+                stepHeader.onclick = null;
+            }
+        } else {
+            // Future steps - collapsed but not marked complete
+            pancake.classList.remove('active', 'compressed', 'completed');
+            if (stepContent) stepContent.style.display = 'none';
+        }
+    });
     
     currentStep = step;
     updateNavigation();
@@ -837,27 +944,123 @@ function updateReviewSummary() {
     `;
 }
 
-function autoSave() {
-    // Quiet autosave - no toast spam
-    sessionStorage.setItem('mediflyIntakeDraft', JSON.stringify(formData));
+// Phase 12.B Fix: Enhanced state preservation
+function saveFormState() {
+    const stateData = {
+        transport_type: formData.transport_type,
+        severity_level: formData.severity_level,
+        from_facility: document.getElementById('from_facility')?.value || '',
+        to_facility: document.getElementById('to_facility')?.value || '',
+        from_address: document.getElementById('from_address')?.value || '',
+        to_address: document.getElementById('to_address')?.value || '',
+        patient_name: document.getElementById('patient_name')?.value || '',
+        patient_age_band: document.getElementById('patient_age_band')?.value || '',
+        medical_info: document.getElementById('medical_info')?.value || '',
+        preferred_date: document.getElementById('preferred_date')?.value || '',
+        preferred_time: document.getElementById('preferred_time')?.value || '',
+        same_day_urgent: document.getElementById('same_day_urgent')?.checked || false,
+        equipment: formData.equipment || [],
+        current_step: currentStep,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Save to both session storage and localStorage for redundancy
+    sessionStorage.setItem('intake_draft', JSON.stringify(stateData));
+    localStorage.setItem('intake_draft', JSON.stringify(stateData));
 }
 
-function loadSavedData() {
-    const saved = sessionStorage.getItem('mediflyIntakeDraft');
-    if (saved) {
-        formData = JSON.parse(saved);
-        // Restore form state if needed
+function restoreFormState() {
+    // Try session storage first, then localStorage
+    let savedData = sessionStorage.getItem('intake_draft');
+    if (!savedData) {
+        savedData = localStorage.getItem('intake_draft');
+    }
+    
+    if (savedData) {
+        try {
+            const data = JSON.parse(savedData);
+            
+            // Restore form data
+            if (data.transport_type) {
+                selectService(data.transport_type);
+            }
+            if (data.severity_level) {
+                selectSeverity(data.severity_level);
+            }
+            
+            // Restore form fields
+            ['from_facility', 'to_facility', 'from_address', 'to_address', 
+             'patient_name', 'patient_age_band', 'medical_info', 
+             'preferred_date', 'preferred_time'].forEach(field => {
+                const element = document.getElementById(field);
+                if (element && data[field]) {
+                    element.value = data[field];
+                }
+            });
+            
+            // Restore same-day urgent checkbox
+            const sameDayCheckbox = document.getElementById('same_day_urgent');
+            if (sameDayCheckbox && data.same_day_urgent) {
+                sameDayCheckbox.checked = true;
+            }
+            
+            // Restore equipment selection
+            if (data.equipment && data.equipment.length > 0) {
+                data.equipment.forEach(eq => {
+                    const checkbox = document.getElementById(`eq_${eq}`);
+                    if (checkbox) checkbox.checked = true;
+                });
+                formData.equipment = data.equipment;
+            }
+            
+            // Restore current step if returning from login
+            if (data.current_step && data.current_step > 1) {
+                goToStep(data.current_step);
+            }
+            
+            console.log('Form state restored from storage');
+        } catch (e) {
+            console.error('Error restoring form state:', e);
+        }
     }
 }
 
+function autoSave() {
+    // Legacy function - redirect to new saveFormState
+    saveFormState();
+}
+
+function loadSavedData() {
+    // Use new restore function
+    restoreFormState();
+}
+}
+
 function setupAutoSave() {
-    // Auto-save on blur for all form inputs
-    document.addEventListener('blur', autoSave, true);
+    // Auto-save on input for enhanced preservation
+    document.addEventListener('input', function(e) {
+        if (e.target.matches('input, select, textarea')) {
+            saveFormState();
+        }
+    });
+    
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('input[type="checkbox"]')) {
+            saveFormState();
+        }
+    });
 }
 
 async function submitRequest() {
     if (!validateCurrentStep()) {
         alert('Please confirm the accuracy of your information.');
+        return;
+    }
+    
+    // Phase 12.B Fix: Check fair-use policy before submission
+    if (shouldTriggerDeposit()) {
+        const depositModal = new bootstrap.Modal(document.getElementById('depositModal'));
+        depositModal.show();
         return;
     }
     
@@ -894,6 +1097,59 @@ async function submitRequest() {
         console.error('Submit error:', error);
         alert('Error submitting request. Please try again.');
     }
+}
+
+function shouldTriggerDeposit() {
+    // For demo purposes, trigger every 4th submission from this session
+    let submissionCount = parseInt(sessionStorage.getItem('submissionCount') || '0');
+    submissionCount++;
+    sessionStorage.setItem('submissionCount', submissionCount.toString());
+    
+    return submissionCount >= 4;
+}
+
+// Phase 12.B Fix: Enhanced utility functions
+function openManualAddressModal(type) {
+    window.currentAddressType = type;
+    const modal = new bootstrap.Modal(document.getElementById('manualAddressModal'));
+    modal.show();
+}
+
+function saveManualAddress() {
+    const street = document.getElementById('manual_street').value;
+    const city = document.getElementById('manual_city').value;
+    const state = document.getElementById('manual_state').value;
+    const zip = document.getElementById('manual_zip').value;
+    
+    if (street && city && state && zip) {
+        const fullAddress = `${street}, ${city}, ${state} ${zip}`;
+        const targetField = window.currentAddressType === 'from' ? 'from_address' : 'to_address';
+        document.getElementById(targetField).value = fullAddress;
+        
+        bootstrap.Modal.getInstance(document.getElementById('manualAddressModal')).hide();
+        saveFormState();
+    }
+}
+
+function proceedWithDeposit() {
+    showSimulatedPayment();
+}
+
+function showSimulatedPayment() {
+    const depositModal = bootstrap.Modal.getInstance(document.getElementById('depositModal'));
+    depositModal.hide();
+    
+    setTimeout(() => {
+        alert('Payment processed successfully! $49 deposit secured. You may continue with quotes.');
+        // Continue with form submission after deposit
+        continueAfterDeposit();
+    }, 2000);
+}
+
+function continueAfterDeposit() {
+    // Reset deposit trigger and continue with submission
+    sessionStorage.setItem('submissionCount', '0');
+    submitRequest();
 }
 
 // Phase 12.A: AI Support Bot

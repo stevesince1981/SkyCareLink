@@ -4276,7 +4276,7 @@ def home():
 
 # Phase 12.A: Anti-abuse and fair-use helper functions
 def check_rate_limit(ip_address):
-    """Check rate limiting: 5 requests per hour per IP"""
+    """Phase 12.B Fix: Enhanced rate limiting - 5 per minute for quote submissions"""
     import time
     from collections import defaultdict
     
@@ -4285,15 +4285,15 @@ def check_rate_limit(ip_address):
         check_rate_limit.requests = defaultdict(list)
     
     now = time.time()
-    hour_ago = now - 3600
+    minute_ago = now - 60  # Changed to 1 minute window
     
     # Clean old requests
     check_rate_limit.requests[ip_address] = [
         req_time for req_time in check_rate_limit.requests[ip_address] 
-        if req_time > hour_ago
+        if req_time > minute_ago
     ]
     
-    # Check limit
+    # Check limit: 5 per minute
     if len(check_rate_limit.requests[ip_address]) >= 5:
         return False
     
@@ -4302,19 +4302,31 @@ def check_rate_limit(ip_address):
     return True
 
 def check_fair_use_policy(user_id):
-    """Check fair-use: 3 no-booking quote rounds in 14 days"""
-    # Simplified check - production would query database
-    user_key = f"user_{user_id}_quotes"
+    """Phase 12.B Fix: Track 4th quote triggers $49 deposit requirement"""
+    import time
+    from collections import defaultdict
     
-    if not hasattr(check_fair_use_policy, 'user_quotes'):
-        check_fair_use_policy.user_quotes = defaultdict(int)
+    if not hasattr(check_fair_use_policy, 'user_tracking'):
+        check_fair_use_policy.user_tracking = defaultdict(lambda: {'quotes': 0, 'bookings': 0, 'last_quote': 0})
     
-    # For demo purposes, allow first 3 quote rounds
-    if check_fair_use_policy.user_quotes[user_key] < 3:
-        check_fair_use_policy.user_quotes[user_key] += 1
-        return True
+    user_key = f"user_{user_id}"
+    user_data = check_fair_use_policy.user_tracking[user_key]
     
-    return False
+    # Check if 14-day window has reset
+    two_weeks_ago = time.time() - (14 * 24 * 3600)
+    if user_data['last_quote'] < two_weeks_ago:
+        user_data['quotes'] = 0
+        user_data['bookings'] = 0
+    
+    # Increment quote count
+    user_data['quotes'] += 1
+    user_data['last_quote'] = time.time()
+    
+    # If this is the 4th quote without bookings, require deposit
+    if user_data['quotes'] >= 4 and user_data['bookings'] == 0:
+        return False
+    
+    return True
 
 def create_transport_request(data):
     """Create a new transport request from intake data"""
@@ -4393,8 +4405,8 @@ def generate_dummy_quotes(request_data):
     """Phase 12.A: Generate quotes with constrained pricing ($20k-$72k) and Concierge options"""
     import random
     
-    # Phase 12.A: Dummy pricing band constraint
-    base_prices = [22000, 28000, 35000, 42000, 48000, 55000, 62000, 68000]
+    # Phase 12.B Fix: Strict $20k-$72k dummy pricing constraint 
+    base_prices = [20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000, 60000, 65000, 70000, 72000]
     
     # Check if any Concierge-enabled affiliate exists (for demo, assume 1 exists)
     has_concierge_provider = True
@@ -4439,9 +4451,9 @@ def generate_dummy_quotes(request_data):
             'booking_code': None
         })
     
-    # Phase 12.A: Add Concierge quote if provider exists
+    # Phase 12.B Fix: Concierge = lowest base + $15k exactly
     if has_concierge_provider:
-        # Find best base fare and add $15k
+        # Find best (lowest) base fare and add exactly $15k
         best_base = min(q['base_fare'] for q in quotes)
         concierge_base = best_base
         concierge_addon = 15000

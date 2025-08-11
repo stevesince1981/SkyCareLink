@@ -46,11 +46,11 @@
                                 {% endif %}
                             </div>
                             
-                            <!-- Phase 12.A: Concierge badge (not "Spotlight") -->
+                            <!-- Phase 12.B Fix: Concierge badge (removed "Spotlight" completely) -->
                             {% if quote.is_concierge %}
                             <div class="concierge-badge ms-auto" 
                                  data-bs-toggle="tooltip" 
-                                 title="Concierge service: $7.5k to MediFly, $7.5k to affiliate. Base 5% commission applies only to base fare.">
+                                 title="Concierge service: Premium white-glove experience. $7.5k to MediFly, $7.5k to affiliate. Base 5% commission applies only to base fare.">
                                 <span class="badge bg-gradient-primary">
                                     <i class="fas fa-concierge-bell me-1"></i>Concierge
                                 </span>
@@ -230,10 +230,19 @@
             </div>
             <div class="modal-body">
                 <p><strong>Request <span id="selectedAffiliateName"></span> for your transport?</strong></p>
-                <p>A booking code will be issued to you and the affiliate. Your request will be sent for confirmation. Provider identity remains hidden until affiliate confirms with partial or full payment.</p>
+                
+                <!-- Phase 12.B Fix: Enhanced selection modal -->
+                <div class="quote-code-preview mb-3">
+                    <div class="border rounded p-3 bg-light">
+                        <h6>Quote Code: <span id="generatedQuoteCode" class="text-monospace font-weight-bold"></span></h6>
+                        <p class="mb-1"><strong>Status:</strong> Awaiting affiliate confirmation</p>
+                        <small class="text-muted">Booking will be confirmed once affiliate accepts and deposit/payment is secured.</small>
+                    </div>
+                </div>
+                
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Once confirmed, you'll receive the provider's full contact information and can coordinate directly.
+                    Provider identity remains masked until affiliate confirms with payment. You'll then receive full contact information for direct coordination.
                 </div>
             </div>
             <div class="modal-footer">
@@ -450,8 +459,22 @@ function selectAffiliate(quoteId, affiliateName) {
     selectedQuoteId = quoteId;
     document.getElementById('selectedAffiliateName').textContent = affiliateName;
     
+    // Phase 12.B Fix: Generate quote code immediately for preview
+    const quoteCode = generateQuoteCode();
+    document.getElementById('generatedQuoteCode').textContent = quoteCode;
+    
     const modal = new bootstrap.Modal(document.getElementById('affiliateSelectionModal'));
     modal.show();
+}
+
+function generateQuoteCode() {
+    // Generate 8-character alphanumeric code
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
 }
 
 function confirmAffiliateSelection() {

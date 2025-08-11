@@ -1,0 +1,98 @@
+Phase 12.B – Runtime Fix Pass
+1. Pancake Intake – 5 Steps
+Current gap: Some transitions don’t preserve state after login, and some steps don’t shrink smoothly.
+Fixes:
+
+Make each step collapse into a titled bar (accordion style) when “Next” is clicked.
+
+Store all step data in session/localStorage so if login is triggered, user returns to Review with everything intact.
+
+Add + Can't find it? link on location fields → opens small modal to manually enter address.
+
+Same-day 20% surcharge toggle appears next to date picker with tooltip explaining cost impact.
+
+Patient equipment auto-populate on Severity Level 3 but stays editable.
+
+2. Quotes List
+Current gap: Prices and badges still inconsistent, and Concierge logic needs enforcement.
+Fixes:
+
+Price randomizer restricted to $20k–$72k for dummy mode before surcharge.
+
+Remove “Spotlight” badge → Replace with Concierge badge if $15k add-on is available.
+
+Concierge total = lowest base + $15k.
+
+When user clicks Select, show modal:
+
+Quote Code (generated)
+
+Status: "Awaiting affiliate confirmation"
+
+Instruction: “Booking will be confirmed once affiliate accepts and deposit/payment is secured.”
+
+3. Affiliate Portal
+Current gap: Post-selection flow not final.
+Fixes:
+
+Pending request shows Confirm Booking button.
+
+On confirm:
+
+Unmask provider contact info to affiliate only.
+
+Provider sees affiliate identity.
+
+Ledger logs $7.5k / $7.5k split for concierge jobs, plus normal commission with 1% recoup.
+
+Add “concierge credit” line item to ledger view.
+
+4. Anti-Abuse System
+Current gap: UI gate works but not fully simulated for deposit flow.
+Fixes:
+
+Track quote requests per user/IP/device fingerprint in rolling 14-day window.
+
+On 4th quote without booking → show $49 refundable deposit modal.
+
+Simulated Stripe checkout (until real integration).
+
+Admin override toggle in dashboard.
+
+Add Google reCAPTCHA to public intake for anon users.
+
+Apply per-IP rate limit (5/minute) to quote submissions.
+
+5. Requests Screen
+Current gap: Layout not as compact as intended.
+Fixes:
+
+Reduce row padding to ~Excel row spacing.
+
+Add “New quote available” badge that auto-clears on click.
+
+Keep 15s polling interval for real-time updates.
+
+6. Affiliate Team Management
+Fixes:
+
+Owner can invite by email → Member accepts → assigned “Team Member” role.
+
+Members see all org requests.
+
+Owner can reassign requests to a team member.
+
+7. AI Helper Bot
+Fixes:
+
+Start prompt: “Hi, how can I help you today? Are you an Affiliate, Hospital/Clinic, or Individual?”
+
+Role-based FAQ buttons:
+
+Affiliate: Commission rules, $25k recoup program, concierge add-on, training.
+
+Hospital/Clinic: How to request transport, partner benefits, referral codes.
+
+Individual: Cost estimates, membership vs per-trip, cancellation policy.
+
+Industry-standard language with clear answers + “More help” link to contact form.
