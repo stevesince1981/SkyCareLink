@@ -905,7 +905,7 @@ def login_post():
             elif user['role'] == 'admin':
                 return redirect(url_for('admin_dashboard'))
             elif user['role'] == 'hospital':
-                return redirect(url_for('consumer_requests_phase12'))
+                return redirect(url_for('consumer_requests'))
             else:
                 return redirect(url_for('home'))
     else:
@@ -1202,8 +1202,110 @@ def consumer_referrals():
 
 @consumer_app.route('/requests')
 def consumer_requests():
-    """Unified request/quote management page with historical data"""
-    return render_template('consumer_requests.html')
+    """Phase 12.A: Enhanced requests screen with card layout"""
+    # Get user's transport requests
+    user_requests = session.get('transport_requests', {})
+    
+    # Phase 12.C: Add sample data for demo purposes if no requests exist
+    if not user_requests:
+        from datetime import datetime, timedelta
+        import random
+        
+        sample_requests = {
+            'req_001': {
+                'request_id': 'req_001',
+                'timestamp': (datetime.now() - timedelta(hours=2)).isoformat(),
+                'transport_type': 'critical',
+                'severity_level': 3,
+                'from_facility': 'Johns Hopkins Hospital',
+                'to_facility': 'Mayo Clinic Rochester',
+                'patient_name': 'John Smith',
+                'patient_age_band': '45-64',
+                'status': 'pending_quotes',
+                'equipment': ['ventilator', 'cardiac_monitor']
+            },
+            'req_002': {
+                'request_id': 'req_002', 
+                'timestamp': (datetime.now() - timedelta(hours=6)).isoformat(),
+                'transport_type': 'scheduled',
+                'severity_level': 2,
+                'from_facility': 'Cleveland Clinic',
+                'to_facility': 'UCSF Medical Center',
+                'patient_name': 'Sarah Johnson',
+                'patient_age_band': '25-44',
+                'status': 'quotes_received',
+                'equipment': ['iv_pumps']
+            },
+            'req_003': {
+                'request_id': 'req_003',
+                'timestamp': (datetime.now() - timedelta(days=1)).isoformat(),
+                'transport_type': 'critical',
+                'severity_level': 1,
+                'from_facility': 'Mass General Hospital',
+                'to_facility': 'UCLA Medical Center',
+                'patient_name': 'Robert Davis',
+                'patient_age_band': '65+',
+                'status': 'completed',
+                'equipment': ['transport_incubator']
+            }
+        }
+        user_requests = sample_requests
+        session['transport_requests'] = user_requests
+    
+    requests_list = []
+    for request_id, req_data in user_requests.items():
+        # Calculate elapsed time
+        from datetime import datetime
+        created_time = datetime.fromisoformat(req_data['timestamp'])
+        elapsed_minutes = int((datetime.now() - created_time).total_seconds() / 60)
+        
+        # Mock quote data for display
+        import random
+        quote_count = random.randint(0, 5) if req_data['status'] != 'pending_quotes' else random.randint(0, 3)
+        
+        # Status mapping
+        status_mapping = {
+            'pending_quotes': {'label': 'Pending Quotes', 'color': 'warning'},
+            'quotes_received': {'label': 'Quotes Available', 'color': 'success'},
+            'confirmed': {'label': 'Confirmed', 'color': 'primary'},
+            'completed': {'label': 'Completed', 'color': 'success'},
+            'cancelled': {'label': 'Cancelled', 'color': 'danger'}
+        }
+        
+        status_info = status_mapping.get(req_data['status'], {'label': 'Unknown', 'color': 'secondary'})
+        
+        requests_list.append({
+            'request_id': request_id,
+            'from_facility': req_data['from_facility'],
+            'to_facility': req_data['to_facility'],
+            'patient_name': req_data['patient_name'],
+            'patient_age_band': req_data['patient_age_band'],
+            'transport_type': req_data['transport_type'],
+            'severity_level': req_data['severity_level'],
+            'status': req_data['status'],
+            'status_label': status_info['label'],
+            'status_color': status_info['color'],
+            'quote_count': quote_count,
+            'min_price': random.randint(20000, 40000) if quote_count > 0 else 0,
+            'max_price': random.randint(50000, 72000) if quote_count > 0 else 0,
+            'timestamp': req_data['timestamp'],
+            'created_date': created_time.strftime('%m/%d/%Y'),
+            'created_time': created_time.strftime('%I:%M %p'),
+            'elapsed_time': f"{elapsed_minutes}m ago" if elapsed_minutes < 60 else f"{elapsed_minutes//60}h {elapsed_minutes%60}m ago",
+            'has_new_quotes': random.random() < 0.3 if req_data['status'] == 'pending_quotes' else False
+        })
+    
+    # Calculate summary statistics
+    summary = {
+        'total_requests': len(requests_list),
+        'pending_requests': len([r for r in requests_list if r['status'] == 'pending_quotes']),
+        'completed_requests': len([r for r in requests_list if r['status'] == 'completed']),
+        'avg_quote_price': sum(r['min_price'] for r in requests_list if r['quote_count'] > 0) // max(1, sum(1 for r in requests_list if r['quote_count'] > 0))
+    }
+    
+    return render_template('consumer_requests_phase12.html', 
+                         requests=requests_list, 
+                         summary=summary)
 
 @consumer_app.route('/portal-views')
 def portal_views():
@@ -4846,8 +4948,8 @@ def quotes_select():
             'message': 'Error processing selection'
         }), 500
 
-@consumer_app.route('/requests')
-def consumer_requests_phase12():
+# Old duplicate route removed - merged into main /requests route above
+def consumer_requests_phase12_old():
     """Phase 12.A: Compact requests screen with New Quote indicators"""
     # Get user's transport requests
     user_requests = session.get('transport_requests', {})
