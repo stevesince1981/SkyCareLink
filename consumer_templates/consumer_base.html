@@ -400,12 +400,18 @@
         const optionsDiv = document.createElement('div');
         optionsDiv.style.cssText = 'margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;';
         
-        ['Individual/Family Member', 'Hospital/Clinic', 'Affiliate Provider'].forEach(option => {
+        const buttonOptions = [
+            { text: 'Individual/Family<br>Member', value: 'Individual/Family Member' },
+            { text: 'Hospital/<br>Clinic', value: 'Hospital/Clinic' },
+            { text: 'Affiliate<br>Provider', value: 'Affiliate Provider' }
+        ];
+        
+        buttonOptions.forEach(option => {
             const button = document.createElement('button');
             button.className = 'btn btn-outline-primary';
-            button.style.cssText = 'font-size: 0.65rem; padding: 8px 2px; height: 50px; line-height: 1.1; word-wrap: break-word; white-space: normal;';
-            button.textContent = option;
-            button.onclick = () => handleAIResponse(option);
+            button.style.cssText = 'font-size: 0.7rem; padding: 8px 4px; height: 50px; line-height: 1.2; display: flex; align-items: center; justify-content: center; text-align: center;';
+            button.innerHTML = option.text;
+            button.onclick = () => handleAIResponse(option.value);
             optionsDiv.appendChild(button);
         });
         
