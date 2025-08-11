@@ -6,15 +6,17 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 12.B Runtime Fixes Complete - Aug 11, 2025)
-- **Phase 12.B Runtime Fixes**: Enhanced pancake intake with accordion-style step transitions, clickable completed steps, improved state preservation with localStorage redundancy
-- **Anti-abuse Enhancements**: 4th quote triggers $49 deposit modal, per-IP rate limiting (5/minute), simulated payment processing, admin override capability
-- **Quotes System Refinements**: Strict $20k-$72k pricing constraint, Concierge = lowest base + $15k exactly, enhanced affiliate selection modal with quote code preview
-- **Requests Screen Polish**: Excel-style compact rows (0.4rem padding), "New Quote" badge auto-clearing, 15s polling maintained for real-time updates
-- **Address Input Improvements**: Manual address modal for "Can't find it?" cases, enhanced form validation, tooltip for same-day surcharge explanation
+## Recent Changes (Phase 12.C Comprehensive Updates Complete - Aug 11, 2025)
+- **MVP Membership Removal**: Completely eliminated all MVP membership references from intake forms, service selection, and throughout the application
+- **Intake Form Enhancements**: Fixed 415 error for form submissions, updated severity levels to "Level 1-3" format, equal-sized boxes (180px height, centered)
+- **Hospital Autofill System**: Implemented comprehensive hospital/clinic database with 30+ major medical centers, real-time search with debouncing for From/To locations
+- **Family Seating Standardization**: Updated to industry standard $1,200 per seat (previously $500), aircraft-specific availability messaging maintained
+- **Same-Day Pricing Logic**: Moved 20% upcharge notice to date/time selection where logically appropriate, removed from service type cards
+- **Legal Compliance Implementation**: Created comprehensive Terms of Service and Privacy Policy modals with standard industry language, liability protection, refund policies, HIPAA compliance
+- **AI Assistant Updates**: Fixed home page AI bot with current information - updated pricing, removed MVP references, correct severity levels, industry-standard family seating costs
+- **Technical Improvements**: Enhanced JSON/form data handling, hospital search API endpoint, modal integration for legal documents
 - **State Management**: Dual storage (session + localStorage), form restoration after login flow, enhanced auto-save on all input changes
 - **Provider Masking Logic**: Identity remains hidden until affiliate payment confirmation, booking code generation with preview display
-- **AI Support Bot**: Industry-standard FAQ responses for Affiliates/Hospitals/Individuals, clear escalation paths to contact support
 
 ## System Architecture
 

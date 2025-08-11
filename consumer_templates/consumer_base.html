@@ -360,13 +360,13 @@
     
     function sendAICommand(command) {
         document.getElementById('floatingAICommand').value = command;
-        // Enhanced AI Assistant with current information
+        // Enhanced AI Assistant with current information (Updated Aug 11, 2025)
         const responses = {
-            'How do I request transport?': 'Click "New Request" and complete our 5-step pancake intake form. You\'ll need to provide patient information, pick-up/drop-off locations, medical equipment needs, and family seating preferences.',
-            'What does same-day transport cost?': 'Same-day transport includes a 20% urgency surcharge. Family seating is available for $500 per seat (aircraft-dependent). Total costs typically range from $20,000-$72,000.',
-            'Can family travel with the patient?': 'Yes! Our family seating system offers up to 3 seats depending on aircraft type. Helicopters don\'t support family seating due to space constraints.',
-            'What equipment is available?': 'We support all critical medical equipment including ECMO, ventilators, cardiac monitors, NICU setups, and custom equipment. Equipment auto-populates based on severity level.',
-            'How does billing work?': 'First quote is free. Additional quotes require MFA verification. Excessive quote requests (4+) trigger a $49 deposit for anti-abuse protection.'
+            'How do I request transport?': 'Click "New Request" and complete our 5-step pancake intake form. You\'ll need to provide patient information (Level 1-3 severity), pick-up/drop-off locations with hospital autofill, medical equipment needs, and family seating preferences.',
+            'What does same-day transport cost?': 'Same-day transport includes a 20% urgency surcharge applied when you select same-day scheduling. Family seating is available for $1,200 per seat (industry standard, aircraft-dependent). Total costs typically range from $20,000-$72,000.',
+            'Can family travel with the patient?': 'Yes! Our family seating system offers up to 3 seats depending on aircraft type at $1,200 per seat. Helicopters don\'t support family seating due to space constraints. Pricing follows industry standards.',
+            'What equipment is available?': 'We support all critical medical equipment including ECMO, ventilators, cardiac monitors, NICU setups, and custom equipment. Equipment selection varies by patient severity level (Level 1-3) with automatic recommendations.',
+            'How does billing work?': 'First quote is always free. MFA verification required for account security. Excessive quote requests (4+) trigger a $49 deposit for anti-abuse protection. No MVP membership programs currently available.'
         };
         alert('AI Transport Assistant: ' + (responses[command] || 'I can help with transport requests, family seating, medical equipment, billing questions, and more. What would you like to know?'));
     }
