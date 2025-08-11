@@ -315,10 +315,10 @@ def generate_mock_quotes(request_data, affiliate_count=None):
             if max_seats == 0:
                 family_availability_message = "No family seating on helicopter aircraft"
             elif available_seats < family_seats:
-                family_cost = available_seats * 500
+                family_cost = available_seats * 1200
                 family_availability_message = f"Limited to {available_seats} seat{'s' if available_seats != 1 else ''} (requested {family_seats})"
             else:
-                family_cost = available_seats * 500
+                family_cost = available_seats * 1200
                 family_availability_message = f"{available_seats} family seat{'s' if available_seats != 1 else ''} (+${family_cost:,})"
         
         total_cost += family_cost
@@ -4470,7 +4470,14 @@ def consumer_intake():
 def intake_submit():
     """Phase 12.A: Handle intake submission with anti-abuse measures"""
     try:
-        data = request.get_json()
+        # Handle both JSON and form data
+        if request.is_json:
+            data = request.get_json()
+        else:
+            data = request.form.to_dict()
+            # Convert equipment array from form data
+            equipment = request.form.getlist('equipment')
+            data['equipment'] = equipment
         
         # Phase 12.A: Anti-abuse rate limiting check
         client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
@@ -4919,6 +4926,31 @@ if DB_AVAILABLE:
         
         def __repr__(self):
             return f'<AbuseFlags {self.ip_address} - {self.abuse_type}>'
+
+# Hospital and Clinic Database for autofill functionality
+HOSPITAL_CLINIC_DATABASE = [
+    "Johns Hopkins Hospital - Baltimore, MD", "Mayo Clinic - Rochester, MN", "Cleveland Clinic - Cleveland, OH",
+    "Massachusetts General Hospital - Boston, MA", "UCLA Medical Center - Los Angeles, CA", "NewYork-Presbyterian Hospital - New York, NY",
+    "UCSF Medical Center - San Francisco, CA", "Duke University Hospital - Durham, NC", "Cedars-Sinai Medical Center - Los Angeles, CA",
+    "Mount Sinai Hospital - New York, NY", "Texas Medical Center - Houston, TX", "Houston Methodist Hospital - Houston, TX",
+    "Baylor University Medical Center - Dallas, TX", "Phoenix Children's Hospital - Phoenix, AZ", "Children's Hospital of Philadelphia - Philadelphia, PA",
+    "Seattle Children's Hospital - Seattle, WA", "Children's Healthcare of Atlanta - Atlanta, GA", "Boston Children's Hospital - Boston, MA",
+    "Cincinnati Children's Hospital - Cincinnati, OH", "Children's Hospital Colorado - Aurora, CO", "Jackson Memorial Hospital - Miami, FL",
+    "Harborview Medical Center - Seattle, WA", "Denver Health Medical Center - Denver, CO", "Cook Children's Medical Center - Fort Worth, TX",
+    "Penn State Health Milton S. Hershey Medical Center - Hershey, PA", "University of Michigan Hospital - Ann Arbor, MI",
+    "Vanderbilt University Medical Center - Nashville, TN", "Washington University School of Medicine - St. Louis, MO",
+    "University of Colorado Hospital - Aurora, CO", "Oregon Health & Science University - Portland, OR"
+]
+
+@consumer_app.route('/api/hospital-search', methods=['GET'])
+def hospital_search():
+    """Hospital/clinic search endpoint for autofill functionality"""
+    query = request.args.get('q', '').lower()
+    if len(query) < 2:
+        return jsonify([])
+    
+    matching_hospitals = [h for h in HOSPITAL_CLINIC_DATABASE if query in h.lower()]
+    return jsonify(matching_hospitals[:10])
 
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

@@ -119,12 +119,18 @@
 .severity-row {
     display: flex;
     gap: 1rem;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .severity-card {
     flex: 1;
-    min-height: 140px;
+    min-height: 180px;
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .pancake-navigation {
@@ -260,7 +266,7 @@
                                                 </div>
                                                 <h6>Critical Transport</h6>
                                                 <p class="small text-muted">Immediate, life-threatening situations</p>
-                                                <span class="badge bg-danger">Same-day +20%</span>
+                                                <span class="badge bg-danger">Urgent</span>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -273,16 +279,7 @@
                                                 <span class="badge bg-primary">Standard rates</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="service-card" data-service="mvp" onclick="selectService('mvp')">
-                                                <div class="service-icon mb-2">
-                                                    <i class="fas fa-crown text-warning fa-2x"></i>
-                                                </div>
-                                                <h6>MVP Membership</h6>
-                                                <p class="small text-muted">Premium service package</p>
-                                                <span class="badge bg-warning">Exclusive</span>
-                                            </div>
-                                        </div>
+
                                     </div>
                                     
                                     <div class="pancake-navigation">
@@ -311,19 +308,19 @@
                                     <div class="severity-row">
                                         <div class="severity-card" data-severity="low" onclick="selectSeverity('low')">
                                             <i class="fas fa-user text-success fa-2x mb-2"></i>
-                                            <h6>Low Severity</h6>
+                                            <h6>Level 1 - Low Severity</h6>
                                             <p class="small text-muted">Stable condition, routine transport</p>
                                             <span class="badge bg-success">Standard equipment</span>
                                         </div>
                                         <div class="severity-card" data-severity="medium" onclick="selectSeverity('medium')">
                                             <i class="fas fa-heartbeat text-warning fa-2x mb-2"></i>
-                                            <h6>Medium Severity</h6>
+                                            <h6>Level 2 - Medium Severity</h6>
                                             <p class="small text-muted">Monitoring required, stable but complex</p>
                                             <span class="badge bg-warning">Enhanced monitoring</span>
                                         </div>
                                         <div class="severity-card" data-severity="high" onclick="selectSeverity('high')">
                                             <i class="fas fa-ambulance text-danger fa-2x mb-2"></i>
-                                            <h6>High Severity</h6>
+                                            <h6>Level 3 - High Severity</h6>
                                             <p class="small text-muted">Critical condition, intensive care</p>
                                             <span class="badge bg-danger">Full life support</span>
                                         </div>
@@ -362,7 +359,8 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Hospital/Facility Name</label>
                                                 <input type="text" class="form-control" name="from_hospital" id="fromHospital" 
-                                                       placeholder="Enter hospital or facility name">
+                                                       placeholder="Enter hospital or facility name" autocomplete="off">
+                                                <div id="fromHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 200px; overflow-y: auto;"></div>
                                                 <div class="form-text">Start typing for suggestions</div>
                                             </div>
                                             <div class="mb-3">
@@ -394,7 +392,9 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Hospital/Facility Name</label>
                                                 <input type="text" class="form-control" name="to_hospital" id="toHospital" 
-                                                       placeholder="Enter destination hospital">
+                                                       placeholder="Enter destination hospital" autocomplete="off">
+                                                <div id="toHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 200px; overflow-y: auto;"></div>
+                                                <div class="form-text">Start typing for suggestions</div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Address</label>
@@ -1083,10 +1083,28 @@ document.getElementById('intakeForm').addEventListener('submit', function(e) {
     formData.append('family_seats', familySeats);
     formData.append('current_step', currentStep);
     
-    // Submit the form
+    // Submit the form with proper JSON content type
+    const jsonData = {};
+    for (let [key, value] of formData.entries()) {
+        if (jsonData[key]) {
+            if (Array.isArray(jsonData[key])) {
+                jsonData[key].push(value);
+            } else {
+                jsonData[key] = [jsonData[key], value];
+            }
+        } else {
+            jsonData[key] = value;
+        }
+    }
+    jsonData.family_seats = familySeats;
+    jsonData.current_step = currentStep;
+    
     fetch('{{ url_for("intake_submit") }}', {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData)
     })
     .then(response => response.json())
     .then(data => {
@@ -1110,9 +1128,160 @@ document.getElementById('intakeForm').addEventListener('submit', function(e) {
 document.addEventListener('input', updateStepValidation);
 document.addEventListener('change', updateStepValidation);
 
-// Initialize family seat controls
+// Initialize family seat controls and hospital autofill
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('seatMinus').disabled = true;
+    setupHospitalAutofill();
 });
+
+// Hospital autofill functionality  
+function setupHospitalAutofill() {
+    setupAutofill('fromHospital', 'fromHospitalSuggestions');
+    setupAutofill('toHospital', 'toHospitalSuggestions');
+}
+
+function setupAutofill(inputId, suggestionsId) {
+    const input = document.getElementById(inputId);
+    const suggestions = document.getElementById(suggestionsId);
+    if (!input || !suggestions) return;
+    
+    let debounceTimer;
+
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const query = this.value.trim();
+            if (query.length < 2) {
+                suggestions.classList.remove('show');
+                return;
+            }
+
+            fetch(`/api/hospital-search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(hospitals => {
+                    suggestions.innerHTML = '';
+                    hospitals.forEach(hospital => {
+                        const item = document.createElement('a');
+                        item.className = 'dropdown-item';
+                        item.href = '#';
+                        item.textContent = hospital;
+                        item.onclick = (e) => {
+                            e.preventDefault();
+                            input.value = hospital;
+                            suggestions.classList.remove('show');
+                            saveFormData();
+                        };
+                        suggestions.appendChild(item);
+                    });
+                    
+                    if (hospitals.length > 0) {
+                        suggestions.classList.add('show');
+                    } else {
+                        suggestions.classList.remove('show');
+                    }
+                })
+                .catch(error => {
+                    console.error('Hospital search error:', error);
+                    suggestions.classList.remove('show');
+                });
+        }, 300);
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+            suggestions.classList.remove('show');
+        }
+    });
+}
+
+function openTermsModal() {
+    const termsModal = new bootstrap.Modal(document.getElementById('termsModal'));
+    termsModal.show();
+}
+
+function openPrivacyModal() {
+    const privacyModal = new bootstrap.Modal(document.getElementById('privacyModal'));
+    privacyModal.show();
+}
 </script>
+
+<!-- Terms of Service Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div class="alert alert-info">
+                    <strong>Important:</strong> By using MediFly services, you acknowledge that we are an information aggregation platform connecting patients with medical transport providers.
+                </div>
+                <h6>1. Service Description</h6>
+                <p>MediFly operates as an information aggregation and connection platform for medical air transport services. We do not own, operate, or control any aircraft or medical transport equipment. All transport services are provided by independent affiliate providers.</p>
+                
+                <h6>2. Limitation of Liability</h6>
+                <p><strong>MediFly disclaims all liability for:</strong></p>
+                <ul>
+                    <li>Medical outcomes, patient safety, or quality of care during transport</li>
+                    <li>Aircraft safety, mechanical issues, or operational delays</li>
+                    <li>Pricing adjustments, additional fees, or billing disputes with affiliates</li>
+                    <li>Cancellations, delays, or changes to transport schedules</li>
+                    <li>Any wrongdoing, negligence, or misconduct by affiliate providers</li>
+                </ul>
+
+                <h6>3. Cancellation and Refund Policy</h6>
+                <p><strong>Patient Death or Medical Contraindication:</strong> In the unfortunate event of patient death before transport, refunds are handled directly by the affiliate provider.</p>
+                <p><strong>Cancellation Timeframes:</strong></p>
+                <ul>
+                    <li><strong>24+ hours before transport:</strong> Full or partial refunds may be available</li>
+                    <li><strong>Less than 24 hours:</strong> Most affiliates impose cancellation fees</li>
+                    <li><strong>Day of transport:</strong> Significant cancellation penalties typically apply</li>
+                </ul>
+                <p><em>All refund requests must be submitted directly to the affiliate provider. MediFly does not process refunds.</em></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div class="alert alert-warning">
+                    <strong>HIPAA Notice:</strong> MediFly operates as a business associate and maintains strict PHI protection standards.
+                </div>
+                <h6>1. Information We Collect</h6>
+                <p><strong>Personal Information:</strong> Name, contact information, medical information necessary for transport coordination, payment and billing information, and location data for pick-up and delivery coordination.</p>
+                
+                <h6>2. How We Use Your Information</h6>
+                <ul>
+                    <li><strong>Transport Coordination:</strong> Connecting you with appropriate medical transport providers</li>
+                    <li><strong>Communication:</strong> Updates on transport status, quotes, and service notifications</li>
+                    <li><strong>Platform Improvement:</strong> Analytics to enhance user experience and service quality</li>
+                    <li><strong>Legal Compliance:</strong> Meeting regulatory requirements and safety standards</li>
+                </ul>
+
+                <h6>3. Information Sharing</h6>
+                <p><strong>With Affiliate Providers:</strong> We share necessary medical and contact information with selected transport providers to facilitate your transport request.</p>
+                <p><strong>We Do NOT Share:</strong> Information with unauthorized third parties, marketing lists, medical information for non-transport purposes, or personal data for commercial gain.</p>
+
+                <h6>4. Data Security</h6>
+                <p>MediFly implements industry-standard security measures including end-to-end encryption for all PHI transmission, multi-factor authentication, regular security audits, secure data storage, and HIPAA-compliant data handling procedures.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
