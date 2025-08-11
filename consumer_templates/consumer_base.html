@@ -249,19 +249,11 @@
             </div>
             <div class="ai-body">
                 <input type="text" class="form-control mb-3" id="floatingAICommand" 
-                       placeholder="Ask about transport options...">
-                <div class="ai-suggestions">
-                    <button class="btn btn-outline-primary btn-sm mb-2 w-100" 
-                            onclick="sendAICommand('help me build a flight for grandma from Orlando to NYC')">
-                        Orlando to NYC for Grandma
-                    </button>
-                    <button class="btn btn-outline-success btn-sm mb-2 w-100" 
-                            onclick="sendAICommand('what emergency transport options are available')">
-                        Emergency Options
-                    </button>
-                    <button class="btn btn-outline-info btn-sm w-100" 
-                            onclick="sendAICommand('show me family seat options')">
-                        Family Seat Options
+                       placeholder="Click below to start conversation..." style="display: none;">
+                <div class="ai-welcome" id="aiWelcome">
+                    <p class="text-center mb-3"><strong>Click the button below to start our conversation:</strong></p>
+                    <button class="btn btn-primary w-100" onclick="sendAICommand('start')">
+                        <i class="fas fa-comments me-2"></i>Start AI Assistant
                     </button>
                 </div>
             </div>
@@ -365,9 +357,10 @@
     };
 
     function sendAICommand(command) {
-        document.getElementById('floatingAICommand').value = command;
-        
-        if (!aiState.conversationStarted) {
+        // Hide welcome screen and show conversation area
+        const welcomeDiv = document.getElementById('aiWelcome');
+        if (welcomeDiv && !aiState.conversationStarted) {
+            welcomeDiv.style.display = 'none';
             startAIConversation();
             return;
         }
