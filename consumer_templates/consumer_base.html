@@ -556,7 +556,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         if (!chatArea) {
             chatArea = document.createElement('div');
             chatArea.id = 'aiChatArea';
-            chatArea.style.cssText = 'max-height: 400px; overflow-y: auto; padding: 15px; background: white; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;';
+            chatArea.style.cssText = 'max-height: 250px; overflow-y: auto; padding: 8px; background: white; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd;';
             const aiBody = panel.querySelector('.ai-body');
             if (aiBody) {
                 aiBody.insertBefore(chatArea, aiBody.firstChild);
@@ -593,9 +593,16 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             chatArea.appendChild(optionsDiv);
         }
         
-        // Add floating navigation controls - only one set at bottom
+        // Add floating navigation controls - only one set at bottom, remove any existing first
         if (isNewSection && aiState.userType) {
+            // Remove any existing floating controls
+            const existingControls = chatArea.querySelector('.floating-navigation-controls');
+            if (existingControls) {
+                existingControls.remove();
+            }
+            
             const floatingControls = document.createElement('div');
+            floatingControls.className = 'floating-navigation-controls';
             floatingControls.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 6px 0; border-top: 1px solid #eee; margin-top: 6px; text-align: center;';
             floatingControls.innerHTML = `
                 <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.6rem; padding: 3px 6px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
