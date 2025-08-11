@@ -403,7 +403,7 @@
         ['Individual/Family Member', 'Hospital/Clinic', 'Affiliate Provider'].forEach(option => {
             const button = document.createElement('button');
             button.className = 'btn btn-outline-primary';
-            button.style.cssText = 'font-size: 0.7rem; padding: 8px 4px; height: 45px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+            button.style.cssText = 'font-size: 0.65rem; padding: 8px 2px; height: 50px; line-height: 1.1; word-wrap: break-word; white-space: normal;';
             button.textContent = option;
             button.onclick = () => handleAIResponse(option);
             optionsDiv.appendChild(button);
@@ -568,23 +568,21 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         
         chatArea.appendChild(messageDiv);
         
-        // Add option buttons if provided
+        // Add option buttons if provided (remove Start Over from question lists)
         if (options.length > 0) {
             const optionsDiv = document.createElement('div');
             optionsDiv.style.cssText = 'margin-top: 10px; margin-bottom: 8px;';
             
             options.forEach(option => {
+                // Skip "Start Over" button in question lists since we have floating controls
+                if (option === 'Start Over') return;
+                
                 const button = document.createElement('button');
                 button.className = 'btn btn-outline-primary me-2 mb-2';
                 button.style.cssText = 'font-size: 0.7rem; padding: 4px 8px; min-height: 28px; min-width: 120px;';
                 button.textContent = option;
                 button.onclick = () => {
-                    if (option === 'Start Over') {
-                        aiState = { userType: null, conversationStarted: false };
-                        startAIConversation();
-                    } else {
-                        handleAIResponse(option);
-                    }
+                    handleAIResponse(option);
                 };
                 optionsDiv.appendChild(button);
             });
@@ -592,13 +590,13 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             chatArea.appendChild(optionsDiv);
         }
         
-        // Add floating navigation controls (removed text size controls)
+        // Add floating navigation controls - only one set at bottom
         if (isNewSection && aiState.userType) {
             const floatingControls = document.createElement('div');
             floatingControls.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 8px 0; border-top: 1px solid #eee; margin-top: 8px; text-align: center;';
             floatingControls.innerHTML = `
-                <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
-                <button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();" style="font-size: 0.7rem; padding: 2px 6px;"><i class="fas fa-redo me-1"></i>Start Over</button>
+                <button class="btn btn-outline-secondary btn-sm me-2" onclick="goBackInConversation();" style="font-size: 0.7rem; padding: 4px 8px;"><i class="fas fa-arrow-left me-1"></i>Go Back</button>
+                <button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();" style="font-size: 0.7rem; padding: 4px 8px;"><i class="fas fa-redo me-1"></i>Start Over</button>
             `;
             chatArea.appendChild(floatingControls);
         }
