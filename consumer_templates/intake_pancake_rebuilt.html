@@ -1284,4 +1284,67 @@ function openPrivacyModal() {
     </div>
 </div>
 
+<!-- Anti-Abuse Deposit Modal -->
+<div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="depositModalLabel">Anti-Abuse Deposit Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Fair Use Policy Triggered</strong>
+                </div>
+                <p id="depositMessage">
+                    After 4 quote requests without booking, a $49 refundable deposit is required. 
+                    This helps prevent system abuse and will be fully refunded after your first booking.
+                </p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="processDeposit()">
+                        <i class="fas fa-credit-card me-2"></i>Pay $49 Deposit
+                    </button>
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDepositModal(data) {
+    document.getElementById('depositModalLabel').textContent = data.deposit_modal_title || 'Anti-Abuse Deposit Required';
+    document.getElementById('depositMessage').textContent = data.deposit_modal_body || 
+        `A $${data.deposit_amount} refundable deposit is required to continue.`;
+    
+    const modal = new bootstrap.Modal(document.getElementById('depositModal'));
+    modal.show();
+}
+
+function processDeposit() {
+    // In a real implementation, this would integrate with a payment processor
+    alert('Payment processing would be integrated here. For demo purposes, proceeding...');
+    
+    // Close the modal and proceed with submission
+    bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
+    
+    // Set a flag to bypass the deposit check and resubmit
+    sessionStorage.setItem('deposit_paid', 'true');
+    
+    // Add hidden field to form
+    const form = document.getElementById('intakeForm');
+    const hiddenField = document.createElement('input');
+    hiddenField.type = 'hidden';
+    hiddenField.name = 'deposit_paid';
+    hiddenField.value = 'true';
+    form.appendChild(hiddenField);
+    
+    // Resubmit form
+    form.submit();
+}
+</script>
+
 {% endblock %}

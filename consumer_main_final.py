@@ -4305,11 +4305,19 @@ def join_hospital():
         try:
             referral_code = request.form.get('referral_code', '').strip()
             
+            # Combine first and last name for contact_name
+            first_name = request.form.get('first_name', '').strip()
+            last_name = request.form.get('last_name', '').strip()
+            contact_name = f"{first_name} {last_name}".strip()
+            
             hospital_data = {
                 'facility_name': request.form.get('facility_name'),
-                'contact_name': request.form.get('contact_name'),
+                'first_name': first_name,
+                'last_name': last_name,
+                'contact_name': contact_name,
                 'email': request.form.get('email'),
                 'phone': request.form.get('phone'),
+                'cell_phone': request.form.get('cell_phone'),
                 'address': request.form.get('address'),
                 'referral_code': referral_code
             }
@@ -4510,12 +4518,49 @@ def admin_affiliates():
     if not affiliates_list:
         # Fallback demo data
         affiliates_list = [
-            {'id': 1, 'name': 'AirMed Partners', 'default_commission': 5.0, 'recoup_remaining': 22500, 'strikes': 0, 'offers_concierge': session.get('affiliate_001_concierge', True), 'total_bookings': 15},
-            {'id': 2, 'name': 'Guardian Flight', 'default_commission': 5.0, 'recoup_remaining': 18000, 'strikes': 1, 'offers_concierge': False, 'total_bookings': 28},
-            {'id': 3, 'name': 'MedEvac Solutions', 'default_commission': 5.0, 'recoup_remaining': 25000, 'strikes': 0, 'offers_concierge': True, 'total_bookings': 0},
+            {
+                'id': 1, 'name': 'AirMed Partners', 'default_commission': 5.0, 'recoup_remaining': 22500, 'strikes': 0, 
+                'offers_concierge': session.get('affiliate_001_concierge', True), 'total_bookings': 15,
+                'team_members': 3, 'owner_name': 'Sarah Chen'
+            },
+            {
+                'id': 2, 'name': 'Guardian Flight', 'default_commission': 5.0, 'recoup_remaining': 18000, 'strikes': 1, 
+                'offers_concierge': session.get('affiliate_002_concierge', False), 'total_bookings': 28,
+                'team_members': 1, 'owner_name': 'Mike Rodriguez'
+            },
+            {
+                'id': 3, 'name': 'MedEvac Solutions', 'default_commission': 5.0, 'recoup_remaining': 25000, 'strikes': 0, 
+                'offers_concierge': session.get('affiliate_003_concierge', True), 'total_bookings': 0,
+                'team_members': 5, 'owner_name': 'Jennifer Walsh'
+            },
         ]
     
     return render_template('admin_affiliates.html', affiliates=affiliates_list)
+
+@consumer_app.route('/admin/affiliates/update', methods=['POST'])
+def admin_update_affiliate():
+    """Update affiliate settings and sync with session state"""
+    try:
+        data = request.get_json()
+        affiliate_id = int(data['id'])
+        concierge = data['concierge']
+        
+        # Update session state for demo mode
+        session[f'affiliate_{str(affiliate_id).zfill(3)}_concierge'] = concierge
+        
+        # In production, update database here
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                affiliate = Affiliate.query.get(affiliate_id)
+                if affiliate:
+                    affiliate.offers_concierge = concierge
+                    affiliate.default_commission = float(data['commission'])
+                    db.session.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Error updating affiliate: {e}")
+        return jsonify({'success': False, 'error': str(e)})
 
 @consumer_app.route('/admin/analytics/affiliates')
 def admin_analytics_affiliates():
@@ -4600,14 +4645,17 @@ def intake_submit():
                 'login_url': url_for('login') + '?return_to=intake_submit'
             })
         
-        # Phase 12.A: Fair-use policy check for logged-in users
+        # Phase 12.A: Fair-use policy check for logged-in users (check for deposit bypass)
         user_id = session.get('user_id')
-        if user_id and not check_fair_use_policy(user_id):
+        deposit_paid = request.form.get('deposit_paid') or session.get('deposit_paid', False)
+        if user_id and not check_fair_use_policy(user_id) and not deposit_paid:
             return jsonify({
                 'success': False,
-                'message': 'Fair-use policy triggered. A $49 refundable deposit is required.',
+                'message': 'Fair-use policy triggered. A $49 refundable deposit is required to continue.',
                 'requires_deposit': True,
-                'deposit_amount': 49
+                'deposit_amount': 49,
+                'deposit_modal_title': 'Anti-Abuse Deposit Required',
+                'deposit_modal_body': 'After 4 quote requests without booking, a $49 refundable deposit is required. This helps prevent system abuse and will be fully refunded after your first booking.'
             })
         
         # Enhanced patient data with family seating and rebuilt form structure
@@ -4727,10 +4775,41 @@ def check_fair_use_policy(user_id):
     user_data['last_quote'] = time.time()
     
     # If this is the 4th quote without bookings, require deposit
+    # Check for admin override first
+    if session.get('admin_override_deposit'):
+        return True
+        
     if user_data['quotes'] >= 4 and user_data['bookings'] == 0:
         return False
     
     return True
+
+@consumer_app.route('/admin/override_deposit', methods=['POST'])
+def admin_override_deposit():
+    """Admin override for anti-abuse deposit requirement"""
+    if session.get('user_role') != 'admin':
+        return jsonify({'success': False, 'error': 'Admin access required'})
+    
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        
+        # Reset the user's tracking
+        if hasattr(check_fair_use_policy, 'user_tracking'):
+            user_key = f"user_{user_id}"
+            if user_key in check_fair_use_policy.user_tracking:
+                check_fair_use_policy.user_tracking[user_key]['quotes'] = 0
+                check_fair_use_policy.user_tracking[user_key]['bookings'] = 0
+        
+        # Set admin override flag
+        session['admin_override_deposit'] = True
+        
+        return jsonify({
+            'success': True,
+            'message': 'Deposit requirement cleared by admin override'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 def create_transport_request(data):
     """Create a new transport request from intake data"""

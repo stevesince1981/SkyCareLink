@@ -29,6 +29,7 @@
                             <th>Strikes</th>
                             <th>Concierge</th>
                             <th>Bookings</th>
+                            <th>Team</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -68,6 +69,15 @@
                                 <strong>{{ affiliate.total_bookings }}</strong>
                             </td>
                             <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-light text-dark me-1">{{ affiliate.team_members|default(0) }}</span>
+                                    <small class="text-muted">members</small>
+                                </div>
+                                <small class="text-info">
+                                    Owner: {{ affiliate.owner_name|default('N/A') }}
+                                </small>
+                            </td>
+                            <td>
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-outline-primary" onclick="viewAffiliate({{ affiliate.id }})">
                                         <i class="fas fa-eye"></i> View
@@ -75,6 +85,14 @@
                                     <button class="btn btn-outline-warning" onclick="editAffiliate({{ affiliate.id }})">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
+                                    <button class="btn btn-outline-info" onclick="manageTeam({{ affiliate.id }})">
+                                        <i class="fas fa-users"></i> Team
+                                    </button>
+                                    {% if session.get('user_role') == 'admin' %}
+                                    <button class="btn btn-outline-success" onclick="adminOverride({{ affiliate.id }})">
+                                        <i class="fas fa-shield-alt"></i> Override
+                                    </button>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -167,23 +185,82 @@ function viewAffiliate(id) {
 }
 
 function editAffiliate(id) {
+    // Find affiliate data
+    const affiliateRow = document.querySelector(`tr:has(button[onclick*="${id}"])`);
+    const conciergeCell = affiliateRow.querySelector('td:nth-child(5)');
+    const isConcierge = conciergeCell.querySelector('.badge').textContent.trim() === 'Yes';
+    
+    // Set checkbox state to match current view
+    document.getElementById('editOffersConcierge').checked = isConcierge;
+    
     // Show edit modal
     const modal = new bootstrap.Modal(document.getElementById('editAffiliateModal'));
     modal.show();
+    
+    // Store current affiliate ID for saving
+    document.getElementById('editAffiliateForm').dataset.affiliateId = id;
 }
 
 document.getElementById('editAffiliateForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
+    const affiliateId = this.dataset.affiliateId;
     const commission = document.getElementById('editCommissionPercent').value;
     const concierge = document.getElementById('editOffersConcierge').checked;
     
-    // TODO: Send to backend
-    console.log('Saving changes:', { commission, concierge });
+    // Update the view immediately to sync Edit/View
+    const affiliateRow = document.querySelector(`tr:has(button[onclick*="${affiliateId}"])`);
+    const conciergeCell = affiliateRow.querySelector('td:nth-child(5)');
+    const badge = conciergeCell.querySelector('.badge');
     
-    // Close modal and show success
-    bootstrap.Modal.getInstance(document.getElementById('editAffiliateModal')).hide();
-    alert('Changes saved successfully!');
+    if (concierge) {
+        badge.className = 'badge bg-info';
+        badge.textContent = 'Yes';
+    } else {
+        badge.className = 'badge bg-secondary';
+        badge.textContent = 'No';
+    }
+    
+    // Send to backend to persist
+    fetch('/admin/affiliates/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: affiliateId, commission, concierge })
+    }).then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              bootstrap.Modal.getInstance(document.getElementById('editAffiliateModal')).hide();
+              showToast('Changes saved successfully!', 'success');
+          }
+      });
 });
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `${message} <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+function manageTeam(id) {
+    showToast('Team management: Invite/reassign members, set permissions', 'info');
+}
+
+function adminOverride(id) {
+    if (confirm('Admin override: Clear deposit requirement and reset tracking for this affiliate?')) {
+        fetch('/admin/override_deposit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: id })
+        }).then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  showToast('Admin override applied successfully', 'success');
+              }
+          });
+    }
+}
 </script>
 {% endblock %}
