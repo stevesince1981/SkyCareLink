@@ -21,6 +21,30 @@
                 </div>
             </div>
 
+            <!-- Summary statistics moved to top -->
+            {% if requests %}
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ summary.total_requests }}</div>
+                        <div class="stat-label">Total Requests</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ summary.pending_requests }}</div>
+                        <div class="stat-label">Pending Quotes</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ summary.completed_requests }}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Card-based layout matching user screenshot -->
             <div class="requests-container">
                 {% for req in requests %}
@@ -112,35 +136,7 @@
             </div>
             {% endif %}
 
-            <!-- Summary statistics -->
-            {% if requests %}
-            <div class="row mt-4">
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-number">{{ summary.total_requests }}</div>
-                        <div class="stat-label">Total Requests</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-number">{{ summary.pending_requests }}</div>
-                        <div class="stat-label">Pending Quotes</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-number">{{ summary.completed_requests }}</div>
-                        <div class="stat-label">Completed</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-number">${{ "{:,}".format(summary.avg_quote_price) }}</div>
-                        <div class="stat-label">Avg Quote Price</div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+
         </div>
     </div>
 </div>
@@ -222,6 +218,30 @@
 .action-buttons {
     display: flex;
     gap: 8px;
+}
+
+/* Summary stat cards */
+.stat-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 }
 

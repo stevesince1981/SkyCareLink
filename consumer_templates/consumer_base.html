@@ -523,8 +523,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         messageDiv.style.cssText = 'background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #007bff;';
         messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 8px;">MediFly Assistant</div><div style="line-height: 1.5; white-space: pre-line;">${message || 'No message provided'}</div>`;
         
-        // Clear previous content and add new message
-        chatArea.innerHTML = '';
+        // Append message to create pancake flow (don't clear previous content)
         chatArea.appendChild(messageDiv);
         
         // Add option buttons if provided
