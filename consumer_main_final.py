@@ -1340,9 +1340,12 @@ def portal_views():
         }
     ]
     
+    # Filter users based on role visibility  
+    filtered_users = get_demo_users_for_role(user_role)
+    
     return render_template('portal_views.html', 
                          user_role=user_role,
-                         users=demo_users,
+                         users=filtered_users,
                          current_user_name=session.get('username', 'Portal User'))
 
 @consumer_app.route('/admin/delisted')
@@ -4677,12 +4680,15 @@ def user_management():
         }
     ]
     
-    return render_template('user_management.html', users=demo_users)
+    # Filter users based on role visibility
+    filtered_users = get_demo_users_for_role(user_role)
+    
+    return render_template('user_management.html', users=filtered_users)
 
 # User Management API Routes
 @consumer_app.route('/api/users/update-subrole', methods=['POST'])
 def api_update_user_subrole():
-    """Update user sub-role (PowerUser/TeamUser)"""
+    """Update user sub-role (PowerUser/TeamUser) with PowerUser protection"""
     if not session.get('logged_in'):
         return jsonify({'success': False, 'error': 'Authentication required'})
     
@@ -4693,10 +4699,20 @@ def api_update_user_subrole():
     
     try:
         data = request.get_json()
-        user_id = data['user_id']
+        user_id = int(data['user_id'])
         new_sub_role = data['sub_role']
         
-        # In production, update database
+        # Demo validation - ensure at least one PowerUser remains
+        demo_users = get_demo_users_for_role(user_role)
+        current_powerusers = [u for u in demo_users if u['sub_role'] == 'PowerUser']
+        
+        # If demoting the only PowerUser, deny the action
+        if new_sub_role == 'TeamUser' and len(current_powerusers) <= 1:
+            target_user = next((u for u in demo_users if u['id'] == user_id), None)
+            if target_user and target_user['sub_role'] == 'PowerUser':
+                return jsonify({'success': False, 'error': 'Cannot demote the last PowerUser. At least one PowerUser must remain.'})
+        
+        # In production, update database with validation
         if DB_AVAILABLE:
             with consumer_app.app_context():
                 user = User.query.get(user_id)
@@ -4704,11 +4720,11 @@ def api_update_user_subrole():
                     user.sub_role = new_sub_role
                     db.session.commit()
         
-        return jsonify({'success': True, 'message': f'User sub-role updated to {new_sub_role}'})
+        return jsonify({'success': True, 'message': f'User promoted to {new_sub_role} successfully'})
     
     except Exception as e:
         logging.error(f"Error updating user sub-role: {e}")
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({'success': False, 'error': f'Database error: {str(e)}'})
 
 @consumer_app.route('/api/users/update-status', methods=['POST'])
 def api_update_user_status():
@@ -4773,6 +4789,99 @@ def api_create_user():
     
     except Exception as e:
         logging.error(f"Error creating user: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+def get_demo_users_for_role(user_role):
+    """Get demo users filtered by role visibility"""
+    all_users = [
+        {
+            'id': 1, 'name': 'Sarah Chen', 'email': 'sarah.chen@airmedpartners.com', 'company': 'AirMed Partners',
+            'role': 'affiliate', 'role_display': 'Affiliate', 'role_color': 'info', 'phone': '555-0101',
+            'sub_role': 'PowerUser', 'permissions': ['Manage Team', 'View Analytics', 'Edit Profiles'],
+            'is_active': True, 'last_active': '2 hours ago', 'referrals_total': 28, 'referrals_completed': 15,
+            'service_type': 'Paid Annual', 'service_expires': '2025-12-15'
+        },
+        {
+            'id': 2, 'name': 'Dr. Michael Rodriguez', 'email': 'mrodriguez@citymedical.org', 'company': 'City Medical Center',
+            'role': 'hospital', 'role_display': 'Hospital', 'role_color': 'success', 'phone': '555-0102',
+            'sub_role': 'PowerUser', 'permissions': ['Request Transport', 'Manage Staff', 'View Reports'],
+            'is_active': True, 'last_active': '1 hour ago', 'referrals_total': 45, 'referrals_completed': 32,
+            'service_type': 'Paid Monthly', 'service_expires': '2025-09-11'
+        },
+        {
+            'id': 3, 'name': 'Jennifer Walsh', 'email': 'jennifer@medevacsolutions.com', 'company': 'MedEvac Solutions',
+            'role': 'affiliate', 'role_display': 'Affiliate', 'role_color': 'info', 'phone': '555-0103',
+            'sub_role': 'TeamUser', 'permissions': ['View Bookings'],
+            'is_active': True, 'last_active': '30 minutes ago', 'referrals_total': 12, 'referrals_completed': 8,
+            'service_type': 'Free Trial', 'service_expires': '2025-08-25'
+        },
+        {
+            'id': 4, 'name': 'Emily Johnson', 'email': 'emily.johnson@gmail.com', 'company': '',
+            'role': 'family', 'role_display': 'Individual', 'role_color': 'primary', 'phone': '555-0104',
+            'sub_role': 'TeamUser', 'permissions': ['Request Transport'],
+            'is_active': False, 'last_active': '3 days ago', 'referrals_total': 3, 'referrals_completed': 1,
+            'service_type': 'Free Trial', 'service_expires': '2025-08-18'
+        },
+        {
+            'id': 5, 'name': 'Mark Stevens', 'email': 'mstevens@citymedical.org', 'company': 'City Medical Center',
+            'role': 'hospital', 'role_display': 'Hospital', 'role_color': 'success', 'phone': '555-0105',
+            'sub_role': 'TeamUser', 'permissions': ['Request Transport'],
+            'is_active': True, 'last_active': '4 hours ago', 'referrals_total': 6, 'referrals_completed': 4,
+            'service_type': 'Paid Monthly', 'service_expires': '2025-09-11'
+        }
+    ]
+    
+    # Filter users based on role visibility
+    if user_role == 'admin':
+        return all_users  # Admin sees everyone
+    elif user_role == 'affiliate':
+        return [u for u in all_users if u['role'] == 'affiliate']
+    elif user_role == 'hospital':
+        return [u for u in all_users if u['role'] == 'hospital']
+    elif user_role == 'family':
+        return [u for u in all_users if u['role'] == 'family']
+    else:
+        return []
+
+@consumer_app.route('/api/users/edit/<int:user_id>')
+def api_get_user_details(user_id):
+    """Get user details for editing"""
+    if not session.get('logged_in'):
+        return jsonify({'success': False, 'error': 'Authentication required'})
+    
+    user_role = session.get('user_role')
+    demo_users = get_demo_users_for_role(user_role)
+    user = next((u for u in demo_users if u['id'] == user_id), None)
+    
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found'})
+    
+    return jsonify({'success': True, 'user': user})
+
+@consumer_app.route('/api/users/update/<int:user_id>', methods=['POST'])
+def api_update_user_details(user_id):
+    """Update user details instantly"""
+    if not session.get('logged_in'):
+        return jsonify({'success': False, 'error': 'Authentication required'})
+    
+    try:
+        data = request.get_json()
+        
+        # In production, update database
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                user = User.query.get(user_id)
+                if user:
+                    user.contact_name = data.get('name', user.contact_name)
+                    user.email = data.get('email', user.email)
+                    user.phone_number = data.get('phone', user.phone_number)
+                    user.company = data.get('company', user.company)
+                    db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'User details updated successfully'})
+    
+    except Exception as e:
+        logging.error(f"Error updating user details: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
 # 5) Phase 12.A: Brand-new Canonical Intake Route + Submission

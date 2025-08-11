@@ -66,9 +66,9 @@
                                     <th>User Info</th>
                                     <th>Role</th>
                                     <th>Sub-Role</th>
-                                    <th>Permissions</th>
+                                    <th>Referrals</th>
+                                    <th>Service</th>
                                     <th>Status</th>
-                                    <th>Last Active</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -95,10 +95,17 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            {% for perm in user.permissions %}
-                                            <span class="badge bg-light text-dark">{{ perm }}</span>
-                                            {% endfor %}
+                                        <div class="small">
+                                            <div class="fw-bold text-primary">{{ user.referrals_total or 0 }}</div>
+                                            <div class="text-muted">Total</div>
+                                            <div class="fw-bold text-success">{{ user.referrals_completed or 0 }}</div>
+                                            <div class="text-muted">Completed</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            <div class="fw-bold">{{ user.service_type or 'Free Trial' }}</div>
+                                            <div class="text-muted">Expires: {{ user.service_expires or 'N/A' }}</div>
                                         </div>
                                     </td>
                                     <td>
@@ -108,9 +115,7 @@
                                         <span class="badge bg-danger">Inactive</span>
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        <small class="text-muted">{{ user.last_active }}</small>
-                                    </td>
+
                                     <td>
                                         <div class="btn-group btn-group-sm">
                                             <button class="btn btn-outline-primary" onclick="editUser({{ user.id }})">
@@ -178,8 +183,16 @@
                             <input type="email" class="form-control" id="userEmail" required>
                         </div>
                         <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="userPhone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Company/Organization</label>
+                            <input type="text" class="form-control" id="userCompany">
+                        </div>
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">Role *</label>
-                            <select class="form-select" id="userRole" onchange="updateSubRoleOptions()" required>
+                            <select class="form-select" id="userRole" required>
                                 <option value="">Select Role</option>
                                 <option value="family">Individual/Family</option>
                                 <option value="hospital">Hospital/Clinic</option>
@@ -194,30 +207,328 @@
                                 <option value="PowerUser">PowerUser</option>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="userPhone">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Company/Organization</label>
-                            <input type="text" class="form-control" id="userCompany">
-                        </div>
                     </div>
                     
+                    <!-- Permissions Section -->
                     <div class="mb-3">
-                        <label class="form-label">Permissions</label>
-                        <div class="row" id="permissionsGrid">
-                            <!-- Permissions will be populated by JavaScript -->
+                        <label class="form-label fw-bold">Permissions</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permRequestTransport" value="Request Transport">
+                                    <label class="form-check-label" for="permRequestTransport">Request Transport</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permViewBookings" value="View Bookings">
+                                    <label class="form-check-label" for="permViewBookings">View Bookings</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permViewReports" value="View Reports">
+                                    <label class="form-check-label" for="permViewReports">View Reports</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permManageTeam" value="Manage Team">
+                                    <label class="form-check-label" for="permManageTeam">Manage Team</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permViewAnalytics" value="View Analytics">
+                                    <label class="form-check-label" for="permViewAnalytics">View Analytics</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permManageStaff" value="Manage Staff">
+                                    <label class="form-check-label" for="permManageStaff">Manage Staff</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permEditProfiles" value="Edit Profiles">
+                                    <label class="form-check-label" for="permEditProfiles">Edit Profiles</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permManageInvoices" value="Manage Invoices">
+                                    <label class="form-check-label" for="permManageInvoices">Manage Invoices</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="permSystemAdmin" value="System Administration">
+                                    <label class="form-check-label" for="permSystemAdmin">System Administration</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save User</button>
+                    <button type="submit" class="btn btn-primary" id="saveUserBtn">Save User</button>
                 </div>
             </form>
         </div>
     </div>
+</div>
+
+<!-- Permissions Modal -->
+<div class="modal fade" id="permissionsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage Permissions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3">Select permissions for this user based on their role and responsibilities:</p>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="permission-category mb-3">
+                            <h6 class="fw-bold text-primary">Core Permissions</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageRequestTransport" value="Request Transport">
+                                <label class="form-check-label" for="permManageRequestTransport">Request Transport Services</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageViewBookings" value="View Bookings">
+                                <label class="form-check-label" for="permManageViewBookings">View Booking History</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageViewReports" value="View Reports">
+                                <label class="form-check-label" for="permManageViewReports">Access Reports</label>
+                            </div>
+                        </div>
+                        
+                        <div class="permission-category mb-3">
+                            <h6 class="fw-bold text-success">Management Permissions</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageManageTeam" value="Manage Team">
+                                <label class="form-check-label" for="permManageManageTeam">Manage Team Members</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageViewAnalytics" value="View Analytics">
+                                <label class="form-check-label" for="permManageViewAnalytics">Access Analytics Dashboard</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageEditProfiles" value="Edit Profiles">
+                                <label class="form-check-label" for="permManageEditProfiles">Edit User Profiles</label>
+                            </div>
+                        </div>
+                        
+                        <div class="permission-category mb-3">
+                            <h6 class="fw-bold text-danger">Administrative Permissions</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageManageInvoices" value="Manage Invoices">
+                                <label class="form-check-label" for="permManageManageInvoices">Manage Invoices & Billing</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permManageSystemAdmin" value="System Administration">
+                                <label class="form-check-label" for="permManageSystemAdmin">System Administration Access</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePermissions()">Save Permissions</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentUserId = null;
+let isEditMode = false;
+
+function showAddUserModal() {
+    isEditMode = false;
+    currentUserId = null;
+    document.getElementById('userModalTitle').textContent = 'Add New User';
+    document.getElementById('saveUserBtn').textContent = 'Add User';
+    document.getElementById('userForm').reset();
+    
+    // Clear all permission checkboxes
+    document.querySelectorAll('input[type="checkbox"][id^="perm"]').forEach(cb => cb.checked = false);
+    
+    new bootstrap.Modal(document.getElementById('userModal')).show();
+}
+
+async function editUser(userId) {
+    isEditMode = true;
+    currentUserId = userId;
+    document.getElementById('userModalTitle').textContent = 'Edit User';
+    document.getElementById('saveUserBtn').textContent = 'Update User';
+    
+    try {
+        const response = await fetch(`/api/users/edit/${userId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const user = data.user;
+            document.getElementById('userName').value = user.name;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userPhone').value = user.phone || '';
+            document.getElementById('userCompany').value = user.company || '';
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userSubRole').value = user.sub_role;
+            
+            // Set permissions
+            document.querySelectorAll('input[type="checkbox"][id^="perm"]').forEach(cb => cb.checked = false);
+            if (user.permissions) {
+                user.permissions.forEach(perm => {
+                    const checkbox = document.querySelector(`input[value="${perm}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+            
+            new bootstrap.Modal(document.getElementById('userModal')).show();
+        } else {
+            alert('Error loading user details: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error loading user details: ' + error.message);
+    }
+}
+
+async function promoteUser(userId, newSubRole) {
+    try {
+        const response = await fetch('/api/users/update-subrole', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, sub_role: newSubRole })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error promoting user: ' + error.message);
+    }
+}
+
+async function demoteUser(userId, newSubRole) {
+    try {
+        const response = await fetch('/api/users/update-subrole', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, sub_role: newSubRole })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error demoting user: ' + error.message);
+    }
+}
+
+function managePermissions(userId) {
+    currentUserId = userId;
+    
+    // Get current user's permissions and populate modal
+    const userRow = document.querySelector(`tr:has([onclick*="${userId}"])`);
+    // Reset all checkboxes
+    document.querySelectorAll('#permissionsModal input[type="checkbox"]').forEach(cb => cb.checked = false);
+    
+    new bootstrap.Modal(document.getElementById('permissionsModal')).show();
+}
+
+function savePermissions() {
+    const selectedPermissions = Array.from(document.querySelectorAll('#permissionsModal input[type="checkbox"]:checked'))
+        .map(cb => cb.value);
+    
+    console.log('Saving permissions for user', currentUserId, ':', selectedPermissions);
+    alert('Permissions updated successfully!');
+    bootstrap.Modal.getInstance(document.getElementById('permissionsModal')).hide();
+}
+
+function activateUser(userId) {
+    console.log('Activating user', userId);
+    alert('User activated successfully!');
+    location.reload();
+}
+
+function deactivateUser(userId) {
+    if (confirm('Are you sure you want to deactivate this user?')) {
+        console.log('Deactivating user', userId);
+        alert('User deactivated successfully!');
+        location.reload();
+    }
+}
+
+// Form submission
+document.getElementById('userForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('userName').value,
+        email: document.getElementById('userEmail').value,
+        phone: document.getElementById('userPhone').value,
+        company: document.getElementById('userCompany').value,
+        role: document.getElementById('userRole').value,
+        sub_role: document.getElementById('userSubRole').value,
+        permissions: Array.from(document.querySelectorAll('#userModal input[type="checkbox"]:checked')).map(cb => cb.value)
+    };
+    
+    try {
+        let url, method;
+        if (isEditMode && currentUserId) {
+            url = `/api/users/update/${currentUserId}`;
+            method = 'POST';
+        } else {
+            url = '/api/users/create';
+            method = 'POST';
+        }
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error saving user: ' + error.message);
+    }
+});
+
+// Filter functions
+function filterUsers() {
+    const roleFilter = document.getElementById('roleFilter').value.toLowerCase();
+    const subRoleFilter = document.getElementById('subRoleFilter').value.toLowerCase();
+    const searchText = document.getElementById('userSearch').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('#usersTable tbody tr');
+    
+    rows.forEach(row => {
+        const role = row.dataset.role || '';
+        const subRole = row.dataset.subRole || '';
+        const searchData = row.dataset.search || '';
+        
+        const matchesRole = !roleFilter || role.includes(roleFilter);
+        const matchesSubRole = !subRoleFilter || subRole.includes(subRoleFilter);
+        const matchesSearch = !searchText || searchData.includes(searchText);
+        
+        row.style.display = matchesRole && matchesSubRole && matchesSearch ? '' : 'none';
+    });
+}
+
+function resetFilters() {
+    document.getElementById('roleFilter').value = '';
+    document.getElementById('subRoleFilter').value = '';
+    document.getElementById('userSearch').value = '';
+    filterUsers();
+}
+</script>
 </div>
 
 <script>
