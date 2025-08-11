@@ -4553,7 +4553,7 @@ def intake_submit():
         return jsonify({
             'success': True,
             'request_id': request_id,
-            'redirect_url': url_for('consumer_quotes_phase12')
+            'redirect_url': url_for('consumer_quotes_phase12', request_id=request_id)
         })
         
     except Exception as e:

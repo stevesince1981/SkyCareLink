@@ -391,6 +391,11 @@
         const responses = getResponsesForUserType(aiState.userType);
         const response = responses[command];
         
+        // Debug logging
+        console.log("AI Debug - User Type:", aiState.userType);
+        console.log("AI Debug - Command:", command);
+        console.log("AI Debug - Response Found:", response ? "YES" : "NO");
+        
         if (response) {
             showAIResponse(response, getQuestionsForUserType(aiState.userType));
         } else {
