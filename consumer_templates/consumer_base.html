@@ -397,7 +397,12 @@
         console.log("AI Debug - Response Found:", response ? "YES" : "NO");
         
         if (response && response !== "conversation_restart") {
-            showAIResponse(response, getQuestionsForUserType(aiState.userType));
+            // Clear chat area and show focused response
+            const chatArea = document.getElementById('aiChatArea');
+            if (chatArea) {
+                chatArea.innerHTML = '';
+            }
+            showAIResponse(response, getQuestionsForUserType(aiState.userType), true);
         } else if (response === "conversation_restart") {
             aiState = { userType: null, conversationStarted: false };
             startAIConversation();
@@ -417,7 +422,13 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             'Affiliate Provider': `Thank you for your interest in partnering with MediFly. I can provide comprehensive information about our affiliate program, commission structure, operational requirements, and partnership benefits.`
         };
         
-        showAIResponse(welcomeMessages[userType], questions);
+        // Clear previous content and show focused view
+        const chatArea = document.getElementById('aiChatArea');
+        if (chatArea) {
+            chatArea.innerHTML = '';
+        }
+        
+        showAIResponse(welcomeMessages[userType], questions, true);
     }
 
     function getQuestionsForUserType(userType) {
@@ -496,7 +507,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         return responses;
     }
 
-    function showAIResponse(message, options = []) {
+    function showAIResponse(message, options = [], isNewSection = false) {
         console.log("AI Debug - showAIResponse called with message:", message ? "YES" : "NO");
         console.log("AI Debug - Message length:", message ? message.length : 0);
         console.log("AI Debug - Options count:", options.length);
@@ -523,13 +534,12 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         messageDiv.style.cssText = 'background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #007bff;';
         messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 8px;">MediFly Assistant</div><div style="line-height: 1.5; white-space: pre-line;">${message || 'No message provided'}</div>`;
         
-        // Append message to create pancake flow (don't clear previous content)
         chatArea.appendChild(messageDiv);
         
         // Add option buttons if provided
         if (options.length > 0) {
             const optionsDiv = document.createElement('div');
-            optionsDiv.style.cssText = 'margin-top: 15px;';
+            optionsDiv.style.cssText = 'margin-top: 15px; margin-bottom: 10px;';
             
             options.forEach(option => {
                 const button = document.createElement('button');
@@ -547,6 +557,14 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             });
             
             chatArea.appendChild(optionsDiv);
+        }
+        
+        // Add floating "Start Over" button for easy access
+        if (isNewSection && aiState.userType) {
+            const floatingStartOver = document.createElement('div');
+            floatingStartOver.style.cssText = 'position: sticky; bottom: 0; background: #fff; padding: 10px 0; border-top: 1px solid #eee; margin-top: 10px; text-align: center;';
+            floatingStartOver.innerHTML = '<button class="btn btn-secondary btn-sm" onclick="aiState = { userType: null, conversationStarted: false }; startAIConversation();"><i class="fas fa-redo me-1"></i>Start Over</button>';
+            chatArea.appendChild(floatingStartOver);
         }
         
         // Scroll to bottom
