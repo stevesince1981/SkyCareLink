@@ -401,7 +401,7 @@
         optionsDiv.style.cssText = 'margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;';
         
         const buttonOptions = [
-            { text: 'Individual/Family<br>Member', value: 'Individual/Family Member' },
+            { text: 'Individual/<br>Family', value: 'Individual/Family Member' },
             { text: 'Hospital/<br>Clinic', value: 'Hospital/Clinic' },
             { text: 'Affiliate<br>Provider', value: 'Affiliate Provider' }
         ];
@@ -409,7 +409,7 @@
         buttonOptions.forEach(option => {
             const button = document.createElement('button');
             button.className = 'btn btn-outline-primary';
-            button.style.cssText = 'font-size: 0.6rem; padding: 6px 3px; height: 40px; line-height: 1.1; display: flex; align-items: center; justify-content: center; text-align: center;';
+            button.style.cssText = 'font-size: 0.5rem; padding: 3px 1px; height: 32px; line-height: 0.9; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 500;';
             button.innerHTML = option.text;
             button.onclick = () => handleAIResponse(option.value);
             optionsDiv.appendChild(button);
@@ -478,8 +478,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
                 'What happens if we need to cancel?',
                 'How quickly can transport be arranged?',
                 'What medical equipment is available?',
-                'How do I prepare my loved one for transport?',
-                'Start Over'
+                'How do I prepare my loved one for transport?'
             ],
             'Hospital/Clinic': [
                 'How do I join the MediFly network?',
@@ -489,8 +488,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
                 'How are invoices generated and payments processed?',
                 'What transport types and equipment are available?',
                 'How do I track patient transfers?',
-                'What are the quality assurance standards?',
-                'Start Over'
+                'What are the quality assurance standards?'
             ],
             'Affiliate Provider': [
                 'How do I become a MediFly affiliate?',
@@ -500,8 +498,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
                 'How do priority partnerships work?',
                 'What insurance and certification requirements exist?',
                 'How are disputes and quality issues handled?',
-                'What marketing support is provided?',
-                'Start Over'
+                'What marketing support is provided?'
             ]
         };
         
