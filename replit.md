@@ -6,7 +6,7 @@ MediFly is a Flask-based web application simulating a hospital interface for man
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 12.E User Management & Portal Enhancement Complete - Aug 11, 2025)
+## Recent Changes (Phase 13.A React Dashboard Preview Complete - Aug 12, 2025)
 - **MVP Membership Removal**: Completely eliminated all MVP membership references from intake forms, service selection, and throughout the application
 - **Intake Form Enhancements**: Fixed 415 error for form submissions, updated severity levels to "Level 1-3" format, equal-sized boxes (180px height, centered)
 - **Hospital Autofill System**: Implemented comprehensive hospital/clinic database with 30+ major medical centers, real-time search with debouncing for From/To locations
@@ -21,6 +21,11 @@ Preferred communication style: Simple, everyday language.
 - **Portal Enhancement**: Expandable analytics cards with +/- controls, date-based filtering (day/week/month/year/custom), search capabilities, and revenue tracking
 - **Team Management**: Owner/member permission system with promotion/demotion capabilities between PowerUser and TeamUser roles
 - **Anti-Abuse System**: Enhanced deposit modal with admin override functionality and fair-use policy enforcement
+- **React Dashboard Preview**: Built complete separate React + Vite + TypeScript + Tailwind application for Phase 1 dashboard demonstration
+- **Split-Screen Interface**: Dual-pane dashboard showing Full View (left) with advanced filtering and Simplified View (right) with streamlined interface
+- **Role-Based Data**: Dynamic role toggle (Affiliate/Provider/Individual) with different datasets and incentive indicators for each role
+- **Interactive Features**: Working Accept buttons with toast notifications, confirmation modals, print functionality, and comprehensive quote management
+- **Responsive Design**: Clean, accessible interface with sticky headers, expandable filters, and print-optimized styling
 
 ## System Architecture
 
@@ -33,6 +38,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Technical Implementations
 - **Web Framework**: Flask with session-based state management.
+- **React Dashboard**: Separate React + Vite + TypeScript + Tailwind application (`medifly-dashboard-sandbox/`) for Phase 1 preview functionality.
 - **Authentication**: Comprehensive role-based authentication (Family, Hospital, Provider, Affiliate, Admin) with PowerUser/TeamUser sub-role hierarchy, role-specific dashboards, and team management capabilities. Demo login credentials provided.
 - **Data Handling**: Hybrid approach combining session-based temporary storage for demo flows with PostgreSQL database for persistent data (users, bookings, commissions, analytics).
 - **Search**: Hybrid provider search system incorporating internal cache, Google Places integration stub, and manual fallback.

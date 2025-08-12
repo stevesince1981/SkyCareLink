@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  .no-print { display: none !important; }
+  .print-area { padding: 12mm; }
+  header, nav, .actions, .filters { display: none !important; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border-bottom: 1px solid #ddd; padding: 6px 8px; }
+  .print-header { font-weight: 700; margin-bottom: 8px; }
+  .print-footer { margin-top: 8px; font-size: 12px; }
+  
+  /* Print header */
+  .print-header::before {
+    content: "MediFly Medical Transport - Quote Summary";
+    display: block;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  /* Print footer */
+  .print-footer::after {
+    content: "No PHI. Updates: https://medifly.example/track/" attr(data-ref);
+    display: block;
+    color: #666;
+  }
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.role-toggle button {
+  transition: all 0.2s ease;
+}
+
+.table-container {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.quote-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
