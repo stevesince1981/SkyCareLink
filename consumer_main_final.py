@@ -5466,11 +5466,14 @@ def hospital_search():
 def dashboard_preview():
     """Serve the React dashboard preview application"""
     try:
-        # Serve the built React app's index.html
+        # Serve the built React app's index.html with corrected asset paths
         dashboard_path = os.path.join(os.getcwd(), 'medifly-dashboard-sandbox', 'dist', 'index.html')
         if os.path.exists(dashboard_path):
             with open(dashboard_path, 'r') as f:
                 content = f.read()
+            # Fix asset paths to work with Flask routing
+            content = content.replace('src="/assets/', 'src="/dashboard-preview/assets/')
+            content = content.replace('href="/assets/', 'href="/dashboard-preview/assets/')
             return content
         else:
             return f"""
@@ -5495,9 +5498,14 @@ def dashboard_assets(filename):
     """Serve React dashboard assets"""
     try:
         assets_path = os.path.join(os.getcwd(), 'medifly-dashboard-sandbox', 'dist', 'assets')
-        return send_file(os.path.join(assets_path, filename))
+        file_path = os.path.join(assets_path, filename)
+        if os.path.exists(file_path):
+            return send_file(file_path)
+        else:
+            return f"Asset not found: {filename}", 404
     except Exception as e:
-        return f"Asset not found: {e}", 404
+        logging.error(f"Error serving asset {filename}: {e}")
+        return f"Error serving asset: {e}", 500
 
 @consumer_app.route('/dashboard-preview/<path:path>')
 def dashboard_spa_routes(path):
