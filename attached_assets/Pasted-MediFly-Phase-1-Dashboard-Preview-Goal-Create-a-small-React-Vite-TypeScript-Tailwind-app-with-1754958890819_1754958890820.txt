@@ -1,0 +1,543 @@
+MediFly Phase‑1 Dashboard Preview
+Goal: Create a small React + Vite + TypeScript + Tailwind app with a Home page and a “Test” button. Clicking it opens /phase-1, a split screen with Dashboard — Full View (left) and Dashboard — Simplified View (right). A role toggle (Affiliate / Provider / Individual) swaps the dummy data across both panes. Concierge quote is pinned first (with badge). Full View has search + basic filters; Simplified has search only. Include print styles and a confirmation modal after “Accept”.
+
+Tech & Setup
+React 18 + Vite + TypeScript
+
+TailwindCSS (PostCSS, autoprefixer)
+
+React Router
+
+No backend; all data is in-memory dummy data
+
+Accessible, keyboard‑friendly; data-test attributes on major controls
+
+File Tree (create exactly)
+pgsql
+Copy
+Edit
+medifly-dashboard-sandbox/
+  index.html
+  package.json
+  postcss.config.js
+  tailwind.config.js
+  tsconfig.json
+  vite.config.ts
+  src/
+    main.tsx
+    App.tsx
+    index.css
+    router.tsx
+    pages/
+      Home.tsx
+      PhaseOne.tsx
+    components/
+      RoleToggle.tsx
+      DashboardFull.tsx
+      DashboardSimple.tsx
+      Table.tsx
+      ConfirmationModal.tsx
+      MiniCards.tsx
+      FiltersBar.tsx
+    data/
+      quotes.ts
+      types.ts
+    utils/
+      format.ts
+      print.ts
+Branding & Style
+App name: MediFly
+
+Light grayscale UI with a blue accent (#2563eb)
+
+Clean, airy tables; large buttons in Simplified view
+
+Icons optional; avoid external UI libs to keep it simple
+
+Behavior & Requirements
+Home (/)**
+
+Centered headline and a large primary button labeled “Test” (data-test="btn-test").
+
+Clicking Test routes to /phase-1.
+
+Phase‑1 (/phase-1)
+
+Sticky header: Title “Phase 1 Dashboard Preview” + Role Toggle (Affiliate | Provider | Individual).
+
+Query state: role lives in URL (/phase-1?role=provider|affiliate|individual).
+
+Two panes in a responsive grid:
+
+Left: “Dashboard — Full View” (search, filters, mini‑cards, table with 25–50 rows for Provider; fewer for others).
+
+Right: “Dashboard — Simplified View” (single table, big Accept buttons, no filters).
+
+Both panes render the same dataset for the selected role (Affiliate/Provider/Individual).
+
+Concierge row pinned to top with a badge “Concierge (MediFly)”. When role=Affiliate, show small pill “Incentive applies”.
+
+Search:
+
+Full View: free‑text search across requestedBy, caseRef, from, to; plus filters (Status, Price range, ETA range, Date range).
+
+Simplified: only the free‑text search.
+
+Row Actions:
+
+View (Full View only) opens a drawer/modal with request summary + quotes table (concierge pinned) and an Accept button.
+
+Accept (both views) triggers a toast “Accepted — Ref #MF‑XXXX” and opens ConfirmationModal with summary and Print Confirmation.
+
+Print (both views) calls window.print(); print CSS hides chrome and renders a clean table with header/footer.
+
+Download (placeholder) triggers a fake PDF link # (or downloads a small text blob as “QuoteList.pdf”).
+
+Accessibility: tabbable, aria- labels for toggle, tables, and modal; maintain focus.
+
+Print specs
+
+@media print in index.css: logo/title, Requester Name, Case Ref, Route, Date/Time, and the quotes table. Hide buttons/nav.
+
+Footer text: “No PHI. Updates: https://medifly.example/track/<ref>”
+
+Dummy data (src/data/quotes.ts)
+
+Three datasets keyed by role: affiliate, provider, individual
+
+Each request has:
+
+yaml
+Copy
+Edit
+{
+  id: 'REQ-1201',
+  requestedBy: 'Maria Gomez',
+  caseRef: 'ER-2025-0145',
+  from: 'Orlando, FL',
+  to: 'New York, NY',
+  windowStart: '2025-08-12T15:00:00Z',
+  windowEnd: '2025-08-12T19:00:00Z',
+  needs: ['vent', 'monitor'], // strings for icon tags
+  quotes: [
+    { providerName: 'Concierge (MediFly)', price: 12000, etaMinutes: 180, expiresAt: '2025-08-12T20:00:00Z', notes: 'All-inclusive concierge', concierge: true, incentive: true },
+    { providerName: 'DP-Air', price: 11500, etaMinutes: 165, expiresAt: '2025-08-12T19:30:00Z', notes: '' },
+    { providerName: 'Sky Rescue', price: 13000, etaMinutes: 210, expiresAt: '2025-08-12T21:00:00Z', notes: '' },
+    { providerName: 'HealthLink', price: 14500, etaMinutes: 195, expiresAt: '2025-08-12T20:30:00Z', notes: '' }
+  ],
+  status: 'quotes_ready', // draft | submitted | collecting_quotes | quotes_ready | booked | expired
+  updatedAt: '2025-08-12T16:00:00Z'
+}
+Provider dataset: ~25 requests. Affiliate: ~12. Individual: ~6.
+
+Ensure concierge item exists per request and appears first when rendered.
+
+Filters (Full View)
+
+Status (multi‑select chips)
+
+Price range (min/max)
+
+ETA range (min/max minutes)
+
+Date range (start/end – simple inputs OK)
+
+“Clear” button resets to dataset default
+
+Saved Views (dummy)
+
+Chips: “Today”, “Last 7 Days”, “My Favorites” (non‑persisted, purely client-side presets)
+
+Components
+
+RoleToggle.tsx – segmented control; updates URL query and state. data-test="role-toggle".
+
+DashboardFull.tsx – renders mini cards, FiltersBar, Table, drawer/modal for “View”.
+
+DashboardSimple.tsx – renders compact search + larger table with bigger Accept buttons.
+
+Table.tsx – reusable table. Props: rows, onAccept(row), onView(row), printable?: boolean, conciergePinned?: boolean.
+
+ConfirmationModal.tsx – summary (Provider, Price, ETA, Terms); actions: Print Confirmation (calls window.print()), Close.
+
+MiniCards.tsx – three KPI cards (Requests Today, Quotes Sent, Acceptance Rate) using computed values from dataset.
+
+FiltersBar.tsx – search input + 3–4 simple filters and Clear.
+
+Acceptance Criteria
+
+Home “Test” button navigates to /phase-1.
+
+Role toggle swaps data in both panes simultaneously; URL query updates.
+
+Concierge row is visibly pinned first with a badge; “Incentive applies” pill appears only when role=Affiliate.
+
+Full View has search + filters; Simplified only search.
+
+Accept action shows toast and opens ConfirmationModal.
+
+Print produces a clean page with header (no PHI), table, and footer text.
+
+All major controls have data-test attributes for future E2E tests.
+
+Code Stubs (implement as shown)
+src/index.css (include Tailwind + print rules)
+
+css
+Copy
+Edit
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  .no-print { display: none !important; }
+  .print-area { padding: 12mm; }
+  header, nav, .actions, .filters { display: none !important; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border-bottom: 1px solid #ddd; padding: 6px 8px; }
+  .print-header { font-weight: 700; margin-bottom: 8px; }
+  .print-footer { margin-top: 8px; font-size: 12px; }
+}
+src/data/types.ts
+
+ts
+Copy
+Edit
+export type Quote = {
+  providerName: string;
+  price: number;
+  etaMinutes: number;
+  expiresAt: string;
+  notes?: string;
+  concierge?: boolean;
+  incentive?: boolean;
+};
+
+export type RequestRow = {
+  id: string;
+  requestedBy: string;
+  caseRef: string;
+  from: string;
+  to: string;
+  windowStart: string;
+  windowEnd: string;
+  needs: string[];
+  quotes: Quote[];
+  status: 'draft'|'submitted'|'collecting_quotes'|'quotes_ready'|'booked'|'expired';
+  updatedAt: string;
+};
+
+export type RoleKey = 'affiliate'|'provider'|'individual';
+src/data/quotes.ts (seed a few; generator can clone variations)
+
+ts
+Copy
+Edit
+import { RequestRow } from './types';
+
+const base: RequestRow = {
+  id: 'REQ-1201',
+  requestedBy: 'Maria Gomez',
+  caseRef: 'ER-2025-0145',
+  from: 'Orlando, FL',
+  to: 'New York, NY',
+  windowStart: '2025-08-12T15:00:00Z',
+  windowEnd: '2025-08-12T19:00:00Z',
+  needs: ['vent','monitor'],
+  quotes: [
+    { providerName: 'Concierge (MediFly)', price: 12000, etaMinutes: 180, expiresAt: '2025-08-12T20:00:00Z', notes: 'All-inclusive concierge', concierge: true, incentive: true },
+    { providerName: 'DP-Air', price: 11500, etaMinutes: 165, expiresAt: '2025-08-12T19:30:00Z' },
+    { providerName: 'Sky Rescue', price: 13000, etaMinutes: 210, expiresAt: '2025-08-12T21:00:00Z' },
+    { providerName: 'HealthLink', price: 14500, etaMinutes: 195, expiresAt: '2025-08-12T20:30:00Z' }
+  ],
+  status: 'quotes_ready',
+  updatedAt: '2025-08-12T16:00:00Z'
+};
+
+function clone(id: number, overrides: Partial<RequestRow> = {}): RequestRow {
+  return { ...base, id: `REQ-${1200+id}`, caseRef: `ER-2025-${1400+id}`, ...overrides };
+}
+
+export const data = {
+  provider: Array.from({length: 25}, (_,i)=> clone(i, { requestedBy: i%2? 'Alex Chen':'Jamie Patel' })),
+  affiliate: Array.from({length: 12}, (_,i)=> clone(i, { requestedBy: i%2? 'Client Lead':'Referral Office' })),
+  individual: Array.from({length: 6},  (_,i)=> clone(i, { requestedBy: i%2? 'Family Contact':'Patient Rep' }))
+};
+src/components/RoleToggle.tsx
+
+tsx
+Copy
+Edit
+import { RoleKey } from '../data/types';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
+const roles: RoleKey[] = ['affiliate','provider','individual'];
+
+export default function RoleToggle() {
+  const nav = useNavigate();
+  const [sp] = useSearchParams();
+  const role = (sp.get('role') as RoleKey) || 'provider';
+
+  function setRole(r: RoleKey){ 
+    const qp = new URLSearchParams(sp);
+    qp.set('role', r);
+    nav({ search: qp.toString() }, { replace: true });
+  }
+
+  return (
+    <div className="inline-flex rounded-md border overflow-hidden" role="tablist" data-test="role-toggle">
+      {roles.map(r=>(
+        <button key={r} role="tab"
+          onClick={()=>setRole(r)}
+          className={`px-3 py-1 text-sm ${r===role?'bg-blue-600 text-white':'bg-white hover:bg-gray-50'}`}>
+          {r[0].toUpperCase()+r.slice(1)}
+        </button>
+      ))}
+    </div>
+  );
+}
+src/components/Table.tsx
+
+tsx
+Copy
+Edit
+import { Quote, RequestRow } from '../data/types';
+import { fmtMoney, fmtETA, fmtDate } from '../utils/format';
+
+type Props = {
+  rows: RequestRow[];
+  simplified?: boolean;
+  onAccept: (row: RequestRow, q: Quote)=>void;
+  onView?: (row: RequestRow)=>void;
+  showIncentive?: boolean;
+};
+
+export default function Table({ rows, simplified, onAccept, onView, showIncentive }: Props){
+  return (
+    <table className="w-full text-sm">
+      <thead className="text-left text-gray-500">
+        <tr>
+          <th className="py-2">Requested By</th>
+          <th>Case Ref</th>
+          <th>From → To</th>
+          <th>{simplified ? 'ETA' : 'Window'}</th>
+          <th>Top Quotes</th>
+          <th className="actions no-print">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {rows.map(row=>{
+        const concierge = row.quotes.find(q=>q.concierge);
+        const others = row.quotes.filter(q=>!q.concierge);
+        const quotesOrdered = concierge ? [concierge, ...others] : row.quotes;
+
+        return (
+          <tr key={row.id} className="border-t">
+            <td className="py-2">{row.requestedBy}</td>
+            <td>{row.caseRef}</td>
+            <td>{row.from} → {row.to}</td>
+            <td>{ simplified ? fmtETA(quotesOrdered[0].etaMinutes) 
+                              : `${fmtDate(row.windowStart)} — ${fmtDate(row.windowEnd)}` }</td>
+            <td>
+              <div className="flex flex-col gap-1">
+                {quotesOrdered.slice(0, simplified?3:4).map((q,i)=>(
+                  <div key={i} className="flex items-center gap-2">
+                    <span className={`px-2 py-0.5 rounded text-xs ${q.concierge?'border border-blue-600 text-blue-700':'bg-gray-100'}`}>
+                      {q.providerName}{q.concierge?'':''}
+                    </span>
+                    <span>{fmtETA(q.etaMinutes)}</span>
+                    <span className="font-medium">{fmtMoney(q.price)}</span>
+                    {q.concierge && showIncentive ? <span className="text-xs text-emerald-700">Incentive applies</span>:null}
+                  </div>
+                ))}
+              </div>
+            </td>
+            <td className="no-print">
+              <div className="flex gap-2">
+                {!simplified && onView && (
+                  <button className="px-2 py-1 border rounded" onClick={()=>onView(row)} data-test="btn-view">View</button>
+                )}
+                <button className="px-2 py-1 bg-blue-600 text-white rounded" 
+                        onClick={()=>onAccept(row, quotesOrdered[0])}
+                        data-test="btn-accept">Accept</button>
+                <button className="px-2 py-1 border rounded" onClick={()=>window.print()} data-test="btn-print">Print</button>
+              </div>
+            </td>
+          </tr>
+        );
+      })}
+      </tbody>
+    </table>
+  );
+}
+src/utils/format.ts
+
+ts
+Copy
+Edit
+export const fmtMoney = (n:number)=> `$${n.toLocaleString()}`;
+export const fmtETA = (m:number)=> `${Math.floor(m/60)}h ${m%60}m`;
+export const fmtDate = (iso:string)=> new Date(iso).toLocaleString();
+src/pages/PhaseOne.tsx
+
+tsx
+Copy
+Edit
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import RoleToggle from '../components/RoleToggle';
+import Table from '../components/Table';
+import ConfirmationModal from '../components/ConfirmationModal';
+import MiniCards from '../components/MiniCards';
+import FiltersBar from '../components/FiltersBar';
+import { data } from '../data/quotes';
+import { RequestRow, RoleKey, Quote } from '../data/types';
+
+export default function PhaseOne(){
+  const [sp] = useSearchParams();
+  const role = (sp.get('role') as RoleKey) || 'provider';
+  const [query, setQuery] = useState('');
+  const [modal, setModal] = useState<{row:RequestRow, quote:Quote}|null>(null);
+
+  const rows = useMemo(()=> {
+    const base = data[role];
+    if(!query) return base;
+    const q = query.toLowerCase();
+    return base.filter(r =>
+      [r.requestedBy, r.caseRef, r.from, r.to].some(f => f.toLowerCase().includes(q)));
+  }, [role, query]);
+
+  function onAccept(row:RequestRow, quote:Quote){
+    setModal({ row, quote });
+  }
+
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 bg-white border-b z-10 px-4 py-2 flex items-center justify-between">
+        <h1 className="text-lg font-semibold">Phase 1 Dashboard Preview</h1>
+        <RoleToggle />
+      </header>
+
+      <main className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Full View */}
+        <section className="border rounded-lg bg-white">
+          <div className="p-3 border-b flex items-center justify-between">
+            <h2 className="font-semibold">Dashboard — Full View</h2>
+            <div className="text-sm text-gray-500">Search & Filters</div>
+          </div>
+          <div className="p-3">
+            <MiniCards rows={rows}/>
+            <FiltersBar value={query} onChange={setQuery}/>
+            <div className="overflow-auto">
+              <Table rows={rows} simplified={false} onAccept={onAccept} onView={()=>{}} showIncentive={role==='affiliate'} />
+            </div>
+          </div>
+        </section>
+
+        {/* Simplified View */}
+        <section className="border rounded-lg bg-white">
+          <div className="p-3 border-b flex items-center justify-between">
+            <h2 className="font-semibold">Dashboard — Simplified View</h2>
+            <button className="no-print px-2 py-1 border rounded" onClick={()=>window.print()}>Print</button>
+          </div>
+          <div className="p-3">
+            <input
+              className="mb-3 w-full border rounded px-3 py-2"
+              placeholder="Search (Requester, Case Ref, From, To)"
+              value={query}
+              onChange={e=>setQuery(e.target.value)}
+              data-test="search-simple"
+            />
+            <div className="overflow-auto">
+              <Table rows={rows} simplified onAccept={onAccept} showIncentive={role==='affiliate'} />
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {modal && (
+        <ConfirmationModal row={modal.row} quote={modal.quote} onClose={()=>setModal(null)} />
+      )}
+    </div>
+  );
+}
+src/pages/Home.tsx
+
+tsx
+Copy
+Edit
+import { Link } from 'react-router-dom';
+export default function Home(){
+  return (
+    <div className="min-h-screen grid place-items-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">MediFly</h1>
+        <p className="mb-6 text-gray-600">Preview our Phase‑1 dashboard experience.</p>
+        <Link to="/phase-1?role=provider" className="px-5 py-3 bg-blue-600 text-white rounded" data-test="btn-test">
+          Test
+        </Link>
+      </div>
+    </div>
+  );
+}
+src/router.tsx
+
+tsx
+Copy
+Edit
+import { createBrowserRouter } from 'react-router-dom';
+import Home from './pages/Home';
+import PhaseOne from './pages/PhaseOne';
+
+export const router = createBrowserRouter([
+  { path: '/', element: <Home/> },
+  { path: '/phase-1', element: <PhaseOne/> }
+]);
+src/App.tsx / src/main.tsx – standard Vite React Router mount.
+
+src/components/ConfirmationModal.tsx
+
+tsx
+Copy
+Edit
+import { RequestRow, Quote } from '../data/types';
+import { fmtMoney, fmtETA } from '../utils/format';
+
+export default function ConfirmationModal({row, quote, onClose}:{row:RequestRow, quote:Quote, onClose:()=>void}){
+  const ref = `MF-${row.id}`;
+  return (
+    <div className="fixed inset-0 bg-black/30 grid place-items-center">
+      <div className="bg-white rounded-lg max-w-lg w-full p-4">
+        <h3 className="text-lg font-semibold mb-2">Quote Accepted — Ref #{ref}</h3>
+        <div className="space-y-1">
+          <div><b>Provider:</b> {quote.providerName}</div>
+          <div><b>Price:</b> {fmtMoney(quote.price)} • <b>ETA:</b> {fmtETA(quote.etaMinutes)}</div>
+          <div><b>Route:</b> {row.from} → {row.to}</div>
+          <div><b>Case Ref:</b> {row.caseRef}</div>
+        </div>
+        <div className="mt-4 flex justify-end gap-2 no-print">
+          <button className="px-3 py-1 border rounded" onClick={()=>window.print()}>Print Confirmation</button>
+          <button className="px-3 py-1 bg-blue-600 text-white rounded" onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+src/components/MiniCards.tsx / FiltersBar.tsx – simple implementations (three KPIs; search + dummy filters).
+
+Run Instructions
+npm create vite@latest medifly-dashboard-sandbox -- --template react-ts
+
+cd medifly-dashboard-sandbox
+
+Install Tailwind per official guide; add the files above.
+
+npm install react-router-dom
+
+npm install -D tailwindcss postcss autoprefixer
+
+npx tailwindcss init -p
+
+npm run dev
+
