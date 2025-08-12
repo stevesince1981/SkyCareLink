@@ -5461,5 +5461,49 @@ def hospital_search():
     matching_hospitals = [h for h in HOSPITAL_CLINIC_DATABASE if query in h.lower()]
     return jsonify(matching_hospitals[:10])
 
+# Dashboard Preview Routes
+@consumer_app.route('/dashboard-preview')
+def dashboard_preview():
+    """Serve the React dashboard preview application"""
+    try:
+        # Serve the built React app's index.html
+        dashboard_path = os.path.join(os.getcwd(), 'medifly-dashboard-sandbox', 'dist', 'index.html')
+        if os.path.exists(dashboard_path):
+            with open(dashboard_path, 'r') as f:
+                content = f.read()
+            return content
+        else:
+            return f"""
+            <div style="padding: 2rem; text-align: center; font-family: system-ui;">
+                <h2>Dashboard Preview Not Available</h2>
+                <p>The React dashboard preview application needs to be built first.</p>
+                <p>Location checked: {dashboard_path}</p>
+                <a href="/" style="padding: 0.5rem 1rem; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Return to Home</a>
+            </div>
+            """
+    except Exception as e:
+        return f"""
+        <div style="padding: 2rem; text-align: center; font-family: system-ui;">
+            <h2>Error Loading Dashboard Preview</h2>
+            <p>Error: {str(e)}</p>
+            <a href="/" style="padding: 0.5rem 1rem; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Return to Home</a>
+        </div>
+        """
+
+@consumer_app.route('/dashboard-preview/assets/<path:filename>')
+def dashboard_assets(filename):
+    """Serve React dashboard assets"""
+    try:
+        assets_path = os.path.join(os.getcwd(), 'medifly-dashboard-sandbox', 'dist', 'assets')
+        return send_file(os.path.join(assets_path, filename))
+    except Exception as e:
+        return f"Asset not found: {e}", 404
+
+@consumer_app.route('/dashboard-preview/<path:path>')
+def dashboard_spa_routes(path):
+    """Handle SPA routing for React dashboard"""
+    # For any route that doesn't exist, serve the React app's index.html
+    return dashboard_preview()
+
 if __name__ == '__main__':
     consumer_app.run(host='0.0.0.0', port=5000, debug=True)

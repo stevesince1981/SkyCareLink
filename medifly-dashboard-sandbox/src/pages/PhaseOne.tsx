@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { RoleKey, RequestRow, Quote } from '../data/types';
 import { data } from '../data/quotes';
