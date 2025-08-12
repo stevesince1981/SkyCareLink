@@ -1781,6 +1781,14 @@
       "ip": "172.31.85.98",
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
       "details": {}
+    },
+    {
+      "timestamp": "2025-08-12T00:45:25.041331",
+      "user": "affiliate",
+      "type": "logout",
+      "ip": "172.31.122.194",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
+      "details": {}
     }
   ]
 }
