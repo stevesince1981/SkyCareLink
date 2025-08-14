@@ -26,7 +26,7 @@
         <h2>Hello {{ user_name | default('User') }},</h2>
         
         <div class="alert-box">
-            <strong><i class="fas fa-exclamation-triangle"></i> Security Notice:</strong> We detected a new login to your MediFly account.
+            <strong><i class="fas fa-exclamation-triangle"></i> Security Notice:</strong> We detected a new login to your SkyCareLink account.
         </div>
         
         <div class="login-details">
@@ -65,7 +65,7 @@
         <div class="security-tip">
             <h4><i class="fas fa-lightbulb"></i> Security Tips</h4>
             <ul>
-                <li>Use a strong, unique password for your MediFly account</li>
+                <li>Use a strong, unique password for your SkyCareLink account</li>
                 <li>Enable two-factor authentication for extra security</li>
                 <li>Never share your login credentials with anyone</li>
                 <li>Log out when using shared or public computers</li>
@@ -75,11 +75,11 @@
         <p><strong>Need help?</strong> Contact our security team immediately at <strong>{{ security_email | default('security@medifly.com') }}</strong> or call <strong>{{ security_phone | default('1-800-MEDIFLY') }}</strong></p>
         
         <p>Stay safe,<br>
-        MediFly Security Team</p>
+        SkyCareLink Security Team</p>
     </div>
     
     <div class="footer">
-        <p>MediFly Air Medical Transport | {{ current_year | default('2025') }}</p>
+        <p>SkyCareLink Air Medical Transport | {{ current_year | default('2025') }}</p>
         <p>This security alert was sent to {{ recipient_email | default('user@example.com') }}</p>
         <p>If you received this email in error, please contact us immediately.</p>
     </div>

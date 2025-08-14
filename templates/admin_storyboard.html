@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Revenue Storyboard - MediFly{% endblock %}
+{% block title %}Revenue Storyboard - SkyCareLink{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -22,7 +22,7 @@
             <div class="col-12">
                 <div class="card bg-gradient-success text-white">
                     <div class="card-body text-center">
-                        <h1 class="display-4">${{ "{:,}".format(booking_stats.actual_revenue|int) }} MediFly Revenue!</h1>
+                        <h1 class="display-4">${{ "{:,}".format(booking_stats.actual_revenue|int) }} SkyCareLink Revenue!</h1>
                         <p class="lead">7 Successful Bookings • ${{ "{:,}".format(booking_stats.total_service_value|int) }} Service Value Generated</p>
                         <div class="row text-center mb-3">
                             <div class="col-md-4">

@@ -1,6 +1,6 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}New Request - MediFly{% endblock %}
+{% block title %}New Request - SkyCareLink{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -340,7 +340,7 @@
 <div class="bot-modal" id="botModal" style="display: none;">
     <div class="bot-content">
         <div class="bot-header">
-            <h5><i class="fas fa-robot me-2"></i>MediFly Assistant</h5>
+            <h5><i class="fas fa-robot me-2"></i>SkyCareLink Assistant</h5>
             <button class="btn-close" onclick="toggleBot()"></button>
         </div>
         <div class="bot-body" id="botBody">
@@ -1245,7 +1245,7 @@ function showBotFAQs(role) {
 function showBotAnswer(question) {
     const answers = {
         'How do commissions work (5% with 1% credit)?': 'Affiliates earn 5% commission on completed bookings. The 1% credit helps offset network fees and platform costs. Credits accumulate and are applied to your monthly invoice.',
-        'Concierge add-on?': 'Concierge service adds $15,000 to base fare. Revenue split: $7.5k to MediFly, $7.5k to affiliate. Base 5% commission applies only to base fare, plus separate concierge credit line.',
+        'Concierge add-on?': 'Concierge service adds $15,000 to base fare. Revenue split: $7.5k to SkyCareLink, $7.5k to affiliate. Base 5% commission applies only to base fare, plus separate concierge credit line.',
         'How fast do quotes arrive?': 'Most quotes arrive within 15-60 minutes. Critical requests may receive faster responses. You\'ll be notified via email/SMS when new quotes are available.',
         "What's the process?": 'Submit request → Receive quotes → Compare providers → Select and confirm booking → Coordinate transport details → Complete transport.',
         'Fees for second booking?': 'First booking is free. Second booking requires either $99 one-time fee (lifetime access) or $9.99/month (1-year minimum, 30-day cancellation window).',

@@ -70,8 +70,8 @@ DEMO_USERS = {
 }
 
 # Global configuration - adjustable non-refundable fee
-MEDFLY_CONFIG = {
-    'non_refundable_fee': int(os.environ.get("MEDFLY_FEE", "1000")),
+SKYCARELINK_CONFIG = {
+    'non_refundable_fee': int(os.environ.get("SKYCARELINK_FEE", "1000")),
     'openweather_api_key': os.environ.get("OPENWEATHER_API_KEY", "demo-key"),
     'google_places_api_key': os.environ.get("GOOGLE_PLACES_API_KEY", "demo-key"),
     'twilio_account_sid': os.environ.get("TWILIO_ACCOUNT_SID", "demo-sid"),
@@ -2390,7 +2390,7 @@ def consumer_quotes():
                          urgency_deadline=quote_expiry,
                          slots_remaining=session.get('slots_remaining', 2),
                          subscription_pricing=SUBSCRIPTION_PRICING,
-                         medfly_fee=MEDFLY_CONFIG['non_refundable_fee'],
+                         medfly_fee=SKYCARELINK_CONFIG['non_refundable_fee'],
                          is_training_mode=is_training_mode,
                          training_label=TRAINING_CONFIG['dummy_label'])
 
@@ -2452,7 +2452,7 @@ def consumer_confirm():
     
     session['selected_quote'] = selected_quote
     
-    medfly_fee = MEDFLY_CONFIG['non_refundable_fee']
+    medfly_fee = SKYCARELINK_CONFIG['non_refundable_fee']
     affiliate_payment = selected_quote['total_cost'] - medfly_fee
     
     fee_breakdown = {
@@ -2857,7 +2857,7 @@ def admin_fee_adjustment():
         flash('Admin access required.', 'error')
         return redirect(url_for('login'))
     
-    current_fee = MEDFLY_CONFIG['non_refundable_fee']
+    current_fee = SKYCARELINK_CONFIG['non_refundable_fee']
     
     return render_template('admin_fee_adjustment.html', current_fee=current_fee)
 
@@ -3033,7 +3033,7 @@ def admin_fee_adjustment_post():
     
     new_fee = request.form.get('new_fee', type=int)
     if new_fee and new_fee > 0:
-        MEDFLY_CONFIG['non_refundable_fee'] = new_fee
+        SKYCARELINK_CONFIG['non_refundable_fee'] = new_fee
         flash(f'Non-refundable fee updated to ${new_fee:,}', 'success')
         logging.info(f"ADMIN: Fee updated to ${new_fee} by {session.get('contact_name', 'admin')}")
     else:
@@ -3049,7 +3049,7 @@ def admin_anti_abuse_settings():
         flash('Admin access required.', 'error')
         return redirect(url_for('home'))
     
-    current_deposit = MEDFLY_CONFIG.get('anti_abuse_deposit', 99)
+    current_deposit = SKYCARELINK_CONFIG.get('anti_abuse_deposit', 99)
     
     return render_template('admin_anti_abuse.html', 
                          current_deposit=current_deposit,
@@ -3063,7 +3063,7 @@ def admin_update_anti_abuse():
     
     new_deposit = request.form.get('deposit_amount', type=int)
     if new_deposit and new_deposit > 0:
-        MEDFLY_CONFIG['anti_abuse_deposit'] = new_deposit
+        SKYCARELINK_CONFIG['anti_abuse_deposit'] = new_deposit
         flash(f'Anti-abuse deposit updated to ${new_deposit}', 'success')
         logging.info(f"ADMIN: Anti-abuse deposit updated to ${new_deposit} by {session.get('contact_name', 'admin')}")
     
@@ -3343,7 +3343,7 @@ def api_providers_search():
         })
     
     # Step 2: Try Google Places if API key is available
-    api_key = MEDFLY_CONFIG.get('google_places_api_key')
+    api_key = SKYCARELINK_CONFIG.get('google_places_api_key')
     if api_key and api_key != "demo-key":
         google_results = search_google_places(query, api_key)
         

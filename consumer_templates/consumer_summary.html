@@ -1,6 +1,6 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Transport Complete - MediFly Consumer{% endblock %}
+{% block title %}Transport Complete - SkyCareLink Consumer{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -186,7 +186,7 @@
                             <form method="POST" action="{{ url_for('summary_complete') }}" id="feedback-form">
                                 <div class="mb-3">
                                     <label for="feedback" class="form-label">
-                                        How was your experience with MediFly? (Optional)
+                                        How was your experience with SkyCareLink? (Optional)
                                     </label>
                                     <textarea class="form-control" 
                                               id="feedback" 
@@ -238,7 +238,7 @@
 function downloadPDF() {
     // Mock PDF download functionality
     const link = document.createElement('a');
-    link.href = 'data:text/plain;charset=utf-8,MediFly Transport Receipt%0A%0AReference: MF-{{ summary.booking_time[-6:] if summary.booking_time else "000001" }}%0AProvider: {{ summary.provider.name }}%0AFrom: {{ summary.pickup_location }}%0ATo: {{ summary.destination }}%0ATotal Cost: ${{ "{:,}".format(summary.total_cost) }}%0A%0AThank you for choosing MediFly!';
+    link.href = 'data:text/plain;charset=utf-8,SkyCareLink Transport Receipt%0A%0AReference: MF-{{ summary.booking_time[-6:] if summary.booking_time else "000001" }}%0AProvider: {{ summary.provider.name }}%0AFrom: {{ summary.pickup_location }}%0ATo: {{ summary.destination }}%0ATotal Cost: ${{ "{:,}".format(summary.total_cost) }}%0A%0AThank you for choosing SkyCareLink!';
     link.download = 'medifly-receipt-{{ summary.booking_time[-6:] if summary.booking_time else "000001" }}.txt';
     link.click();
     

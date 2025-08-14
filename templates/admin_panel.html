@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Panel - MediFly{% endblock %}
+{% block title %}Admin Panel - SkyCareLink{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -31,7 +31,7 @@
                 <div class="card bg-success text-white">
                     <div class="card-body text-center">
                         <h4>${{ "{:,}".format(stats.actual_revenue|int) }}</h4>
-                        <small>MediFly Revenue</small>
+                        <small>SkyCareLink Revenue</small>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>MediFly Revenue Analysis</h5>
+                        <h5>SkyCareLink Revenue Analysis</h5>
                     </div>
                     <div class="card-body">
                         <p><strong>Revenue per Booking:</strong> ${{ "{:,}".format((stats.actual_revenue / stats.total_bookings)|int) }}</p>

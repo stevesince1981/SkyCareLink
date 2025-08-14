@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MediFly Consumer - Get Your Loved One Home Safely{% endblock %}</title>
+    <title>{% block title %}SkyCareLink Consumer - Get Your Loved One Home Safely{% endblock %}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -54,7 +54,7 @@
             <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">
                 <i class="fas fa-helicopter me-2 text-primary"></i>
                 <i class="fas fa-plane me-2 text-info"></i>
-                MediFly
+                SkyCareLink
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -196,7 +196,7 @@
                         No data storage • Session-based only
                     </p>
                     <div class="disclaimer mt-2">
-                        MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+                        SkyCareLink aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
                     </div>
                 </div>
             </div>
@@ -370,7 +370,7 @@
 
     function startAIConversation() {
         aiState.conversationStarted = true;
-        const message = "Hello! I'm your MediFly transport assistant. I'm here to guide you through our medical air transport services with personalized information based on your needs.\n\nTo provide the most relevant assistance, could you please tell me which category best describes you?\n\n• Individual/Family Member - Seeking transport for a loved one\n• Hospital/Clinic - Medical facility needing transport coordination\n• Affiliate Provider - Transport company interested in partnership\n\nPlease select your category to continue.";
+        const message = "Hello! I'm your SkyCareLink transport assistant. I'm here to guide you through our medical air transport services with personalized information based on your needs.\n\nTo provide the most relevant assistance, could you please tell me which category best describes you?\n\n• Individual/Family Member - Seeking transport for a loved one\n• Hospital/Clinic - Medical facility needing transport coordination\n• Affiliate Provider - Transport company interested in partnership\n\nPlease select your category to continue.";
         
         // Create uniform sized buttons for user types
         const panel = document.getElementById('aiChatPanel');
@@ -394,7 +394,7 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = 'ai-message';
         messageDiv.style.cssText = 'background: #f8f9fa; padding: 8px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #007bff;';
-        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 3px; font-size: 0.65rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.2; white-space: pre-line; font-size: 0.6rem;">${message}</div>`;
+        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 3px; font-size: 0.65rem;">SkyCareLink Assistant</div><div class="ai-message-text" style="line-height: 1.2; white-space: pre-line; font-size: 0.6rem;">${message}</div>`;
         chatArea.appendChild(messageDiv);
         
         const optionsDiv = document.createElement('div');
@@ -445,7 +445,7 @@
             startAIConversation();
         } else {
             console.log("AI Debug - No response found, showing fallback");
-            showAIResponse('I can help with any questions about MediFly transport services. Please select from the options below:', getQuestionsForUserType(aiState.userType));
+            showAIResponse('I can help with any questions about SkyCareLink transport services. Please select from the options below:', getQuestionsForUserType(aiState.userType));
         }
     }
 
@@ -456,7 +456,7 @@
 
 Medical air transport can feel overwhelming, but I'll help you understand what to expect, what information you'll need, and how to prepare for this journey.`,
             'Hospital/Clinic': `Welcome! I'm here to assist with your medical transport coordination needs. Whether you're arranging critical transfers, scheduled transports, or need information about our partnership program, I can provide detailed operational guidance.`,
-            'Affiliate Provider': `Thank you for your interest in partnering with MediFly. I can provide comprehensive information about our affiliate program, commission structure, operational requirements, and partnership benefits.`
+            'Affiliate Provider': `Thank you for your interest in partnering with SkyCareLink. I can provide comprehensive information about our affiliate program, commission structure, operational requirements, and partnership benefits.`
         };
         
         // Clear previous content and show focused view
@@ -481,7 +481,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
                 'How do I prepare my loved one for transport?'
             ],
             'Hospital/Clinic': [
-                'How do I join the MediFly network?',
+                'How do I join the SkyCareLink network?',
                 'What are the referral commission rates?',
                 'How does the quote distribution system work?',
                 'What documentation is required for transfers?',
@@ -491,7 +491,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
                 'What are the quality assurance standards?'
             ],
             'Affiliate Provider': [
-                'How do I become a MediFly affiliate?',
+                'How do I become a SkyCareLink affiliate?',
                 'What are the commission rates and payment terms?',
                 'How does the fair quote distribution system work?',
                 'What are the operational requirements?',
@@ -518,7 +518,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             responses["What medical equipment is available?"] = "Equipment varies by severity: Level 1 (basic monitoring, oxygen), Level 2 (advanced monitoring, ventilators), Level 3 (ECMO, advanced life support, NICU equipment). All transports include certified medical staff. Equipment automatically recommended based on your severity selection.";
             responses["How do I prepare my loved one for transport?"] = "Preparation includes: Medical (gather medications, records, clearance), Personal (pack essentials, comfort items), Communication (explain process to patient), Family coordination (arrange airport transportation), Documentation (insurance cards, emergency contacts). Our medical team handles all clinical aspects during transport.";
         } else if (userType === "Hospital/Clinic") {
-            responses["How do I join the MediFly network?"] = "Network membership requires: licensed healthcare facility, current malpractice insurance, EMR system, dedicated transport coordinator. Application process takes 4 weeks: initial application, verification, integration setup, activation. Benefits include access to certified providers, commission earnings, and streamlined coordination.";
+            responses["How do I join the SkyCareLink network?"] = "Network membership requires: licensed healthcare facility, current malpractice insurance, EMR system, dedicated transport coordinator. Application process takes 4 weeks: initial application, verification, integration setup, activation. Benefits include access to certified providers, commission earnings, and streamlined coordination.";
             responses["What are the referral commission rates?"] = "Commission structure: 4% standard rate, 5% premium rate (25+ referrals/quarter), volume bonuses available. Monthly ACH payments, Net 30 terms, detailed reporting provided. Quality bonuses available for high satisfaction scores. Real-time tracking in partner dashboard.";
             responses["How does the quote distribution system work?"] = "Fair distribution system prioritizes: geographic proximity, capability matching, response history, quality metrics. Standard quotes have 6-hour response window, urgent cases 2-hour window. Maximum 6 quotes per request to prevent overwhelm. Performance-based adjustments ensure quality providers get more opportunities.";
             responses["What documentation is required for transfers?"] = "Required documentation includes: Complete medical history and physical exam (within 48 hours), current medications list, diagnostic results from past 72 hours, physician transfer orders with medical necessity, receiving facility acceptance confirmation, insurance pre-authorization, HIPAA authorization, and EMTALA compliance documentation. Our platform streamlines this process with automated workflows.";
@@ -527,8 +527,8 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
             responses["How do I track patient transfers?"] = "Real-time tracking through partner portal: Live flight tracking with GPS coordinates, crew communication updates, departure/arrival notifications, patient status reports during transport, destination facility handoff confirmation. Mobile app and SMS notifications available. Family communication coordination included.";
             responses["What are the quality assurance standards?"] = "Comprehensive quality program: All providers maintain DOT Part 135 certificates, minimum $10M liability insurance, certified medical crews with ongoing training, regular safety audits, patient satisfaction tracking (target 95%+), outcome monitoring, 24/7 medical direction, HIPAA compliance verification, and continuous improvement protocols.";
         } else if (userType === "Affiliate Provider") {
-            responses["How do I become a MediFly affiliate?"] = "Requirements include: DOT Part 135 certificate, $10M liability insurance, certified medical crews, exemplary safety record. 4-week application process with operational assessment. Benefits: steady referral stream, fair quote distribution, 24/7 dispatch support, professional network access.";
-            responses["What are the commission rates and payment terms?"] = "Affiliates set pricing within $20k-$72k range. MediFly takes 15% platform fee. Net 15 payment processing. Volume incentives: 15% standard (1-25 transports), 12% premium (26-50), 10% elite (51+). Quality bonuses for 98%+ satisfaction scores.";
+            responses["How do I become a SkyCareLink affiliate?"] = "Requirements include: DOT Part 135 certificate, $10M liability insurance, certified medical crews, exemplary safety record. 4-week application process with operational assessment. Benefits: steady referral stream, fair quote distribution, 24/7 dispatch support, professional network access.";
+            responses["What are the commission rates and payment terms?"] = "Affiliates set pricing within $20k-$72k range. SkyCareLink takes 15% platform fee. Net 15 payment processing. Volume incentives: 15% standard (1-25 transports), 12% premium (26-50), 10% elite (51+). Quality bonuses for 98%+ satisfaction scores.";
             responses["How does the fair quote distribution system work?"] = "Equitable system based on: geographic proximity, capability matching, response history, quality scores. Round-robin distribution prevents single provider dominance. 90-day support for new providers. Performance transparency through individual dashboards and benchmarking.";
             responses["What are the operational requirements?"] = "24/7 dispatch capability, geographic coverage area definition, medical equipment inventory matching service commitments, real-time tracking systems, crew qualification maintenance, backup aircraft arrangements, FAA-approved maintenance schedules, communication systems integration, and quality reporting capabilities.";
             responses["How do priority partnerships work?"] = "Priority partners receive enhanced quote distribution visibility, reduced platform fees (10% vs standard 15%), dedicated account management, co-branded marketing materials, priority customer support, quarterly performance reviews, and expansion support. Requirements: 100+ annual transports, 98%+ satisfaction scores, zero safety incidents.";
@@ -567,7 +567,7 @@ Medical air transport can feel overwhelming, but I'll help you understand what t
         const messageDiv = document.createElement('div');
         messageDiv.className = 'ai-message';
         messageDiv.style.cssText = 'background: #f8f9fa; padding: 6px; border-radius: 4px; margin-bottom: 6px; border-left: 2px solid #007bff;';
-        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 3px; font-size: 0.65rem;">MediFly Assistant</div><div class="ai-message-text" style="line-height: 1.2; white-space: pre-line; font-size: 0.6rem;">${message || 'No message provided'}</div>`;
+        messageDiv.innerHTML = `<div style="color: #0056b3; font-weight: bold; margin-bottom: 3px; font-size: 0.65rem;">SkyCareLink Assistant</div><div class="ai-message-text" style="line-height: 1.2; white-space: pre-line; font-size: 0.6rem;">${message || 'No message provided'}</div>`;
         
         chatArea.appendChild(messageDiv);
         

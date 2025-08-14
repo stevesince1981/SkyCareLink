@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to MediFly Hospital Network</title>
+    <title>Welcome to SkyCareLink Hospital Network</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background: linear-gradient(135deg, #1976d2, #42a5f5); color: white; padding: 20px; text-align: center; border-radius: 8px; }
@@ -16,19 +16,19 @@
 </head>
 <body>
     <div class="header">
-        <h1><i class="fas fa-hospital"></i> Welcome to MediFly</h1>
+        <h1><i class="fas fa-hospital"></i> Welcome to SkyCareLink</h1>
         <p>Professional Air Medical Transport Services</p>
     </div>
     
     <div class="content">
         <h2>Welcome {{ hospital_name | default('Healthcare Partner') }},</h2>
         
-        <p>Thank you for joining the MediFly network. We're committed to providing your patients with rapid, safe, and professional air medical transport when they need it most.</p>
+        <p>Thank you for joining the SkyCareLink network. We're committed to providing your patients with rapid, safe, and professional air medical transport when they need it most.</p>
         
         <div class="steps">
             <h3>How to Submit a Transport Request</h3>
             <ol>
-                <li><strong>Access the Portal:</strong> Log into your MediFly dashboard</li>
+                <li><strong>Access the Portal:</strong> Log into your SkyCareLink dashboard</li>
                 <li><strong>Patient Information:</strong> Enter essential patient details and medical condition</li>
                 <li><strong>Transport Details:</strong> Specify pickup/destination locations and urgency level</li>
                 <li><strong>Equipment Needs:</strong> Select required medical equipment and crew certifications</li>
@@ -47,18 +47,18 @@
             </ul>
         </div>
         
-        <p><strong>Emergency Situations:</strong> For life-threatening emergencies, call 911 first. MediFly is ideal for planned transfers, time-sensitive transports, and interfacility moves.</p>
+        <p><strong>Emergency Situations:</strong> For life-threatening emergencies, call 911 first. SkyCareLink is ideal for planned transfers, time-sensitive transports, and interfacility moves.</p>
         
         <a href="{{ portal_url | default('#') }}" class="btn">Access Transport Portal</a>
         
         <p>Questions? Our medical transport coordinators are available 24/7 at <strong>{{ support_phone | default('1-800-MEDIFLY') }}</strong></p>
         
         <p>Best regards,<br>
-        The MediFly Medical Team</p>
+        The SkyCareLink Medical Team</p>
     </div>
     
     <div class="footer">
-        <p>MediFly Air Medical Transport | {{ current_year | default('2025') }}</p>
+        <p>SkyCareLink Air Medical Transport | {{ current_year | default('2025') }}</p>
         <p>This email was sent to {{ recipient_email | default('hospital@example.com') }}</p>
     </div>
 </body>

@@ -10,7 +10,7 @@ const base: RequestRow = {
   windowEnd: '2025-08-12T19:00:00Z',
   needs: ['vent','monitor'],
   quotes: [
-    { providerName: 'Concierge (MediFly)', price: 12000, etaMinutes: 180, expiresAt: '2025-08-12T20:00:00Z', notes: 'All-inclusive concierge', concierge: true, incentive: true },
+    { providerName: 'Concierge (SkyCareLink)', price: 12000, etaMinutes: 180, expiresAt: '2025-08-12T20:00:00Z', notes: 'All-inclusive concierge', concierge: true, incentive: true },
     { providerName: 'DP-Air', price: 11500, etaMinutes: 165, expiresAt: '2025-08-12T19:30:00Z' },
     { providerName: 'Sky Rescue', price: 13000, etaMinutes: 210, expiresAt: '2025-08-12T21:00:00Z' },
     { providerName: 'HealthLink', price: 14500, etaMinutes: 195, expiresAt: '2025-08-12T20:30:00Z' }
@@ -62,7 +62,7 @@ function generateRequest(id: number, role: 'provider' | 'affiliate' | 'individua
     status: statuses[id % statuses.length],
     quotes: [
       { 
-        providerName: 'Concierge (MediFly)', 
+        providerName: 'Concierge (SkyCareLink)', 
         price: basePrice + 1000, 
         etaMinutes: 150 + (id % 4) * 30, 
         expiresAt: '2025-08-12T20:00:00Z', 

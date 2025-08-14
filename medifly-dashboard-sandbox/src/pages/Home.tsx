@@ -11,7 +11,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center">
       <div className="text-center">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">MediFly</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">SkyCareLink</h1>
           <p className="text-xl text-gray-600 mb-2">Medical Transport Dashboard</p>
           <p className="text-gray-500">Phase 1 Preview Application</p>
         </div>

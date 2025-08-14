@@ -76,7 +76,7 @@ export default function ConfirmationModal({ isOpen, onClose, request, quote }: P
             {/* Print Area */}
             <div className="print-area print-header" data-ref={request.caseRef}>
               <div className="hidden print:block">
-                <h2>MediFly Medical Transport - Booking Confirmation</h2>
+                <h2>SkyCareLink Medical Transport - Booking Confirmation</h2>
                 <div className="mt-4">
                   <div><strong>Case Reference:</strong> {request.caseRef}</div>
                   <div><strong>Route:</strong> {request.from} → {request.to}</div>

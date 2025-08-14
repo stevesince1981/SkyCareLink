@@ -1,7 +1,7 @@
-# MediFly Hospital App
+# SkyCareLink Hospital App
 
 ## Overview
-MediFly is a Flask-based web application simulating a hospital interface for managing air medical transport services. It streamlines patient transport coordination from intake to flight completion, featuring a multi-step form, enhanced provider comparison, booking confirmation, real-time flight tracking simulation, intelligent chatbot assistance with severity-based recommendations, and HIPAA-compliant administrative oversight. The project aims to provide an efficient, transparent, and scalable solution for medical transport logistics, incorporating a fairness system for provider quote distribution, a hybrid provider search, and a comprehensive commission accounting system. MediFly generates revenue through non-refundable deposits and a commission structure per booking.
+SkyCareLink is a Flask-based web application simulating a hospital interface for managing air medical transport services. It streamlines patient transport coordination from intake to flight completion, featuring a multi-step form, enhanced provider comparison, booking confirmation, real-time flight tracking simulation, intelligent chatbot assistance with severity-based recommendations, and HIPAA-compliant administrative oversight. The project aims to provide an efficient, transparent, and scalable solution for medical transport logistics, incorporating a fairness system for provider quote distribution, a hybrid provider search, and a comprehensive commission accounting system. SkyCareLink generates revenue through non-refundable deposits and a commission structure per booking.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -33,7 +33,7 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### UI/UX Decisions
-- **Branding**: MediFly branding with helicopter + aircraft icons.
+- **Branding**: SkyCareLink branding with helicopter + aircraft icons and professional medical team hero imagery.
 - **Theme**: Defaulting to a calming light blue theme.
 - **Layout**: Jinja2 templates with a base template system for consistent layout, styled with Bootstrap 5.
 - **Visuals**: Enhanced provider comparison with larger pricing displays and capability badges, improved hover animations, smooth progress bar transitions, priority partner pulse animations, and responsive design for mobile compatibility.

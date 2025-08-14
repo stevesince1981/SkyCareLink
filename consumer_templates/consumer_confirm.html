@@ -1,6 +1,6 @@
 {% extends "consumer_base.html" %}
 
-{% block title %}Confirm Booking - MediFly{% endblock %}
+{% block title %}Confirm Booking - SkyCareLink{% endblock %}
 
 {% block head %}
 <style>
@@ -130,7 +130,7 @@
         <!-- Booking Summary -->
         <div class="booking-summary">
             <div class="disclaimer mb-3">
-                MediFly aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
+                SkyCareLink aggregates requests and quotes. Affiliates are solely responsible for licensing, safety, availability, and service delivery. Availability and pricing are not guaranteed.
             </div>
             <h4><i class="fas fa-clipboard-list me-2"></i>Booking Summary</h4>
             
@@ -165,7 +165,7 @@
             <p class="text-muted mb-3">Understanding what you pay and when</p>
             
             <div class="fee-item non-refundable">
-                <span><i class="fas fa-building me-2"></i>MediFly Service Fee (Non-refundable)</span>
+                <span><i class="fas fa-building me-2"></i>SkyCareLink Service Fee (Non-refundable)</span>
                 <span class="fw-bold">${{ "{:,}".format(fee_breakdown.medfly_fee) }}</span>
             </div>
             

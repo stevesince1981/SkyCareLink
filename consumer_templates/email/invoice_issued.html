@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Invoice - MediFly</title>
+    <title>Weekly Invoice - SkyCareLink</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background: #1976d2; color: white; padding: 20px; text-align: center; border-radius: 8px; }
@@ -63,7 +63,7 @@
             <h3><i class="fas fa-university"></i> ACH Payment Details</h3>
             <p><strong>Payment Date:</strong> {{ payment_date | default('Friday, Jan 15, 2025') }}</p>
             <p><strong>Bank Account:</strong> ***{{ account_last_four | default('7842') }}</p>
-            <p><strong>Reference:</strong> MediFly-{{ invoice_number | default('INV-2025-001') }}</p>
+            <p><strong>Reference:</strong> SkyCareLink-{{ invoice_number | default('INV-2025-001') }}</p>
         </div>
         
         <h3>Year-to-Date Progress</h3>
@@ -80,11 +80,11 @@
         <p>Thank you for your continued partnership!</p>
         
         <p>Best regards,<br>
-        MediFly Finance Team</p>
+        SkyCareLink Finance Team</p>
     </div>
     
     <div class="footer">
-        <p>MediFly Air Medical Transport | {{ current_year | default('2025') }}</p>
+        <p>SkyCareLink Air Medical Transport | {{ current_year | default('2025') }}</p>
         <p>Invoice sent to {{ recipient_email | default('affiliate@example.com') }}</p>
     </div>
 </body>
