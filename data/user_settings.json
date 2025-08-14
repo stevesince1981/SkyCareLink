@@ -34,6 +34,16 @@
       ],
       "last_login": "2025-08-11T00:40:02.548018",
       "mfa_enabled": false
+    },
+    "hospital": {
+      "known_ips": [
+        "172.31.97.34"
+      ],
+      "known_user_agents": [
+        "ce69b851"
+      ],
+      "last_login": "2025-08-12T07:38:53.207793",
+      "mfa_enabled": false
     }
   }
 }

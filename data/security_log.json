@@ -1789,6 +1789,54 @@
       "ip": "172.31.122.194",
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Sa",
       "details": {}
+    },
+    {
+      "timestamp": "2025-08-12T07:38:53.210714",
+      "user": "hospital",
+      "type": "login_success",
+      "ip": "172.31.97.34",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.",
+      "details": {
+        "anomaly_detected": true,
+        "risk_factors": [
+          "new_ip",
+          "new_device"
+        ]
+      }
+    },
+    {
+      "timestamp": "2025-08-12T07:38:53.213299",
+      "user": "hospital",
+      "type": "anomaly_alert_sent",
+      "ip": "172.31.97.34",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.",
+      "details": {
+        "is_risky": true,
+        "risk_factors": [
+          "new_ip",
+          "new_device"
+        ],
+        "require_step_up": true
+      }
+    },
+    {
+      "timestamp": "2025-08-12T07:38:53.224267",
+      "user": "hospital",
+      "type": "mfa_challenge_sent",
+      "ip": "172.31.97.34",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.",
+      "details": {
+        "reason": "step_up_required",
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-12T07:39:10.903987",
+      "user": "hospital",
+      "type": "mfa_failed",
+      "ip": "172.31.97.34",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.",
+      "details": {}
     }
   ]
 }
