@@ -3,18 +3,18 @@
 {% block title %}SkyCareLink - Medical Transport Network{% endblock %}
 
 {% block content %}
-<!-- Hero Section with Professional Image -->
-<div class="hero-section position-relative text-white py-5" style="background: linear-gradient(135deg, rgba(0, 85, 128, 0.9), rgba(0, 119, 181, 0.9)), url('{{ url_for('static', filename='images/skycarelink_hero.png') }}') center/cover; min-height: 600px;">
+<!-- Hero Section with Professional Medical Transport Image -->
+<div class="hero-section position-relative text-white py-5" style="background: linear-gradient(135deg, rgba(0, 85, 128, 0.7), rgba(0, 119, 181, 0.7)), url('{{ url_for('static', filename='images/skycarelink_hero.png') }}') center/cover no-repeat; min-height: 600px;">
     <div class="container h-100">
         <div class="row align-items-center h-100">
             <div class="col-lg-7">
-                <div class="hero-content p-4 bg-dark bg-opacity-50 rounded-3">
-                    <h1 class="display-3 fw-bold mb-4">
+                <div class="hero-content p-4 bg-dark bg-opacity-75 rounded-3 shadow-lg">
+                    <h1 class="display-3 fw-bold mb-4 text-white">
                         <i class="fas fa-plane me-3 text-info"></i>
                         SkyCareLink
                     </h1>
                     <h2 class="h3 mb-4 text-light">Medical Transport Made Simple</h2>
-                    <p class="lead mb-4">
+                    <p class="lead mb-4 text-light">
                         Connect with the largest network of certified air medical transport providers. 
                         Fast quotes, transparent pricing, and comprehensive care coordination with our professional medical teams.
                     </p>
@@ -35,27 +35,27 @@
                 <div class="hero-stats">
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <div class="stat-card bg-white bg-opacity-15 backdrop-blur rounded-3 p-3 shadow">
-                                <h3 class="h2 fw-bold text-white">{{ stats.total_providers }}+</h3>
-                                <p class="mb-0 text-light">Certified Providers</p>
+                            <div class="stat-card bg-dark bg-opacity-75 border border-light border-opacity-25 rounded-3 p-3 shadow">
+                                <h3 class="h2 fw-bold text-info">{{ stats.total_providers }}+</h3>
+                                <p class="mb-0 text-white">Certified Providers</p>
                             </div>
                         </div>
                         <div class="col-6 mb-3">
-                            <div class="stat-card bg-white bg-opacity-15 backdrop-blur rounded-3 p-3 shadow">
-                                <h3 class="h2 fw-bold text-white">{{ stats.avg_response_time }} min</h3>
-                                <p class="mb-0 text-light">Average Response</p>
+                            <div class="stat-card bg-dark bg-opacity-75 border border-light border-opacity-25 rounded-3 p-3 shadow">
+                                <h3 class="h2 fw-bold text-info">{{ stats.avg_response_time }} min</h3>
+                                <p class="mb-0 text-white">Average Response</p>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="stat-card bg-white bg-opacity-15 backdrop-blur rounded-3 p-3 shadow">
-                                <h3 class="h2 fw-bold text-white">{{ '{:,}'.format(stats.completed_transports) }}</h3>
-                                <p class="mb-0 text-light">Completed Transports</p>
+                            <div class="stat-card bg-dark bg-opacity-75 border border-light border-opacity-25 rounded-3 p-3 shadow">
+                                <h3 class="h2 fw-bold text-info">{{ '{:,}'.format(stats.completed_transports) }}</h3>
+                                <p class="mb-0 text-white">Completed Transports</p>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="stat-card bg-white bg-opacity-15 backdrop-blur rounded-3 p-3 shadow">
-                                <h3 class="h2 fw-bold text-white">{{ stats.satisfaction_rate }}%</h3>
-                                <p class="mb-0 text-light">Satisfaction Rate</p>
+                            <div class="stat-card bg-dark bg-opacity-75 border border-light border-opacity-25 rounded-3 p-3 shadow">
+                                <h3 class="h2 fw-bold text-info">{{ stats.satisfaction_rate }}%</h3>
+                                <p class="mb-0 text-white">Satisfaction Rate</p>
                             </div>
                         </div>
                     </div>
