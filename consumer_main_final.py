@@ -70,7 +70,10 @@ try:
     @consumer_app.context_processor
     def security_context_processor():
         from flask_wtf.csrf import generate_csrf
-        return {'csrf_token': generate_csrf}
+        return {
+            'csrf_token': generate_csrf,
+            'get_csrf_token': generate_csrf
+        }
     
     print("✓ CSRF protection enabled")
     
