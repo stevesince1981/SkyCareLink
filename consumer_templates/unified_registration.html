@@ -97,13 +97,13 @@
 }
 
 .field-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .field-group label {
     font-weight: 600;
     color: #333;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     display: block;
 }
 
@@ -241,10 +241,10 @@
                 </div>
 
                 <!-- Benefits Section -->
-                <div class="card border-primary mb-4">
+                <div class="card border-primary mb-3">
                     <div class="card-header bg-primary text-white">
                         <h5 class="card-title mb-0">
-                            <i class="fas fa-star me-2"></i>Partner Benefits
+                            <i class="fas fa-star me-2"></i>Affiliate Benefits
                         </h5>
                     </div>
                     <div class="card-body">
@@ -261,7 +261,7 @@
                                     </li>
                                     <li class="mb-2">
                                         <i class="fas fa-check text-success me-2"></i>
-                                        <strong>No upfront costs</strong> - Commission-based partnership
+                                        <strong>1% payback system</strong> - Affiliate fee reimbursed through flights
                                     </li>
                                 </ul>
                             </div>
@@ -286,13 +286,13 @@
                 </div>
 
                 <!-- Affiliate Program Information -->
-                <div class="alert alert-warning mb-4">
+                <div class="alert alert-warning mb-3">
                     <i class="fas fa-star me-2"></i>
-                    <strong>Year One (Founding Tier):</strong> $25,000 one-time affiliate fee with 1% payback on each flight until recovered. Priority placement and refundable if platform doesn't deliver expected opportunities.
+                    <strong>Year One (Founding Tier):</strong> $25,000 one-time affiliate fee with 1% payback on each flight until recovered. Priority placement and refundable if platform doesn't deliver minimum flight opportunities.
                 </div>
-                <div class="alert alert-info mb-4">
+                <div class="alert alert-info mb-3">
                     <i class="fas fa-info-circle me-2"></i>
-                    <strong>Year Two (Proof of Concept):</strong> Reduced $10,000 affiliate fee. Founding affiliates retain early placement advantage. Same 1% payback model applies.
+                    <strong>Year Two (Proof of Concept):</strong> Reduced $10,000 affiliate fee. Founding affiliates retain early placement advantage. No payback needed as platform is proven.
                 </div>
 
                 <h5 class="mb-3">Company Registration</h5>
@@ -390,6 +390,53 @@
                     </div>
                 </div>
 
+                <div class="field-group">
+                    <label for="affiliate_address">Company Address *</label>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" class="form-control mb-2" id="affiliate_street" name="street_address" placeholder="Street Address" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="affiliate_city" name="city" placeholder="City" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="affiliate_state" name="state" placeholder="State" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="affiliate_zip" name="zip_code" placeholder="ZIP Code" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="affiliate_country" name="country" placeholder="Country" value="United States" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Communication Preferences</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="affiliate_comm_email" name="communication_preferences" value="email" checked>
+                                <label class="form-check-label" for="affiliate_comm_email">Email Updates</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="affiliate_comm_sms" name="communication_preferences" value="sms">
+                                <label class="form-check-label" for="affiliate_comm_sms">SMS Notifications</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="affiliate_comm_phone" name="communication_preferences" value="phone">
+                                <label class="form-check-label" for="affiliate_comm_phone">Phone Calls</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="affiliate_comm_newsletter" name="communication_preferences" value="newsletter">
+                                <label class="form-check-label" for="affiliate_comm_newsletter">Newsletter</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="field-group">
@@ -443,7 +490,7 @@
                 </div>
 
                 <!-- Membership Benefits -->
-                <div class="card border-success mb-4">
+                <div class="card border-success mb-3">
                     <div class="card-header bg-success text-white">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-gift me-2"></i>Membership Benefits
@@ -459,7 +506,7 @@
                                     </li>
                                     <li class="mb-2">
                                         <i class="fas fa-check text-success me-2"></i>
-                                        <strong>+1 year</strong> after 5 successful referrals
+                                        <strong>+1 year free</strong> when you refer 5 additional providers
                                     </li>
                                     <li class="mb-2">
                                         <i class="fas fa-check text-success me-2"></i>
@@ -488,13 +535,13 @@
                 </div>
 
                 <!-- Provider Program Information -->
-                <div class="alert alert-success mb-4">
+                <div class="alert alert-success mb-3">
                     <i class="fas fa-gift me-2"></i>
                     <strong>Year One (Launch Offer):</strong> Join free for the first 12 months from official go-live date. No annual membership fees during initial period.
                 </div>
-                <div class="alert alert-info mb-4">
+                <div class="alert alert-info mb-3">
                     <i class="fas fa-handshake me-2"></i>
-                    <strong>Year Two and Beyond:</strong> Standard annual fee can be waived through referrals. Refer providers for free next year, or get lifetime free membership when a referral books a flight.
+                    <strong>Year Two and Beyond:</strong> $99/year annual fee can be waived through referrals. Refer 5 providers for free next year, or get lifetime free membership when a referral books a flight.
                 </div>
 
                 <h5 class="mb-3">Facility Registration</h5>
@@ -572,11 +619,40 @@
                         <div class="col-md-4">
                             <input type="text" class="form-control mb-2" id="provider_city" name="city" placeholder="City" required>
                         </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="provider_state" name="state" placeholder="State" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="provider_zip" name="zip_code" placeholder="ZIP Code" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="provider_country" name="country" placeholder="Country" value="United States" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Communication Preferences</label>
+                    <div class="row">
                         <div class="col-md-6">
-                            <input type="text" class="form-control mb-2" id="provider_state" name="state" placeholder="State/Province" required>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="provider_comm_email" name="communication_preferences" value="email" checked>
+                                <label class="form-check-label" for="provider_comm_email">Email Updates</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="provider_comm_sms" name="communication_preferences" value="sms">
+                                <label class="form-check-label" for="provider_comm_sms">SMS Notifications</label>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" class="form-control mb-2" id="provider_country" name="country" placeholder="Country" value="United States" required>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="provider_comm_phone" name="communication_preferences" value="phone">
+                                <label class="form-check-label" for="provider_comm_phone">Phone Calls</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="provider_comm_newsletter" name="communication_preferences" value="newsletter">
+                                <label class="form-check-label" for="provider_comm_newsletter">Newsletter</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -597,7 +673,7 @@
                 </div>
 
                 <!-- Individual Benefits -->
-                <div class="card border-info mb-4">
+                <div class="card border-info mb-3">
                     <div class="card-header bg-info text-white">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-heart me-2"></i>Individual Benefits
@@ -642,7 +718,7 @@
                 </div>
 
                 <!-- Quick Registration Note -->
-                <div class="alert alert-success mb-4">
+                <div class="alert alert-success mb-3">
                     <i class="fas fa-info-circle me-2"></i>
                     <strong>Quick & Easy:</strong> Simple registration process. Start requesting transport quotes immediately after verification.
                 </div>
@@ -691,8 +767,50 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="individual_address">Address</label>
-                    <textarea class="form-control" id="individual_address" name="address" rows="2" placeholder="Optional - helps us provide better service"></textarea>
+                    <label for="individual_address">Your Address *</label>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" class="form-control mb-2" id="individual_street" name="street_address" placeholder="Street Address" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="individual_city" name="city" placeholder="City" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="individual_state" name="state" placeholder="State" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="individual_zip" name="zip_code" placeholder="ZIP Code" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control mb-2" id="individual_country" name="country" placeholder="Country" value="United States" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Communication Preferences</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="individual_comm_email" name="communication_preferences" value="email" checked>
+                                <label class="form-check-label" for="individual_comm_email">Email Updates</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="individual_comm_sms" name="communication_preferences" value="sms">
+                                <label class="form-check-label" for="individual_comm_sms">SMS Notifications</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="individual_comm_phone" name="communication_preferences" value="phone">
+                                <label class="form-check-label" for="individual_comm_phone">Phone Calls</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="individual_comm_newsletter" name="communication_preferences" value="newsletter">
+                                <label class="form-check-label" for="individual_comm_newsletter">Newsletter</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
