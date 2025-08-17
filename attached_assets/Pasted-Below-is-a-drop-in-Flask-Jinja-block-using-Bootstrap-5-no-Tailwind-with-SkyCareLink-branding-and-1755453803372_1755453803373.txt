@@ -1,0 +1,97 @@
+Below is a drop-in Flask/Jinja block using Bootstrap 5 (no Tailwind), with SkyCareLink branding, and your route updates (/intake, /join_affiliate). It keeps the two-column hero, makes the left card nearly square, and adds the “Know Your Rights” advisory on the right.
+
+✅ Flask/Jinja (Bootstrap 5) — replace your homepage content block
+
+Pre-reqs: Ensure you load Bootstrap 5 CSS/JS and Bootstrap Icons in your base.html <head> (most projects already do):
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons (optional but used below) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+templates/main/index.html
+
+Replace the {% block content %} ... {% endblock %} with:
+
+{% extends "base.html" %}
+{% block content %}
+
+<section class="container py-4">
+  <div class="row g-4 align-items-stretch">
+    <!-- Left: compact, nearly-square hero -->
+    <div class="col-12 col-md-6">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 360px;">
+          <div class="text-center" style="max-width: 420px;">
+            <h1 class="h2 fw-semibold mb-2">
+              SkyCareLink medical transport, <span class="text-primary">made simple</span>
+            </h1>
+            <p class="text-muted mb-4">
+              Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
+            </p>
+            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+              <a href="/intake"
+                 class="btn btn-primary px-4"
+                 aria-label="Request a quote">
+                <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
+              </a>
+              <a href="/join_affiliate"
+                 class="btn btn-outline-secondary px-4"
+                 aria-label="Affiliate onboarding">
+                <i class="bi bi-people me-1" aria-hidden="true"></i> Affiliate Program
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: advisory / transparency box -->
+    <aside class="col-12 col-md-6">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-shield-check text-success fs-4 me-2" aria-hidden="true"></i>
+            <h2 class="h5 fw-semibold mb-0">Know your rights before you choose an air ambulance</h2>
+          </div>
+
+          <ul class="mt-3 mb-3 text-body">
+            <li class="mb-2">Providers should give a <strong>written price quote</strong> before a flight (except true emergencies).</li>
+            <li class="mb-2">Quotes should clearly list <strong>services and all charges</strong> you will incur.</li>
+            <li class="mb-2"><strong>Avoid providers</strong> who refuse to provide a written quote.</li>
+            <li class="mb-2">Comparing quotes helps you review <strong>costs, certifications, and qualifications</strong>.</li>
+            <li class="mb-0"><strong>Ask questions.</strong> This is an important medical decision—make it an informed one.</li>
+          </ul>
+
+          <div class="mt-auto">
+            <a href="/resources/financial-assistance"
+               class="link-primary fw-medium"
+               aria-label="Learn more about patient rights and transparency">
+              Learn more <i class="bi bi-arrow-right-short" aria-hidden="true"></i>
+            </a>
+            <p class="text-muted small mt-2 mb-0">
+              <i class="bi bi-hearts text-danger me-1" aria-hidden="true"></i>
+              SkyCareLink is a software platform, not a broker. We do not arrange or provide transport, and we do not handle funds between providers and patients.
+            </p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% endblock %}
+
+Why this meets the feedback
+
+Bootstrap 5 only: No Tailwind classes; uses B5 grid (row, col-md-6), utilities, cards, and icons.
+
+Routes updated: Primary CTA → /intake; affiliate CTA → /join_affiliate (match to your real routes if different).
+
+Branding: “SkyCareLink medical transport, made simple” + primary color via Bootstrap’s text-primary/btn-primary (which you can theme).
+
+Square-ish hero: Left card uses min-height: 360px; (adjust to 400–420px if you want it more square; remains responsive).
+
+Mobile-first: Columns stack on small screens; spacing via g-4 and Bootstrap utilities.
+
+Accessibility: Clear headings, ARIA-friendly buttons and icons, visible focus (Bootstrap’s defaults).

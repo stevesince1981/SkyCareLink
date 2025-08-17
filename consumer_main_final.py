@@ -5452,7 +5452,7 @@ def home():
         'satisfaction_rate': 98.7
     }
     
-    return render_template('home_enhanced.html', stats=stats)
+    return render_template('home.html', stats=stats)
 
 # Phase 12.A: Anti-abuse and fair-use helper functions
 def check_rate_limit(ip_address):
