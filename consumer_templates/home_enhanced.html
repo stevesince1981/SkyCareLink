@@ -32,7 +32,84 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <!-- Compact expandable info boxes will be added in the "Why Choose" section below -->
+                <div class="why-choose-compact bg-white bg-opacity-90 rounded-3 p-3 shadow">
+                    <h3 class="h4 fw-bold mb-2 text-primary text-center">Why Choose SkyCareLink?</h3>
+                    <p class="text-muted text-center small mb-3">
+                        We're building the largest medical transport provider network in the U.S., with international expansion planned.
+                    </p>
+                    
+                    <!-- Compact Network & Coverage -->
+                    <div class="compact-accordion mb-2">
+                        <div class="compact-header" onclick="toggleCompactPancake('compact-network')" tabindex="0" role="button" aria-expanded="false">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-network-wired me-2 text-primary"></i>
+                                    <strong class="small">Network & Coverage</strong>
+                                </div>
+                                <i class="fas fa-chevron-down compact-chevron" id="chevron-compact-network"></i>
+                            </div>
+                        </div>
+                        <div class="compact-content" id="compact-network">
+                            <div class="small text-muted p-2">
+                                <strong>125 Provider Partners</strong> - Expanding network with 25min average response time for quotes and emergency coordination.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Compact Safety & Compliance -->
+                    <div class="compact-accordion mb-2">
+                        <div class="compact-header" onclick="toggleCompactPancake('compact-safety')" tabindex="0" role="button" aria-expanded="false">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-shield-alt me-2 text-success"></i>
+                                    <strong class="small">Safety & Compliance</strong>
+                                </div>
+                                <i class="fas fa-chevron-down compact-chevron" id="chevron-compact-safety"></i>
+                            </div>
+                        </div>
+                        <div class="compact-content" id="compact-safety">
+                            <div class="small text-muted p-2">
+                                <strong>98.7% Satisfaction Rate</strong> - FAA Part 135 verified operators with 2,847+ completed transports.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Compact Service Features -->
+                    <div class="compact-accordion mb-2">
+                        <div class="compact-header" onclick="toggleCompactPancake('compact-service')" tabindex="0" role="button" aria-expanded="false">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-star me-2 text-info"></i>
+                                    <strong class="small">Service Features</strong>
+                                </div>
+                                <i class="fas fa-chevron-down compact-chevron" id="chevron-compact-service"></i>
+                            </div>
+                        </div>
+                        <div class="compact-content" id="compact-service">
+                            <div class="small text-muted p-2">
+                                24/7 availability, family seating ($1,200/seat), complete door-to-door coordination.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Compact Privacy & Security -->
+                    <div class="compact-accordion">
+                        <div class="compact-header" onclick="toggleCompactPancake('compact-privacy')" tabindex="0" role="button" aria-expanded="false">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-lock me-2 text-secondary"></i>
+                                    <strong class="small">Privacy & Security</strong>
+                                </div>
+                                <i class="fas fa-chevron-down compact-chevron" id="chevron-compact-privacy"></i>
+                            </div>
+                        </div>
+                        <div class="compact-content" id="compact-privacy">
+                            <div class="small text-muted p-2">
+                                HIPAA compliant with provider identity masking until booking confirmation.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -378,5 +455,62 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(card);
     });
 });
+
+function toggleCompactPancake(sectionId) {
+    const content = document.getElementById(sectionId);
+    const chevron = document.getElementById('chevron-' + sectionId);
+    
+    if (content && chevron) {
+        if (content.classList.contains('show')) {
+            content.classList.remove('show');
+            chevron.classList.remove('rotated');
+        } else {
+            content.classList.add('show');
+            chevron.classList.add('rotated');
+        }
+    }
+}
 </script>
+
+<style>
+/* Compact Accordion Styles for Hero Section */
+.compact-accordion {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.compact-header {
+    padding: 0.5rem 0.75rem;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.compact-header:hover {
+    background: #e9ecef;
+}
+
+.compact-content {
+    display: none;
+    background: white;
+}
+
+.compact-content.show {
+    display: block;
+}
+
+.compact-chevron {
+    transition: transform 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.compact-chevron.rotated {
+    transform: rotate(180deg);
+}
+</style>
+
 {% endblock %}
