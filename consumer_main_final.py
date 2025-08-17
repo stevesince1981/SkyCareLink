@@ -2151,15 +2151,20 @@ def consumer_intake_post():
 def quotes_new():
     """New quote request flow with simplified form structure"""
     if request.method == 'GET':
-        return render_template('quotes_new.html')
+        return render_template('quotes_new.html', datetime=datetime)
     
     # Process POST submission
     try:
-        # Extract form data with validation
-        contact_name = request.form.get('contact_name', '').strip()
-        if not contact_name:
-            flash('Contact Name is required.', 'error')
+        # Extract contact information with validation
+        contact_first_name = request.form.get('contact_first_name', '').strip()
+        contact_last_name = request.form.get('contact_last_name', '').strip()
+        if not contact_first_name or not contact_last_name:
+            flash('Contact First Name and Last Name are required.', 'error')
             return render_template('quotes_new.html')
+        
+        # Optional patient information
+        patient_last_name = request.form.get('patient_last_name', '').strip()
+        relation_to_patient = request.form.get('relation_to_patient', '').strip()
         
         service_type = request.form.get('service_type')
         if service_type not in ['critical', 'scheduled']:
@@ -2211,7 +2216,10 @@ def quotes_new():
         # Create quote request data
         quote_request = {
             'ref_id': ref_id,
-            'contact_name': contact_name,
+            'contact_first_name': contact_first_name,
+            'contact_last_name': contact_last_name,
+            'patient_last_name': patient_last_name,
+            'relation_to_patient': relation_to_patient,
             'service_type': service_type,
             'severity_level': int(severity_level),
             'flight_date': flight_date,
@@ -2224,8 +2232,8 @@ def quotes_new():
             'specialized_care': request.form.get('specialized_care', '').strip(),
             'additional_medical_info': request.form.get('additional_medical_info', '').strip(),
             'equipment': default_equipment,
-            'email': request.form.get('email', '').strip(),
-            'phone': request.form.get('phone', '').strip(),
+            'email': request.form.get('contact_email', '').strip(),
+            'phone': request.form.get('contact_phone', '').strip(),
             'timestamp': datetime.now().isoformat(),
             'status': 'submitted',
             'quote_expiry': (datetime.now() + timedelta(days=7)).isoformat()
@@ -2253,7 +2261,10 @@ def quotes_new():
                 
                 quote_db = Quote(
                     ref_id=ref_id,
-                    contact_name=contact_name,
+                    contact_first_name=contact_first_name,
+                    contact_last_name=contact_last_name,
+                    patient_last_name=patient_last_name,
+                    relation_to_patient=relation_to_patient,
                     contact_email=request.form.get('contact_email', '').strip(),
                     contact_phone=request.form.get('contact_phone', '').strip(),
                     service_type=service_type,
