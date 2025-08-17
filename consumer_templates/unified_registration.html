@@ -97,22 +97,22 @@
 }
 
 .field-group {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .field-group label {
     font-weight: 600;
     color: #333;
-    margin-bottom: 0.125rem;
+    margin-bottom: 0.1rem;
     display: block;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 .field-group .form-control, .field-group .form-select {
-    border-radius: 6px;
-    border: 1.5px solid #e0e0e0;
-    padding: 0.5rem 0.65rem;
-    font-size: 0.9rem;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8rem;
     transition: border-color 0.3s ease;
 }
 
@@ -122,7 +122,7 @@
 }
 
 .form-check {
-    margin: 0.25rem 0;
+    margin: 0.1rem 0;
 }
 
 .form-check-input:checked {
@@ -175,8 +175,42 @@
 }
 
 .benefits-list li {
-    margin: 0.5rem 0;
+    margin: 0.2rem 0;
     color: #444;
+    font-size: 0.8rem;
+}
+
+/* Ultra-compact spacing and 75% width */
+.container {
+    max-width: 75% !important;
+}
+
+.role-selector {
+    margin-bottom: 0.5rem !important;
+}
+
+.role-card {
+    padding: 0.75rem !important;
+}
+
+.registration-form {
+    padding: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+h6 {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.card-body {
+    padding: 0.5rem !important;
+}
+
+.alert {
+    padding: 0.4rem 0.75rem !important;
+    margin-bottom: 0.3rem !important;
+    font-size: 0.75rem !important;
 }
 </style>
 {% endblock %}
@@ -512,42 +546,7 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label>Services Offered</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="service_emergency" name="services" value="emergency">
-                                <label class="form-check-label" for="service_emergency">Emergency Transport</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="service_scheduled" name="services" value="scheduled">
-                                <label class="form-check-label" for="service_scheduled">Scheduled Transport</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="service_international" name="services" value="international">
-                                <label class="form-check-label" for="service_international">International Flights</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label>Additional Capabilities</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="offers_concierge" name="offers_concierge" value="1">
-                                <label class="form-check-label" for="offers_concierge">Concierge Services</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="offers_24_7" name="offers_24_7" value="1">
-                                <label class="form-check-label" for="offers_24_7">24/7 Availability</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="offers_nicu" name="offers_nicu" value="1">
-                                <label class="form-check-label" for="offers_nicu">NICU Specialist</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
 
 
             </div>
