@@ -471,13 +471,13 @@
                                             </div>
                                             <div class="row g-2">
                                                 <div class="col-8">
-                                                    <label class="form-label small">City</label>
+                                                    <label class="form-label small">City <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control form-control-sm compact-input" name="from_city" id="fromCity" 
-                                                           placeholder="City">
+                                                           placeholder="City" required>
                                                 </div>
                                                 <div class="col-4">
-                                                    <label class="form-label small">State</label>
-                                                    <select class="form-select form-select-sm compact-input" name="from_state" id="fromState">
+                                                    <label class="form-label small">State <span class="text-danger">*</span></label>
+                                                    <select class="form-select form-select-sm compact-input" name="from_state" id="fromState" required>
                                                         <option value="">State</option>
                                                         <!-- US States will be populated -->
                                                     </select>
@@ -504,13 +504,13 @@
                                             </div>
                                             <div class="row g-2">
                                                 <div class="col-8">
-                                                    <label class="form-label small">City</label>
+                                                    <label class="form-label small">City <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control form-control-sm compact-input" name="to_city" id="toCity" 
-                                                           placeholder="City">
+                                                           placeholder="City" required>
                                                 </div>
                                                 <div class="col-4">
-                                                    <label class="form-label small">State</label>
-                                                    <select class="form-select form-select-sm compact-input" name="to_state" id="toState">
+                                                    <label class="form-label small">State <span class="text-danger">*</span></label>
+                                                    <select class="form-select form-select-sm compact-input" name="to_state" id="toState" required>
                                                         <option value="">State</option>
                                                         <!-- US States will be populated -->
                                                     </select>
@@ -875,7 +875,7 @@ function selectSeverity(severity) {
     document.querySelector(`[data-severity="${severity}"]`).classList.add('selected');
     formData.severity = severity;
     
-    // Auto-populate equipment based on severity
+    // Populate equipment options for this severity
     populateEquipment(severity);
     
     updateStepValidation();
@@ -917,15 +917,15 @@ function populateEquipment(severity) {
         equipmentGrid.appendChild(equipmentItem);
     });
     
-    // Removed auto-selection of default equipment to prevent unwanted defaults
-    // const defaults = defaultSelections[severity] || [];
-    // defaults.forEach(eqId => {
-    //     const checkbox = document.getElementById(`eq_${eqId}`);
-    //     if (checkbox) {
-    //         checkbox.checked = true;
-    //         document.querySelector(`[data-equipment="${eqId}"]`).classList.add('selected');
-    //     }
-    // });
+    // Auto-select recommended equipment based on severity level (but allow user to modify)
+    const defaults = defaultSelections[severity] || [];
+    defaults.forEach(eqId => {
+        const checkbox = document.getElementById(`eq_${eqId}`);
+        if (checkbox) {
+            checkbox.checked = true;
+            document.querySelector(`[data-equipment="${eqId}"]`).classList.add('selected');
+        }
+    });
 }
 
 // Toggle equipment selection
@@ -1067,7 +1067,11 @@ function validateCurrentStep() {
         case 2:
             return formData.severity;
         case 3:
-            return document.getElementById('flightDate').value;
+            return document.getElementById('flightDate').value &&
+                   document.getElementById('fromCity').value &&
+                   document.getElementById('fromState').value &&
+                   document.getElementById('toCity').value &&
+                   document.getElementById('toState').value;
         case 4:
             return document.getElementById('contactName').value &&
                    document.getElementById('relationToPatient').value;
@@ -1080,11 +1084,15 @@ function validateCurrentStep() {
 
 // Update step validation and button states
 function updateStepValidation() {
-    // Update next buttons
+    // Update next buttons for all steps, not just current step
     for (let i = 1; i <= 4; i++) {
         const nextButton = document.getElementById(`nextStep${i}`);
-        if (nextButton && currentStep === i) {
+        if (nextButton) {
+            // Temporarily set currentStep to validate the specific step
+            const originalStep = currentStep;
+            currentStep = i;
             nextButton.disabled = !validateCurrentStep();
+            currentStep = originalStep; // Restore original step
         }
     }
     
