@@ -6,7 +6,7 @@ SkyCareLink is a Flask-based web application simulating a hospital interface for
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 14.C Quote Form Implementation & Contact Name Update - Aug 17, 2025)
+## Recent Changes (Phase 15.A Data Models, Indexes & Immutable Document Uploads - Aug 17, 2025)
 - **MVP Membership Removal**: Completely eliminated all MVP membership references from intake forms, service selection, and throughout the application
 - **Intake Form Enhancements**: Fixed 415 error for form submissions, updated severity levels to "Level 1-3" format, equal-sized boxes (180px height, centered)
 - **Hospital Autofill System**: Implemented comprehensive hospital/clinic database with 30+ major medical centers, real-time search with debouncing for From/To locations
@@ -57,6 +57,13 @@ Preferred communication style: Simple, everyday language.
 - **IVR Feature Flag**: Complete ENABLE_IVR feature flag system with graceful fallbacks when disabled or Twilio credentials unavailable
 - **Enhanced Notifications**: Fixed affiliate notification system with proper email/SMS integration and quote management workflow
 - **Static File Fixes**: Resolved all static file serving issues, compact CSS and UI.js working properly across both /static/ and /consumer_static/ paths
+- **Database Model Infrastructure**: Complete data model system with Document and AuditLog models, BLOB storage for file data, comprehensive audit trail logging
+- **Performance Index System**: Created database indexes on documents(quote_ref), audit_logs(event_type, entity_id, created_at), affiliates(buy_in_paid) for optimized query performance
+- **Immutable Document Upload System**: Full document upload functionality with multiple files per request, BLOB storage, SHA-256 file hashing, and strict no-deletion enforcement
+- **Document Management Interface**: Professional upload interface with drag-and-drop, progress tracking, file validation, and comprehensive document listing with metadata
+- **Audit Compliance System**: Complete audit trail with user tracking, IP logging, request tracing, and immutable document storage for regulatory compliance
+- **API Security Implementation**: HTTP DELETE prevention (returns 405), multiple route protection, and clear immutable storage messaging for all deletion attempts
+- **Admin Co-Founders System**: Payment tracking with partial/full buy-in management, email verification workflow, welcome email automation, and terms acceptance timestamp recording
 
 ## System Architecture
 

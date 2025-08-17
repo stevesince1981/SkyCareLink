@@ -1935,6 +1935,69 @@
         "reason": "step_up_required",
         "risk_factors": []
       }
+    },
+    {
+      "timestamp": "2025-08-17T04:22:37.009536",
+      "user": "unknown",
+      "type": "password_reset_request",
+      "ip": "172.31.105.2",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "email": null
+      }
+    },
+    {
+      "timestamp": "2025-08-17T04:22:58.331062",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.105.2",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": true,
+        "risk_factors": [
+          "odd_time"
+        ]
+      }
+    },
+    {
+      "timestamp": "2025-08-17T04:22:58.333865",
+      "user": "admin",
+      "type": "anomaly_alert_sent",
+      "ip": "172.31.105.2",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "is_risky": true,
+        "risk_factors": [
+          "odd_time"
+        ],
+        "require_step_up": false
+      }
+    },
+    {
+      "timestamp": "2025-08-17T04:23:00.256831",
+      "user": "admin",
+      "type": "logout",
+      "ip": "172.31.105.2",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-17T04:23:37.019671",
+      "user": "admin",
+      "type": "logout",
+      "ip": "172.31.105.2",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-17T04:23:44.614319",
+      "user": "unknown",
+      "type": "password_reset_request",
+      "ip": "172.31.105.2",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "email": null
+      }
     }
   ]
 }

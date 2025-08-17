@@ -72,6 +72,14 @@ if DB_AVAILABLE:
     except ImportError as e:
         print(f"⚠ IVR system not available: {e}")
     
+    # Register document blueprint
+    try:
+        from routes.documents import documents_bp
+        consumer_app.register_blueprint(documents_bp)
+        print("✓ Document upload system registered successfully")
+    except ImportError as e:
+        print(f"⚠ Document system not available: {e}")
+    
     print("✓ Notification services loaded successfully")
 
 # Performance: Enable gzip compression and cache headers

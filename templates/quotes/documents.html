@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents - Quote {{ quote_ref }} - SkyCareLink</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Site Audit UX Tightening - Compact CSS -->
+    <link rel="stylesheet" href="/static/css/compact.css">
+    
+    <style>
+        .upload-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        .document-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .document-row:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .file-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+        }
+        
+        .upload-progress {
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        .upload-results {
+            margin-top: 1rem;
+        }
+        
+        .file-size {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        
+        .upload-timestamp {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-arrow-left me-2"></i>Quote {{ quote_ref }}
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">Documents</span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid py-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4><i class="fas fa-file-alt me-2"></i>Quote Documents</h4>
+                    <span class="badge bg-info">{{ documents|length }} Files</span>
+                </div>
+                
+                <!-- Upload Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Documents</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-zone" id="uploadZone">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <p class="mb-3">
+                                <strong>Drag and drop files here</strong><br>
+                                or click to select files
+                            </p>
+                            <input type="file" id="fileInput" multiple accept=".txt,.pdf,.png,.jpg,.jpeg,.gif,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.csv,.json" style="display: none;">
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-plus me-1"></i>Select Files
+                            </button>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    Supported formats: PDF, Images, Office docs, ZIP, CSV, JSON<br>
+                                    Maximum file size: 10MB per file, 10 files per upload
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Progress -->
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="progress mb-2">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     id="progressBar" style="width: 0%"></div>
+                            </div>
+                            <div class="text-center">
+                                <small id="progressText">Uploading...</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Results -->
+                        <div class="upload-results" id="uploadResults"></div>
+                    </div>
+                </div>
+                
+                <!-- Documents List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-list me-2"></i>Uploaded Documents</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if documents %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 document-table">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Size</th>
+                                        <th>Type</th>
+                                        <th>Uploaded</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for document in documents %}
+                                    <tr class="document-row">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-{{ 'file-pdf' if document.content_type == 'application/pdf' 
+                                                                   else 'file-image' if 'image/' in document.content_type 
+                                                                   else 'file-word' if 'word' in document.content_type 
+                                                                   else 'file-excel' if 'excel' in document.content_type or 'sheet' in document.content_type
+                                                                   else 'file-powerpoint' if 'powerpoint' in document.content_type or 'presentation' in document.content_type
+                                                                   else 'file-archive' if 'zip' in document.content_type or 'rar' in document.content_type
+                                                                   else 'file-alt' }} file-icon text-primary"></i>
+                                                <div>
+                                                    <div class="fw-medium">{{ document.original_filename }}</div>
+                                                    {% if document.original_filename != document.filename %}
+                                                    <small class="text-muted">Stored as: {{ document.filename }}</small>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="file-size">{{ document.file_size_human }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ document.content_type.split('/')[1].upper() if '/' in document.content_type else document.content_type.upper() }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="upload-timestamp">
+                                                {{ document.uploaded_at[:16] if document.uploaded_at else 'Unknown' }}
+                                                {% if document.uploaded_by and document.uploaded_by != 'anonymous' %}
+                                                <br><small>by {{ document.uploaded_by }}</small>
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="/quotes/{{ quote_ref }}/docs/{{ document.id }}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="Download {{ document.original_filename }}">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No Documents Uploaded</h6>
+                            <p class="text-muted">Upload documents using the form above.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Immutable Storage Notice -->
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Immutable Document Storage:</strong> 
+                    Documents cannot be deleted once uploaded for audit compliance and data integrity.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const quoteRef = '{{ quote_ref }}';
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const uploadResults = document.getElementById('uploadResults');
+        
+        // Drag and drop functionality
+        uploadZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadFiles(files);
+            }
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                uploadFiles(e.target.files);
+            }
+        });
+        
+        // Upload files function
+        function uploadFiles(files) {
+            if (files.length > 10) {
+                alert('Maximum 10 files per upload. Please select fewer files.');
+                return;
+            }
+            
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > 10 * 1024 * 1024) {
+                    alert(`File "${files[i].name}" is too large (max 10MB per file).`);
+                    return;
+                }
+                formData.append('files', files[i]);
+            }
+            
+            // Show progress
+            uploadProgress.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressText.textContent = `Uploading ${files.length} file(s)...`;
+            uploadResults.innerHTML = '';
+            
+            // Upload via fetch
+            fetch(`/quotes/${quoteRef}/docs`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Upload complete!';
+                
+                // Show results
+                if (data.success) {
+                    uploadResults.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Successfully uploaded ${data.uploaded_count} of ${data.total_submitted} files.
+                            ${data.errors && data.errors.length > 0 ? 
+                              '<br><strong>Errors:</strong> ' + data.errors.join(', ') : ''}
+                        </div>
+                    `;
+                    
+                    // Refresh page after 2 seconds to show new documents
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    uploadResults.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Upload failed: ${data.error || 'Unknown error'}
+                            ${data.errors && data.errors.length > 0 ? 
+                              '<br><strong>Details:</strong> ' + data.errors.join(', ') : ''}
+                        </div>
+                    `;
+                }
+                
+                // Hide progress after 3 seconds
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                    progressBar.style.width = '0%';
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                progressBar.style.width = '100%';
+                progressBar.classList.add('bg-danger');
+                progressText.textContent = 'Upload failed!';
+                
+                uploadResults.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Upload failed: ${error.message || 'Network error'}
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                    progressBar.classList.remove('bg-danger');
+                    progressBar.style.width = '0%';
+                }, 3000);
+            });
+            
+            // Reset file input
+            fileInput.value = '';
+        }
+        
+        // Test document deletion prevention (for audit)
+        window.testDocumentDeletion = function(docId) {
+            fetch(`/quotes/${quoteRef}/docs/${docId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Delete attempt result:', data);
+                alert(`Delete attempt: ${data.error || data.message}`);
+            })
+            .catch(error => {
+                console.log('Delete attempt blocked:', error);
+            });
+        };
+    </script>
+</body>
+</html>
