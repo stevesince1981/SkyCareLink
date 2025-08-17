@@ -264,6 +264,51 @@
     color: #666;
     margin-top: 0.25rem;
 }
+
+/* Button state improvements */
+.btn:disabled,
+.btn:disabled:hover,
+.btn:disabled:focus,
+.btn:disabled:active {
+    opacity: 0.65 !important;
+    cursor: not-allowed !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+    position: relative;
+}
+
+/* Remove any prohibition icons that might be added by other CSS */
+.btn:disabled::before,
+.btn:disabled::after,
+.btn[disabled]::before,
+.btn[disabled]::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Override any Font Awesome content on disabled buttons */
+.btn:disabled i::before,
+.btn:disabled i::after {
+    content: inherit !important;
+}
+
+.btn-primary:not(:disabled) {
+    background-color: #1976d2 !important;
+    border-color: #1976d2 !important;
+    color: #fff !important;
+}
+
+.btn-primary:not(:disabled):hover {
+    background-color: #1565c0 !important;
+    border-color: #1565c0 !important;
+}
+
+.btn-secondary:disabled {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    opacity: 0.65 !important;
+}
 </style>
 
 <div class="container-fluid py-4">
@@ -862,6 +907,7 @@ function selectService(serviceType) {
     document.querySelector(`[data-service="${serviceType}"]`).classList.add('selected');
     formData.serviceType = serviceType;
     
+    console.log('Service selected:', serviceType);
     updateStepValidation();
     saveFormData();
 }
@@ -1059,9 +1105,9 @@ function toggleStep(stepNumber) {
     }
 }
 
-// Validate current step
-function validateCurrentStep() {
-    switch(currentStep) {
+// Validate a specific step
+function validateStep(stepNumber) {
+    switch(stepNumber) {
         case 1:
             return formData.serviceType;
         case 2:
@@ -1076,23 +1122,38 @@ function validateCurrentStep() {
             return document.getElementById('contactName').value &&
                    document.getElementById('relationToPatient').value;
         case 5:
-            return document.getElementById('agreeTerms').checked;
+            return document.getElementById('agreeTerms') && document.getElementById('agreeTerms').checked;
         default:
             return true;
     }
 }
 
+// Validate current step
+function validateCurrentStep() {
+    return validateStep(currentStep);
+}
+
 // Update step validation and button states
 function updateStepValidation() {
-    // Update next buttons for all steps, not just current step
+    console.log('Updating step validation, current formData:', formData);
+    
+    // Update next buttons for all steps
     for (let i = 1; i <= 4; i++) {
         const nextButton = document.getElementById(`nextStep${i}`);
         if (nextButton) {
-            // Temporarily set currentStep to validate the specific step
-            const originalStep = currentStep;
-            currentStep = i;
-            nextButton.disabled = !validateCurrentStep();
-            currentStep = originalStep; // Restore original step
+            const isValid = validateStep(i);
+            nextButton.disabled = !isValid;
+            
+            console.log(`Step ${i} validation:`, isValid);
+            
+            // Add visual feedback
+            if (isValid) {
+                nextButton.classList.remove('btn-secondary');
+                nextButton.classList.add('btn-primary');
+            } else {
+                nextButton.classList.remove('btn-primary');
+                nextButton.classList.add('btn-secondary');
+            }
         }
     }
     
