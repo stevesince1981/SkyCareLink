@@ -214,8 +214,8 @@
 
 .equipment-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Slightly smaller for compact items */
-    gap: 0.5rem; /* Reduced gap for compact layout */
+    grid-template-columns: repeat(3, 1fr); /* Fixed 3-column layout for consistent ordering */
+    gap: 0.5rem;
     margin: 1rem 0;
 }
 
@@ -465,7 +465,7 @@
                                                 <div class="form-text small">Start typing for suggestions</div>
                                             </div>
                                             <div class="mb-2">
-                                                <label class="form-label small">Address</label>
+                                                <label class="form-label small">From Location Address <small class="text-muted">(Optional)</small></label>
                                                 <input type="text" class="form-control form-control-sm compact-input" name="from_address" id="fromAddress" 
                                                        placeholder="Street address">
                                             </div>
@@ -498,7 +498,7 @@
                                                 <div class="form-text small">Start typing for suggestions</div>
                                             </div>
                                             <div class="mb-2">
-                                                <label class="form-label small">Address</label>
+                                                <label class="form-label small">To Location Address <small class="text-muted">(Optional)</small></label>
                                                 <input type="text" class="form-control form-control-sm compact-input" name="to_address" id="toAddress" 
                                                        placeholder="Street address">
                                             </div>
@@ -515,6 +515,27 @@
                                                         <!-- US States will be populated -->
                                                     </select>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Flight Date and Return -->
+                                    <div class="row g-2 mt-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small">Flight Date <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control form-control-sm compact-input" name="flight_date" id="flightDate" required>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" name="return_flight" id="returnFlight" onchange="toggleReturnDate()">
+                                                <label class="form-check-label" for="returnFlight">
+                                                    Return flight needed?
+                                                </label>
+                                            </div>
+                                            <div id="returnDateContainer" style="display: none;" class="mt-2">
+                                                <label class="form-label small">Return Date</label>
+                                                <input type="date" class="form-control form-control-sm compact-input" name="return_date" id="returnDate">
                                             </div>
                                         </div>
                                     </div>
@@ -585,10 +606,17 @@
                                                    placeholder="e.g., Mother, Father, Guardian" required>
                                         </div>
 
+                                        <!-- Contact Phone -->
+                                        <div class="col-md-6">
+                                            <label class="form-label small">Contact Phone <small class="text-muted">(Optional but encouraged - mobile preferred)</small></label>
+                                            <input type="tel" class="form-control form-control-sm compact-input" name="contact_phone" id="contactPhone" 
+                                                   placeholder="(555) 123-4567">
+                                        </div>
+
                                         <!-- Gender -->
                                         <div class="col-md-4">
-                                            <label class="form-label small">Gender</label>
-                                            <select class="form-select form-select-sm compact-input" name="patient_gender" id="patientGender" required>
+                                            <label class="form-label small">Gender <small class="text-muted">(Optional)</small></label>
+                                            <select class="form-select form-select-sm compact-input" name="patient_gender" id="patientGender">
                                                 <option value="">Select gender</option>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
@@ -598,7 +626,7 @@
 
                                         <!-- Age Range -->
                                         <div class="col-md-4">
-                                            <label class="form-label small">Age Range</label>
+                                            <label class="form-label small">Age Range <small class="text-muted">(Optional)</small></label>
                                             <select class="form-select form-select-sm compact-input" name="patient_age_range" id="patientAgeRange">
                                                 <option value="">Select age range</option>
                                                 <option value="newborn">Newborn (0-1 month)</option>
@@ -613,7 +641,7 @@
 
                                         <!-- Weight Range -->
                                         <div class="col-md-4">
-                                            <label class="form-label small">Weight Range</label>
+                                            <label class="form-label small">Weight Range <small class="text-muted">(Optional)</small></label>
                                             <select class="form-select form-select-sm compact-input" name="patient_weight" id="patientWeight">
                                                 <option value="">Select weight range</option>
                                                 <option value="under-50">Under 50 lbs</option>
@@ -624,6 +652,28 @@
                                                 <option value="250-300">250-300 lbs</option>
                                                 <option value="over-300">Over 300 lbs</option>
                                             </select>
+                                        </div>
+
+                                        <!-- COVID Testing -->
+                                        <div class="col-md-6 mt-3">
+                                            <label class="form-label small">COVID Tested? <small class="text-muted">(Optional)</small></label>
+                                            <select class="form-select form-select-sm compact-input" name="covid_tested" id="covidTested" onchange="toggleCovidResult()">
+                                                <option value="">Select option</option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mt-3">
+                                            <div id="covidResultContainer" style="display: none;">
+                                                <label class="form-label small">COVID Test Result <small class="text-muted">(Optional)</small></label>
+                                                <select class="form-select form-select-sm compact-input" name="covid_result" id="covidResult">
+                                                    <option value="">Select result</option>
+                                                    <option value="n/a">N/A</option>
+                                                    <option value="negative">Negative</option>
+                                                    <option value="positive">Positive</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -734,29 +784,21 @@ const US_STATES = [
     'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
-// Medical equipment data
+// Medical equipment data - ordered for specific layout
 const MEDICAL_EQUIPMENT = {
-    basic: [
-        { id: 'oxygen', name: 'Oxygen Supply', description: 'Basic oxygen therapy for respiratory support', cost: 0 },
-        { id: 'monitor', name: 'Basic Monitor', description: 'Vital signs monitoring during transport', cost: 0 },
-        { id: 'stretcher', name: 'Medical Stretcher', description: 'Standard patient transport stretcher', cost: 0 }
-    ],
-    intermediate: [
-        { id: 'oxygen', name: 'Oxygen Supply', description: 'Basic oxygen therapy for respiratory support', cost: 0 },
-        { id: 'cardiac_monitor', name: 'Cardiac Monitor', description: 'Advanced heart rhythm and vital signs monitoring', cost: 0 },
-        { id: 'iv_pump', name: 'IV Pump', description: 'Intravenous medication delivery system', cost: 0 },
-        { id: 'suction', name: 'Suction Unit', description: 'Airway clearance and secretion management', cost: 0 },
-        { id: 'transport_vent', name: 'Transport Ventilator', description: 'Mechanical breathing support during transport', cost: 0 }
-    ],
     advanced: [
+        // Line 1: Oxygen supply, Cardiac Monitor, Stretcher
         { id: 'oxygen', name: 'Oxygen Supply', description: 'Basic oxygen therapy for respiratory support', cost: 0 },
-        { id: 'ventilator', name: 'Advanced Ventilator', description: 'Full mechanical ventilation with multiple modes', cost: 0 },
         { id: 'cardiac_monitor', name: 'Cardiac Monitor', description: 'Advanced heart rhythm and vital signs monitoring', cost: 0 },
-        { id: 'defibrillator', name: 'Defibrillator', description: 'Emergency cardiac rhythm correction device', cost: 0 },
+        { id: 'stretcher', name: 'Medical Stretcher', description: 'Standard patient transport stretcher', cost: 0 },
+        // Line 2: IV Pump, Balloon Pump, ECMO, Suction
+        { id: 'iv_pump', name: 'IV Pump', description: 'Intravenous medication delivery system', cost: 0 },
         { id: 'balloon_pump', name: 'Balloon Pump', description: 'Intra-aortic balloon pump for cardiac support', cost: 0 },
         { id: 'ecmo', name: 'ECMO', description: 'Extracorporeal membrane oxygenation for critical life support', cost: 0 },
-        { id: 'iv_pump', name: 'IV Pump', description: 'Intravenous medication delivery system', cost: 0 },
         { id: 'suction', name: 'Suction Unit', description: 'Airway clearance and secretion management', cost: 0 },
+        // Line 3: Remaining equipment
+        { id: 'defibrillator', name: 'Defibrillator', description: 'Emergency cardiac rhythm correction device', cost: 0 },
+        { id: 'ventilator', name: 'Advanced Ventilator', description: 'Full mechanical ventilation with multiple modes', cost: 0 },
         { id: 'incubator', name: 'Transport Incubator', description: 'Neonatal intensive care transport unit', cost: 0 }
     ]
 };
@@ -823,9 +865,9 @@ function populateEquipment(severity) {
     
     // Define default selections for each severity level
     const defaultSelections = {
-        'low': ['oxygen', 'monitor'], // Level 1
-        'medium': ['oxygen', 'cardiac_monitor', 'iv_pump'], // Level 2  
-        'high': ['oxygen', 'ventilator', 'cardiac_monitor', 'defibrillator', 'iv_pump'] // Level 3
+        'low': ['oxygen'], // Level 1
+        'medium': ['oxygen', 'stretcher', 'cardiac_monitor', 'iv_pump'], // Level 2  
+        'high': ['oxygen', 'stretcher', 'cardiac_monitor', 'iv_pump', 'defibrillator'] // Level 3
     };
     
     equipmentGrid.innerHTML = '';
@@ -891,6 +933,38 @@ function adjustFamilySeats(change) {
         
         saveFormData();
     }
+}
+
+// Toggle return date field
+function toggleReturnDate() {
+    const returnFlightCheckbox = document.getElementById('returnFlight');
+    const returnDateContainer = document.getElementById('returnDateContainer');
+    
+    if (returnFlightCheckbox.checked) {
+        returnDateContainer.style.display = 'block';
+    } else {
+        returnDateContainer.style.display = 'none';
+        // Clear the return date value when unchecked
+        document.getElementById('returnDate').value = '';
+    }
+    
+    saveFormData();
+}
+
+// Toggle COVID test result field
+function toggleCovidResult() {
+    const covidTested = document.getElementById('covidTested');
+    const covidResultContainer = document.getElementById('covidResultContainer');
+    
+    if (covidTested.value === 'yes') {
+        covidResultContainer.style.display = 'block';
+    } else {
+        covidResultContainer.style.display = 'none';
+        // Clear the result value when not tested
+        document.getElementById('covidResult').value = '';
+    }
+    
+    saveFormData();
 }
 
 // Step navigation
