@@ -947,13 +947,24 @@ function adjustFamilySeats(change) {
 function toggleReturnDate() {
     const returnFlightCheckbox = document.getElementById('returnFlight');
     const returnDateContainer = document.getElementById('returnDateContainer');
+    const returnDateField = document.getElementById('returnDate');
     
     if (returnFlightCheckbox.checked) {
         returnDateContainer.style.display = 'block';
+        
+        // Set minimum date to today for return date
+        const today = new Date().toISOString().split('T')[0];
+        returnDateField.setAttribute('min', today);
+        
+        // Also ensure return date is not before flight date
+        const flightDate = document.getElementById('flightDate').value;
+        if (flightDate && flightDate > today) {
+            returnDateField.setAttribute('min', flightDate);
+        }
     } else {
         returnDateContainer.style.display = 'none';
         // Clear the return date value when unchecked
-        document.getElementById('returnDate').value = '';
+        returnDateField.value = '';
     }
     
     saveFormData();
@@ -1250,11 +1261,38 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('seatMinus').disabled = true;
     setupHospitalAutofill();
     
-    // Set minimum date to today for flight date
+    // Set minimum date to today for both flight date fields
     const today = new Date().toISOString().split('T')[0];
     const flightDateField = document.getElementById('flightDate');
+    const returnDateField = document.getElementById('returnDate');
+    
     if (flightDateField) {
         flightDateField.setAttribute('min', today);
+    }
+    if (returnDateField) {
+        returnDateField.setAttribute('min', today);
+    }
+    
+    // Add listener to update return date minimum when flight date changes
+    if (flightDateField) {
+        flightDateField.addEventListener('change', function() {
+            const returnDateField = document.getElementById('returnDate');
+            const returnFlightCheckbox = document.getElementById('returnFlight');
+            
+            if (returnDateField && returnFlightCheckbox && returnFlightCheckbox.checked) {
+                const flightDate = this.value;
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Set minimum to whichever is later: today or flight date
+                const minDate = flightDate > today ? flightDate : today;
+                returnDateField.setAttribute('min', minDate);
+                
+                // Clear return date if it's now invalid
+                if (returnDateField.value && returnDateField.value < minDate) {
+                    returnDateField.value = '';
+                }
+            }
+        });
     }
 });
 
