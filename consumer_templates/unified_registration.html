@@ -198,7 +198,7 @@
                     <div class="role-icon">
                         <i class="fas fa-helicopter"></i>
                     </div>
-                    <h5 class="role-title">Affiliate</h5>
+                    <h5 class="role-title">Transport Affiliate</h5>
                     <p class="role-description">Flight transport companies and air ambulance operators</p>
                 </div>
             </div>
@@ -207,7 +207,7 @@
                     <div class="role-icon">
                         <i class="fas fa-hospital"></i>
                     </div>
-                    <h5 class="role-title">Provider</h5>
+                    <h5 class="role-title">Healthcare Provider</h5>
                     <p class="role-description">Hospitals, clinics, and medical facilities</p>
                 </div>
             </div>
@@ -233,7 +233,7 @@
                 <div class="text-center mb-4">
                     <h3 class="display-6 fw-bold text-primary mb-3">
                         <i class="fas fa-plane me-3"></i>
-                        Join as Transport Provider
+                        Join as Transport Affiliate
                     </h3>
                     <p class="lead text-muted">
                         Partner with SkyCareLink to expand your medical transport business
@@ -285,11 +285,14 @@
                     </div>
                 </div>
 
-                <!-- Commission Information -->
+                <!-- Affiliate Program Information -->
+                <div class="alert alert-warning mb-4">
+                    <i class="fas fa-star me-2"></i>
+                    <strong>Year One (Founding Tier):</strong> $25,000 one-time affiliate fee with 1% payback on each flight until recovered. Priority placement and refundable if platform doesn't deliver expected opportunities.
+                </div>
                 <div class="alert alert-info mb-4">
                     <i class="fas fa-info-circle me-2"></i>
-                    <strong>Commission Structure:</strong> Adjustable rates from 3.0% to 7.0% (default 5.0%). 
-                    First $25,000 in bookings help recoup our onboarding costs, then your negotiated rate applies.
+                    <strong>Year Two (Proof of Concept):</strong> Reduced $10,000 affiliate fee. Founding affiliates retain early placement advantage. Same 1% payback model applies.
                 </div>
 
                 <h5 class="mb-3">Company Registration</h5>
@@ -312,13 +315,13 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="affiliate_email">Business Email *</label>
+                            <label for="affiliate_email">Email *</label>
                             <input type="email" class="form-control" id="affiliate_email" name="email" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="affiliate_phone">Business Phone *</label>
+                            <label for="affiliate_phone">Phone (Cell) *</label>
                             <input type="tel" class="form-control" id="affiliate_phone" name="phone" required>
                         </div>
                     </div>
@@ -327,21 +330,64 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="affiliate_certificate">Part 135 Certificate Number *</label>
-                            <input type="text" class="form-control" id="affiliate_certificate" name="certificate_number" required>
+                            <label for="affiliate_phone_24_7">Phone (24/7 number)</label>
+                            <input type="tel" class="form-control" id="affiliate_phone_24_7" name="phone_24_7">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="field-group">
-                            <label for="affiliate_commission">Commission Rate (3.0% - 7.0%) *</label>
-                            <input type="number" class="form-control" id="affiliate_commission" name="commission_percent" min="3" max="7" step="0.1" value="5.0" required>
+                        <div class="field-group mt-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="affiliate_same_phone" onchange="autoFillPhone('affiliate')">
+                                <label class="form-check-label" for="affiliate_same_phone">Same as cell phone</label>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="field-group">
-                    <label for="affiliate_coverage">Coverage Areas</label>
-                    <textarea class="form-control" id="affiliate_coverage" name="coverage_areas" rows="3" placeholder="Describe your service areas and range limitations"></textarea>
+                    <label for="affiliate_coverage">Coverage Areas *</label>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_east" name="coverage_areas" value="east_coast">
+                                <label class="form-check-label" for="coverage_east">East Coast</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_central" name="coverage_areas" value="central">
+                                <label class="form-check-label" for="coverage_central">Central US</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_west" name="coverage_areas" value="west_coast">
+                                <label class="form-check-label" for="coverage_west">West Coast</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_southwest" name="coverage_areas" value="southwest">
+                                <label class="form-check-label" for="coverage_southwest">Southwest</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_southeast" name="coverage_areas" value="southeast">
+                                <label class="form-check-label" for="coverage_southeast">Southeast</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_midwest" name="coverage_areas" value="midwest">
+                                <label class="form-check-label" for="coverage_midwest">Midwest</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_international" name="coverage_areas" value="international">
+                                <label class="form-check-label" for="coverage_international">International</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="coverage_alaska_hawaii" name="coverage_areas" value="alaska_hawaii">
+                                <label class="form-check-label" for="coverage_alaska_hawaii">Alaska/Hawaii</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -441,11 +487,14 @@
                     </div>
                 </div>
 
-                <!-- Pricing Information -->
+                <!-- Provider Program Information -->
+                <div class="alert alert-success mb-4">
+                    <i class="fas fa-gift me-2"></i>
+                    <strong>Year One (Launch Offer):</strong> Join free for the first 12 months from official go-live date. No annual membership fees during initial period.
+                </div>
                 <div class="alert alert-info mb-4">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Pricing:</strong> Free for 1 year, then $199.99/year with auto-renewal. 
-                    30-day cancellation notice required. Referral bonuses can extend or eliminate fees.
+                    <i class="fas fa-handshake me-2"></i>
+                    <strong>Year Two and Beyond:</strong> Standard annual fee can be waived through referrals. Refer providers for free next year, or get lifetime free membership when a referral books a flight.
                 </div>
 
                 <h5 class="mb-3">Facility Registration</h5>
@@ -482,8 +531,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="provider_title">Title/Position *</label>
-                            <input type="text" class="form-control" id="provider_title" name="contact_title" required>
+                            <label for="provider_email">Email *</label>
+                            <input type="email" class="form-control" id="provider_email" name="email" required>
                         </div>
                     </div>
                 </div>
@@ -491,97 +540,43 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="provider_email">Business Email *</label>
-                            <input type="email" class="form-control" id="provider_email" name="email" required>
+                            <label for="provider_phone">Phone (Cell) *</label>
+                            <input type="tel" class="form-control" id="provider_phone" name="phone" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="provider_phone">Business Phone *</label>
-                            <input type="tel" class="form-control" id="provider_phone" name="phone" required>
+                            <label for="provider_phone_24_7">Phone (24/7 number)</label>
+                            <input type="tel" class="form-control" id="provider_phone_24_7" name="phone_24_7">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="field-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="provider_same_phone" onchange="autoFillPhone('provider')">
+                                <label class="form-check-label" for="provider_same_phone">24/7 number same as cell phone</label>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="field-group">
                     <label for="provider_address">Facility Address *</label>
-                    <textarea class="form-control" id="provider_address" name="address" rows="2" required></textarea>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label for="provider_npi">NPI Number</label>
-                            <input type="text" class="form-control" id="provider_npi" name="npi_number">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label for="provider_license">State License Number</label>
-                            <input type="text" class="form-control" id="provider_license" name="license_number">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label for="provider_beds">Number of Beds</label>
-                            <input type="number" class="form-control" id="provider_beds" name="bed_count" min="1">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label for="provider_referral">Referral Code</label>
-                            <input type="text" class="form-control" id="provider_referral" name="referral_code" placeholder="Optional">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label>Specializations</label>
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_emergency" name="specializations" value="emergency">
-                                <label class="form-check-label" for="spec_emergency">Emergency Medicine</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_cardiac" name="specializations" value="cardiac">
-                                <label class="form-check-label" for="spec_cardiac">Cardiac Care</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_trauma" name="specializations" value="trauma">
-                                <label class="form-check-label" for="spec_trauma">Trauma Center</label>
-                            </div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control mb-2" id="provider_street" name="street_address" placeholder="Street Address" required>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_pediatric" name="specializations" value="pediatric">
-                                <label class="form-check-label" for="spec_pediatric">Pediatrics</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_nicu" name="specializations" value="nicu">
-                                <label class="form-check-label" for="spec_nicu">NICU</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_stroke" name="specializations" value="stroke">
-                                <label class="form-check-label" for="spec_stroke">Stroke Center</label>
-                            </div>
+                            <input type="text" class="form-control mb-2" id="provider_city" name="city" placeholder="City" required>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_cancer" name="specializations" value="cancer">
-                                <label class="form-check-label" for="spec_cancer">Cancer Treatment</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_rehab" name="specializations" value="rehabilitation">
-                                <label class="form-check-label" for="spec_rehab">Rehabilitation</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="spec_other" name="specializations" value="other">
-                                <label class="form-check-label" for="spec_other">Other</label>
-                            </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control mb-2" id="provider_state" name="state" placeholder="State/Province" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control mb-2" id="provider_country" name="country" placeholder="Country" value="United States" required>
                         </div>
                     </div>
                 </div>
@@ -657,14 +652,14 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="individual_first_name">First Name *</label>
-                            <input type="text" class="form-control" id="individual_first_name" name="first_name" required>
+                            <label for="individual_contact_name">Primary Contact Name *</label>
+                            <input type="text" class="form-control" id="individual_contact_name" name="contact_name" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="individual_last_name">Last Name *</label>
-                            <input type="text" class="form-control" id="individual_last_name" name="last_name" required>
+                            <label for="individual_email">Email *</label>
+                            <input type="email" class="form-control" id="individual_email" name="email" required>
                         </div>
                     </div>
                 </div>
@@ -672,14 +667,25 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="individual_email">Email Address *</label>
-                            <input type="email" class="form-control" id="individual_email" name="email" required>
+                            <label for="individual_phone">Phone (Cell) *</label>
+                            <input type="tel" class="form-control" id="individual_phone" name="phone" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="individual_phone">Phone Number *</label>
-                            <input type="tel" class="form-control" id="individual_phone" name="phone" required>
+                            <label for="individual_phone_24_7">Phone (24/7 number)</label>
+                            <input type="tel" class="form-control" id="individual_phone_24_7" name="phone_24_7">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="field-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="individual_same_phone" onchange="autoFillPhone('individual')">
+                                <label class="form-check-label" for="individual_same_phone">24/7 number same as cell phone</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -819,18 +825,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // Additional role-specific validation can be added here
     });
     
-    // Real-time validation for commission rate
-    const commissionInput = document.getElementById('affiliate_commission');
-    if (commissionInput) {
-        commissionInput.addEventListener('input', function() {
-            const value = parseFloat(this.value);
-            if (value < 3.0 || value > 7.0) {
-                this.setCustomValidity('Commission rate must be between 3.0% and 7.0%');
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-    }
 });
+
+// Auto-fill phone functionality
+function autoFillPhone(roleType) {
+    const cellPhone = document.getElementById(`${roleType}_phone`).value;
+    const phone247 = document.getElementById(`${roleType}_phone_24_7`);
+    const checkbox = document.getElementById(`${roleType}_same_phone`);
+    
+    if (checkbox.checked) {
+        phone247.value = cellPhone;
+        phone247.readOnly = true;
+    } else {
+        phone247.value = '';
+        phone247.readOnly = false;
+    }
+}
 </script>
 {% endblock %}
