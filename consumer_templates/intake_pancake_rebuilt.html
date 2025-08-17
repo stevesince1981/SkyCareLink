@@ -370,6 +370,44 @@
         transform: translateY(0);
     }
 }
+
+/* Equipment Pills Styling */
+.equipment-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0.5rem 0;
+}
+
+.equipment-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.equipment-pill:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.equipment-pill.selected {
+    background: #d1ecf1;
+    border-color: #17a2b8;
+    color: #0c5460;
+}
+
+.equipment-pill .form-check-input {
+    margin-right: 6px;
+    margin-top: 0;
+}
 </style>
 
 <div class="container-fluid py-4">
@@ -444,27 +482,30 @@
                                 <div class="pancake-content">
                                     <div class="severity-row mb-3">
                                         <div class="severity-card" data-severity="low" onclick="selectSeverity('low')">
-                                            <i class="fas fa-user text-success mb-1"></i>
-                                            <h6 class="small mb-1">Level 1 - Low</h6>
-                                            <span class="badge bg-success small">Standard</span>
+                                            <i class="fas fa-user text-success fa-2x mb-2"></i>
+                                            <h6 class="mb-1">Level 1 - Low</h6>
+                                            <p class="small text-muted mb-2">Stable condition</p>
+                                            <span class="badge bg-success">Standard</span>
                                         </div>
                                         <div class="severity-card" data-severity="medium" onclick="selectSeverity('medium')">
-                                            <i class="fas fa-heartbeat text-warning mb-1"></i>
-                                            <h6 class="small mb-1">Level 2 - Medium</h6>
-                                            <span class="badge bg-warning small">Monitoring</span>
+                                            <i class="fas fa-heartbeat text-warning fa-2x mb-2"></i>
+                                            <h6 class="mb-1">Level 2 - Medium</h6>
+                                            <p class="small text-muted mb-2">Monitoring required</p>
+                                            <span class="badge bg-warning">Enhanced</span>
                                         </div>
                                         <div class="severity-card" data-severity="high" onclick="selectSeverity('high')">
-                                            <i class="fas fa-ambulance text-danger mb-1"></i>
-                                            <h6 class="small mb-1">Level 3 - High</h6>
-                                            <span class="badge bg-danger small">Life support</span>
+                                            <i class="fas fa-ambulance text-danger fa-2x mb-2"></i>
+                                            <h6 class="mb-1">Level 3 - High</h6>
+                                            <p class="small text-muted mb-2">Critical condition</p>
+                                            <span class="badge bg-danger">Life support</span>
                                         </div>
                                     </div>
 
-                                    <!-- Medical Equipment (compact) -->
+                                    <!-- Medical Equipment (pill-style) -->
                                     <div class="mb-2">
-                                        <h6 class="small mb-1">Equipment <small class="text-muted">(auto-selected)</small></h6>
-                                        <div class="equipment-grid" id="equipmentGrid">
-                                            <!-- Equipment options will be populated based on severity -->
+                                        <h6 class="small mb-2">Equipment <small class="text-muted">(auto-selected, click to customize)</small></h6>
+                                        <div class="equipment-pills" id="equipmentGrid">
+                                            <!-- Equipment options will be populated as pills -->
                                         </div>
                                     </div>
 
@@ -559,8 +600,8 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-4">
-                                                    <select class="form-select form-select-sm compact-input" name="from_county" id="fromCounty">
-                                                        <option value="">County</option>
+                                                    <select class="form-select form-select-sm compact-input" name="from_country" id="fromCountry">
+                                                        <option value="">Country</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -582,8 +623,8 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-4">
-                                                    <select class="form-select form-select-sm compact-input" name="to_county" id="toCounty">
-                                                        <option value="">County</option>
+                                                    <select class="form-select form-select-sm compact-input" name="to_country" id="toCountry">
+                                                        <option value="">Country</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -825,16 +866,12 @@ const US_STATES = [
     'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
-// USA Counties (major counties for all states - default to USA counties)
-const USA_COUNTIES = [
-    'Adams', 'Allen', 'Anderson', 'Baker', 'Baldwin', 'Barton', 'Benton', 
-    'Boone', 'Brown', 'Butler', 'Carroll', 'Clark', 'Clay', 'Clinton', 
-    'Cook', 'Crawford', 'Davis', 'Douglas', 'Franklin', 'Grant', 
-    'Greene', 'Hamilton', 'Harrison', 'Henry', 'Jackson', 'Jefferson', 
-    'Johnson', 'Jones', 'King', 'Lake', 'Lee', 'Lewis', 'Lincoln', 
-    'Madison', 'Marion', 'Marshall', 'Martin', 'Miller', 'Montgomery', 
-    'Morgan', 'Newton', 'Orange', 'Polk', 'Reed', 'Scott', 'Smith', 
-    'Taylor', 'Union', 'Washington', 'Wayne', 'Wilson', 'Wood', 'Wright'
+// Countries list (major countries for international transport)
+const COUNTRIES = [
+    'USA', 'Canada', 'Mexico', 'United Kingdom', 'Germany', 'France', 
+    'Italy', 'Spain', 'Netherlands', 'Belgium', 'Switzerland', 'Austria',
+    'Denmark', 'Sweden', 'Norway', 'Australia', 'New Zealand', 'Japan',
+    'South Korea', 'Singapore', 'Brazil', 'Argentina', 'Chile', 'Colombia'
 ];
 
 
@@ -901,23 +938,26 @@ function populateStates() {
         toState.innerHTML += `<option value="${state}">${state}</option>`;
     });
     
-    // Populate counties with USA defaults
-    populateCounties('fromCounty');
-    populateCounties('toCounty');
+    // Populate countries with international options
+    populateCountries('fromCountry');
+    populateCountries('toCountry');
 }
 
-// Populate counties dropdown with USA default list
-function populateCounties(countyElementId) {
-    const countySelect = document.getElementById(countyElementId);
+// Populate countries dropdown with international options
+function populateCountries(countryElementId) {
+    const countrySelect = document.getElementById(countryElementId);
     
-    if (!countySelect) return;
+    if (!countrySelect) return;
     
-    // Add USA counties as default
-    USA_COUNTIES.forEach(county => {
+    // Add countries with USA as default selected
+    COUNTRIES.forEach((country, index) => {
         const option = document.createElement('option');
-        option.value = county;
-        option.textContent = county + ' County';
-        countySelect.appendChild(option);
+        option.value = country;
+        option.textContent = country;
+        if (country === 'USA') {
+            option.selected = true;
+        }
+        countrySelect.appendChild(option);
     });
 }
 
@@ -968,22 +1008,17 @@ function populateEquipment(severity) {
     equipmentGrid.innerHTML = '';
     
     allEquipmentList.forEach(equipment => {
-        const equipmentItem = document.createElement('div');
-        equipmentItem.className = 'equipment-item compact-equipment';
-        equipmentItem.setAttribute('data-equipment', equipment.id);
-        equipmentItem.onclick = () => toggleEquipment(equipment.id);
+        const equipmentPill = document.createElement('div');
+        equipmentPill.className = 'equipment-pill';
+        equipmentPill.setAttribute('data-equipment', equipment.id);
+        equipmentPill.onclick = () => toggleEquipment(equipment.id);
         
-        equipmentItem.innerHTML = `
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="eq_${equipment.id}" name="equipment" value="${equipment.id}">
-                <label class="form-check-label" for="eq_${equipment.id}">
-                    <strong>${equipment.name}</strong>
-                    <div class="equipment-description">${equipment.description}</div>
-                </label>
-            </div>
+        equipmentPill.innerHTML = `
+            <input class="form-check-input" type="checkbox" id="eq_${equipment.id}" name="equipment" value="${equipment.id}">
+            <span>${equipment.name}</span>
         `;
         
-        equipmentGrid.appendChild(equipmentItem);
+        equipmentGrid.appendChild(equipmentPill);
     });
     
     // Auto-select recommended equipment based on severity level (but allow user to modify)
