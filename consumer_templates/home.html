@@ -103,33 +103,43 @@
 
 {% block content %}
 
-<section class="container-fluid px-0">
-  <div class="row g-0">
-    <!-- Left: hero with background image -->
-    <div class="col-12 col-md-6 d-flex align-items-center justify-content-center hero-bg"
-         style="background-image: url('{{ url_for('static', filename='img/skycarelink_Front.png') }}');">
-      <div class="hero-overlay p-4 p-md-5 shadow-sm text-center" style="max-width: 480px;">
-        <h1 class="h2 fw-semibold mb-2">
-          SkyCareLink medical transport, <span class="text-primary">made simple</span>
-        </h1>
-        <p class="text-muted mb-4">
-          Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
-        </p>
-        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
-          <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary px-4" aria-label="Request a quote">
-            <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
-          </a>
-          <a href="{{ url_for('join_affiliate') }}" class="btn btn-outline-secondary px-4" aria-label="Affiliate program">
-            <i class="bi bi-people me-1" aria-hidden="true"></i> Affiliate Program
-          </a>
+<section class="hero-section">
+  <div class="container-fluid px-0 hero-content">
+    <div class="row g-0 h-100">
+      <!-- Left: hero content -->
+      <div class="col-12 col-md-6 d-flex align-items-center justify-content-center p-3">
+        <div class="hero-card p-4 p-md-5 text-center" style="max-width: 480px;">
+          <h1 class="h2 fw-semibold mb-2">
+            SkyCareLink medical transport, <span class="text-primary">made simple</span>
+          </h1>
+          <p class="text-muted mb-4">
+            Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
+          </p>
+          <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center mb-3">
+            <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary px-4" aria-label="Request a quote">
+              <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
+            </a>
+            <a href="{{ url_for('join_affiliate') }}" class="btn btn-outline-secondary px-4" aria-label="Affiliate program">
+              <i class="bi bi-people me-1" aria-hidden="true"></i> Affiliate Program
+            </a>
+          </div>
+          
+          <!-- How it works section -->
+          <div class="how-it-works">
+            <h3>How it works</h3>
+            <ol>
+              <li>Submit your transport request details</li>
+              <li>We route to qualified affiliates instantly</li>
+              <li>Review and compare provider quotes</li>
+              <li>Book directly with your chosen provider</li>
+            </ol>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Right: advisory / transparency box -->
-    <aside class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm rounded-0 rounded-end">
-        <div class="card-body d-flex flex-column">
+      <!-- Right: advisory / transparency box -->
+      <aside class="col-12 col-md-6 d-flex align-items-center p-3">
+        <div class="hero-card p-4 p-md-5 h-100 d-flex flex-column">
           <div class="d-flex align-items-center mb-2">
             <i class="bi bi-shield-check text-success fs-4 me-2" aria-hidden="true"></i>
             <h2 class="h5 fw-semibold mb-0">Know your rights before you choose an air ambulance</h2>
@@ -152,8 +162,8 @@
             </p>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
   </div>
 </section>
 

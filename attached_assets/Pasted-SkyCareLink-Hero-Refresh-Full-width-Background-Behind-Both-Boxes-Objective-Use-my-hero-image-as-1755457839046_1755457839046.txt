@@ -1,0 +1,70 @@
+SkyCareLink — Hero Refresh (Full-width Background Behind Both Boxes)
+Objective
+
+Use my hero image as a single full-row background that sits behind BOTH columns (left hero + right advisory).
+
+Background should be faded (subtle, not washed out).
+
+Background must match the current hero height/width—no cropping surprises, no mismatched bottoms.
+
+Keep the “Request a Quote” button as the primary CTA.
+
+Place the 4-step “How it works” block directly under the “Request a Quote” button (within the left content panel).
+
+What to change (no code—actions only)
+
+Move the image to the row-level background
+
+Apply the hero image as the background of the entire hero row/section, not to either column/card.
+
+Background position: center center; size: cover; repeat: no-repeat.
+
+This ensures the image sits behind both boxes and scales cleanly.
+
+Add a full-row fade overlay
+
+Add one overlay layer that spans the entire hero row (same width/height as the row).
+
+Opacity target: 22–28% black (start at ~25%).
+
+The goal is “faded but still vivid,” not gray or muddy.
+
+The two foreground cards (left hero panel + right advisory card) remain solid (white) so text stays crisp.
+
+Lock the hero height consistently
+
+Set a single min-height on the hero row so both columns naturally share the same height.
+
+Desktop: 440–480 px (pick one; 460 px is a good default).
+
+Mobile: 340–380 px (360 px is a good default).
+
+Remove any competing min-heights on individual columns that cause mismatched bottoms.
+
+Ensure bottom edges align perfectly
+
+The bottom edge of the left and right panels must sit on the same baseline—no steps, no 1–2 px offsets.
+
+If the right column grows taller, the row height must grow with it so the background and the left column expand together.
+
+Place the 4-step block under the CTA
+
+Inside the left content panel, keep the CTA row first.
+
+Immediately below it, add the 4-step “How it works” explainer as a small, secondary block (light weight, small text).
+
+Keep it single-column on mobile and compact on desktop (no heavy borders; subtle background if needed).
+
+Maintain existing routes and branding
+
+Primary CTA: /intake
+
+Secondary CTA: /join_affiliate
+
+Keep current SkyCareLink colors, icons, and typography.
+
+Performance & assets
+
+Use the provided hero image file; if it’s heavy, compress to ≤ 400 KB without visible degradation.
+
+Enable lazy-loading only on below-the-fold images; hero should load immediately.
