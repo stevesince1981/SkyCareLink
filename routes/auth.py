@@ -1,259 +1,225 @@
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash
+from datetime import datetime
 import os
-import secrets
-import hashlib
-from datetime import datetime, timedelta
-from flask import Blueprint, request, render_template, redirect, url_for, flash, session, jsonify
-from werkzeug.security import check_password_hash, generate_password_hash
-import logging
+from services.email_service import email_service, EmailTemplates
 
-from models.audit import AuditLog
-from services.mailer import email_service
+auth_bp = Blueprint('auth', __name__)
 
-logger = logging.getLogger(__name__)
+def log_audit_event(action, details, user_id=None):
+    """Helper function to log audit events"""
+    try:
+        from quote_app import db, AuditLog
+        audit_log = AuditLog(
+            action=action,
+            details=details,
+            user_id=user_id,
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent', '')
+        )
+        db.session.add(audit_log)
+        db.session.commit()
+    except Exception as e:
+        print(f"Failed to log audit event: {e}")
+        try:
+            from quote_app import db
+            db.session.rollback()
+        except:
+            pass
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
-
-# Password reset token storage (in production, use Redis or database)
-password_reset_tokens = {}
-
-def generate_reset_token():
-    """Generate a secure password reset token"""
-    return secrets.token_urlsafe(32)
-
-def hash_token(token):
-    """Hash token for secure storage"""
-    return hashlib.sha256(token.encode()).hexdigest()
-
-def is_token_valid(token, email):
-    """Check if password reset token is valid"""
-    token_hash = hash_token(token)
-    if token_hash not in password_reset_tokens:
-        return False
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        user_type = request.form.get('user_type', 'individual')
+        
+        if not email or not password:
+            flash('Email and password are required', 'error')
+            return render_template('auth/register.html')
+        
+        # Check if user already exists
+        from quote_app import db, User
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash('Email already registered', 'error')
+            return render_template('auth/register.html')
+        
+        # Create new user
+        user = User(
+            email=email,
+            user_type=user_type,
+            is_verified=False
+        )
+        user.set_password(password)
+        user.generate_verification_token()
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        # Log registration
+        log_audit_event('user_registered', f'New {user_type} user registered: {email}', user.id)
+        
+        # Send verification email
+        portal_base = os.environ.get('PORTAL_BASE', 'http://localhost:5000')
+        email_html = EmailTemplates.verification_email(user.verification_token, portal_base)
+        
+        if email_service.send_email(
+            email,
+            'Verify your SkyCareLink account',
+            email_html,
+            'verification',
+            quote_id=None
+        ):
+            log_audit_event('email_verification_sent', f'Verification email sent to {email}', user.id)
+            flash('Registration successful! Please check your email to verify your account.', 'success')
+        else:
+            flash('Registration successful! However, we could not send the verification email. Please contact support.', 'warning')
+        
+        return redirect(url_for('auth.login'))
     
-    stored_data = password_reset_tokens[token_hash]
-    if stored_data['email'] != email:
-        return False
-    
-    # Check expiration (2 hours)
-    expiry = datetime.fromisoformat(stored_data['expires'])
-    if datetime.now() > expiry:
-        # Clean up expired token
-        del password_reset_tokens[token_hash]
-        return False
-    
-    return True
+    return render_template('auth/register.html')
 
-def cleanup_expired_tokens():
-    """Remove expired tokens from storage"""
-    current_time = datetime.now()
-    expired_tokens = []
+@auth_bp.route('/verify')
+def verify():
+    token = request.args.get('token')
+    if not token:
+        flash('Invalid verification link', 'error')
+        return redirect(url_for('auth.login'))
     
-    for token_hash, data in password_reset_tokens.items():
-        expiry = datetime.fromisoformat(data['expires'])
-        if current_time > expiry:
-            expired_tokens.append(token_hash)
+    from quote_app import db, User
+    user = User.query.filter_by(verification_token=token).first()
+    if not user:
+        flash('Invalid or expired verification link', 'error')
+        return redirect(url_for('auth.login'))
     
-    for token_hash in expired_tokens:
-        del password_reset_tokens[token_hash]
+    user.is_verified = True
+    user.verification_token = None
+    db.session.commit()
+    
+    log_audit_event('email_verified', f'Email verified for user: {user.email}', user.id)
+    
+    flash('Email verified successfully! You can now log in.', 'success')
+    return redirect(url_for('auth.login'))
 
-@auth_bp.route('/password-reset', methods=['GET', 'POST'])
-def password_reset_request():
-    """Password reset request form"""
-    if request.method == 'GET':
-        return render_template('auth/password_reset_request.html')
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        
+        if not email or not password:
+            flash('Email and password are required', 'error')
+            return render_template('auth/login.html')
+        
+        from quote_app import db, User
+        user = User.query.filter_by(email=email).first()
+        
+        if not user or not user.check_password(password):
+            if user:
+                user.increment_failed_login()
+                db.session.commit()
+                log_audit_event('login_failed', f'Invalid password for user: {email}', user.id)
+            else:
+                log_audit_event('login_failed', f'Login attempt for non-existent user: {email}')
+            
+            flash('Invalid email or password', 'error')
+            return render_template('auth/login.html')
+        
+        # Check if account is locked
+        if user.is_locked():
+            log_audit_event('login_failed', f'Account locked for user: {email}', user.id)
+            flash('Account temporarily locked due to too many failed attempts. Please try again in 5 minutes.', 'error')
+            return render_template('auth/login.html')
+        
+        # Check if user is verified
+        if not user.is_verified:
+            log_audit_event('login_failed', f'Unverified user attempted login: {email}', user.id)
+            flash('Please verify your email before logging in.', 'error')
+            return render_template('auth/login.html', show_resend=True, user_email=email)
+        
+        # Successful login
+        user.reset_failed_login()
+        db.session.commit()
+        
+        session['user_id'] = user.id
+        session['user_email'] = user.email
+        session['user_type'] = user.user_type
+        
+        log_audit_event('login_success', f'User logged in: {email}', user.id)
+        
+        # Redirect based on user type
+        if user.user_type == 'admin':
+            return redirect(url_for('admin.dashboard'))
+        elif user.user_type == 'affiliate':
+            return redirect(url_for('affiliate.dashboard'))
+        else:
+            return redirect(url_for('quotes.request_quote'))
     
-    # Handle POST request
+    return render_template('auth/login.html')
+
+@auth_bp.route('/resend-verification', methods=['POST'])
+def resend_verification():
     email = request.form.get('email', '').strip().lower()
     
-    if not email:
-        flash('Please enter your email address.', 'error')
-        return render_template('auth/password_reset_request.html')
+    user = User.query.filter_by(email=email, is_verified=False).first()
+    if not user:
+        flash('No unverified account found with this email', 'error')
+        return redirect(url_for('auth.login'))
     
-    # In production, verify email exists in database
-    # For demo, accept any email that looks like a demo account
-    valid_emails = ['admin@demo.com', 'family@demo.com', 'hospital@demo.com', 'affiliate@demo.com']
+    # Generate new token if needed
+    if not user.verification_token:
+        user.generate_verification_token()
+        db.session.commit()
     
-    if email not in valid_emails and not email.endswith('@demo.com'):
-        flash('If an account exists with that email, a reset link has been sent.', 'info')
-        return redirect(url_for('auth.password_reset_request'))
+    # Send verification email
+    portal_base = os.environ.get('PORTAL_BASE', 'http://localhost:5000')
+    email_html = EmailTemplates.verification_email(user.verification_token, portal_base)
     
-    try:
-        # Generate reset token
-        reset_token = generate_reset_token()
-        token_hash = hash_token(reset_token)
-        
-        # Store token with expiration
-        expiry = datetime.now() + timedelta(hours=2)
-        password_reset_tokens[token_hash] = {
-            'email': email,
-            'expires': expiry.isoformat(),
-            'created': datetime.now().isoformat()
-        }
-        
-        # Generate reset URL
-        reset_url = url_for('auth.password_reset_verify', token=reset_token, email=email, _external=True)
-        
-        # Send reset email
-        success = email_service.send_password_reset_email(email, reset_url, expiry)
-        
-        if success:
-            # Log the reset request
-            AuditLog.log_event(
-                event_type='password_reset_request',
-                entity_type='user',
-                entity_id=email,
-                action='requested',
-                description=f'Password reset requested for {email}',
-                ip_address=request.remote_addr,
-                user_agent=request.headers.get('User-Agent', '')[:500]
-            )
-            
-            flash('If an account exists with that email, a reset link has been sent.', 'info')
-            logger.info(f"Password reset email sent to {email}")
-        else:
-            flash('Error sending reset email. Please try again later.', 'error')
-            logger.error(f"Failed to send password reset email to {email}")
-        
-    except Exception as e:
-        logger.error(f"Password reset request error for {email}: {str(e)}")
-        flash('Error processing reset request. Please try again later.', 'error')
+    if email_service.send_email(
+        email,
+        'Verify your SkyCareLink account',
+        email_html,
+        'verification_resend',
+        quote_id=None
+    ):
+        log_audit_event('email_verification_sent', f'Verification email resent to {email}', user.id)
+        flash('Verification email sent! Please check your inbox.', 'success')
+    else:
+        flash('Could not send verification email. Please try again later.', 'error')
     
-    return redirect(url_for('auth.password_reset_request'))
+    return redirect(url_for('auth.login'))
 
-@auth_bp.route('/password-reset/verify')
-def password_reset_verify():
-    """Verify reset token and show reset form"""
-    token = request.args.get('token')
-    email = request.args.get('email')
+@auth_bp.route('/logout')
+def logout():
+    user_id = session.get('user_id')
+    if user_id:
+        log_audit_event('user_logout', 'User logged out', user_id)
     
-    if not token or not email:
-        flash('Invalid reset link.', 'error')
-        return redirect(url_for('auth.password_reset_request'))
-    
-    # Clean up expired tokens
-    cleanup_expired_tokens()
-    
-    # Verify token
-    if not is_token_valid(token, email):
-        flash('Reset link has expired or is invalid. Please request a new one.', 'error')
-        return redirect(url_for('auth.password_reset_request'))
-    
-    return render_template('auth/password_reset_form.html', token=token, email=email)
+    session.clear()
+    flash('Logged out successfully', 'success')
+    return redirect(url_for('auth.login'))
 
-@auth_bp.route('/password-reset/confirm', methods=['POST'])
-def password_reset_confirm():
-    """Process password reset with new password"""
-    token = request.form.get('token')
-    email = request.form.get('email')
-    new_password = request.form.get('new_password')
-    confirm_password = request.form.get('confirm_password')
+def login_required(f):
+    """Decorator to require login"""
+    from functools import wraps
     
-    if not all([token, email, new_password, confirm_password]):
-        flash('All fields are required.', 'error')
-        return render_template('auth/password_reset_form.html', token=token, email=email)
-    
-    if new_password != confirm_password:
-        flash('Passwords do not match.', 'error')
-        return render_template('auth/password_reset_form.html', token=token, email=email)
-    
-    if len(new_password) < 6:
-        flash('Password must be at least 6 characters long.', 'error')
-        return render_template('auth/password_reset_form.html', token=token, email=email)
-    
-    # Clean up expired tokens
-    cleanup_expired_tokens()
-    
-    # Verify token one more time
-    if not is_token_valid(token, email):
-        flash('Reset link has expired or is invalid.', 'error')
-        return redirect(url_for('auth.password_reset_request'))
-    
-    try:
-        # In production, update password in database
-        # For demo, we'll simulate the password update
-        password_hash = generate_password_hash(new_password)
-        
-        # Remove used token
-        token_hash = hash_token(token)
-        if token_hash in password_reset_tokens:
-            del password_reset_tokens[token_hash]
-        
-        # Send confirmation email
-        email_service.send_password_reset_confirmation(email)
-        
-        # Log the password reset completion
-        AuditLog.log_event(
-            event_type='password_reset',
-            entity_type='user',
-            entity_id=email,
-            action='completed',
-            description=f'Password reset completed for {email}',
-            ip_address=request.remote_addr,
-            user_agent=request.headers.get('User-Agent', '')[:500],
-            new_values={'password_changed': True, 'reset_method': 'email_token'}
-        )
-        
-        flash('Your password has been reset successfully. You can now log in with your new password.', 'success')
-        logger.info(f"Password reset completed for {email}")
-        
-        return redirect('/')
-        
-    except Exception as e:
-        logger.error(f"Password reset confirmation error for {email}: {str(e)}")
-        flash('Error resetting password. Please try again.', 'error')
-        return render_template('auth/password_reset_form.html', token=token, email=email)
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page', 'error')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-@auth_bp.route('/audit-test')
-def audit_test():
-    """Test endpoint to demonstrate audit logging"""
-    try:
-        # Log a test audit event
-        AuditLog.log_event(
-            event_type='system_test',
-            entity_type='audit',
-            entity_id='test_audit_001',
-            action='test_performed',
-            description='Audit logging system test',
-            user_id=session.get('username', 'anonymous'),
-            user_role=session.get('user_role', 'unknown'),
-            ip_address=request.remote_addr,
-            user_agent=request.headers.get('User-Agent', '')[:500],
-            new_values={'test_data': True, 'timestamp': datetime.now().isoformat()}
-        )
-        
-        return jsonify({
-            'success': True,
-            'message': 'Audit event logged successfully',
-            'event_id': 'test_audit_001'
-        })
-        
-    except Exception as e:
-        logger.error(f"Audit test error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-# Helper function to log sensitive actions
-def log_sensitive_action(event_type, entity_type, entity_id, action, description=None, old_values=None, new_values=None):
-    """Helper function to log sensitive actions with consistent format"""
-    try:
-        AuditLog.log_event(
-            event_type=event_type,
-            entity_type=entity_type,
-            entity_id=entity_id,
-            action=action,
-            description=description,
-            user_id=session.get('username'),
-            user_role=session.get('user_role'),
-            session_id=session.get('session_id'),
-            ip_address=request.remote_addr,
-            user_agent=request.headers.get('User-Agent', '')[:500],
-            old_values=old_values,
-            new_values=new_values,
-            request_id=request.headers.get('X-Request-ID')
-        )
-        return True
-    except Exception as e:
-        logger.error(f"Failed to log sensitive action: {str(e)}")
-        return False
+def admin_required(f):
+    """Decorator to require admin privileges"""
+    from functools import wraps
+    
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session or session.get('user_type') != 'admin':
+            flash('Admin access required', 'error')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function

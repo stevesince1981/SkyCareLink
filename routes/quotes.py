@@ -1,210 +1,164 @@
-"""
-Quote routes for handling quote requests and results
-"""
-
-from flask import Blueprint, request, render_template, redirect, url_for, flash, jsonify, session
-import logging
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from datetime import datetime
-import uuid
+import os
+from services.email_service import email_service, EmailTemplates
+from routes.auth import login_required, log_audit_event
 
-from models import db, Quote
-from routes.affiliate import send_affiliate_quote_request
-from services.mailer import email_service
-from services.sms import sms_service
+quotes_bp = Blueprint('quotes', __name__)
 
-logger = logging.getLogger(__name__)
-
-quotes_bp = Blueprint('quotes', __name__, url_prefix='/quotes')
-
-@quotes_bp.route('/submit', methods=['POST'])
-def submit_quote_request():
-    """Handle quote request submission and send to affiliate"""
-    try:
-        # Extract form data (this integrates with the existing intake form)
-        contact_name = request.form.get('contact_name', '').strip()
-        contact_email = request.form.get('contact_email', '').strip()
-        contact_phone = request.form.get('contact_phone', '').strip()
+@quotes_bp.route('/quote/request', methods=['GET', 'POST'])
+@login_required
+def request_quote():
+    if request.method == 'POST':
+        # Get form data
+        pickup_location = request.form.get('pickup_location', '').strip()
+        destination = request.form.get('destination', '').strip()
+        transport_date_str = request.form.get('transport_date', '')
+        patient_condition = request.form.get('patient_condition', '').strip()
+        special_requirements = request.form.get('special_requirements', '').strip()
         
-        if not contact_name:
-            flash('Contact name is required.', 'error')
-            return redirect(url_for('intake_pancake'))
+        # Validate required fields
+        if not all([pickup_location, destination, transport_date_str]):
+            flash('Please fill in all required fields', 'error')
+            return render_template('quotes/request.html')
         
-        # Generate reference number
-        ref_id = f"QR{datetime.utcnow().strftime('%Y%m%d')}{str(uuid.uuid4())[:8].upper()}"
+        try:
+            transport_date = datetime.strptime(transport_date_str, '%Y-%m-%d')
+        except ValueError:
+            flash('Invalid date format', 'error')
+            return render_template('quotes/request.html')
         
-        # Create quote record
+        # Create quote
+        from quote_app import db, Quote
         quote = Quote(
-            ref_id=ref_id,
-            contact_name=contact_name,
-            contact_email=contact_email,
-            contact_phone=contact_phone,
-            relation_to_patient=request.form.get('relation_to_patient', ''),
-            service_type=request.form.get('service_type', ''),
-            severity_level=request.form.get('severity_level', ''),
-            flight_date=datetime.strptime(request.form.get('flight_date'), '%Y-%m-%d') if request.form.get('flight_date') else None,
-            return_date=datetime.strptime(request.form.get('return_date'), '%Y-%m-%d') if request.form.get('return_date') else None,
-            return_flight_needed=bool(request.form.get('return_flight')),
-            from_hospital=request.form.get('from_hospital', ''),
-            from_address=request.form.get('from_address', ''),
-            from_city=request.form.get('from_city', ''),
-            from_state=request.form.get('from_state', ''),
-            to_hospital=request.form.get('to_hospital', ''),
-            to_address=request.form.get('to_address', ''),
-            to_city=request.form.get('to_city', ''),
-            to_state=request.form.get('to_state', ''),
-            preferred_time=request.form.get('preferred_time', ''),
-            family_seats=int(request.form.get('family_seats', 0)),
-            patient_gender=request.form.get('patient_gender', ''),
-            patient_age_range=request.form.get('patient_age_range', ''),
-            patient_weight=request.form.get('patient_weight', ''),
-            covid_tested=request.form.get('covid_tested', ''),
-            covid_result=request.form.get('covid_result', ''),
-            additional_info=request.form.get('additional_info', ''),
-            quote_status='pending',
-            created_at=datetime.utcnow()
+            reference_number=Quote.generate_reference(),
+            individual_id=session['user_id'],
+            pickup_location=pickup_location,
+            destination=destination,
+            transport_date=transport_date,
+            patient_condition=patient_condition,
+            special_requirements=special_requirements
         )
-        
-        # Handle medical equipment (stored as JSON)
-        equipment_list = []
-        for key, value in request.form.items():
-            if key.startswith('eq_') and value == 'on':
-                equipment_id = key[3:]  # Remove 'eq_' prefix
-                equipment_list.append(equipment_id)
-        
-        quote.medical_equipment = equipment_list
-        
-        # Set equipment flags based on selections
-        quote.oxygen_required = 'oxygen' in equipment_list
-        quote.cardiac_monitor_required = 'cardiac_monitor' in equipment_list
-        quote.stretcher_required = 'stretcher' in equipment_list
-        quote.iv_pump_required = 'iv_pump' in equipment_list
-        quote.defibrillator_required = 'defibrillator' in equipment_list
-        quote.ventilator_required = 'ventilator' in equipment_list
-        quote.balloon_pump_required = 'balloon_pump' in equipment_list
-        quote.ecmo_required = 'ecmo' in equipment_list
-        quote.suction_required = 'suction' in equipment_list
-        quote.incubator_required = 'incubator' in equipment_list
         
         db.session.add(quote)
         db.session.commit()
         
-        # Send notification to affiliate
-        send_affiliate_quote_request(quote)
+        # Log quote creation
+        log_audit_event('quote_created', 
+                       f'Quote created: {quote.reference_number} from {pickup_location} to {destination}',
+                       session['user_id'])
         
-        logger.info(f"Quote request submitted: {ref_id}")
+        # Send confirmation email to individual
+        portal_base = os.environ.get('PORTAL_BASE', 'http://localhost:5000')
+        individual_email = session['user_email']
         
-        # Store reference for results page
-        session['quote_reference'] = ref_id
+        confirmation_html = EmailTemplates.quote_request_confirmation(
+            quote.reference_number, quote.id, portal_base
+        )
         
-        flash(f'Quote request submitted successfully! Reference: {ref_id}', 'success')
-        return redirect(url_for('quotes.quote_submitted', ref=ref_id))
+        email_service.send_email(
+            individual_email,
+            f'Quote request received – Ref #{quote.reference_number}',
+            confirmation_html,
+            'quote_confirmation',
+            quote.id
+        )
+        
+        # Send notification emails to all affiliates
+        from quote_app import User
+        affiliates = User.query.filter_by(user_type='affiliate', is_verified=True).all()
+        for affiliate in affiliates:
+            affiliate_html = EmailTemplates.affiliate_quote_request(
+                quote.reference_number,
+                quote.id,
+                pickup_location,
+                destination,
+                transport_date.strftime('%Y-%m-%d'),
+                portal_base
+            )
+            
+            email_service.send_email(
+                affiliate.email,
+                f'New SkyCareLink quote – Ref #{quote.reference_number}',
+                affiliate_html,
+                'affiliate_quote_notification',
+                quote.id
+            )
+        
+        flash(f'Quote request submitted successfully! Reference: {quote.reference_number}', 'success')
+        return redirect(url_for('quotes.quote_results', quote_id=quote.id))
     
-    except Exception as e:
-        logger.error(f"Error submitting quote request: {str(e)}")
-        db.session.rollback()
-        flash('An error occurred while submitting your quote request. Please try again.', 'error')
-        return redirect(url_for('intake_pancake'))
+    return render_template('quotes/request.html')
 
-@quotes_bp.route('/submitted/<ref>')
-def quote_submitted(ref):
-    """Quote submission confirmation page"""
-    quote = Quote.query.filter_by(ref_id=ref).first()
+@quotes_bp.route('/quote/<int:quote_id>/results')
+@login_required
+def quote_results(quote_id):
+    from quote_app import Quote
+    quote = Quote.query.get_or_404(quote_id)
     
-    if not quote:
-        flash('Quote reference not found.', 'error')
-        return redirect(url_for('consumer_home'))
+    # Only allow individual who created the quote to view it
+    if quote.individual_id != session['user_id']:
+        flash('You can only view your own quotes', 'error')
+        return redirect(url_for('quotes.request_quote'))
     
-    return render_template('quote_submitted.html', quote=quote)
+    return render_template('quotes/results.html', quote=quote)
 
-@quotes_bp.route('/results/<ref>')
-def quote_results(ref):
-    """Display quote results and booking options"""
-    quote = Quote.query.filter_by(ref_id=ref).first()
+@quotes_bp.route('/quote/<int:quote_id>/confirm', methods=['POST'])
+@login_required
+def confirm_booking(quote_id):
+    from quote_app import db, Quote, User
+    quote = Quote.query.get_or_404(quote_id)
     
-    if not quote:
-        flash('Quote reference not found.', 'error')
-        return redirect(url_for('consumer_home'))
+    # Only allow individual who created the quote to confirm it
+    if quote.individual_id != session['user_id']:
+        flash('You can only confirm your own quotes', 'error')
+        return redirect(url_for('quotes.request_quote'))
     
-    # Determine page content based on quote status
-    if quote.quote_status == 'pending':
-        return render_template('quote_pending.html', quote=quote)
-    elif quote.quote_status == 'quoted':
-        return render_template('quote_ready.html', quote=quote)
-    elif quote.quote_status == 'booked':
-        return render_template('booking_confirmed.html', quote=quote)
-    elif quote.quote_status == 'expired':
-        return render_template('quote_expired.html', quote=quote)
-    else:
-        return render_template('quote_error.html', quote=quote)
+    if quote.status != 'quoted':
+        flash('This quote cannot be confirmed', 'error')
+        return redirect(url_for('quotes.quote_results', quote_id=quote_id))
+    
+    # Update quote status
+    quote.status = 'confirmed'
+    quote.confirmed_at = datetime.utcnow()
+    db.session.commit()
+    
+    # Log confirmation
+    log_audit_event('quote_confirmed', 
+                   f'Quote confirmed: {quote.reference_number}',
+                   session['user_id'])
+    
+    # Send confirmation emails
+    individual_email = session['user_email']
+    affiliate = User.query.get(quote.affiliate_id)
+    
+    # Email to individual
+    individual_html = EmailTemplates.booking_confirmed_individual(quote.reference_number)
+    email_service.send_email(
+        individual_email,
+        f'Booking confirmed – Ref #{quote.reference_number}',
+        individual_html,
+        'booking_confirmed_individual',
+        quote.id
+    )
+    
+    # Email to affiliate
+    if affiliate:
+        affiliate_html = EmailTemplates.booking_confirmed_affiliate(quote.reference_number)
+        email_service.send_email(
+            affiliate.email,
+            f'Quote accepted – Ref #{quote.reference_number}',
+            affiliate_html,
+            'booking_confirmed_affiliate',
+            quote.id
+        )
+    
+    flash('Booking confirmed successfully! You will be contacted shortly.', 'success')
+    return redirect(url_for('quotes.quote_results', quote_id=quote_id))
 
-@quotes_bp.route('/book/<ref>', methods=['POST'])
-def book_quote(ref):
-    """Handle quote booking confirmation"""
-    try:
-        quote = Quote.query.filter_by(ref_id=ref).first()
-        
-        if not quote:
-            return jsonify({'success': False, 'message': 'Quote not found'}), 404
-        
-        if quote.quote_status != 'quoted':
-            return jsonify({'success': False, 'message': 'Quote is not available for booking'}), 400
-        
-        # Check if quote has expired
-        if quote.quote_expires_at and datetime.utcnow() > quote.quote_expires_at:
-            quote.quote_status = 'expired'
-            db.session.commit()
-            return jsonify({'success': False, 'message': 'Quote has expired'}), 400
-        
-        # Update quote status to booked
-        quote.quote_status = 'booked'
-        quote.booking_confirmed_at = datetime.utcnow()
-        quote.booking_reference = f"BK{datetime.utcnow().strftime('%Y%m%d')}{str(uuid.uuid4())[:8].upper()}"
-        
-        db.session.commit()
-        
-        # Send booking confirmation notifications (imported from affiliate routes)
-        from routes.affiliate import send_booking_confirmed_notifications
-        send_booking_confirmed_notifications(quote)
-        
-        logger.info(f"Quote {ref} booked successfully, booking ref: {quote.booking_reference}")
-        
-        return jsonify({
-            'success': True,
-            'booking_reference': quote.booking_reference,
-            'redirect_url': url_for('quotes.quote_results', ref=ref)
-        })
-    
-    except Exception as e:
-        logger.error(f"Error booking quote {ref}: {str(e)}")
-        db.session.rollback()
-        return jsonify({'success': False, 'message': 'An error occurred while booking'}), 500
-
-@quotes_bp.route('/test-notifications/<ref>')
-def test_notifications(ref):
-    """Test endpoint for sending notifications (development only)"""
-    if not request.args.get('test_key') == 'dev123':
-        return "Access denied", 403
-    
-    quote = Quote.query.filter_by(ref_id=ref).first()
-    if not quote:
-        return f"Quote {ref} not found", 404
-    
-    # Test affiliate notification
-    from routes.affiliate import send_affiliate_quote_request
-    affiliate_result = send_affiliate_quote_request(quote)
-    
-    # Test quote ready notification
-    from routes.affiliate import send_quote_ready_notifications
-    quote_ready_result = send_quote_ready_notifications(quote)
-    
-    # Test booking confirmation
-    from routes.affiliate import send_booking_confirmed_notifications
-    booking_result = send_booking_confirmed_notifications(quote)
-    
-    return f"""
-    <h3>Notification Test Results for {ref}</h3>
-    <p>Affiliate notification: {'Success' if affiliate_result else 'Failed'}</p>
-    <p>Quote ready notification: Sent (check logs)</p>
-    <p>Booking confirmation: Sent (check logs)</p>
-    <p>Check server logs for detailed results.</p>
-    """
+@quotes_bp.route('/my-quotes')
+@login_required
+def my_quotes():
+    from quote_app import Quote
+    quotes = Quote.query.filter_by(individual_id=session['user_id']).order_by(Quote.created_at.desc()).all()
+    return render_template('quotes/my_quotes.html', quotes=quotes)

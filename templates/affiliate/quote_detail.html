@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Details - {{ quote.reference_number }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('affiliate.dashboard') }}">SkyCareLink - Affiliate Portal</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ url_for('affiliate.dashboard') }}">Dashboard</a>
+                <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Quote Details -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Quote Request: {{ quote.reference_number }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Transport Details</h5>
+                                <p><strong>From:</strong> {{ quote.pickup_location }}</p>
+                                <p><strong>To:</strong> {{ quote.destination }}</p>
+                                <p><strong>Date:</strong> {{ quote.transport_date.strftime('%Y-%m-%d') }}</p>
+                                <p><strong>Submitted:</strong> {{ quote.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                {% if quote.patient_condition %}
+                                <h5>Patient Condition</h5>
+                                <p>{{ quote.patient_condition }}</p>
+                                {% endif %}
+                                
+                                {% if quote.special_requirements %}
+                                <h5>Special Requirements</h5>
+                                <p>{{ quote.special_requirements }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quote Submission Form -->
+                {% if quote.status == 'pending' %}
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">Provide Your Quote</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('affiliate.submit_quote', quote_id=quote.id) }}">
+                            <div class="mb-3">
+                                <label for="quoted_price" class="form-label">Quoted Price (USD) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="quoted_price" name="quoted_price" 
+                                           step="0.01" min="0" placeholder="0.00" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="quote_details" class="form-label">Quote Details</label>
+                                <textarea class="form-control" id="quote_details" name="quote_details" rows="4"
+                                          placeholder="Include details about aircraft type, crew qualifications, included services, timing, etc."></textarea>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg"
+                                        onclick="return confirm('Submit this quote? The customer will be notified immediately.')">
+                                    Submit Quote
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                {% elif quote.affiliate_id == session.user_id %}
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">Your Quote - {{ quote.status.title() }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3 class="text-success">${{ "%.2f"|format(quote.quoted_price) }}</h3>
+                                <p class="text-muted">Submitted: {{ quote.quoted_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span class="badge bg-{{ 'success' if quote.status == 'confirmed' else 'secondary' }} fs-6">
+                                    {{ quote.status.title() }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {% if quote.quote_details %}
+                        <div class="mt-3">
+                            <strong>Details:</strong>
+                            <p>{{ quote.quote_details }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if quote.status == 'confirmed' %}
+                        <div class="alert alert-success mt-3" role="alert">
+                            <h5 class="alert-heading">Congratulations!</h5>
+                            <p>Your quote has been accepted. Please contact the customer within 24 hours to coordinate the transport.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="text-muted">This quote is no longer available</h5>
+                        <p class="text-muted">Another affiliate has already provided a quote for this request.</p>
+                        <a href="{{ url_for('affiliate.dashboard') }}" class="btn btn-primary">Return to Dashboard</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
