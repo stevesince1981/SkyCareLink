@@ -1,0 +1,118 @@
+SkyCareLink — Hero Image Corrections (No Code, Exact Actions)
+Objective
+
+Make the left hero image (plane + crew) look professional: not cropped, slightly dimmed, and exactly the same height as the right advisory card—on desktop and mobile. Keep the CTA + 4-step “How it works” panel under the button.
+
+Files/Areas to touch (no code here—just where to work)
+
+Homepage hero section in your main template (where the image + “Request a Quote” live).
+
+The small CSS file you’re already using for hero tweaks.
+
+The image asset: static/img/skycarelink_Front.png (leave the filename as-is).
+
+Step-by-step changes (what to do)
+
+Switch the image handling to avoid cropping
+
+Use the image as an <img> element inside the left hero container, not as a CSS background.
+
+Set it so it fills the width and height of the left hero area without obvious cropping.
+
+Focal point: keep the plane nose and crew visible (center slightly above midpoint).
+
+Target frame: approximately 50% (horizontal), 40% (vertical) so faces/plane aren’t cut off.
+
+Add a subtle dimmer (do not over-darken)
+
+Apply a soft black overlay on top of the image at 25–35% opacity across the full image area.
+
+Keep your existing semi-transparent white panel behind the text/buttons so the copy is crisp.
+
+The panel should remain around 70–75% white opacity (not more).
+
+Force equal column heights
+
+The left image column and the right advisory card must be exactly the same height.
+
+Do this by:
+
+Making the hero row stretch both columns to equal height, and
+
+Applying the same minimum height to both columns:
+
+Desktop: 420–460 px target (choose one; use the same on both sides).
+
+Mobile: 320–360 px target (again, same on both sides).
+
+Ensure the bottom edges align perfectly (no step as shown by the red underline in your screenshot).
+
+Prevent “short box” on the left
+
+The left image container must expand to match the right card’s height even if the image is shorter.
+
+The image should scale up to fill the vertical space while keeping the focal point (plane + crew) intact.
+
+Keep the hero text legible but not floating
+
+Keep the text/button box centered horizontally on desktop; centered on mobile.
+
+Leave comfortable padding around it so the crew faces aren’t blocked by the box.
+
+Maintain the CTA, then directly under it, the small 4-step “How it works” panel (same visual style you added earlier).
+
+Spacing + edges
+
+No gutter gap between the two columns at desktop (or keep a very thin one, but both columns must still align at the bottom).
+
+Ensure the right card’s outer drop shadow remains subtle; match the left overlay panel’s shadow.
+
+Performance
+
+Compress the PNG if it’s large. Aim for ≤ 300–400 KB without visible degradation.
+
+Ensure lazy loading is ON for the image on mobile.
+
+Acceptance criteria (what QA must confirm)
+
+Layout & alignment
+
+ The bottom edges of the left image area and right advisory card are exactly aligned (no 1–2px mismatch).
+
+ On desktop, both columns are the same height (420–460 px); on mobile, both are the same (320–360 px).
+
+ The left column never becomes shorter than the right.
+
+Image quality
+
+ The plane and crew are fully visible—no heads cut off; the plane’s nose is not cropped out.
+
+ The image is slightly dimmed (25–35% overlay) but remains vivid; not washed out.
+
+Text legibility
+
+ The hero text remains high-contrast and readable in all screen sizes.
+
+ The CTA is the primary visual element in the left panel.
+
+ The 4-step explainer appears directly beneath the CTA in a small, subtle block.
+
+Responsiveness
+
+ On mobile, columns stack; the image still looks correct (no severe cropping), and the text panel doesn’t overlap faces.
+
+ On tablet widths, the composition still shows plane + crew clearly.
+
+Performance
+
+ The image loads quickly (no jank); Lighthouse shows efficient image usage for the hero.
+
+Visual tuning knobs (if it still doesn’t “feel right”)
+
+If the image looks too bright → increase overlay from 25% to 30–35%.
+
+If the image feels too muted → reduce overlay to 20–22%.
+
+If faces get cut off on some screens → adjust focal point upward slightly (vertical ~35–38%).
+
+If the left still runs shorter than the right on tall content → increase the left min-height to match the right’s tallest case (typically 460 px on desktop).

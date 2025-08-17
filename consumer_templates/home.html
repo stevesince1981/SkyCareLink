@@ -105,23 +105,34 @@
 
 <section class="container-fluid px-0">
   <div class="row g-0">
-    <!-- Left: hero with background image -->
-    <div class="col-12 col-md-6 d-flex align-items-center justify-content-center hero-bg"
-         style="background-image: url('{{ url_for('static', filename='img/skycarelink_Front.png') }}');">
-      <div class="hero-overlay p-4 p-md-5 shadow-sm text-center" style="max-width: 480px;">
+    <!-- Left: hero with image element -->
+    <div class="col-12 col-md-6 hero-image-container">
+      <img src="{{ url_for('static', filename='img/skycarelink_Front.png') }}" 
+           alt="SkyCareLink medical transport team with aircraft" 
+           class="hero-image"
+           loading="lazy">
+      <div class="hero-image-overlay"></div>
+      <div class="hero-text-panel">
         <h1 class="h2 fw-semibold mb-2">
           SkyCareLink medical transport, <span class="text-primary">made simple</span>
         </h1>
-        <p class="text-muted mb-4">
+        <p class="text-muted mb-3">
           Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
         </p>
-        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center mb-3">
           <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary px-4" aria-label="Request a quote">
             <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
           </a>
           <a href="{{ url_for('join_affiliate') }}" class="btn btn-outline-secondary px-4" aria-label="Affiliate program">
             <i class="bi bi-people me-1" aria-hidden="true"></i> Affiliate Program
           </a>
+        </div>
+        <!-- 4-step How it works panel -->
+        <div class="how-it-works-panel">
+          <div class="small text-muted">
+            <span class="fw-semibold">How it works:</span>
+            <span>1) Request</span> • <span>2) Compare</span> • <span>3) Book</span> • <span>4) Fly</span>
+          </div>
         </div>
       </div>
     </div>
