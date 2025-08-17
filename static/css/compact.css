@@ -1,0 +1,203 @@
+/* Site Audit & UX Tightening - Compact Design */
+/* Reduces vertical whitespace by 35% and implements accordion functionality */
+
+/* 35% reduction in margins and padding for sections, cards, and accordions */
+.section {
+    margin-top: 0.65rem !important;    /* 65% of original 1rem */
+    margin-bottom: 0.65rem !important;
+}
+
+.card {
+    margin-top: 0.65rem !important;
+    margin-bottom: 0.65rem !important;
+    padding: 0.65rem !important;
+}
+
+.accordion {
+    margin-top: 0.65rem !important;
+    margin-bottom: 0.65rem !important;
+}
+
+.accordion-item {
+    margin-bottom: 0.33rem !important; /* 65% of original 0.5rem */
+}
+
+.accordion-header {
+    padding: 0.65rem !important;
+    margin-bottom: 0.33rem !important;
+}
+
+.accordion-body {
+    padding: 0.65rem !important;
+}
+
+/* Form spacing reduction */
+.form-group, .mb-3, .mb-4 {
+    margin-bottom: 0.65rem !important;
+}
+
+.form-control, .form-select {
+    padding: 0.5rem !important; /* Reduced from typical 0.75rem */
+    margin-bottom: 0.5rem !important;
+}
+
+/* Card body and header spacing */
+.card-body {
+    padding: 0.65rem !important;
+}
+
+.card-header {
+    padding: 0.5rem 0.65rem !important;
+}
+
+/* Button spacing reduction */
+.btn {
+    padding: 0.5rem 0.75rem !important; /* Reduced from 0.75rem 1rem */
+    margin: 0.33rem !important;
+}
+
+.btn-lg {
+    padding: 0.65rem 1rem !important; /* Reduced from 1rem 1.5rem */
+}
+
+.btn-sm {
+    padding: 0.33rem 0.5rem !important; /* Reduced from 0.5rem 0.75rem */
+}
+
+/* Accordion functionality - closed by default */
+.accordion .content {
+    display: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.accordion.open .content {
+    display: block;
+}
+
+.accordion .header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.accordion .header:hover {
+    background-color: #f8f9fa;
+}
+
+.accordion .header .toggle-icon {
+    transition: transform 0.3s ease;
+    float: right;
+    font-weight: bold;
+}
+
+.accordion.open .header .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Button state management */
+button, .btn {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+button:disabled, .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Compact spacing for specific components */
+.alert {
+    padding: 0.5rem !important;
+    margin-bottom: 0.65rem !important;
+}
+
+.list-group-item {
+    padding: 0.5rem !important;
+}
+
+.nav-link {
+    padding: 0.5rem !important;
+}
+
+.table td, .table th {
+    padding: 0.5rem !important;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .section, .card, .accordion {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .card {
+        padding: 0.5rem !important;
+    }
+    
+    .accordion-header, .accordion-body {
+        padding: 0.5rem !important;
+    }
+    
+    .btn {
+        padding: 0.4rem 0.6rem !important;
+        margin: 0.25rem !important;
+    }
+}
+
+/* Ultra-compact mode for pancake accordions */
+.pancake-accordion {
+    margin-bottom: 0.35rem !important;
+}
+
+.pancake-accordion .header {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.9rem;
+}
+
+.pancake-accordion .content {
+    padding: 0.6rem !important;
+}
+
+.compact-input {
+    padding: 0.4rem !important;
+    font-size: 0.85rem !important;
+    height: auto !important;
+    min-height: 2.2rem !important;
+}
+
+/* Severity cards compact sizing */
+.severity-card {
+    min-height: 60px !important;
+    padding: 0.5rem !important;
+}
+
+/* Navigation spacing reduction */
+.nav-item {
+    margin: 0.25rem !important;
+}
+
+.navbar {
+    padding: 0.5rem 1rem !important;
+}
+
+/* Progress indicators compact */
+.progress {
+    height: 0.75rem !important;
+    margin: 0.5rem 0 !important;
+}
+
+/* Toast and modal compact */
+.toast {
+    padding: 0.5rem !important;
+}
+
+.modal-body {
+    padding: 0.75rem !important;
+}
+
+.modal-header, .modal-footer {
+    padding: 0.5rem 0.75rem !important;
+}

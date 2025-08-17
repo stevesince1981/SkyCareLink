@@ -1,0 +1,76 @@
+1) Site audit & UX tightening (no dead clicks, compact “pancake”)
+
+Objective
+Eliminate dead buttons/dialogs, fix broken routes, and reduce vertical whitespace by ~35% across quote and affiliate pages. Persist accordion open/close state per session.
+
+Files
+
+templates/quotes/new_request.html
+
+templates/affiliate/dashboard.html
+
+static/js/ui.js (create)
+
+static/css/compact.css (create)
+
+routes/main.py (ensure /health route exists)
+
+Implement
+
+Create static/css/compact.css with:
+
+Reduce all margin-top/bottom of .section, .card, .accordion by 35%.
+
+.accordion .content { display:none } .accordion.open .content { display:block }
+
+Buttons: ensure cursor:pointer and :disabled { opacity:.5 }.
+
+Create static/js/ui.js:
+
+Add event listeners to .accordion .header to toggle .open and store state in sessionStorage keyed by data-accordion-id.
+
+On page load, restore each accordion’s state from sessionStorage.
+
+In both templates above, ensure every button triggers a form submit or href navigation. If not, add type="button" with attached JS handler that shows a specific reason (e.g., “Price required before confirm”).
+
+Add a client-side 404 detector script (temporary dev tool):
+
+On load, query all <a> with same-origin URLs; fetch with HEAD; log any non-200s to console with ⚠️ Broken link: prefix.
+
+Ensure /health route returns JSON {status:"ok"} (already should; if not, add it).
+
+Replit Shell (run)
+
+python -m flask run --host=0.0.0.0 --port=8000
+
+
+Automated audit
+
+Open browser DevTools → Console must not show ⚠️ Broken link.
+
+In each page that has accordions, collapse/expand → refresh → state must persist.
+
+In Console, run:
+
+[...document.querySelectorAll('button, a')].forEach(el=>{
+  if (getComputedStyle(el).pointerEvents==='none') console.warn('Dead click',el)
+})
+
+
+Expect no warnings.
+
+Manual QA
+
+Mobile viewport 390px:
+
+Scroll through quote form; no giant gaps; accordions compact; all CTAs clickable.
+
+Try every obvious nav link. Expect a page load OR a handled message, never a no-op.
+
+Definition of Done
+
+No ⚠️ Broken link logs.
+
+Accordion state persists between reloads.
+
+No dead clicks; disabled state is visually clear.

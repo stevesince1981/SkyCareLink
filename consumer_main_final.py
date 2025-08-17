@@ -17,7 +17,7 @@ except ImportError:
     # Fallback for older Python versions
     EST = timezone(timedelta(hours=-5))
 import random
-from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify, send_file, Response
+from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify, send_file, Response, send_from_directory
 import io
 
 # Configure logging
@@ -62,7 +62,7 @@ def after_request(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     
     # Cache static assets for 1 year
-    if request.path.startswith('/consumer_static/'):
+    if request.path.startswith('/consumer_static/') or request.path.startswith('/static/'):
         response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
     elif request.path.endswith(('.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2')):
         response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
@@ -2600,6 +2600,21 @@ def healthcheck():
     except Exception as e:
         log_error("healthcheck_failed", str(e))
         return jsonify({"ok": False, "error": str(e)}), 500
+
+@consumer_app.route('/health')
+def health():
+    """Alternative health check endpoint (as required by site audit)"""
+    try:
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        log_error("health_failed", str(e))
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# Additional static file routing for site audit files
+@consumer_app.route('/static/<path:filename>')
+def serve_static_files(filename):
+    """Serve files from main static folder"""
+    return send_from_directory('static', filename)
 
 @consumer_app.route('/test-error')
 def test_error():

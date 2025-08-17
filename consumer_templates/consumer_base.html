@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='consumer_css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='consumer_static/css/main.css') }}">
     
+    <!-- Site Audit UX Tightening - Compact CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/compact.css') }}">
+    
     <!-- Google Analytics 4 -->
     {% if config.get('GA_MEASUREMENT_ID') or config.get('ga_measurement_id') %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.get('GA_MEASUREMENT_ID') or config.get('ga_measurement_id') }}"></script>
@@ -508,6 +511,9 @@
         }
     </script>
 
+    <!-- Site Audit UX Tightening - UI.js -->
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
