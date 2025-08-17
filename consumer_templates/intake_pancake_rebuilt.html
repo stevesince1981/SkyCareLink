@@ -336,137 +336,141 @@
                                         </div>
                                     </div>
 
-                                    <!-- Required Medical Equipment (Auto-populated based on severity level) -->
-                                    <div class="mt-3" id="severityEquipmentSection" style="display: none;">
-                                        <h6 class="mb-2">
+                                    <!-- Medical Equipment Section - Moved from Step 4 to Step 2 -->
+                                    <div class="mt-4" id="equipmentSectionFromStep4">
+                                        <h6 class="mb-3">
                                             <i class="fas fa-medical-case me-2"></i>Required Medical Equipment
                                             <small class="text-muted">(Auto-selected based on severity level)</small>
                                         </h6>
-                                        <div class="equipment-grid" id="severityEquipmentGrid">
-                                            <!-- Equipment options will be populated based on severity selection -->
-                                        </div>
-                                    </div>
-
-                                    <!-- Additional Specialized Care Options -->
-                                    <div class="mt-3" id="additionalEquipmentSection" style="display: none;">
-                                        <h6 class="mb-2">
-                                            <i class="fas fa-plus-circle me-2"></i>Additional Equipment
-                                            <small class="text-muted">(Select if needed beyond standard level)</small>
-                                        </h6>
-                                        <div class="equipment-grid" id="additionalEquipmentGrid">
-                                            <div class="equipment-item" data-equipment="oxygen">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="oxygen_supply" id="equipOxygen">
-                                                    <label class="form-check-label flex-grow-1" for="equipOxygen">
-                                                        <strong>Oxygen Supply</strong>
-                                                        <div class="equipment-description">Basic oxygen therapy for respiratory support</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="ventilator">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="advanced_ventilator" id="equipVentilator">
-                                                    <label class="form-check-label flex-grow-1" for="equipVentilator">
-                                                        <strong>Advanced Ventilator</strong>
-                                                        <div class="equipment-description">Full mechanical ventilation with multiple modes</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="cardiac">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="cardiac_monitor" id="equipCardiac">
-                                                    <label class="form-check-label flex-grow-1" for="equipCardiac">
-                                                        <strong>Cardiac Monitor</strong>
-                                                        <div class="equipment-description">Advanced heart rhythm and vital signs monitoring</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="defibrillator">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="defibrillator" id="equipDefib">
-                                                    <label class="form-check-label flex-grow-1" for="equipDefib">
-                                                        <strong>Defibrillator</strong>
-                                                        <div class="equipment-description">Emergency cardiac rhythm correction device</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="balloon">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="balloon_pump" id="equipBalloon">
-                                                    <label class="form-check-label flex-grow-1" for="equipBalloon">
-                                                        <strong>Balloon Pump</strong>
-                                                        <div class="equipment-description">Intra-aortic balloon pump for cardiac support</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="ecmo">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="ecmo" id="equipEcmo">
-                                                    <label class="form-check-label flex-grow-1" for="equipEcmo">
-                                                        <strong>ECMO</strong>
-                                                        <div class="equipment-description">Extracorporeal membrane oxygenation for critical life support</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="iv_pump">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="iv_pump" id="equipIv">
-                                                    <label class="form-check-label flex-grow-1" for="equipIv">
-                                                        <strong>IV Pump</strong>
-                                                        <div class="equipment-description">Intravenous medication delivery system</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="suction">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="suction_unit" id="equipSuction">
-                                                    <label class="form-check-label flex-grow-1" for="equipSuction">
-                                                        <strong>Suction Unit</strong>
-                                                        <div class="equipment-description">Airway clearance and secretion management</div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="equipment-item" data-equipment="incubator">
-                                                <div class="d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="transport_incubator" id="equipIncubator">
-                                                    <label class="form-check-label flex-grow-1" for="equipIncubator">
-                                                        <strong>Transport Incubator</strong>
-                                                        <div class="equipment-description">Neonatal intensive care transport unit</div>
-                                                    </label>
-                                                </div>
+                                        
+                                        <!-- Required Equipment Display -->
+                                        <div id="severityEquipmentSection" style="display: none;">
+                                            <div class="equipment-grid" id="severityEquipmentGrid">
+                                                <!-- Equipment options will be populated based on severity selection -->
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Specialized Care Needs -->
-                                    <div class="mt-3" id="specializedCareSection" style="display: none;">
-                                        <h6 class="mb-2">
-                                            <i class="fas fa-tags me-2"></i>Specialized Care Needs
-                                            <small class="text-muted">(Select if applicable)</small>
-                                        </h6>
-                                        <div class="row g-2">
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialized_care" value="pediatric" id="carePediatric">
-                                                    <label class="form-check-label" for="carePediatric">Pediatric</label>
+                                        <!-- Additional Equipment Options -->
+                                        <div class="mt-3" id="additionalEquipmentSection" style="display: none;">
+                                            <h6 class="mb-2">
+                                                <i class="fas fa-plus-circle me-2"></i>Additional Equipment
+                                                <small class="text-muted">(Select if needed beyond standard level)</small>
+                                            </h6>
+                                            <div class="equipment-grid" id="additionalEquipmentGrid">
+                                                <div class="equipment-item" data-equipment="oxygen">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="oxygen_supply" id="equipOxygen">
+                                                        <label class="form-check-label flex-grow-1" for="equipOxygen">
+                                                            <strong>Oxygen Supply</strong>
+                                                            <div class="equipment-description">Basic oxygen therapy for respiratory support</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="ventilator">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="advanced_ventilator" id="equipVentilator">
+                                                        <label class="form-check-label flex-grow-1" for="equipVentilator">
+                                                            <strong>Advanced Ventilator</strong>
+                                                            <div class="equipment-description">Full mechanical ventilation with multiple modes</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="cardiac">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="cardiac_monitor" id="equipCardiac">
+                                                        <label class="form-check-label flex-grow-1" for="equipCardiac">
+                                                            <strong>Cardiac Monitor</strong>
+                                                            <div class="equipment-description">Advanced heart rhythm and vital signs monitoring</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="defibrillator">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="defibrillator" id="equipDefib">
+                                                        <label class="form-check-label flex-grow-1" for="equipDefib">
+                                                            <strong>Defibrillator</strong>
+                                                            <div class="equipment-description">Emergency cardiac rhythm correction device</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="balloon">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="balloon_pump" id="equipBalloon">
+                                                        <label class="form-check-label flex-grow-1" for="equipBalloon">
+                                                            <strong>Balloon Pump</strong>
+                                                            <div class="equipment-description">Intra-aortic balloon pump for cardiac support</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="ecmo">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="ecmo" id="equipEcmo">
+                                                        <label class="form-check-label flex-grow-1" for="equipEcmo">
+                                                            <strong>ECMO</strong>
+                                                            <div class="equipment-description">Extracorporeal membrane oxygenation for critical life support</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="iv_pump">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="iv_pump" id="equipIv">
+                                                        <label class="form-check-label flex-grow-1" for="equipIv">
+                                                            <strong>IV Pump</strong>
+                                                            <div class="equipment-description">Intravenous medication delivery system</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="suction">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="suction_unit" id="equipSuction">
+                                                        <label class="form-check-label flex-grow-1" for="equipSuction">
+                                                            <strong>Suction Unit</strong>
+                                                            <div class="equipment-description">Airway clearance and secretion management</div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="equipment-item" data-equipment="incubator">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input me-2" type="checkbox" name="additional_equipment" value="transport_incubator" id="equipIncubator">
+                                                        <label class="form-check-label flex-grow-1" for="equipIncubator">
+                                                            <strong>Transport Incubator</strong>
+                                                            <div class="equipment-description">Neonatal intensive care transport unit</div>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialized_care" value="nicu" id="careNicu">
-                                                    <label class="form-check-label" for="careNicu">NICU</label>
+                                        </div>
+
+                                        <!-- Specialized Care Needs -->
+                                        <div class="mt-3" id="specializedCareSection" style="display: none;">
+                                            <h6 class="mb-2">
+                                                <i class="fas fa-tags me-2"></i>Specialized Care Needs
+                                                <small class="text-muted">(Select if applicable)</small>
+                                            </h6>
+                                            <div class="row g-2">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="specialized_care" value="pediatric" id="carePediatric">
+                                                        <label class="form-check-label" for="carePediatric">Pediatric</label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialized_care" value="cardiac" id="careCardiac">
-                                                    <label class="form-check-label" for="careCardiac">Cardiac</label>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="specialized_care" value="nicu" id="careNicu">
+                                                        <label class="form-check-label" for="careNicu">NICU</label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialized_care" value="neurological" id="careNeuro">
-                                                    <label class="form-check-label" for="careNeuro">Neurological</label>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="specialized_care" value="cardiac" id="careCardiac">
+                                                        <label class="form-check-label" for="careCardiac">Cardiac</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="specialized_care" value="neurological" id="careNeuro">
+                                                        <label class="form-check-label" for="careNeuro">Neurological</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
