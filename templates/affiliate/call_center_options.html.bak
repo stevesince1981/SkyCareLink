@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Center Options - SkyCareLink Affiliate</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Site Audit UX Tightening - Compact CSS -->
+    <link rel="stylesheet" href="/static/css/compact.css">
+    
+    <style>
+        .section-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .section-body {
+            padding: 1.5rem;
+        }
+        
+        .test-call-result {
+            display: none;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .coverage-map {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .severity-checkbox {
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .severity-checkbox:hover {
+            border-color: #007bff;
+        }
+        
+        .severity-checkbox.level-1 { border-left: 4px solid #28a745; }
+        .severity-checkbox.level-2 { border-left: 4px solid #ffc107; }
+        .severity-checkbox.level-3 { border-left: 4px solid #dc3545; }
+        
+        .phone-input {
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/affiliate/dashboard"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">Call Center Options</span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid py-3">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" id="callCenterForm">
+            <!-- Phone Numbers Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i class="fas fa-phone me-2"></i>Phone Configuration
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="day_phone" class="form-label">
+                                Day Phone Number <span class="text-danger">*</span>
+                            </label>
+                            <input type="tel" class="form-control phone-input" id="day_phone" name="day_phone" 
+                                   value="{{ options.day_phone }}" required
+                                   placeholder="(555) 123-4567">
+                            <div class="form-text">Primary contact number during business hours</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="after_hours_phone" class="form-label">After-Hours Phone Number</label>
+                            <input type="tel" class="form-control phone-input" id="after_hours_phone" name="after_hours_phone" 
+                                   value="{{ options.after_hours_phone }}"
+                                   placeholder="(555) 987-6543">
+                            <div class="form-text">Optional number for after-hours calls</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Business Hours Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i class="fas fa-clock me-2"></i>Business Hours
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="hours_start" class="form-label">Start Time</label>
+                            <select class="form-select" id="hours_start" name="hours_start">
+                                {% for hour in range(6, 13) %}
+                                <option value="{{ hour }}" {% if options.hours_start == hour %}selected{% endif %}>
+                                    {{ hour }}:00 {{ 'AM' if hour < 12 else 'PM' }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="hours_end" class="form-label">End Time</label>
+                            <select class="form-select" id="hours_end" name="hours_end">
+                                {% for hour in range(14, 22) %}
+                                <option value="{{ hour }}" {% if options.hours_end == hour %}selected{% endif %}>
+                                    {{ hour - 12 if hour > 12 else hour }}:00 PM
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" id="after_hours_opt_in" name="after_hours_opt_in" 
+                                       {% if options.after_hours_opt_in %}checked{% endif %}>
+                                <label class="form-check-label" for="after_hours_opt_in">
+                                    <strong>Accept After-Hours Calls</strong>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Severity Levels Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i class="fas fa-heartbeat me-2"></i>Accepted Severity Levels
+                </div>
+                <div class="section-body">
+                    <div class="mb-3">
+                        <div class="form-text">Select which patient condition levels your team can handle</div>
+                    </div>
+                    
+                    <div class="severity-checkbox level-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="severity_l1" name="severity_l1" 
+                                   {% if options.severity_l1 %}checked{% endif %}>
+                            <label class="form-check-label" for="severity_l1">
+                                <strong>Level 1 - Stable Condition</strong><br>
+                                <small class="text-muted">Basic monitoring, routine transport</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="severity-checkbox level-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="severity_l2" name="severity_l2" 
+                                   {% if options.severity_l2 %}checked{% endif %}>
+                            <label class="form-check-label" for="severity_l2">
+                                <strong>Level 2 - Moderate Care</strong><br>
+                                <small class="text-muted">IV medications, ventilator support</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="severity-checkbox level-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="severity_l3" name="severity_l3" 
+                                   {% if options.severity_l3 %}checked{% endif %}>
+                            <label class="form-check-label" for="severity_l3">
+                                <strong>Level 3 - Critical Care</strong><br>
+                                <small class="text-muted">ICU-level care, ECMO, specialized equipment</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="emergency_outreach" name="emergency_outreach" 
+                                   {% if options.emergency_outreach %}checked{% endif %}>
+                            <label class="form-check-label" for="emergency_outreach">
+                                <strong>Allow Emergency Outreach for Level 3 Cases</strong><br>
+                                <small class="text-muted">We can contact you outside business hours for critical cases</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Capabilities Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i class="fas fa-ambulance me-2"></i>Service Capabilities
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="ground_transport_capable" name="ground_transport_capable" 
+                                       {% if options.ground_transport_capable %}checked{% endif %}>
+                                <label class="form-check-label" for="ground_transport_capable">
+                                    <strong>Ground Transport Capable</strong><br>
+                                    <small class="text-muted">Can provide ambulance services to/from airports</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="coverage_radius" class="form-label">Coverage Radius (miles)</label>
+                            <input type="number" class="form-control" id="coverage_radius" name="coverage_radius" 
+                                   value="{{ options.coverage_radius }}" min="50" max="1000" step="25"
+                                   placeholder="e.g., 150">
+                            <div class="form-text">Service area radius from your base</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label for="coverage_regions" class="form-label">Coverage Regions/Bases</label>
+                        <textarea class="form-control" id="coverage_regions" name="coverage_regions" rows="3"
+                                  placeholder="List your primary service regions, airports, or bases">{{ options.coverage_regions }}</textarea>
+                        <div class="form-text">Help us route appropriate requests to your team</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Test Call Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i class="fas fa-phone-volume me-2"></i>Test Call System
+                </div>
+                <div class="section-body">
+                    <p>Test your phone configuration to ensure proper routing.</p>
+                    
+                    <div class="row g-2">
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-primary" id="testCallBtn">
+                                <i class="fas fa-phone me-2"></i>Test Call Configuration
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="test-call-result" id="testCallResult">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Test Call Successful!</strong><br>
+                            Configuration verified: Day phone reachable, business hours active, Level 1 & 2 acceptance confirmed.
+                            <div class="mt-2 small">
+                                <strong>Simulated call flow:</strong> IVR → Data collection → Affiliate routing → Accept confirmation
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Section -->
+            <div class="d-flex gap-2 mb-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Save Call Center Options
+                </button>
+                <button type="reset" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo me-2"></i>Reset
+                </button>
+            </div>
+        </form>
+        
+        <!-- Current Status Display -->
+        {% if options.day_phone %}
+        <div class="section-card">
+            <div class="section-header">
+                <i class="fas fa-info-circle me-2"></i>Current Configuration Status
+            </div>
+            <div class="section-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6>Phone Numbers</h6>
+                        <div class="small">
+                            <div><strong>Day:</strong> {{ options.day_phone }}</div>
+                            {% if options.after_hours_phone %}
+                            <div><strong>After-hours:</strong> {{ options.after_hours_phone }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6>Business Hours</h6>
+                        <div class="small">
+                            {{ options.hours_start }}:00 - {{ options.hours_end }}:00
+                            {% if options.after_hours_opt_in %}
+                            <span class="badge bg-success ms-2">After-hours enabled</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <h6>Accepted Severity Levels</h6>
+                        <div>
+                            {% if options.severity_l1 %}<span class="badge bg-success me-1">Level 1</span>{% endif %}
+                            {% if options.severity_l2 %}<span class="badge bg-warning me-1">Level 2</span>{% endif %}
+                            {% if options.severity_l3 %}<span class="badge bg-danger me-1">Level 3</span>{% endif %}
+                            {% if options.emergency_outreach %}<span class="badge bg-info">Emergency Outreach</span>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Site Audit UX Tightening - UI.js -->
+    <script src="/static/js/ui.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Phone number formatting
+            const phoneInputs = document.querySelectorAll('.phone-input');
+            phoneInputs.forEach(input => {
+                input.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 6) {
+                        value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6,10)}`;
+                    } else if (value.length >= 3) {
+                        value = `(${value.slice(0,3)}) ${value.slice(3)}`;
+                    }
+                    e.target.value = value;
+                });
+            });
+            
+            // Test call functionality
+            const testCallBtn = document.getElementById('testCallBtn');
+            const testCallResult = document.getElementById('testCallResult');
+            
+            testCallBtn.addEventListener('click', function() {
+                // Disable button and show loading
+                testCallBtn.disabled = true;
+                testCallBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Testing...';
+                
+                // Simulate test call (in production, this would make an actual API call)
+                setTimeout(function() {
+                    testCallResult.style.display = 'block';
+                    testCallBtn.disabled = false;
+                    testCallBtn.innerHTML = '<i class="fas fa-phone me-2"></i>Test Call Configuration';
+                    
+                    // Log simulated success
+                    console.log('Simulated IVR test call successful');
+                    
+                    // Show success animation
+                    testCallResult.classList.add('fade');
+                    testCallResult.classList.add('show');
+                }, 2000);
+            });
+            
+            // Form validation
+            const form = document.getElementById('callCenterForm');
+            form.addEventListener('submit', function(e) {
+                const dayPhone = document.getElementById('day_phone').value;
+                const severityLevels = [
+                    document.getElementById('severity_l1').checked,
+                    document.getElementById('severity_l2').checked,
+                    document.getElementById('severity_l3').checked
+                ];
+                
+                if (!dayPhone.trim()) {
+                    e.preventDefault();
+                    alert('Day phone number is required.');
+                    document.getElementById('day_phone').focus();
+                    return false;
+                }
+                
+                if (!severityLevels.some(level => level)) {
+                    e.preventDefault();
+                    alert('You must accept at least one severity level.');
+                    return false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Quote - SkyCareLink Affiliate</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Site Audit UX Tightening - Compact CSS -->
+    <link rel="stylesheet" href="/static/css/compact.css">
+    
+    <style>
+        .quote-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .trip-details {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .form-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .price-input-group {
+            position: relative;
+        }
+        
+        .price-preview {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .severity-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        
+        .severity-1 { background-color: #28a745; }
+        .severity-2 { background-color: #ffc107; }
+        .severity-3 { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/affiliate/dashboard"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">Submit Quote</span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid py-3">
+        <!-- Quote Header -->
+        <div class="quote-header">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <h4 class="mb-2">
+                        <i class="fas fa-quote-right me-2"></i>Quote Request: {{ quote.ref_id }}
+                    </h4>
+                    <div class="d-flex align-items-center">
+                        <span class="severity-indicator severity-{{ quote.severity_level }}"></span>
+                        <span class="me-3">Severity Level {{ quote.severity_level }}</span>
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-clock me-1"></i>{{ quote.age_hours }}h ago
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <h6 class="mb-1">Contact: {{ quote.contact_name or 'TBD' }}</h6>
+                    {% if quote.contact_phone %}
+                    <div><i class="fas fa-phone me-1"></i>{{ quote.contact_phone }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trip Details -->
+        <div class="trip-details mb-4">
+            <h6 class="text-primary mb-3"><i class="fas fa-route me-2"></i>Trip Details</h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-plane-departure text-primary me-2"></i>
+                        <strong>From:</strong>
+                        <span class="ms-2">{{ quote.from_city }}, {{ quote.from_state }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-plane-arrival text-success me-2"></i>
+                        <strong>To:</strong>
+                        <span class="ms-2">{{ quote.to_city }}, {{ quote.to_state }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar text-info me-2"></i>
+                        <strong>Date:</strong>
+                        <span class="ms-2">{{ quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else 'Date TBD' }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    {% if quote.ground_transport_needed %}
+                    <span class="badge bg-info">
+                        <i class="fas fa-ambulance me-1"></i>Ground Transport Required
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Quote Submission Form -->
+        <form method="POST" id="quoteForm">
+            <div class="form-section">
+                <h6 class="text-primary mb-3"><i class="fas fa-dollar-sign me-2"></i>Quote Pricing</h6>
+                
+                <!-- Price Input -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="quoted_price" class="form-label">
+                            Quote Price (USD) <span class="text-danger">*</span>
+                        </label>
+                        <div class="price-input-group">
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="quoted_price" name="quoted_price" 
+                                       step="0.01" min="0" max="999999" required
+                                       value="{{ request.form.get('quoted_price', '') }}"
+                                       placeholder="Enter quote amount">
+                            </div>
+                        </div>
+                        <div id="priceError" class="error-message" style="display: none;">
+                            Price is required and must be a valid amount.
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="aircraft_type" class="form-label">Aircraft Type</label>
+                        <select class="form-select" id="aircraft_type" name="aircraft_type">
+                            <option value="">Select aircraft type</option>
+                            <option value="King Air 200" {% if request.form.get('aircraft_type') == 'King Air 200' %}selected{% endif %}>King Air 200</option>
+                            <option value="Citation CJ3" {% if request.form.get('aircraft_type') == 'Citation CJ3' %}selected{% endif %}>Citation CJ3</option>
+                            <option value="Learjet 45" {% if request.form.get('aircraft_type') == 'Learjet 45' %}selected{% endif %}>Learjet 45</option>
+                            <option value="King Air 350" {% if request.form.get('aircraft_type') == 'King Air 350' %}selected{% endif %}>King Air 350</option>
+                            <option value="Citation Excel" {% if request.form.get('aircraft_type') == 'Citation Excel' %}selected{% endif %}>Citation Excel</option>
+                            <option value="Other" {% if request.form.get('aircraft_type') == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Additional Options -->
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="include_ground" name="include_ground" 
+                                   {% if request.form.get('include_ground') %}checked{% endif %}>
+                            <label class="form-check-label" for="include_ground">
+                                Include Ground Transport in Quote
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="flight_time" class="form-label">Estimated Flight Time</label>
+                        <input type="text" class="form-control" id="flight_time" name="flight_time" 
+                               value="{{ request.form.get('flight_time', '') }}"
+                               placeholder="e.g., 2 hours 30 minutes">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Information -->
+            <div class="form-section">
+                <h6 class="text-primary mb-3"><i class="fas fa-comment me-2"></i>Additional Information</h6>
+                
+                <div class="mb-3">
+                    <label for="provider_notes" class="form-label">Notes (No PHI)</label>
+                    <textarea class="form-control" id="provider_notes" name="provider_notes" rows="4"
+                              placeholder="Add any relevant notes about the quote (no patient health information)">{{ request.form.get('provider_notes', '') }}</textarea>
+                    <div class="form-text">
+                        <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                        Do not include any patient health information (PHI) in notes.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Preview -->
+            <div class="price-preview" id="pricePreview" style="display: none;">
+                <h6 class="text-primary mb-2"><i class="fas fa-calculator me-2"></i>Quote Summary</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between">
+                            <span>Base Flight Cost:</span>
+                            <span id="basePrice">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between" id="groundCostRow" style="display: none;">
+                            <span>Ground Transport:</span>
+                            <span id="groundPrice">$0.00</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total Quote:</strong>
+                            <strong id="totalPrice">$0.00</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Buttons -->
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Quote
+                </button>
+                <a href="/affiliate/dashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Site Audit UX Tightening - UI.js -->
+    <script src="/static/js/ui.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.getElementById('quoted_price');
+            const includeGroundCheckbox = document.getElementById('include_ground');
+            const pricePreview = document.getElementById('pricePreview');
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('quoteForm');
+            
+            // Ground transport base cost
+            const GROUND_TRANSPORT_COST = 750;
+            
+            function updatePricePreview() {
+                const basePrice = parseFloat(priceInput.value) || 0;
+                const includeGround = includeGroundCheckbox.checked;
+                
+                if (basePrice > 0) {
+                    pricePreview.style.display = 'block';
+                    
+                    document.getElementById('basePrice').textContent = '$' + basePrice.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    
+                    const groundCostRow = document.getElementById('groundCostRow');
+                    const groundPrice = document.getElementById('groundPrice');
+                    const totalPrice = document.getElementById('totalPrice');
+                    
+                    if (includeGround) {
+                        groundCostRow.style.display = 'flex';
+                        groundPrice.textContent = '$' + GROUND_TRANSPORT_COST.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                        
+                        const total = basePrice + GROUND_TRANSPORT_COST;
+                        totalPrice.textContent = '$' + total.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    } else {
+                        groundCostRow.style.display = 'none';
+                        totalPrice.textContent = '$' + basePrice.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    }
+                } else {
+                    pricePreview.style.display = 'none';
+                }
+            }
+            
+            // Update preview on input changes
+            priceInput.addEventListener('input', updatePricePreview);
+            includeGroundCheckbox.addEventListener('change', updatePricePreview);
+            
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                const price = parseFloat(priceInput.value);
+                const priceError = document.getElementById('priceError');
+                
+                if (!price || price <= 0) {
+                    e.preventDefault();
+                    priceError.style.display = 'block';
+                    priceInput.focus();
+                    priceInput.classList.add('is-invalid');
+                    return false;
+                } else {
+                    priceError.style.display = 'none';
+                    priceInput.classList.remove('is-invalid');
+                }
+                
+                // Confirm submission
+                if (!confirm('Are you sure you want to submit this quote? The customer will be automatically notified.')) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable submit button to prevent double submission
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+            });
+            
+            // Clear invalid state on input
+            priceInput.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                document.getElementById('priceError').style.display = 'none';
+            });
+            
+            // Initialize preview if there's already a value
+            updatePricePreview();
+        });
+    </script>
+</body>
+</html>
