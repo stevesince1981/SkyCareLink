@@ -4862,6 +4862,57 @@ def join_provider():
     """Provider (hospital/clinic) registration page"""
     return redirect(url_for('join_hospital'))
 
+@consumer_app.route('/register')
+def unified_registration():
+    """Unified registration page for all user types"""
+    return render_template('unified_registration.html')
+
+@consumer_app.route('/register_individual', methods=['POST'])
+def register_individual():
+    """Handle individual user registration"""
+    try:
+        individual_data = {
+            'first_name': request.form.get('first_name'),
+            'last_name': request.form.get('last_name'),
+            'email': request.form.get('email'),
+            'phone': request.form.get('phone'),
+            'address': request.form.get('address'),
+            'relationship_to_patient': request.form.get('relationship_to_patient'),
+            'emergency_contact': request.form.get('emergency_contact'),
+            'communication_preferences': request.form.getlist('communication_preferences')
+        }
+        
+        # Validate required fields
+        if not all([individual_data['first_name'], individual_data['last_name'], 
+                   individual_data['email'], individual_data['phone']]):
+            flash('Please fill in all required fields.', 'error')
+            return redirect(url_for('unified_registration'))
+        
+        if DB_AVAILABLE:
+            with consumer_app.app_context():
+                # Create user
+                full_name = f"{individual_data['first_name']} {individual_data['last_name']}"
+                new_user = User(
+                    username=individual_data['email'],
+                    email=individual_data['email'],
+                    contact_name=full_name,
+                    phone_number=individual_data['phone'],
+                    role='family'
+                )
+                db.session.add(new_user)
+                db.session.commit()
+                
+                flash('Registration successful! You can now log in and request transport services.', 'success')
+                return redirect(url_for('login'))
+        else:
+            flash('Registration submitted! We will contact you within 24 hours to complete setup.', 'success')
+            
+    except Exception as e:
+        logging.error(f"Individual registration error: {e}")
+        flash('Registration error. Please try again.', 'error')
+    
+    return redirect(url_for('unified_registration'))
+
 @consumer_app.route('/join_affiliate', methods=['GET', 'POST'])  
 def join_affiliate():
     """Affiliate registration with concierge option"""

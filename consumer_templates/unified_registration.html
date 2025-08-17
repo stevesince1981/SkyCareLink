@@ -1,0 +1,690 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Join SkyCareLink — Registration{% endblock %}
+
+{% block head %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    margin-top: -1rem;
+}
+
+.role-selector {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: -2rem auto 3rem;
+    max-width: 800px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 10;
+}
+
+.role-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+}
+
+.role-card:hover {
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.role-card.selected {
+    border-color: var(--primary-blue);
+    background: #e3f2fd;
+    transform: translateY(-2px);
+}
+
+.role-card .role-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.role-card.selected .role-icon {
+    background: var(--primary-blue);
+}
+
+.role-card .role-title {
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.role-card .role-description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.registration-form {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    display: none;
+}
+
+.form-section.active {
+    display: block;
+}
+
+.field-group {
+    margin-bottom: 1.5rem;
+}
+
+.field-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.field-group .form-control, .field-group .form-select {
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    padding: 0.75rem;
+    transition: border-color 0.3s ease;
+}
+
+.field-group .form-control:focus, .field-group .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.15);
+}
+
+.form-check {
+    margin: 0.5rem 0;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.submit-section {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 2rem;
+}
+
+.btn-submit {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 3rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: var(--secondary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.requirements-note {
+    background: #f8f9fa;
+    border-left: 4px solid var(--primary-blue);
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.benefits-list {
+    background: #f0f8ff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.benefits-list ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.benefits-list li {
+    margin: 0.5rem 0;
+    color: #444;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Join SkyCareLink</h1>
+        <p class="lead mb-0">Choose your role and start connecting with the medical transport community</p>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Role Selection -->
+    <div class="role-selector">
+        <h3 class="text-center mb-4">Select Your Role</h3>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="role-card" data-role="affiliate" onclick="selectRole('affiliate')">
+                    <div class="role-icon">
+                        <i class="fas fa-helicopter"></i>
+                    </div>
+                    <h5 class="role-title">Affiliate</h5>
+                    <p class="role-description">Flight transport companies and air ambulance operators</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="role-card" data-role="provider" onclick="selectRole('provider')">
+                    <div class="role-icon">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <h5 class="role-title">Provider</h5>
+                    <p class="role-description">Hospitals, clinics, and medical facilities</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="role-card" data-role="individual" onclick="selectRole('individual')">
+                    <div class="role-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h5 class="role-title">Individual</h5>
+                    <p class="role-description">Patients, families, and individual users</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="registration-form" id="registrationForm" style="display: none;">
+        <form id="unifiedRegistrationForm" method="POST">
+            <input type="hidden" id="selectedRole" name="role" value="">
+            
+            <!-- Affiliate Registration Form -->
+            <div class="form-section" id="affiliateForm">
+                <h4 class="mb-4"><i class="fas fa-helicopter me-2"></i>Affiliate Registration</h4>
+                
+                <div class="requirements-note">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Requirements</h6>
+                    <p class="mb-0">Part 135 Air Carrier Certificate required. We verify all certifications before approval.</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="affiliate_company_name">Company Name *</label>
+                            <input type="text" class="form-control" id="affiliate_company_name" name="company_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="affiliate_contact_name">Primary Contact Name *</label>
+                            <input type="text" class="form-control" id="affiliate_contact_name" name="contact_name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="affiliate_email">Business Email *</label>
+                            <input type="email" class="form-control" id="affiliate_email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="affiliate_phone">Business Phone *</label>
+                            <input type="tel" class="form-control" id="affiliate_phone" name="phone" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="affiliate_certificate">Part 135 Certificate Number *</label>
+                            <input type="text" class="form-control" id="affiliate_certificate" name="certificate_number" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="affiliate_commission">Commission Rate (3.0% - 7.0%) *</label>
+                            <input type="number" class="form-control" id="affiliate_commission" name="commission_percent" min="3" max="7" step="0.1" value="5.0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="affiliate_coverage">Coverage Areas</label>
+                    <textarea class="form-control" id="affiliate_coverage" name="coverage_areas" rows="3" placeholder="Describe your service areas and range limitations"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label>Services Offered</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="service_emergency" name="services" value="emergency">
+                                <label class="form-check-label" for="service_emergency">Emergency Transport</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="service_scheduled" name="services" value="scheduled">
+                                <label class="form-check-label" for="service_scheduled">Scheduled Transport</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="service_international" name="services" value="international">
+                                <label class="form-check-label" for="service_international">International Flights</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label>Additional Capabilities</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="offers_concierge" name="offers_concierge" value="1">
+                                <label class="form-check-label" for="offers_concierge">Concierge Services</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="offers_24_7" name="offers_24_7" value="1">
+                                <label class="form-check-label" for="offers_24_7">24/7 Availability</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="offers_nicu" name="offers_nicu" value="1">
+                                <label class="form-check-label" for="offers_nicu">NICU Specialist</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="benefits-list">
+                    <h6><i class="fas fa-star me-2"></i>Affiliate Benefits</h6>
+                    <ul>
+                        <li>Access to qualified leads from hospitals and individuals</li>
+                        <li>Transparent commission structure with weekly ACH payments</li>
+                        <li>Professional dashboard for quote and booking management</li>
+                        <li>Marketing support and co-branding opportunities</li>
+                        <li>Real-time notifications for new transport requests</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Provider Registration Form -->
+            <div class="form-section" id="providerForm">
+                <h4 class="mb-4"><i class="fas fa-hospital me-2"></i>Provider Registration</h4>
+                
+                <div class="requirements-note">
+                    <h6><i class="fas fa-shield-alt me-2"></i>Verification Required</h6>
+                    <p class="mb-0">Healthcare facility verification required. NPI number and state license will be validated.</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="field-group">
+                            <label for="provider_facility_name">Facility Name *</label>
+                            <input type="text" class="form-control" id="provider_facility_name" name="facility_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="field-group">
+                            <label for="provider_facility_type">Facility Type *</label>
+                            <select class="form-select" id="provider_facility_type" name="facility_type" required>
+                                <option value="">Select Type</option>
+                                <option value="hospital">Hospital</option>
+                                <option value="clinic">Clinic</option>
+                                <option value="urgent_care">Urgent Care</option>
+                                <option value="rehabilitation">Rehabilitation Center</option>
+                                <option value="nursing_home">Nursing Home</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_contact_name">Primary Contact Name *</label>
+                            <input type="text" class="form-control" id="provider_contact_name" name="contact_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_title">Title/Position *</label>
+                            <input type="text" class="form-control" id="provider_title" name="contact_title" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_email">Business Email *</label>
+                            <input type="email" class="form-control" id="provider_email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_phone">Business Phone *</label>
+                            <input type="tel" class="form-control" id="provider_phone" name="phone" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="provider_address">Facility Address *</label>
+                    <textarea class="form-control" id="provider_address" name="address" rows="2" required></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_npi">NPI Number</label>
+                            <input type="text" class="form-control" id="provider_npi" name="npi_number">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_license">State License Number</label>
+                            <input type="text" class="form-control" id="provider_license" name="license_number">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_beds">Number of Beds</label>
+                            <input type="number" class="form-control" id="provider_beds" name="bed_count" min="1">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="provider_referral">Referral Code</label>
+                            <input type="text" class="form-control" id="provider_referral" name="referral_code" placeholder="Optional">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Specializations</label>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_emergency" name="specializations" value="emergency">
+                                <label class="form-check-label" for="spec_emergency">Emergency Medicine</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_cardiac" name="specializations" value="cardiac">
+                                <label class="form-check-label" for="spec_cardiac">Cardiac Care</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_trauma" name="specializations" value="trauma">
+                                <label class="form-check-label" for="spec_trauma">Trauma Center</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_pediatric" name="specializations" value="pediatric">
+                                <label class="form-check-label" for="spec_pediatric">Pediatrics</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_nicu" name="specializations" value="nicu">
+                                <label class="form-check-label" for="spec_nicu">NICU</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_stroke" name="specializations" value="stroke">
+                                <label class="form-check-label" for="spec_stroke">Stroke Center</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_cancer" name="specializations" value="cancer">
+                                <label class="form-check-label" for="spec_cancer">Cancer Treatment</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_rehab" name="specializations" value="rehabilitation">
+                                <label class="form-check-label" for="spec_rehab">Rehabilitation</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="spec_other" name="specializations" value="other">
+                                <label class="form-check-label" for="spec_other">Other</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="benefits-list">
+                    <h6><i class="fas fa-handshake me-2"></i>Provider Benefits</h6>
+                    <ul>
+                        <li>Streamlined patient transport coordination</li>
+                        <li>Access to verified affiliate network</li>
+                        <li>Bulk booking capabilities and volume discounts</li>
+                        <li>HIPAA-compliant secure communication</li>
+                        <li>Integration with existing hospital systems</li>
+                        <li>Free membership for first year with referral program</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Individual Registration Form -->
+            <div class="form-section" id="individualForm">
+                <h4 class="mb-4"><i class="fas fa-user-friends me-2"></i>Individual Registration</h4>
+                
+                <div class="requirements-note">
+                    <h6><i class="fas fa-info-circle me-2"></i>Quick & Easy</h6>
+                    <p class="mb-0">Simple registration process. Start requesting transport quotes immediately after verification.</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="individual_first_name">First Name *</label>
+                            <input type="text" class="form-control" id="individual_first_name" name="first_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="individual_last_name">Last Name *</label>
+                            <input type="text" class="form-control" id="individual_last_name" name="last_name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="individual_email">Email Address *</label>
+                            <input type="email" class="form-control" id="individual_email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="individual_phone">Phone Number *</label>
+                            <input type="tel" class="form-control" id="individual_phone" name="phone" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="individual_address">Address</label>
+                    <textarea class="form-control" id="individual_address" name="address" rows="2" placeholder="Optional - helps us provide better service"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="individual_relationship">Relationship to Patient</label>
+                            <select class="form-select" id="individual_relationship" name="relationship_to_patient">
+                                <option value="">Select Relationship</option>
+                                <option value="self">Self (I am the patient)</option>
+                                <option value="spouse">Spouse</option>
+                                <option value="parent">Parent</option>
+                                <option value="child">Child</option>
+                                <option value="sibling">Sibling</option>
+                                <option value="family">Other Family Member</option>
+                                <option value="friend">Friend</option>
+                                <option value="caregiver">Caregiver</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-group">
+                            <label for="individual_emergency_contact">Emergency Contact</label>
+                            <input type="text" class="form-control" id="individual_emergency_contact" name="emergency_contact" placeholder="Name and phone number">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Communication Preferences</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="comm_email" name="communication_preferences" value="email" checked>
+                                <label class="form-check-label" for="comm_email">Email Updates</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="comm_sms" name="communication_preferences" value="sms">
+                                <label class="form-check-label" for="comm_sms">SMS Notifications</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="comm_phone" name="communication_preferences" value="phone">
+                                <label class="form-check-label" for="comm_phone">Phone Calls</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="comm_newsletter" name="communication_preferences" value="newsletter">
+                                <label class="form-check-label" for="comm_newsletter">Newsletter</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="benefits-list">
+                    <h6><i class="fas fa-heart me-2"></i>Individual Benefits</h6>
+                    <ul>
+                        <li>Compare quotes from multiple certified affiliates</li>
+                        <li>Transparent pricing with no hidden fees</li>
+                        <li>24/7 customer support and assistance</li>
+                        <li>Real-time flight tracking and updates</li>
+                        <li>Insurance coordination and billing support</li>
+                        <li>Family seating options and special accommodations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <button type="submit" class="btn btn-submit" id="submitBtn" disabled>
+                    <i class="fas fa-paper-plane me-2"></i>Complete Registration
+                </button>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        By registering, you agree to our 
+                        <a href="#" class="text-primary">Terms of Service</a> and 
+                        <a href="#" class="text-primary">Privacy Policy</a>
+                    </small>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let selectedRole = null;
+
+function selectRole(role) {
+    selectedRole = role;
+    
+    // Update visual selection
+    document.querySelectorAll('.role-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelector(`[data-role="${role}"]`).classList.add('selected');
+    
+    // Show registration form
+    const form = document.getElementById('registrationForm');
+    form.style.display = 'block';
+    
+    // Hide all form sections
+    document.querySelectorAll('.form-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Show selected form section
+    document.getElementById(`${role}Form`).classList.add('active');
+    
+    // Update hidden input
+    document.getElementById('selectedRole').value = role;
+    
+    // Enable submit button
+    document.getElementById('submitBtn').disabled = false;
+    
+    // Update form action based on role
+    const formElement = document.getElementById('unifiedRegistrationForm');
+    if (role === 'affiliate') {
+        formElement.action = '{{ url_for("join_affiliate") }}';
+    } else if (role === 'provider') {
+        formElement.action = '{{ url_for("join_hospital") }}';
+    } else {
+        formElement.action = '{{ url_for("register_individual") }}';
+    }
+    
+    // Scroll to form
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('unifiedRegistrationForm');
+    
+    form.addEventListener('submit', function(e) {
+        if (!selectedRole) {
+            e.preventDefault();
+            alert('Please select a role first.');
+            return;
+        }
+        
+        // Additional role-specific validation can be added here
+    });
+    
+    // Real-time validation for commission rate
+    const commissionInput = document.getElementById('affiliate_commission');
+    if (commissionInput) {
+        commissionInput.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (value < 3.0 || value > 7.0) {
+                this.setCustomValidity('Commission rate must be between 3.0% and 7.0%');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
