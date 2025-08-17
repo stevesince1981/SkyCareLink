@@ -265,49 +265,75 @@
     margin-top: 0.25rem;
 }
 
-/* Button state improvements */
-.btn:disabled,
-.btn:disabled:hover,
-.btn:disabled:focus,
-.btn:disabled:active {
-    opacity: 0.65 !important;
-    cursor: not-allowed !important;
-    background-color: #6c757d !important;
-    border-color: #6c757d !important;
-    color: #fff !important;
-    position: relative;
+/* Button state improvements - Complete override */
+.pancake-navigation .btn {
+    position: relative !important;
+    overflow: visible !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-/* Remove any prohibition icons that might be added by other CSS */
-.btn:disabled::before,
-.btn:disabled::after,
-.btn[disabled]::before,
-.btn[disabled]::after {
+/* Remove all prohibition icons and pseudo-elements - Nuclear option */
+.pancake-navigation .btn::before,
+.pancake-navigation .btn::after,
+.pancake-navigation .btn *::before,
+.pancake-navigation .btn *::after,
+.pancake-navigation .btn i::before,
+.pancake-navigation .btn i::after,
+.pancake-navigation button::before,
+.pancake-navigation button::after,
+.pancake-navigation button *::before,
+.pancake-navigation button *::after {
     content: none !important;
+    display: none !important;
+    visibility: hidden !important;
+    background: none !important;
+    background-image: none !important;
+}
+
+/* Remove Font Awesome ban/prohibition icons specifically */
+.pancake-navigation .btn .fa-ban,
+.pancake-navigation .btn .fa-times-circle,
+.pancake-navigation .btn .fa-slash,
+.pancake-navigation .btn .fa-prohibition {
     display: none !important;
 }
 
-/* Override any Font Awesome content on disabled buttons */
-.btn:disabled i::before,
-.btn:disabled i::after {
-    content: inherit !important;
+/* Default button state - light teal/blue like service cards */
+.pancake-navigation .btn {
+    background-color: #b3e5fc !important; /* Light cyan/teal like your example */
+    border-color: #81d4fa !important;
+    color: #0277bd !important;
+    opacity: 1 !important;
+    cursor: default !important;
 }
 
-.btn-primary:not(:disabled) {
-    background-color: #1976d2 !important;
-    border-color: #1976d2 !important;
+/* Enabled/Active state - bright cyan like "Request Transport" button */
+.pancake-navigation .btn:not(:disabled),
+.pancake-navigation .btn.btn-primary:not(:disabled) {
+    background-color: #00bcd4 !important; /* Bright cyan like your example */
+    border-color: #0097a7 !important;
     color: #fff !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
 }
 
-.btn-primary:not(:disabled):hover {
-    background-color: #1565c0 !important;
-    border-color: #1565c0 !important;
+.pancake-navigation .btn:not(:disabled):hover {
+    background-color: #0097a7 !important;
+    border-color: #00838f !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0,188,212,0.3) !important;
 }
 
-.btn-secondary:disabled {
-    background-color: #6c757d !important;
-    border-color: #6c757d !important;
-    opacity: 0.65 !important;
+/* Disabled state - keep light teal but muted */
+.pancake-navigation .btn:disabled {
+    background-color: #b3e5fc !important;
+    border-color: #81d4fa !important;
+    color: #0277bd !important;
+    opacity: 0.7 !important;
+    cursor: not-allowed !important;
 }
 </style>
 
@@ -1146,13 +1172,15 @@ function updateStepValidation() {
             
             console.log(`Step ${i} validation:`, isValid);
             
-            // Add visual feedback
+            // Add visual feedback - force class changes
             if (isValid) {
-                nextButton.classList.remove('btn-secondary');
+                nextButton.classList.remove('btn-secondary', 'disabled');
                 nextButton.classList.add('btn-primary');
+                nextButton.removeAttribute('disabled');
             } else {
                 nextButton.classList.remove('btn-primary');
                 nextButton.classList.add('btn-secondary');
+                nextButton.setAttribute('disabled', 'true');
             }
         }
     }
