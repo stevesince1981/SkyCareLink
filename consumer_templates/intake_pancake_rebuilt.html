@@ -814,7 +814,8 @@ const MEDICAL_EQUIPMENT = {
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     populateStates();
-    restoreFormData();
+    // Remove auto-restore that was causing unwanted auto-selection
+    // restoreFormData(); // Disabled to prevent auto-selection
     updateStepValidation();
     
     // Auto-save form data on input changes
@@ -822,7 +823,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('intakeForm').addEventListener('change', saveFormData);
     
     console.log('Enhanced SkyCareLink Pancake Stepper Loaded');
+    
+    // Setup form validation
+    setupFormValidation();
 });
+
+// Setup form validation (prevents JavaScript errors)
+function setupFormValidation() {
+    // Basic form validation setup is handled by updateStepValidation
+    console.log('Form validation setup complete');
+}
+
+// Enable next button (helper function to prevent errors)
+function enableNextButton(stepNumber) {
+    const nextButton = document.getElementById(`nextStep${stepNumber}`);
+    if (nextButton) {
+        nextButton.disabled = false;
+    }
+}
 
 // Populate state dropdowns
 function populateStates() {
@@ -899,15 +917,15 @@ function populateEquipment(severity) {
         equipmentGrid.appendChild(equipmentItem);
     });
     
-    // Auto-select default equipment based on severity level
-    const defaults = defaultSelections[severity] || [];
-    defaults.forEach(eqId => {
-        const checkbox = document.getElementById(`eq_${eqId}`);
-        if (checkbox) {
-            checkbox.checked = true;
-            document.querySelector(`[data-equipment="${eqId}"]`).classList.add('selected');
-        }
-    });
+    // Removed auto-selection of default equipment to prevent unwanted defaults
+    // const defaults = defaultSelections[severity] || [];
+    // defaults.forEach(eqId => {
+    //     const checkbox = document.getElementById(`eq_${eqId}`);
+    //     if (checkbox) {
+    //         checkbox.checked = true;
+    //         document.querySelector(`[data-equipment="${eqId}"]`).classList.add('selected');
+    //     }
+    // });
 }
 
 // Toggle equipment selection
@@ -1049,16 +1067,10 @@ function validateCurrentStep() {
         case 2:
             return formData.severity;
         case 3:
-            return document.getElementById('fromHospital').value && 
-                   document.getElementById('toHospital').value &&
-                   document.getElementById('fromCity').value &&
-                   document.getElementById('toCity').value &&
-                   document.getElementById('fromState').value &&
-                   document.getElementById('toState').value;
+            return document.getElementById('flightDate').value;
         case 4:
-            return document.getElementById('patientFirstName').value &&
-                   document.getElementById('patientLastName').value &&
-                   document.getElementById('patientGender').value;
+            return document.getElementById('contactName').value &&
+                   document.getElementById('relationToPatient').value;
         case 5:
             return document.getElementById('agreeTerms').checked;
         default:
