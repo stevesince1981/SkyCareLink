@@ -319,5 +319,113 @@ class EmailService:
 
         return self.send_email([caller_email], subject, html_body, text_body)
 
+    def send_password_reset_email(self, email, reset_url, expiry):
+        """Send password reset email with secure token link"""
+        subject = "SkyCareLink - Password Reset Request"
+        
+        html_body = f"""
+        <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+            <div style="background-color: #007bff; color: white; padding: 20px; text-align: center;">
+                <h2>🚁 SkyCareLink</h2>
+                <h3>Password Reset Request</h3>
+            </div>
+            
+            <div style="padding: 30px; background-color: #f8f9fa;">
+                <p>Hello,</p>
+                
+                <p>We received a request to reset your password for your SkyCareLink account.</p>
+                
+                <div style="background-color: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                    <p><strong>Account Email:</strong> {email}</p>
+                    <p><strong>Reset Link Expires:</strong> {expiry.strftime('%B %d, %Y at %I:%M %p UTC')}</p>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{reset_url}" style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Your Password</a>
+                </div>
+                
+                <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
+                    <h4 style="color: #856404; margin-top: 0;">🔒 Security Notice</h4>
+                    <ul style="color: #856404; margin-bottom: 0;">
+                        <li>This link will expire in 2 hours for your security</li>
+                        <li>If you didn't request this reset, please ignore this email</li>
+                        <li>Your current password remains unchanged until you complete the reset</li>
+                        <li>Never share this link with anyone</li>
+                    </ul>
+                </div>
+                
+                <p>If the button above doesn't work, copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; background-color: #f1f3f4; padding: 10px; border-radius: 4px;">
+                    {reset_url}
+                </p>
+                
+                <hr style="margin: 30px 0;">
+                
+                <p style="font-size: 12px; color: #666;">
+                    This email was sent to {email} because a password reset was requested for your SkyCareLink account.<br>
+                    If you did not request this reset, please contact our support team immediately.<br><br>
+                    
+                    SkyCareLink - Professional Air Medical Transport Network<br>
+                    This is an automated security email.
+                </p>
+            </div>
+        </div>
+        """
+        
+        return self.send_email([email], subject, html_body)
+    
+    def send_password_reset_confirmation(self, email):
+        """Send confirmation email after password reset is completed"""
+        from datetime import datetime
+        
+        subject = "SkyCareLink - Password Reset Completed"
+        
+        html_body = f"""
+        <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+            <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+                <h2>🚁 SkyCareLink</h2>
+                <h3>Password Reset Completed</h3>
+            </div>
+            
+            <div style="padding: 30px; background-color: #f8f9fa;">
+                <p>Hello,</p>
+                
+                <p><strong>Your password has been successfully reset.</strong></p>
+                
+                <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
+                    <h4 style="color: #155724; margin-top: 0;">✅ Password Updated</h4>
+                    <p style="color: #155724; margin-bottom: 0;">
+                        Your password was reset on {datetime.now().strftime('%B %d, %Y at %I:%M %p UTC')}<br>
+                        Account: {email}
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="http://localhost:5000/login" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Sign In Now</a>
+                </div>
+                
+                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 15px; margin: 20px 0;">
+                    <h4 style="color: #721c24; margin-top: 0;">🚨 Didn't Reset Your Password?</h4>
+                    <p style="color: #721c24; margin-bottom: 0;">
+                        If you didn't reset your password, your account may have been compromised. 
+                        Please contact our support team immediately and change your password again.
+                    </p>
+                </div>
+                
+                <hr style="margin: 30px 0;">
+                
+                <p style="font-size: 12px; color: #666;">
+                    This is a security notification for account: {email}<br>
+                    This email confirms that your password was successfully changed.<br><br>
+                    
+                    SkyCareLink - Professional Air Medical Transport Network<br>
+                    This is an automated security email.
+                </p>
+            </div>
+        </div>
+        """
+        
+        return self.send_email([email], subject, html_body)
+
 # Global instance
 email_service = EmailService()

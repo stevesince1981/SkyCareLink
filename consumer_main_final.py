@@ -47,9 +47,43 @@ except ImportError as e:
     print(f"⚠ Database not available: {e}")
     DB_AVAILABLE = False
 
-# Create Flask app with performance optimizations
+# Create Flask app with performance optimizations and CSRF protection
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static', static_url_path='/consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
+
+# Import and configure security
+try:
+    from flask_wtf.csrf import CSRFProtect
+    csrf = CSRFProtect(consumer_app)
+    
+    # CSRF configuration
+    consumer_app.config['WTF_CSRF_ENABLED'] = True
+    consumer_app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1 hour
+    consumer_app.config['WTF_CSRF_SSL_STRICT'] = False  # Allow HTTP for Replit development
+    
+    # Session security
+    consumer_app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FORCE_HTTPS', 'false').lower() == 'true'
+    consumer_app.config['SESSION_COOKIE_HTTPONLY'] = True
+    consumer_app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
+    # Make CSRF token available to templates
+    @consumer_app.context_processor
+    def security_context_processor():
+        from flask_wtf.csrf import generate_csrf
+        return {'csrf_token': generate_csrf}
+    
+    print("✓ CSRF protection enabled")
+    
+except ImportError as e:
+    print(f"⚠ CSRF protection not available: {e}")
+
+# Add GA4 measurement ID to template context
+@consumer_app.context_processor
+def analytics_context():
+    return {
+        'GA_MEASUREMENT_ID': os.environ.get('GA_MEASUREMENT_ID'),
+        'ga_measurement_id': os.environ.get('GA_MEASUREMENT_ID')  # Alternative name
+    }
 
 # Register notification blueprints
 if DB_AVAILABLE:
@@ -79,6 +113,14 @@ if DB_AVAILABLE:
         print("✓ Document upload system registered successfully")
     except ImportError as e:
         print(f"⚠ Document system not available: {e}")
+    
+    # Register auth blueprint
+    try:
+        from routes.auth import auth_bp
+        consumer_app.register_blueprint(auth_bp)
+        print("✓ Security and auth system registered successfully")
+    except ImportError as e:
+        print(f"⚠ Auth system not available: {e}")
     
     print("✓ Notification services loaded successfully")
 

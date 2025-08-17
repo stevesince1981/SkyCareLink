@@ -36,6 +36,7 @@ dependencies = [
     "flask-limiter>=2.1.0",
     "requests>=2.31.0",
     "twilio>=9.7.0",
+    "flask-wtf>=1.2.2",
 ]
 
 [tool.setuptools]
