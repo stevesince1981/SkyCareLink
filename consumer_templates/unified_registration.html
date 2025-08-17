@@ -83,9 +83,9 @@
 .registration-form {
     background: white;
     border-radius: 15px;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .form-section {
@@ -97,7 +97,7 @@
 }
 
 .field-group {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .field-group label {
@@ -243,13 +243,13 @@
                 </div>
 
                 <!-- Benefits Section -->
-                <div class="card border-primary mb-2">
-                    <div class="card-header bg-primary text-white py-2">
-                        <h6 class="card-title mb-0">
+                <div class="card border-primary mb-1">
+                    <div class="card-header bg-primary text-white py-1">
+                        <h6 class="card-title mb-0 small">
                             <i class="fas fa-star me-2"></i>Affiliate Benefits
                         </h6>
                     </div>
-                    <div class="card-body py-2">
+                    <div class="card-body py-1">
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="list-unstyled">
@@ -288,16 +288,16 @@
                 </div>
 
                 <!-- Affiliate Program Information -->
-                <div class="alert alert-warning mb-2 py-2">
-                    <i class="fas fa-star me-2"></i>
-                    <strong>Year One (Founding Tier):</strong> $25,000 one-time affiliate fee with 1% payback on each flight until recovered. Priority placement and refundable if platform doesn't deliver minimum flight opportunities.
+                <div class="alert alert-warning mb-1 py-1 small">
+                    <i class="fas fa-star me-1"></i>
+                    <strong>Year One:</strong> $25,000 fee with 1% payback. Refundable if minimum opportunities not delivered.
                 </div>
-                <div class="alert alert-info mb-2 py-2">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Year Two (Proof of Concept):</strong> Reduced $10,000 affiliate fee. Founding affiliates retain early placement advantage. No payback needed as platform is proven.
+                <div class="alert alert-info mb-1 py-1 small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    <strong>Year Two:</strong> $10,000 fee. No payback needed as platform is proven.
                 </div>
 
-                <h5 class="mb-3">Company Registration</h5>
+                <h6 class="mb-2">Company Registration</h6>
 
                 <div class="row">
                     <div class="col-md-6">
@@ -337,56 +337,124 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="field-group mt-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="affiliate_same_phone" onchange="autoFillPhone('affiliate')">
-                                <label class="form-check-label" for="affiliate_same_phone">Same as cell phone</label>
-                            </div>
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="affiliate_same_phone" onchange="autoFillPhone('affiliate')">
+                            <label class="form-check-label" for="affiliate_same_phone">Same as cell phone</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="field-group">
-                    <label for="affiliate_coverage">Coverage Areas *</label>
+                    <label for="affiliate_address">Company Address *</label>
+                    <input type="text" class="form-control mb-1" id="affiliate_street" name="street_address" placeholder="Street Address" required>
                     <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_east" name="coverage_areas" value="east_coast">
-                                <label class="form-check-label" for="coverage_east">East Coast</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_central" name="coverage_areas" value="central">
-                                <label class="form-check-label" for="coverage_central">Central US</label>
-                            </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="affiliate_city" name="city" placeholder="City" required>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_west" name="coverage_areas" value="west_coast">
-                                <label class="form-check-label" for="coverage_west">West Coast</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_southwest" name="coverage_areas" value="southwest">
-                                <label class="form-check-label" for="coverage_southwest">Southwest</label>
-                            </div>
+                            <input type="text" class="form-control" id="affiliate_state" name="state" placeholder="State" required>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_southeast" name="coverage_areas" value="southeast">
-                                <label class="form-check-label" for="coverage_southeast">Southeast</label>
+                            <input type="text" class="form-control" id="affiliate_zip" name="zip_code" placeholder="ZIP Code" required>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="affiliate_country" name="country" required>
+                                <option value="United States">USA</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Mexico">Mexico</option>
+                                <option value="United Kingdom">UK</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coverage Areas Box -->
+                <div class="card border-secondary mb-2">
+                    <div class="card-header bg-light py-1">
+                        <h6 class="card-title mb-0 small">Coverage Areas *</h6>
+                    </div>
+                    <div class="card-body py-1">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_east" name="coverage_areas" value="east_coast">
+                                    <label class="form-check-label small" for="coverage_east">East Coast</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_central" name="coverage_areas" value="central">
+                                    <label class="form-check-label small" for="coverage_central">Central US</label>
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_midwest" name="coverage_areas" value="midwest">
-                                <label class="form-check-label" for="coverage_midwest">Midwest</label>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_west" name="coverage_areas" value="west_coast">
+                                    <label class="form-check-label small" for="coverage_west">West Coast</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_southwest" name="coverage_areas" value="southwest">
+                                    <label class="form-check-label small" for="coverage_southwest">Southwest</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_southeast" name="coverage_areas" value="southeast">
+                                    <label class="form-check-label small" for="coverage_southeast">Southeast</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_midwest" name="coverage_areas" value="midwest">
+                                    <label class="form-check-label small" for="coverage_midwest">Midwest</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_international" name="coverage_areas" value="international">
+                                    <label class="form-check-label small" for="coverage_international">International</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="coverage_alaska_hawaii" name="coverage_areas" value="alaska_hawaii">
+                                    <label class="form-check-label small" for="coverage_alaska_hawaii">Alaska/Hawaii</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_international" name="coverage_areas" value="international">
-                                <label class="form-check-label" for="coverage_international">International</label>
+                    </div>
+                </div>
+
+                <!-- Services Offered Box -->
+                <div class="card border-secondary mb-2">
+                    <div class="card-header bg-light py-1">
+                        <h6 class="card-title mb-0 small">Services Offered *</h6>
+                    </div>
+                    <div class="card-body py-1">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="service_emergency" name="services_offered" value="emergency_transport">
+                                    <label class="form-check-label small" for="service_emergency">Emergency Transport</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="service_scheduled" name="services_offered" value="scheduled_transport">
+                                    <label class="form-check-label small" for="service_scheduled">Scheduled Transport</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="service_international" name="services_offered" value="international_flights">
+                                    <label class="form-check-label small" for="service_international">International Flights</label>
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="coverage_alaska_hawaii" name="coverage_areas" value="alaska_hawaii">
-                                <label class="form-check-label" for="coverage_alaska_hawaii">Alaska/Hawaii</label>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="service_concierge" name="services_offered" value="concierge_services">
+                                    <label class="form-check-label small" for="service_concierge">Concierge Services</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="service_24_7" name="services_offered" value="24_7_availability">
+                                    <label class="form-check-label small" for="service_24_7">24/7 Availability</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="service_nicu" name="services_offered" value="nicu_specialist">
+                                    <label class="form-check-label small" for="service_nicu">NICU Specialist</label>
+                                </div>
                             </div>
                         </div>
                     </div>
