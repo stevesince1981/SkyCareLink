@@ -214,8 +214,8 @@
 
 .equipment-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Slightly smaller for compact items */
+    gap: 0.5rem; /* Reduced gap for compact layout */
     margin: 1rem 0;
 }
 
@@ -225,6 +225,28 @@
     padding: 0.75rem;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.equipment-item.compact-equipment {
+    padding: 0.49rem; /* 35% smaller than 0.75rem */
+    min-height: 60px; /* Uniform height, 35% smaller */
+    max-height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.equipment-item.compact-equipment .form-check {
+    width: 100%;
+}
+
+.equipment-item.compact-equipment .form-check-label {
+    font-size: 0.75rem; /* Smaller text */
+    line-height: 1.2;
+}
+
+.equipment-item.compact-equipment .equipment-description {
+    font-size: 0.65rem; /* Even smaller description */
+    margin-top: 0.15rem;
 }
 
 .equipment-item:hover {
@@ -795,25 +817,22 @@ function selectSeverity(severity) {
 // Populate equipment based on severity
 function populateEquipment(severity) {
     const equipmentGrid = document.getElementById('equipmentGrid');
-    let equipmentList = [];
     
-    switch(severity) {
-        case 'low':
-            equipmentList = MEDICAL_EQUIPMENT.basic;
-            break;
-        case 'medium':
-            equipmentList = MEDICAL_EQUIPMENT.intermediate;
-            break;
-        case 'high':
-            equipmentList = MEDICAL_EQUIPMENT.advanced;
-            break;
-    }
+    // Always show all equipment options from advanced (Level 3) list
+    const allEquipmentList = MEDICAL_EQUIPMENT.advanced;
+    
+    // Define default selections for each severity level
+    const defaultSelections = {
+        'low': ['oxygen', 'monitor'], // Level 1
+        'medium': ['oxygen', 'cardiac_monitor', 'iv_pump'], // Level 2  
+        'high': ['oxygen', 'ventilator', 'cardiac_monitor', 'defibrillator', 'iv_pump'] // Level 3
+    };
     
     equipmentGrid.innerHTML = '';
     
-    equipmentList.forEach(equipment => {
+    allEquipmentList.forEach(equipment => {
         const equipmentItem = document.createElement('div');
-        equipmentItem.className = 'equipment-item';
+        equipmentItem.className = 'equipment-item compact-equipment';
         equipmentItem.setAttribute('data-equipment', equipment.id);
         equipmentItem.onclick = () => toggleEquipment(equipment.id);
         
@@ -830,24 +849,15 @@ function populateEquipment(severity) {
         equipmentGrid.appendChild(equipmentItem);
     });
     
-    // Auto-select basic equipment for medium/high severity
-    if (severity === 'medium' || severity === 'high') {
-        ['oxygen', 'cardiac_monitor'].forEach(eqId => {
-            const checkbox = document.getElementById(`eq_${eqId}`);
-            if (checkbox) {
-                checkbox.checked = true;
-                document.querySelector(`[data-equipment="${eqId}"]`).classList.add('selected');
-            }
-        });
-    }
-    
-    if (severity === 'high') {
-        const ventilatorCheckbox = document.getElementById('eq_ventilator');
-        if (ventilatorCheckbox) {
-            ventilatorCheckbox.checked = true;
-            document.querySelector('[data-equipment="ventilator"]').classList.add('selected');
+    // Auto-select default equipment based on severity level
+    const defaults = defaultSelections[severity] || [];
+    defaults.forEach(eqId => {
+        const checkbox = document.getElementById(`eq_${eqId}`);
+        if (checkbox) {
+            checkbox.checked = true;
+            document.querySelector(`[data-equipment="${eqId}"]`).classList.add('selected');
         }
-    }
+    });
 }
 
 // Toggle equipment selection
