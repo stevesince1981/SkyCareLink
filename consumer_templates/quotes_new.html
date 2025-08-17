@@ -85,7 +85,7 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="flight_date" class="form-label fw-bold">Flight Date <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control compact-input" id="flight_date" name="flight_date" required min="{{ datetime.now().strftime('%Y-%m-%d') }}">
+                                    <input type="date" class="form-control compact-input" id="flight_date" name="flight_date" required min="{{ (datetime.now().date()).strftime('%Y-%m-%d') }}">
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check mt-4">
@@ -99,7 +99,7 @@
                             <div class="row g-3 mt-2" id="return_date_section" style="display: none;">
                                 <div class="col-md-6">
                                     <label for="return_date" class="form-label fw-bold">Return Date</label>
-                                    <input type="date" class="form-control compact-input" id="return_date" name="return_date" min="{{ datetime.now().strftime('%Y-%m-%d') }}">
+                                    <input type="date" class="form-control compact-input" id="return_date" name="return_date" min="{{ (datetime.now().date()).strftime('%Y-%m-%d') }}">
                                 </div>
                             </div>
                         </div>

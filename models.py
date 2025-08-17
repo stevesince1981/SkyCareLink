@@ -151,15 +151,10 @@ class Quote(db.Model):
     id = Column(Integer, primary_key=True)
     ref_id = Column(String(50), unique=True, nullable=False)  # QR240817XXXX format
     
-    # Contact information 
-    contact_first_name = Column(String(100), nullable=False)
-    contact_last_name = Column(String(100), nullable=False)
+    # Contact information
+    contact_name = Column(String(200), nullable=False)
     contact_email = Column(String(120), nullable=True)
     contact_phone = Column(String(20), nullable=True)
-    
-    # Patient information (optional)
-    patient_last_name = Column(String(100), nullable=True)
-    relation_to_patient = Column(String(50), nullable=True)  # parent, spouse, guardian, etc.
     
     # Service details
     service_type = Column(String(50), nullable=False)  # critical, scheduled
@@ -198,7 +193,7 @@ class Quote(db.Model):
     is_demo_data = Column(Boolean, default=False)
     
     def __repr__(self):
-        return f'<Quote {self.ref_id} - {self.contact_first_name} {self.contact_last_name}>'
+        return f'<Quote {self.ref_id} - {self.contact_name}>'
 
 class Commission(db.Model):
     """Commission tracking for completed bookings"""
