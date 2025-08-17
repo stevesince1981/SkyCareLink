@@ -134,12 +134,13 @@
 
 .severity-card {
     flex: 1;
-    min-height: 95px;
+    min-height: 60px;
     max-width: 160px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 0.5rem;
 }
 
 .pancake-navigation {
@@ -830,7 +831,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="submit" class="btn btn-success btn-sm" id="submitRequest" disabled>
+                                        <button type="button" class="btn btn-success btn-sm" id="submitRequest" onclick="handleSubmitClick()" disabled>
                                             <i class="fas fa-paper-plane me-2"></i>Submit Quote Request
                                         </button>
                                     </div>
@@ -867,6 +868,23 @@ function showLoginExpansionBox() {
     if (expansionBox) {
         expansionBox.style.display = 'block';
         expansionBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Handle submit button click - check if user is logged in
+function handleSubmitClick() {
+    const isLoggedIn = {{ 'true' if session.get('logged_in') else 'false' }};
+    
+    if (!isLoggedIn) {
+        // Show login expansion box
+        showLoginExpansionBox();
+        return false;
+    } else {
+        // User is logged in, proceed with form submission
+        const form = document.getElementById('intakeForm');
+        if (form) {
+            form.submit();
+        }
     }
 }
 
