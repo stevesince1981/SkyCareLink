@@ -1,0 +1,302 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Our Programs — SkyCareLink{% endblock %}
+
+{% block head %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+    margin-top: -1rem;
+}
+
+.program-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-blue);
+}
+
+.program-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.program-title {
+    color: var(--primary-blue);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.program-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.feature-list {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.feature-list li:last-child {
+    border-bottom: none;
+}
+
+.cta-button {
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.cta-primary {
+    background: var(--primary-blue);
+    color: white;
+    border: 2px solid var(--primary-blue);
+}
+
+.cta-primary:hover {
+    background: white;
+    color: var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+.cta-secondary {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+}
+
+.cta-secondary:hover {
+    background: var(--primary-blue);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.cta-success {
+    background: #28a745;
+    color: white;
+    border: 2px solid #28a745;
+}
+
+.cta-success:hover {
+    background: white;
+    color: #28a745;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Our Programs</h1>
+        <p class="lead mb-4">Choose the program that best fits your role in medical transport</p>
+        <p class="mb-0">SkyCareLink connects three key groups in the medical transport ecosystem</p>
+    </div>
+</section>
+
+<!-- Programs Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Affiliates Program -->
+            <div class="col-lg-4">
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-helicopter"></i>
+                    </div>
+                    <h3 class="program-title">Affiliates</h3>
+                    <p class="program-description">
+                        Flight transport companies, air ambulance operators, and aviation providers who want to expand their customer reach and streamline booking operations.
+                    </p>
+                    
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check text-success me-2"></i>Join our growing network of certified providers</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Receive qualified quote requests automatically</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Transparent commission structure (4-5%)</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Professional dashboard for quote management</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Marketing support and lead generation</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Real-time notifications and booking tools</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Commission tracking and weekly ACH payments</li>
+                    </ul>
+                    
+                    <div class="mt-auto">
+                        <a href="{{ url_for('join_affiliate') }}" class="btn cta-primary">
+                            <i class="fas fa-plane me-2"></i>Join as Affiliate
+                        </a>
+                        <div class="mt-2">
+                            <small class="text-muted">Part 135 certification required</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Providers Program -->
+            <div class="col-lg-4">
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <h3 class="program-title">Providers</h3>
+                    <p class="program-description">
+                        Hospitals, clinics, medical facilities, and healthcare institutions that need to coordinate patient transport services for their patients.
+                    </p>
+                    
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check text-success me-2"></i>Streamlined transport request process</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Access to verified affiliate network</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Bulk booking capabilities</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Integration with hospital systems</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Patient tracking and status updates</li>
+                        <li><i class="fas fa-check text-success me-2"></i>HIPAA-compliant secure communication</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Dedicated account management</li>
+                    </ul>
+                    
+                    <div class="mt-auto">
+                        <a href="{{ url_for('join_provider') }}" class="btn cta-secondary">
+                            <i class="fas fa-user-md me-2"></i>Join as Provider
+                        </a>
+                        <div class="mt-2">
+                            <small class="text-muted">Healthcare facility verification required</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Individuals Program -->
+            <div class="col-lg-4">
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h3 class="program-title">Individuals</h3>
+                    <p class="program-description">
+                        Patients, family members, and individuals who need to arrange medical transport services and want to compare options from multiple providers.
+                    </p>
+                    
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check text-success me-2"></i>Compare quotes from multiple affiliates</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Transparent pricing with no hidden fees</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Easy-to-use booking interface</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Real-time flight tracking</li>
+                        <li><i class="fas fa-check text-success me-2"></i>24/7 customer support</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Secure payment processing</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Insurance coordination assistance</li>
+                    </ul>
+                    
+                    <div class="mt-auto">
+                        <a href="{{ url_for('consumer_intake') }}" class="btn cta-success">
+                            <i class="fas fa-paper-plane me-2"></i>Request Transport
+                        </a>
+                        <div class="mt-2">
+                            <small class="text-muted">No registration required to start</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold mb-4">How SkyCareLink Works</h2>
+                <p class="lead mb-5">We bring together the medical transport ecosystem on one platform</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">1</span>
+                    </div>
+                    <h5>Request Submitted</h5>
+                    <p class="text-muted">Individual or Provider submits transport request with patient details</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">2</span>
+                    </div>
+                    <h5>Affiliates Notified</h5>
+                    <p class="text-muted">Qualified affiliates receive request and submit competitive quotes</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">3</span>
+                    </div>
+                    <h5>Quotes Compared</h5>
+                    <p class="text-muted">Customer reviews quotes, capabilities, and selects preferred affiliate</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <span class="fw-bold">4</span>
+                    </div>
+                    <h5>Transport Completed</h5>
+                    <p class="text-muted">Affiliate handles transport while SkyCareLink provides support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+                <p class="lead mb-4">Join thousands of satisfied customers, providers, and affiliates</p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{{ url_for('consumer_intake') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-paper-plane me-2"></i>Request Transport Now
+                    </a>
+                    <a href="{{ url_for('join_affiliate') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-handshake me-2"></i>Become an Affiliate
+                    </a>
+                    <a href="{{ url_for('join_provider') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-hospital me-2"></i>Provider Registration
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

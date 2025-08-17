@@ -4852,6 +4852,16 @@ def join_hospital():
 
 # Route removed to fix duplicate mapping
 
+@consumer_app.route('/our_programs')
+def our_programs():
+    """Our Programs page - explaining Affiliates, Providers, and Individuals"""
+    return render_template('our_programs.html')
+
+@consumer_app.route('/join_provider')
+def join_provider():
+    """Provider (hospital/clinic) registration page"""
+    return redirect(url_for('join_hospital'))
+
 @consumer_app.route('/join_affiliate', methods=['GET', 'POST'])  
 def join_affiliate():
     """Affiliate registration with concierge option"""
