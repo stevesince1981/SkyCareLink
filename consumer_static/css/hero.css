@@ -1,25 +1,26 @@
-/* True background image - heavily dimmed with full aircraft visible */
+/* True background image - like a shadow, with complete aircraft visible */
 .hero-bg {
   background-position: center;
-  background-size: 50%;  /* Much smaller to show complete aircraft and team */
+  background-size: 30%;  /* Much smaller to show complete aircraft including nose */
   background-repeat: no-repeat;
   min-height: 420px;
   position: relative;
 }
 
 .hero-bg::before {
-  /* Very heavy overlay to make image a true background */
+  /* Extreme overlay to make image barely visible like a shadow */
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0.95);  /* 95% white overlay for strong dimming */
+  background: rgba(255,255,255,0.98);  /* 98% white overlay - almost invisible */
   z-index: 1;
 }
 
 .hero-overlay {
   position: relative;
   z-index: 2;
-  /* Remove the additional background since the ::before handles fading */
-  background-color: transparent;
+  /* Add slight background to ensure text readability */
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
+  padding: 2rem !important;
 }
