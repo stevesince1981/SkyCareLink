@@ -123,12 +123,6 @@
     height: auto;
     min-height: 60px;
     font-size: 0.8rem;
-    flex: 1;
-    max-width: 160px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
 .service-card:hover, .severity-card:hover {
@@ -143,12 +137,7 @@
     transform: translateY(-2px);
 }
 
-.severity-row {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+
 
 
 
@@ -508,24 +497,37 @@
                                     </div>
                                 </div>
                                 <div class="pancake-content">
-                                    <div class="severity-row mb-3">
-                                        <div class="severity-card" data-severity="low" onclick="selectSeverity('low')">
-                                            <i class="fas fa-user text-success fa-2x mb-2"></i>
-                                            <h6 class="mb-1">Level 1 - Low</h6>
-                                            <p class="small text-muted mb-2">Stable condition</p>
-                                            <span class="badge bg-success">Standard</span>
+                                    <p class="text-muted mb-3">Select the patient's severity level for proper equipment matching</p>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="severity-card" data-severity="low" onclick="selectSeverity('low')">
+                                                <div class="service-icon mb-2">
+                                                    <i class="fas fa-user text-success fa-2x"></i>
+                                                </div>
+                                                <h6>Level 1 - Low</h6>
+                                                <p class="small text-muted">Stable condition</p>
+                                                <span class="badge bg-success">Standard</span>
+                                            </div>
                                         </div>
-                                        <div class="severity-card" data-severity="medium" onclick="selectSeverity('medium')">
-                                            <i class="fas fa-heartbeat text-warning fa-2x mb-2"></i>
-                                            <h6 class="mb-1">Level 2 - Medium</h6>
-                                            <p class="small text-muted mb-2">Monitoring required</p>
-                                            <span class="badge bg-warning">Enhanced</span>
+                                        <div class="col-md-4">
+                                            <div class="severity-card" data-severity="medium" onclick="selectSeverity('medium')">
+                                                <div class="service-icon mb-2">
+                                                    <i class="fas fa-heartbeat text-warning fa-2x"></i>
+                                                </div>
+                                                <h6>Level 2 - Medium</h6>
+                                                <p class="small text-muted">Monitoring required</p>
+                                                <span class="badge bg-warning">Enhanced</span>
+                                            </div>
                                         </div>
-                                        <div class="severity-card" data-severity="high" onclick="selectSeverity('high')">
-                                            <i class="fas fa-ambulance text-danger fa-2x mb-2"></i>
-                                            <h6 class="mb-1">Level 3 - High</h6>
-                                            <p class="small text-muted mb-2">Critical condition</p>
-                                            <span class="badge bg-danger">Life support</span>
+                                        <div class="col-md-4">
+                                            <div class="severity-card" data-severity="high" onclick="selectSeverity('high')">
+                                                <div class="service-icon mb-2">
+                                                    <i class="fas fa-ambulance text-danger fa-2x"></i>
+                                                </div>
+                                                <h6>Level 3 - High</h6>
+                                                <p class="small text-muted">Critical condition</p>
+                                                <span class="badge bg-danger">Life support</span>
+                                            </div>
                                         </div>
                                     </div>
 
