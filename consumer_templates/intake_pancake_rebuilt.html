@@ -330,13 +330,26 @@
     color: #fff !important;
 }
 
-/* Disabled state - keep light teal but muted */
+/* Disabled state - gray until step is complete */
 .pancake-navigation .btn:disabled {
-    background-color: #b3e5fc !important;
-    border-color: #81d4fa !important;
-    color: #0277bd !important;
-    opacity: 0.7 !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+    opacity: 0.6 !important;
     cursor: not-allowed !important;
+}
+
+/* Success buttons only show green when enabled (step complete) */
+.pancake-navigation .btn-success:not(:disabled) {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+
+.pancake-navigation .btn-success:not(:disabled):hover {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
 }
 
 /* Login expansion box styling */
@@ -409,7 +422,7 @@
                                     
                                     <div class="pancake-navigation">
                                         <div></div>
-                                        <button type="button" class="btn btn-success btn-sm" id="nextStep1" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-secondary btn-sm" id="nextStep1" onclick="nextStep()" disabled>
                                             Next: Patient Severity <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -524,7 +537,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-success btn-sm" id="nextStep2" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-secondary btn-sm" id="nextStep2" onclick="nextStep()" disabled>
                                             Next: Locations <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -674,7 +687,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-success btn-sm" id="nextStep3" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-secondary btn-sm" id="nextStep3" onclick="nextStep()" disabled>
                                             Next: Patient Info <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -784,7 +797,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-success btn-sm" id="nextStep4" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-secondary btn-sm" id="nextStep4" onclick="nextStep()" disabled>
                                             Next: Review & Submit <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -1213,13 +1226,13 @@ function updateStepValidation() {
             
             console.log(`Step ${i} validation:`, isValid);
             
-            // Add visual feedback - force class changes
+            // Visual feedback - buttons turn green when enabled, gray when disabled
             if (isValid) {
-                nextButton.classList.remove('btn-secondary', 'disabled');
-                nextButton.classList.add('btn-primary');
+                nextButton.classList.remove('btn-secondary');
+                nextButton.classList.add('btn-success');
                 nextButton.removeAttribute('disabled');
             } else {
-                nextButton.classList.remove('btn-primary');
+                nextButton.classList.remove('btn-success');
                 nextButton.classList.add('btn-secondary');
                 nextButton.setAttribute('disabled', 'true');
             }
