@@ -2252,6 +2252,64 @@
       "details": {
         "email": null
       }
+    },
+    {
+      "timestamp": "2025-08-17T14:26:41.817959",
+      "user": "unknown",
+      "type": "password_reset_request",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "email": null
+      }
+    },
+    {
+      "timestamp": "2025-08-17T14:28:04.517195",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": true,
+        "risk_factors": [
+          "new_ip"
+        ]
+      }
+    },
+    {
+      "timestamp": "2025-08-17T14:28:04.520189",
+      "user": "admin",
+      "type": "anomaly_alert_sent",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "is_risky": true,
+        "risk_factors": [
+          "new_ip"
+        ],
+        "require_step_up": true
+      }
+    },
+    {
+      "timestamp": "2025-08-17T14:28:04.535639",
+      "user": "admin",
+      "type": "mfa_challenge_sent",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "reason": "step_up_required",
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-17T14:28:30.597754",
+      "user": "unknown",
+      "type": "password_reset_request",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "email": null
+      }
     }
   ]
 }

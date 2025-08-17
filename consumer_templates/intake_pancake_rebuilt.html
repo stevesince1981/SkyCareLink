@@ -309,11 +309,11 @@
     cursor: default !important;
 }
 
-/* Enabled/Active state - bright cyan like "Request Transport" button */
+/* Enabled/Active state - bright green like screenshot */
 .pancake-navigation .btn:not(:disabled),
 .pancake-navigation .btn.btn-primary:not(:disabled) {
-    background-color: #00bcd4 !important; /* Bright cyan like your example */
-    border-color: #0097a7 !important;
+    background-color: #4caf50 !important; /* Bright green like your screenshot */
+    border-color: #45a049 !important;
     color: #fff !important;
     cursor: pointer !important;
     opacity: 1 !important;
@@ -321,10 +321,10 @@
 }
 
 .pancake-navigation .btn:not(:disabled):hover {
-    background-color: #0097a7 !important;
-    border-color: #00838f !important;
+    background-color: #45a049 !important;
+    border-color: #3e8e41 !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 8px rgba(0,188,212,0.3) !important;
+    box-shadow: 0 4px 8px rgba(76,175,80,0.3) !important;
 }
 
 /* Disabled state - keep light teal but muted */
@@ -334,6 +334,25 @@
     color: #0277bd !important;
     opacity: 0.7 !important;
     cursor: not-allowed !important;
+}
+
+/* Login expansion box styling */
+.login-expansion-box {
+    animation: slideDown 0.3s ease-out;
+    margin-top: 1rem;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        max-height: 200px;
+        transform: translateY(0);
+    }
 }
 </style>
 
@@ -673,37 +692,20 @@
                                 </div>
                                 <div class="pancake-content">
                                     <div class="row g-2">
-                                        <!-- Contact Name -->
+                                        <!-- Contact Name - Required -->
                                         <div class="col-md-6">
-                                            <label class="form-label small">Contact Name</label>
+                                            <label class="form-label small">Contact Name <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm compact-input" name="contact_name" id="contactName" 
                                                    placeholder="Primary contact name" required>
                                         </div>
+                                        <!-- Relation to Patient - Optional -->
                                         <div class="col-md-6">
-                                            <label class="form-label small">Relation to Patient</label>
+                                            <label class="form-label small">Relation to Patient <small class="text-muted">(Optional)</small></label>
                                             <input type="text" class="form-control form-control-sm compact-input" name="relation_to_patient" id="relationToPatient" 
-                                                   placeholder="e.g., Mother, Father, Guardian" required>
+                                                   placeholder="e.g., Mother, Father, Guardian">
                                         </div>
 
-                                        <!-- Contact Phone -->
-                                        <div class="col-md-6">
-                                            <label class="form-label small">Contact Phone <small class="text-muted">(Optional but encouraged - mobile preferred)</small></label>
-                                            <input type="tel" class="form-control form-control-sm compact-input" name="contact_phone" id="contactPhone" 
-                                                   placeholder="(555) 123-4567">
-                                        </div>
-
-                                        <!-- Gender -->
-                                        <div class="col-md-4">
-                                            <label class="form-label small">Gender <small class="text-muted">(Optional)</small></label>
-                                            <select class="form-select form-select-sm compact-input" name="patient_gender" id="patientGender">
-                                                <option value="">Select gender</option>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="unknown">Unknown</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Age Range -->
+                                        <!-- Age, Weight, Gender on same row -->
                                         <div class="col-md-4">
                                             <label class="form-label small">Age Range <small class="text-muted">(Optional)</small></label>
                                             <select class="form-select form-select-sm compact-input" name="patient_age_range" id="patientAgeRange">
@@ -718,7 +720,6 @@
                                             </select>
                                         </div>
 
-                                        <!-- Weight Range -->
                                         <div class="col-md-4">
                                             <label class="form-label small">Weight Range <small class="text-muted">(Optional)</small></label>
                                             <select class="form-select form-select-sm compact-input" name="patient_weight" id="patientWeight">
@@ -730,6 +731,16 @@
                                                 <option value="200-250">200-250 lbs</option>
                                                 <option value="250-300">250-300 lbs</option>
                                                 <option value="over-300">Over 300 lbs</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Gender <small class="text-muted">(Optional)</small></label>
+                                            <select class="form-select form-select-sm compact-input" name="patient_gender" id="patientGender">
+                                                <option value="">Select gender</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="unknown">Unknown</option>
                                             </select>
                                         </div>
 
@@ -814,6 +825,25 @@
                                         </label>
                                     </div>
                                     
+                                    <!-- Login Expansion Box (hidden by default) -->
+                                    <div id="loginExpansionBox" class="login-expansion-box" style="display: none;">
+                                        <div class="alert alert-info mt-3">
+                                            <h6><i class="fas fa-shield-alt me-2"></i>Account Required to Submit</h6>
+                                            <p class="mb-3">To submit your quote request, please login now or create an account quickly:</p>
+                                            <div class="d-flex gap-2 mb-2">
+                                                <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-sign-in-alt me-2"></i>Login Now
+                                                </a>
+                                                <a href="{{ url_for('login') }}?join=1" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-user-plus me-2"></i>+Join
+                                                </a>
+                                            </div>
+                                            <small class="text-muted">
+                                                Your progress will be saved automatically. Takes less than 2 minutes.
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
                                     <div class="pancake-navigation">
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
@@ -849,6 +879,15 @@
 </div>
 
 <script>
+// Show login expansion box instead of popup
+function showLoginExpansionBox() {
+    const expansionBox = document.getElementById('loginExpansionBox');
+    if (expansionBox) {
+        expansionBox.style.display = 'block';
+        expansionBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
 // Enhanced Pancake Stepper JavaScript
 let currentStep = 1;
 let formData = {};
@@ -1145,8 +1184,7 @@ function validateStep(stepNumber) {
                    document.getElementById('toCity').value &&
                    document.getElementById('toState').value;
         case 4:
-            return document.getElementById('contactName').value &&
-                   document.getElementById('relationToPatient').value;
+            return document.getElementById('contactName').value; // Only contact name is required now
         case 5:
             return document.getElementById('agreeTerms') && document.getElementById('agreeTerms').checked;
         default:
@@ -1307,12 +1345,9 @@ document.getElementById('intakeForm').addEventListener('submit', function(e) {
     
     // Check if user is logged in for MFA requirement
     {% if not session.get('logged_in') %}
-    if (confirm('You must be logged in with verified email and phone to submit a quote request. Would you like to login now?')) {
-        window.location.href = '{{ url_for("login") }}';
-        return;
-    } else {
-        return;
-    }
+    // Show login expansion box instead of popup
+    showLoginExpansionBox();
+    return;
     {% endif %}
     
     // Prepare form data for submission
