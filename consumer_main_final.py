@@ -2146,6 +2146,180 @@ def consumer_intake_post():
     session['equipment_cost'] = equipment_cost
     return redirect(url_for('consumer_quotes'))
 
+# New Quote Request Flow - Phase 14.C
+@consumer_app.route('/quotes/new', methods=['GET', 'POST'])
+def quotes_new():
+    """New quote request flow with simplified form structure"""
+    if request.method == 'GET':
+        return render_template('quotes_new.html')
+    
+    # Process POST submission
+    try:
+        # Extract form data with validation
+        contact_name = request.form.get('contact_name', '').strip()
+        if not contact_name:
+            flash('Contact Name is required.', 'error')
+            return render_template('quotes_new.html')
+        
+        service_type = request.form.get('service_type')
+        if service_type not in ['critical', 'scheduled']:
+            flash('Please select a valid service type.', 'error')
+            return render_template('quotes_new.html')
+        
+        severity_level = request.form.get('severity_level')
+        if severity_level not in ['1', '2', '3']:
+            flash('Please select a valid severity level.', 'error')
+            return render_template('quotes_new.html')
+        
+        flight_date = request.form.get('flight_date')
+        if not flight_date:
+            flash('Flight Date is required.', 'error')
+            return render_template('quotes_new.html')
+        
+        # Location validation
+        from_location = {
+            'city': request.form.get('from_city', '').strip(),
+            'state': request.form.get('from_state', '').strip(),
+            'country': request.form.get('from_country', 'United States').strip()
+        }
+        
+        to_location = {
+            'city': request.form.get('to_city', '').strip(),
+            'state': request.form.get('to_state', '').strip(),
+            'country': request.form.get('to_country', 'United States').strip()
+        }
+        
+        if not from_location['city'] or not from_location['state']:
+            flash('From location (City and State) is required.', 'error')
+            return render_template('quotes_new.html')
+        
+        if not to_location['city'] or not to_location['state']:
+            flash('To location (City and State) is required.', 'error')
+            return render_template('quotes_new.html')
+        
+        # Default equipment mapping based on severity level
+        equipment_mapping = {
+            '1': ['basic_monitor'],
+            '2': ['basic_monitor', 'medical_stretcher'], 
+            '3': ['basic_monitor', 'oxygen_supply', 'medical_stretcher']
+        }
+        default_equipment = equipment_mapping.get(severity_level, [])
+        
+        # Generate unique reference ID
+        ref_id = f"QR{datetime.now().strftime('%y%m%d')}{random.randint(1000, 9999)}"
+        
+        # Create quote request data
+        quote_request = {
+            'ref_id': ref_id,
+            'contact_name': contact_name,
+            'service_type': service_type,
+            'severity_level': int(severity_level),
+            'flight_date': flight_date,
+            'return_flight': request.form.get('return_flight') == 'on',
+            'return_date': request.form.get('return_date') if request.form.get('return_flight') == 'on' else None,
+            'from_location': from_location,
+            'to_location': to_location,
+            'covid_tested': request.form.get('covid_tested'),
+            'covid_result': request.form.get('covid_result') if request.form.get('covid_tested') == 'yes' else None,
+            'specialized_care': request.form.get('specialized_care', '').strip(),
+            'additional_medical_info': request.form.get('additional_medical_info', '').strip(),
+            'equipment': default_equipment,
+            'email': request.form.get('email', '').strip(),
+            'phone': request.form.get('phone', '').strip(),
+            'timestamp': datetime.now().isoformat(),
+            'status': 'submitted',
+            'quote_expiry': (datetime.now() + timedelta(days=7)).isoformat()
+        }
+        
+        # Store in session for demo (in production, save to database)
+        if 'quote_requests' not in session:
+            session['quote_requests'] = {}
+        session['quote_requests'][ref_id] = quote_request
+        
+        # Trigger affiliate notification (stub)
+        logging.info(f"Quote request {ref_id} submitted - triggering affiliate notifications")
+        
+        # Send confirmation message
+        flash(f'Quote request submitted successfully! Reference ID: {ref_id}', 'success')
+        
+        # Redirect to results page
+        return redirect(url_for('quotes_results', ref=ref_id))
+        
+    except Exception as e:
+        logging.error(f"Quote request submission error: {e}")
+        flash('An error occurred processing your request. Please try again.', 'error')
+        return render_template('quotes_new.html')
+
+@consumer_app.route('/quotes/results/<ref>')
+def quotes_results(ref):
+    """Display quote results page"""
+    # Get quote request from session
+    quote_request = session.get('quote_requests', {}).get(ref)
+    
+    if not quote_request:
+        flash('Quote request not found.', 'error')
+        return redirect(url_for('quotes_new'))
+    
+    # Generate sample quotes for demonstration
+    sample_quotes = generate_sample_quotes(quote_request)
+    
+    return render_template('quotes_results.html', 
+                         quote_request=quote_request,
+                         quotes=sample_quotes,
+                         ref=ref)
+
+def generate_sample_quotes(quote_request):
+    """Generate sample quotes based on request data"""
+    import random
+    
+    base_prices = [25000, 30000, 35000, 40000, 45000, 50000, 55000, 60000]
+    quotes = []
+    
+    # Generate 3-5 quotes
+    for i in range(random.randint(3, 5)):
+        base_fare = random.choice(base_prices)
+        
+        # Add equipment costs
+        equipment_cost = 0
+        equipment_pricing = {
+            'basic_monitor': 2000,
+            'medical_stretcher': 3000,
+            'oxygen_supply': 2500,
+            'ventilator': 15000,
+            'ecmo': 25000
+        }
+        
+        for eq in quote_request.get('equipment', []):
+            equipment_cost += equipment_pricing.get(eq, 0)
+        
+        # Same-day surcharge for critical transport
+        same_day_surcharge = 0
+        if quote_request.get('service_type') == 'critical':
+            same_day_surcharge = int((base_fare + equipment_cost) * 0.2)
+        
+        total_price = base_fare + equipment_cost + same_day_surcharge
+        
+        quotes.append({
+            'id': f'quote_{i+1}',
+            'provider_name': f'Provider {chr(65+i)}**',  # A**, B**, etc.
+            'aircraft_type': random.choice(['King Air 350', 'Citation CJ3', 'Learjet 45', 'Beechcraft 1900']),
+            'eta': f'{random.randint(2, 8)} hours',
+            'base_fare': base_fare,
+            'equipment_cost': equipment_cost,
+            'same_day_surcharge': same_day_surcharge,
+            'total_price': total_price,
+            'capabilities': random.sample([
+                'Critical Care Certified',
+                'Pediatric Specialist', 
+                'ECMO Capable',
+                '24/7 Availability',
+                'Weather Certified',
+                'International Flights'
+            ], 3)
+        })
+    
+    return sorted(quotes, key=lambda x: x['total_price'])
+
 # Legacy route redirects (301 permanent redirects)
 @consumer_app.route('/request')
 @consumer_app.route('/home')

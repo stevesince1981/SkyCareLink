@@ -1,0 +1,226 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Quote Results - SkyCareLink{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Quote Request Summary -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>Quote Request Submitted Successfully
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <strong>Reference ID:</strong><br>
+                            <code class="text-primary">{{ quote_request.ref_id }}</code>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Contact:</strong><br>
+                            {{ quote_request.contact_name }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Service Type:</strong><br>
+                            <span class="badge bg-{% if quote_request.service_type == 'critical' %}danger{% else %}primary{% endif %}">
+                                {{ quote_request.service_type.title() }} Transport
+                            </span>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Severity Level:</strong><br>
+                            <span class="badge bg-secondary">Level {{ quote_request.severity_level }}</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <strong>Route:</strong><br>
+                            <i class="fas fa-map-marker-alt text-success me-1"></i>
+                            {{ quote_request.from_location.city }}, {{ quote_request.from_location.state }}
+                            <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                            <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                            {{ quote_request.to_location.city }}, {{ quote_request.to_location.state }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Flight Date:</strong><br>
+                            {{ quote_request.flight_date }}
+                            {% if quote_request.return_flight %}
+                                <br><small class="text-muted">Return: {{ quote_request.return_date or 'TBD' }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Quote Valid Until:</strong><br>
+                            <small class="text-muted">{{ quote_request.quote_expiry[:10] }}</small>
+                        </div>
+                    </div>
+                    
+                    {% if quote_request.specialized_care %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <strong>Specialized Care:</strong> {{ quote_request.specialized_care }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Quotes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plane me-2"></i>Available Quotes ({{ quotes|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if quotes %}
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Quotes are valid 7 days from the requested departure date, subject to aircraft and crew availability.</strong>
+                            Provider identities are masked until booking confirmation.
+                        </div>
+
+                        <div class="row g-3">
+                            {% for quote in quotes %}
+                            <div class="col-lg-6">
+                                <div class="card quote-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div>
+                                                <h6 class="fw-bold mb-1">{{ quote.provider_name }}</h6>
+                                                <small class="text-muted">{{ quote.aircraft_type }}</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="h5 fw-bold text-primary mb-0">
+                                                    ${{ "{:,}".format(quote.total_price) }}
+                                                </div>
+                                                <small class="text-muted">ETA: {{ quote.eta }}</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Price Breakdown -->
+                                        <div class="mb-3">
+                                            <small class="text-muted">
+                                                Base Fare: ${{ "{:,}".format(quote.base_fare) }}
+                                                {% if quote.equipment_cost > 0 %}
+                                                <br>Equipment: ${{ "{:,}".format(quote.equipment_cost) }}
+                                                {% endif %}
+                                                {% if quote.same_day_surcharge > 0 %}
+                                                <br>Same-Day Surcharge (20%): ${{ "{:,}".format(quote.same_day_surcharge) }}
+                                                {% endif %}
+                                            </small>
+                                        </div>
+
+                                        <!-- Capabilities -->
+                                        <div class="mb-3">
+                                            {% for capability in quote.capabilities %}
+                                                <span class="badge bg-light text-dark me-1 mb-1">{{ capability }}</span>
+                                            {% endfor %}
+                                        </div>
+
+                                        <!-- Action Button -->
+                                        <div class="d-grid">
+                                            <button class="btn btn-outline-primary" onclick="selectQuote('{{ quote.id }}', '{{ ref }}')">
+                                                <i class="fas fa-check me-2"></i>Select This Quote
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Contact Information -->
+                        {% if quote_request.email or quote_request.phone %}
+                        <div class="alert alert-success mt-4">
+                            <h6 class="fw-bold mb-2">
+                                <i class="fas fa-envelope me-2"></i>Quote Delivery
+                            </h6>
+                            <p class="mb-0">
+                                Your quotes will also be sent to:
+                                {% if quote_request.email %}
+                                    <br><i class="fas fa-at me-1"></i>{{ quote_request.email }}
+                                {% endif %}
+                                {% if quote_request.phone %}
+                                    <br><i class="fas fa-phone me-1"></i>{{ quote_request.phone }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Searching for Available Providers...</h5>
+                            <p class="text-muted">This may take a few minutes. You'll receive quotes via your provided contact information.</p>
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('quotes_new') }}" class="btn btn-secondary me-3">
+                <i class="fas fa-plus me-2"></i>Submit Another Request
+            </a>
+            <a href="{{ url_for('consumer_index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home me-2"></i>Return Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.quote-card {
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.quote-card:hover {
+    border-color: #1976d2;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.quote-card .btn:hover {
+    transform: none;
+}
+</style>
+
+<script>
+function selectQuote(quoteId, ref) {
+    // In a real application, this would submit the selection to the server
+    if (confirm('Are you sure you want to select this quote? You will receive booking confirmation details.')) {
+        // For demo purposes, show success message
+        alert(`Quote ${quoteId} selected! You will receive booking details shortly.\n\nReference: ${ref}`);
+        
+        // In production, this would make an AJAX call to submit the selection
+        // fetch('/quotes/select', {
+        //     method: 'POST',
+        //     headers: {'Content-Type': 'application/json'},
+        //     body: JSON.stringify({quote_id: quoteId, ref: ref})
+        // });
+    }
+}
+
+// Auto-refresh quotes every 30 seconds if no quotes available
+{% if not quotes %}
+setTimeout(function() {
+    location.reload();
+}, 30000);
+{% endif %}
+</script>
+{% endblock %}

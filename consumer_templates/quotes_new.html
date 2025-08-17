@@ -1,0 +1,358 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Request Quote - SkyCareLink{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-quote-left me-2"></i>Request Medical Transport Quote
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('quotes_new') }}" id="quoteForm">
+                        
+                        <!-- Service Type Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Service Type <span class="text-danger">*</span></label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="service-card" data-value="critical">
+                                        <i class="fas fa-ambulance fa-2x text-danger mb-2"></i>
+                                        <h6 class="fw-bold">Critical Transport</h6>
+                                        <small class="text-muted">Same-day availability<br>Advanced life support</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="service-card" data-value="scheduled">
+                                        <i class="fas fa-calendar-alt fa-2x text-primary mb-2"></i>
+                                        <h6 class="fw-bold">Scheduled Transport</h6>
+                                        <small class="text-muted">Planned medical transfers<br>Standard monitoring</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="service_type" id="service_type" required>
+                        </div>
+
+                        <!-- Patient Severity Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Patient Severity Level <span class="text-danger">*</span></label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="severity-card" data-value="1">
+                                        <div class="severity-number">1</div>
+                                        <h6 class="fw-bold">Level 1</h6>
+                                        <small class="text-muted">Stable<br>Basic monitoring</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="severity-card" data-value="2">
+                                        <div class="severity-number">2</div>
+                                        <h6 class="fw-bold">Level 2</h6>
+                                        <small class="text-muted">Moderate<br>Enhanced care</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="severity-card" data-value="3">
+                                        <div class="severity-number">3</div>
+                                        <h6 class="fw-bold">Level 3</h6>
+                                        <small class="text-muted">Critical<br>Intensive care</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="severity_level" id="severity_level" required>
+                        </div>
+
+                        <!-- Flight Dates -->
+                        <div class="mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="flight_date" class="form-label fw-bold">Flight Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control compact-input" id="flight_date" name="flight_date" required min="{{ (datetime.now().date()).strftime('%Y-%m-%d') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" id="return_flight" name="return_flight" onchange="toggleReturnDate()">
+                                        <label class="form-check-label fw-bold" for="return_flight">
+                                            Return Flight Required?
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-2" id="return_date_section" style="display: none;">
+                                <div class="col-md-6">
+                                    <label for="return_date" class="form-label fw-bold">Return Date</label>
+                                    <input type="date" class="form-control compact-input" id="return_date" name="return_date" min="{{ (datetime.now().date()).strftime('%Y-%m-%d') }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="mb-4">
+                            <label for="contact_name" class="form-label fw-bold">Contact Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control compact-input" id="contact_name" name="contact_name" required placeholder="Primary contact for this request">
+                        </div>
+
+                        <!-- Location Information -->
+                        <div class="mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-primary mb-3">From Location <span class="text-danger">*</span></h6>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control compact-input" name="from_city" placeholder="City" required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control compact-input" name="from_state" placeholder="State/Province" required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control compact-input" name="from_country" value="United States" placeholder="Country">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-primary mb-3">To Location <span class="text-danger">*</span></h6>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control compact-input" name="to_city" placeholder="City" required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control compact-input" name="to_state" placeholder="State/Province" required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" class="form-control compact-input" name="to_country" value="United States" placeholder="Country">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COVID Information -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">COVID Testing Status</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <select class="form-select compact-input" name="covid_tested" id="covid_tested" onchange="toggleCovidResult()">
+                                        <option value="">Select testing status</option>
+                                        <option value="yes">Yes, tested</option>
+                                        <option value="no">No, not tested</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="covid_result_section" style="display: none;">
+                                    <select class="form-select compact-input" name="covid_result" id="covid_result">
+                                        <option value="n/a">N/A</option>
+                                        <option value="negative">Negative</option>
+                                        <option value="positive">Positive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medical Information -->
+                        <div class="mb-4">
+                            <label for="specialized_care" class="form-label fw-bold">Specialized Care Needs (Optional)</label>
+                            <input type="text" class="form-control compact-input" id="specialized_care" name="specialized_care" placeholder="e.g., Pediatric specialist, ECMO support, etc.">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="additional_medical_info" class="form-label fw-bold">Additional Medical Information (Optional)</label>
+                            <div class="alert alert-warning alert-sm py-1 px-2 mb-2">
+                                <small><i class="fas fa-exclamation-triangle me-1"></i>Do not include PHI—no patient names or MRNs.</small>
+                            </div>
+                            <textarea class="form-control compact-input" id="additional_medical_info" name="additional_medical_info" rows="3" placeholder="Additional medical considerations or requirements"></textarea>
+                        </div>
+
+                        <!-- Default Equipment Display -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Included Equipment (Based on Severity Level)</label>
+                            <div id="equipment_display" class="p-3 bg-light rounded">
+                                <small class="text-muted">Equipment will be automatically assigned based on your selected severity level.</small>
+                            </div>
+                        </div>
+
+                        <!-- Contact Delivery -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">Contact Information for Quote Delivery</h6>
+                            <p class="text-muted small mb-3">Provide an email and/or a mobile number to receive your quote (SMS includes price, provider, and a secure link).</p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email (Optional but encouraged)</label>
+                                    <input type="email" class="form-control compact-input" id="email" name="email" placeholder="your@email.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone (Optional but encouraged)</label>
+                                    <input type="tel" class="form-control compact-input" id="phone" name="phone" placeholder="(555) 123-4567">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quote Validity Notice -->
+                        <div class="alert alert-info mb-4">
+                            <small><i class="fas fa-info-circle me-2"></i>Quotes are valid 7 days from the requested departure date, subject to aircraft and crew availability.</small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Quote Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.service-card, .severity-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+}
+
+.service-card:hover, .severity-card:hover {
+    border-color: #1976d2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.service-card.selected, .severity-card.selected {
+    border-color: #1976d2;
+    background: #e3f2fd;
+    transform: translateY(-2px);
+}
+
+.severity-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1976d2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0 auto 0.5rem;
+}
+
+.compact-input {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.8rem;
+}
+
+.alert-sm {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+</style>
+
+<script>
+// Service type selection
+document.querySelectorAll('.service-card').forEach(card => {
+    card.addEventListener('click', function() {
+        // Remove selected class from all cards
+        document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+        // Add selected class to clicked card
+        this.classList.add('selected');
+        // Set hidden input value
+        document.getElementById('service_type').value = this.dataset.value;
+        
+        // Update same-day notice for critical transport
+        if (this.dataset.value === 'critical') {
+            showSameDayNotice();
+        }
+    });
+});
+
+// Severity level selection with equipment update
+document.querySelectorAll('.severity-card').forEach(card => {
+    card.addEventListener('click', function() {
+        // Remove selected class from all cards
+        document.querySelectorAll('.severity-card').forEach(c => c.classList.remove('selected'));
+        // Add selected class to clicked card
+        this.classList.add('selected');
+        // Set hidden input value
+        document.getElementById('severity_level').value = this.dataset.value;
+        
+        // Update equipment display
+        updateEquipmentDisplay(this.dataset.value);
+    });
+});
+
+function updateEquipmentDisplay(level) {
+    const equipmentMapping = {
+        '1': ['Basic Monitor'],
+        '2': ['Basic Monitor', 'Medical Stretcher'], 
+        '3': ['Basic Monitor', 'Oxygen Supply', 'Medical Stretcher']
+    };
+    
+    const equipment = equipmentMapping[level] || [];
+    const display = document.getElementById('equipment_display');
+    
+    if (equipment.length > 0) {
+        display.innerHTML = '<strong>Included Equipment:</strong><br>' + 
+                           equipment.map(eq => `<span class="badge bg-secondary me-1">${eq}</span>`).join('');
+    } else {
+        display.innerHTML = '<small class="text-muted">Equipment will be automatically assigned based on your selected severity level.</small>';
+    }
+}
+
+function toggleReturnDate() {
+    const checkbox = document.getElementById('return_flight');
+    const section = document.getElementById('return_date_section');
+    
+    if (checkbox.checked) {
+        section.style.display = 'block';
+        document.getElementById('return_date').required = true;
+    } else {
+        section.style.display = 'none';
+        document.getElementById('return_date').required = false;
+        document.getElementById('return_date').value = '';
+    }
+}
+
+function toggleCovidResult() {
+    const tested = document.getElementById('covid_tested').value;
+    const section = document.getElementById('covid_result_section');
+    
+    if (tested === 'yes') {
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+        document.getElementById('covid_result').value = 'n/a';
+    }
+}
+
+function showSameDayNotice() {
+    // Could add a notice about 20% surcharge for same-day critical transport
+    // For now, this is handled in the pricing logic
+}
+
+// Form validation
+document.getElementById('quoteForm').addEventListener('submit', function(e) {
+    const serviceType = document.getElementById('service_type').value;
+    const severityLevel = document.getElementById('severity_level').value;
+    
+    if (!serviceType) {
+        e.preventDefault();
+        alert('Please select a service type.');
+        return;
+    }
+    
+    if (!severityLevel) {
+        e.preventDefault();
+        alert('Please select a severity level.');
+        return;
+    }
+});
+</script>
+{% endblock %}
