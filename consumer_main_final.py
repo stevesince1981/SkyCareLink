@@ -1306,6 +1306,17 @@ def consumer_referrals():
     """Referral program page"""
     return render_template('consumer_referrals.html')
 
+@consumer_app.route('/resources-financial')
+def resources_financial():
+    """Financial resources page with neutral financing options"""
+    return render_template('main/resources_financial.html')
+
+@consumer_app.route('/terms-of-service')
+def terms_of_service():
+    """Terms of service page with buy-in terms and compliance info"""
+    from datetime import datetime
+    return render_template('legal/terms.html', current_date=datetime.now().strftime('%B %d, %Y'))
+
 @consumer_app.route('/requests')
 def consumer_requests():
     """Phase 12.A: Enhanced requests screen with card layout"""
@@ -3200,7 +3211,7 @@ def partners_page():
     partner_stats = {
         'cost_reduction': '50%',
         'volume_increase': '35%',
-        'partner_count': '150+',
+        'partner_count': 'Building the largest network',
         'success_stories': '500+'
     }
     

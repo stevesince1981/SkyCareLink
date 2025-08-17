@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Financial Resources - SkyCareLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">
+                    <i class="fas fa-credit-card me-3 text-primary"></i>
+                    Financial Resources
+                </h1>
+                <p class="lead text-muted">
+                    Explore financing options for medical transport services. 
+                    These resources may help make critical care more accessible.
+                </p>
+            </div>
+
+            <!-- Non-Endorsement Disclaimer -->
+            <div class="alert alert-info border-0 mb-4">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-info-circle me-3 mt-1"></i>
+                    <div>
+                        <h6 class="mb-2">Important Disclaimer</h6>
+                        <p class="mb-0 small">
+                            <strong>SkyCareLink does not endorse or guarantee any financial services listed below.</strong> 
+                            We provide these resources for informational purposes only. Please evaluate all terms, 
+                            rates, and conditions independently. Consult with financial advisors as needed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financing Options -->
+            <div class="row g-4">
+                <!-- CareCredit -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-heartbeat me-2"></i>
+                                CareCredit
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Healthcare-focused credit card with promotional financing options.</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    No interest if paid in full within promotional period
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Accepted at many healthcare providers
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Online account management
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="https://www.carecredit.com" target="_blank" rel="noopener" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-external-link-alt me-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LightStream -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-bolt me-2"></i>
+                                LightStream
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Personal loans with competitive rates and no fees.</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Fixed-rate personal loans
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    No origination or prepayment fees
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Same-day funding available
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="https://www.lightstream.com" target="_blank" rel="noopener" 
+                               class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-external-link-alt me-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capital One -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-university me-2"></i>
+                                Capital One
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Personal loans and credit cards with various term options.</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Flexible repayment terms
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Pre-qualification available
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Mobile app management
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="https://www.capitalone.com/personal-loans/" target="_blank" rel="noopener" 
+                               class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-external-link-alt me-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prosper -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="fas fa-handshake me-2"></i>
+                                Prosper
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Peer-to-peer lending platform for personal loans.</p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Competitive interest rates
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    3 to 5-year loan terms
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Fast online application
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="https://www.prosper.com" target="_blank" rel="noopener" 
+                               class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-external-link-alt me-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="mt-5">
+                <div class="card border-0 bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-lightbulb me-2 text-warning"></i>
+                            Before You Apply
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        Compare interest rates and terms
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        Review all fees and conditions
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        Check your credit score
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        Understand repayment obligations
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        Consider alternative options
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        Seek financial advice if needed
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    Questions about medical transport services? 
+                    <a href="{{ url_for('index') }}" class="text-primary">Return to Home</a> or 
+                    <a href="{{ url_for('intake') }}" class="text-primary">Start a New Request</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
