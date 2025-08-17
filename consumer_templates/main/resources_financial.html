@@ -1,0 +1,178 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Financial Resources - SkyCareLink{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-credit-card me-2"></i>
+                        Financial Resources & Payment Options
+                    </h2>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Important Disclaimer -->
+                    <div class="alert alert-warning mb-4">
+                        <h5><i class="fas fa-exclamation-triangle me-2"></i>Important Notice</h5>
+                        <p class="mb-0">
+                            <strong>SkyCareLink does not endorse or guarantee any financial services listed below.</strong> 
+                            We provide these resources for informational purposes only. Please evaluate all terms, 
+                            rates, and conditions independently. Always consult with a financial advisor before 
+                            making major financial decisions.
+                        </p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="text-secondary mb-3">Financing Options for Medical Transport</h4>
+                            <p class="lead">
+                                Air medical transport costs can be significant. These resources may help you explore 
+                                financing options for your medical transport needs.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Financing Options -->
+                    <div class="row g-4">
+                        <!-- CareCredit -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary text-white rounded-circle p-2 me-3">
+                                            <i class="fas fa-medical-kit"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">CareCredit</h5>
+                                    </div>
+                                    <p class="card-text">
+                                        Healthcare financing credit card that can be used for medical expenses, 
+                                        including emergency medical transport services.
+                                    </p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Specialized for healthcare expenses</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Promotional financing options available</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>No annual fee</li>
+                                    </ul>
+                                    <a href="https://www.carecredit.com" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                                        Learn More <i class="fas fa-external-link-alt ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LightStream -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-info">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-info text-white rounded-circle p-2 me-3">
+                                            <i class="fas fa-bolt"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">LightStream</h5>
+                                    </div>
+                                    <p class="card-text">
+                                        Personal loans with competitive rates for qualified borrowers. 
+                                        Can be used for medical expenses and emergency healthcare needs.
+                                    </p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Competitive interest rates</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>No fees</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Fast funding available</li>
+                                    </ul>
+                                    <a href="https://www.lightstream.com" class="btn btn-outline-info" target="_blank" rel="noopener noreferrer">
+                                        Learn More <i class="fas fa-external-link-alt ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Capital One -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-success">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-success text-white rounded-circle p-2 me-3">
+                                            <i class="fas fa-university"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Capital One</h5>
+                                    </div>
+                                    <p class="card-text">
+                                        Personal loans and credit products from a major financial institution. 
+                                        Various lending options for medical and emergency expenses.
+                                    </p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Major bank reputation</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Multiple product options</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Online application process</li>
+                                    </ul>
+                                    <a href="https://www.capitalone.com/bank/personal-loans/" class="btn btn-outline-success" target="_blank" rel="noopener noreferrer">
+                                        Learn More <i class="fas fa-external-link-alt ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Prosper -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-warning">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-warning text-dark rounded-circle p-2 me-3">
+                                            <i class="fas fa-handshake"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Prosper</h5>
+                                    </div>
+                                    <p class="card-text">
+                                        Peer-to-peer lending platform offering personal loans for various purposes, 
+                                        including medical expenses and emergency healthcare costs.
+                                    </p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Peer-to-peer lending model</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Fixed rate loans</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>No prepayment penalties</li>
+                                    </ul>
+                                    <a href="https://www.prosper.com" class="btn btn-outline-warning" target="_blank" rel="noopener noreferrer">
+                                        Learn More <i class="fas fa-external-link-alt ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <h5><i class="fas fa-lightbulb me-2"></i>Additional Considerations</h5>
+                                <ul class="mb-0">
+                                    <li><strong>Insurance Coverage:</strong> Check with your insurance provider first - many policies cover emergency medical transport</li>
+                                    <li><strong>Payment Plans:</strong> Many medical transport providers offer direct payment plan options</li>
+                                    <li><strong>Medical Savings Accounts:</strong> HSA or FSA funds can often be used for medical transport expenses</li>
+                                    <li><strong>Employer Benefits:</strong> Some employers offer emergency assistance programs or flexible spending accounts</li>
+                                    <li><strong>Non-Profit Organizations:</strong> Certain charities provide assistance for medical transportation costs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="{{ url_for('home') }}" class="btn btn-primary me-3">
+                                <i class="fas fa-home me-2"></i>Return Home
+                            </a>
+                            <a href="{{ url_for('consumer_intake') }}" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>Request New Quote
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

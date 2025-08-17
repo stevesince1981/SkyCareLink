@@ -1,0 +1,289 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Terms of Service - SkyCareLink{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-file-contract me-2"></i>
+                        Terms of Service
+                    </h2>
+                    <p class="mb-0 mt-2"><small>Effective Date: {{ current_date }}</small></p>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Platform Statement -->
+                    <div class="alert alert-primary mb-4">
+                        <h5><i class="fas fa-info-circle me-2"></i>Platform Notice</h5>
+                        <p class="mb-0">
+                            <strong>SkyCareLink™ is a software platform, not a broker.</strong> 
+                            We do not arrange or provide transport, and we do not handle funds between providers and patients. 
+                            We facilitate connections between patients seeking medical transport and qualified providers.
+                        </p>
+                    </div>
+
+                    <!-- Table of Contents -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="border-bottom pb-2">Table of Contents</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="#section-1" class="text-decoration-none">1. Acceptance of Terms</a></li>
+                                        <li><a href="#section-2" class="text-decoration-none">2. Platform Services</a></li>
+                                        <li><a href="#section-3" class="text-decoration-none">3. Buy-in Terms</a></li>
+                                        <li><a href="#section-4" class="text-decoration-none">4. Performance Requirements</a></li>
+                                        <li><a href="#section-5" class="text-decoration-none">5. Commission Structure</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="#section-6" class="text-decoration-none">6. Quote Validity</a></li>
+                                        <li><a href="#section-7" class="text-decoration-none">7. After-Hours Communications</a></li>
+                                        <li><a href="#section-8" class="text-decoration-none">8. Privacy & Data</a></li>
+                                        <li><a href="#section-9" class="text-decoration-none">9. Limitation of Liability</a></li>
+                                        <li><a href="#section-10" class="text-decoration-none">10. Contact Information</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms Sections -->
+                    <div class="terms-content">
+                        <!-- Section 1: Acceptance -->
+                        <section id="section-1" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">1. Acceptance of Terms</h4>
+                            <p>
+                                By accessing or using SkyCareLink's platform, you acknowledge that you have read, 
+                                understood, and agree to be bound by these Terms of Service. If you do not agree 
+                                to these terms, you may not use our services.
+                            </p>
+                            <p>
+                                These terms apply to all users, including patients, families, healthcare providers, 
+                                medical transport operators, affiliates, and any other parties using our platform.
+                            </p>
+                        </section>
+
+                        <!-- Section 2: Platform Services -->
+                        <section id="section-2" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">2. Platform Services</h4>
+                            <p><strong>SkyCareLink provides:</strong></p>
+                            <ul>
+                                <li>A technology platform connecting patients with medical transport providers</li>
+                                <li>Quote comparison and provider evaluation tools</li>
+                                <li>Communication facilitation between parties</li>
+                                <li>Administrative support and documentation assistance</li>
+                            </ul>
+                            <p><strong>SkyCareLink does NOT:</strong></p>
+                            <ul>
+                                <li>Provide medical transport services directly</li>
+                                <li>Act as a broker or intermediary for transport arrangements</li>
+                                <li>Handle financial transactions between patients and providers</li>
+                                <li>Make medical decisions or provide medical advice</li>
+                            </ul>
+                        </section>
+
+                        <!-- Section 3: Buy-in Terms -->
+                        <section id="section-3" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">3. Buy-in Terms for Partners</h4>
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-dollar-sign me-2"></i>Financial Commitment</h6>
+                                <p>Partners participating in our network may be required to make an initial investment 
+                                or buy-in payment to access certain platform features and priority placement opportunities.</p>
+                            </div>
+                            <p><strong>Buy-in Requirements:</strong></p>
+                            <ul>
+                                <li>Initial investment amount varies by partnership level and market conditions</li>
+                                <li>Payment must be received before activation of premium platform features</li>
+                                <li>All buy-in investments are subject to performance requirements outlined in Section 4</li>
+                            </ul>
+                        </section>
+
+                        <!-- Section 4: Performance Requirements -->
+                        <section id="section-4" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">4. Performance Requirements & Refund Policy</h4>
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-chart-line me-2"></i>40 Qualified Opportunities Requirement</h6>
+                                <p>Partners must receive and respond to at least <strong>40 qualified transport opportunities</strong> 
+                                within their first 12 months of platform participation.</p>
+                            </div>
+                            <p><strong>Refund Policy:</strong></p>
+                            <ul>
+                                <li>If fewer than 40 qualified opportunities are provided within 12 months, 
+                                    partners are eligible for a pro-rata refund based on the shortfall</li>
+                                <li>Refund calculation: (40 - opportunities_provided) / 40 × buy_in_amount</li>
+                                <li>Refund requests must be submitted within 30 days of the 12-month anniversary</li>
+                                <li>Partners must have maintained active status and responded to opportunities in good faith</li>
+                            </ul>
+                        </section>
+
+                        <!-- Section 5: Commission Structure -->
+                        <section id="section-5" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">5. Commission Structure</h4>
+                            <p><strong>Early Adopter Benefits (Years 0-3):</strong></p>
+                            <ul>
+                                <li>1% commission reduction for partners joining during initial growth phase</li>
+                                <li>Standard commission rates apply after the introductory period</li>
+                                <li>Commission structure subject to market conditions and platform growth</li>
+                            </ul>
+                            <p>Detailed commission schedules are provided separately and may be updated annually 
+                            with 60 days written notice.</p>
+                        </section>
+
+                        <!-- Section 6: Quote Validity -->
+                        <section id="section-6" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">6. Quote Validity Period</h4>
+                            <div class="alert alert-success">
+                                <h6><i class="fas fa-clock me-2"></i>7-Day Quote Validity</h6>
+                                <p>All quotes provided through the SkyCareLink platform are valid for 
+                                <strong>7 calendar days</strong> from the date of submission.</p>
+                            </div>
+                            <p><strong>Important Notes:</strong></p>
+                            <ul>
+                                <li>Quotes may be subject to change based on market conditions, fuel costs, 
+                                    or operational requirements</li>
+                                <li>Emergency or critical transport requests may have different validity periods</li>
+                                <li>Partners are encouraged to honor quoted prices during the validity period</li>
+                                <li>Patients should confirm pricing before finalizing any transport arrangements</li>
+                            </ul>
+                        </section>
+
+                        <!-- Section 7: After-Hours Communications -->
+                        <section id="section-7" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">7. After-Hours Communications Consent</h4>
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-phone me-2"></i>Emergency Communication Permission</h6>
+                                <p>By using SkyCareLink, you consent to being contacted outside normal business hours 
+                                for critical medical transport needs and emergency situations.</p>
+                            </div>
+                            <p><strong>After-hours contact includes:</strong></p>
+                            <ul>
+                                <li>Phone calls for urgent transport requests</li>
+                                <li>Text messages for time-sensitive updates</li>
+                                <li>Email notifications for critical status changes</li>
+                                <li>Emergency escalation communications</li>
+                            </ul>
+                            <p>You may opt out of non-emergency after-hours communications through your account settings, 
+                            but emergency transport coordination may still require immediate contact.</p>
+                        </section>
+
+                        <!-- Section 8: Privacy & Data -->
+                        <section id="section-8" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">8. Privacy & Data Protection</h4>
+                            <p>SkyCareLink is committed to protecting your privacy and maintaining HIPAA compliance 
+                            where applicable. Our data practices include:</p>
+                            <ul>
+                                <li>Secure handling of personal and medical information</li>
+                                <li>Limited data retention periods for sensitive information</li>
+                                <li>Encryption of all data transmissions</li>
+                                <li>Restricted access to authorized personnel only</li>
+                            </ul>
+                            <p>For complete details on our data practices, please review our Privacy Policy.</p>
+                        </section>
+
+                        <!-- Section 9: Limitation of Liability -->
+                        <section id="section-9" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">9. Limitation of Liability</h4>
+                            <p><strong>Platform Limitations:</strong></p>
+                            <ul>
+                                <li>SkyCareLink serves as a technology platform and is not responsible for the 
+                                    actions, decisions, or services provided by medical transport operators</li>
+                                <li>Users are responsible for verifying provider credentials, licensing, and insurance coverage</li>
+                                <li>SkyCareLink does not guarantee service availability, response times, or outcomes</li>
+                                <li>Our liability is limited to the maximum extent permitted by applicable law</li>
+                            </ul>
+                        </section>
+
+                        <!-- Section 10: Contact Information -->
+                        <section id="section-10" class="mb-4">
+                            <h4 class="text-primary border-bottom pb-2">10. Contact Information</h4>
+                            <p>For questions about these Terms of Service or our platform:</p>
+                            <address>
+                                <strong>SkyCareLink Support</strong><br>
+                                Email: support@skycarelink.com<br>
+                                Phone: 1-800-SKYCARE (1-800-759-2273)<br>
+                                Business Hours: Monday-Friday, 8:00 AM - 6:00 PM EST<br>
+                                Emergency Line: Available 24/7 for urgent transport coordination
+                            </address>
+                        </section>
+                    </div>
+
+                    <!-- Acceptance Section -->
+                    <div class="mt-5 p-4 bg-light rounded">
+                        <h5 class="text-dark">Terms Acknowledgment</h5>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="terms-acceptance" onchange="toggleAcceptButton()">
+                            <label for="terms-acceptance" class="form-check-label">
+                                <strong>I understand and accept these Terms of Service.</strong>
+                                I acknowledge that I have read and understood all sections, including buy-in terms, 
+                                performance requirements, refund policies, and after-hours communication permissions.
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-success btn-lg" id="accept-terms-btn" disabled onclick="acceptTerms()">
+                            <i class="fas fa-check-circle me-2"></i>I Accept These Terms
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-3" onclick="window.history.back()">
+                            <i class="fas fa-arrow-left me-2"></i>Go Back
+                        </button>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="{{ url_for('resources_financial') }}" class="btn btn-outline-primary me-3">
+                                <i class="fas fa-credit-card me-2"></i>Financial Resources
+                            </a>
+                            <a href="{{ url_for('home') }}" class="btn btn-primary">
+                                <i class="fas fa-home me-2"></i>Return Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Terms Acceptance -->
+<script>
+function toggleAcceptButton() {
+    const checkbox = document.getElementById('terms-acceptance');
+    const button = document.getElementById('accept-terms-btn');
+    button.disabled = !checkbox.checked;
+}
+
+function acceptTerms() {
+    const timestamp = new Date().toISOString();
+    
+    // Store acceptance in session/localStorage for demo purposes
+    if (localStorage) {
+        localStorage.setItem('terms_accepted', timestamp);
+        localStorage.setItem('terms_acceptance_ip', 'user_ip_placeholder');
+    }
+    
+    // Show confirmation
+    alert('Terms of Service accepted successfully!\n\nTimestamp: ' + timestamp + '\n\nYou may now proceed to use all platform features.');
+    
+    // Redirect to home or previous page
+    window.location.href = '{{ url_for("home") }}';
+}
+
+// Auto-check if terms were previously accepted
+document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage && localStorage.getItem('terms_accepted')) {
+        const acceptedDate = new Date(localStorage.getItem('terms_accepted'));
+        const daysAgo = Math.floor((new Date() - acceptedDate) / (1000 * 60 * 60 * 24));
+        
+        if (daysAgo < 365) { // Terms valid for 1 year
+            document.getElementById('terms-acceptance').checked = true;
+            toggleAcceptButton();
+        }
+    }
+});
+</script>
+{% endblock %}
