@@ -49,7 +49,8 @@ Preferred communication style: Simple, everyday language.
 - **Professional Statistics**: Updated network messaging to focus on growth ambition rather than specific partner counts - "Building the Largest Network" approach
 - **Complete Quote Request System**: Implemented `/quotes/new` with all specified fields including service type, severity levels 1-3, flight dates, location fields, contact information, COVID status, and medical needs
 - **Database Integration**: Added Quote model with equipment flags that auto-map from severity levels (L1→monitor, L2→monitor+stretcher, L3→monitor+stretcher+oxygen)  
-- **Contact Name Replacement**: Updated pancake Step 4 from "Patient First Name" to "Contact Name" for better workflow alignment
+- **Form Structure Reorganization**: Updated pancake Step 4 with "Contact Name" and "Relation to Patient" fields, moved medical equipment and specialized care sections from Step 4 to Step 2
+- **Medical Equipment Positioning**: Relocated "Required Medical Equipment" and "Specialized Care Needs" sections to Step 2, positioned below severity levels for logical workflow progression
 - **Form Validation**: Complete client/server validation, PHI warning banners, return flight toggle, and diagnostic endpoints for testing
 
 ## System Architecture

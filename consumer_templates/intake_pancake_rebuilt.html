@@ -335,6 +335,75 @@
                                             <span class="badge bg-danger">Full life support</span>
                                         </div>
                                     </div>
+
+                                    <!-- Medical Equipment -->
+                                    <div class="mt-3">
+                                        <h6 class="mb-2">
+                                            <i class="fas fa-medical-case me-2"></i>Required Medical Equipment
+                                            <small class="text-muted">(Select all that apply)</small>
+                                        </h6>
+                                        <div class="equipment-grid" id="equipmentGrid">
+                                            <!-- Equipment options will be populated based on severity -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Niche Markets -->
+                                    <div class="mt-3">
+                                        <h6 class="mb-2">
+                                            <i class="fas fa-tags me-2"></i>Specialized Care Needs
+                                            <small class="text-muted">(Select if applicable)</small>
+                                        </h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="pediatric" id="nichePediatric">
+                                                    <label class="form-check-label" for="nichePediatric">Pediatric</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="nicu" id="nicheNicu">
+                                                    <label class="form-check-label" for="nicheNicu">NICU</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="cardiac" id="nicheCardiac">
+                                                    <label class="form-check-label" for="nicheCardiac">Cardiac</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="neurological" id="nicheNeurological">
+                                                    <label class="form-check-label" for="nicheNeurological">Neurological</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="trauma" id="nicheTrauma">
+                                                    <label class="form-check-label" for="nicheTrauma">Trauma</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="transplant" id="nicheTransplant">
+                                                    <label class="form-check-label" for="nicheTransplant">Organ Transport</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="bariatric" id="nicheBariatric">
+                                                    <label class="form-check-label" for="nicheBariatric">Bariatric</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="infectious" id="nicheInfectious">
+                                                    <label class="form-check-label" for="nicheInfectious">Infectious Disease</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     
                                     <div class="pancake-navigation">
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
@@ -489,9 +558,9 @@
                                                    placeholder="Primary contact name" required>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label small">Patient Last Name</label>
-                                            <input type="text" class="form-control form-control-sm compact-input" name="patient_last_name" id="patientLastName" 
-                                                   placeholder="Last name" required>
+                                            <label class="form-label small">Relation to Patient</label>
+                                            <input type="text" class="form-control form-control-sm compact-input" name="relation_to_patient" id="relationToPatient" 
+                                                   placeholder="e.g., Mother, Father, Guardian" required>
                                         </div>
 
                                         <!-- Gender -->
@@ -533,75 +602,6 @@
                                                 <option value="250-300">250-300 lbs</option>
                                                 <option value="over-300">Over 300 lbs</option>
                                             </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Medical Equipment -->
-                                    <div class="mt-3">
-                                        <h6 class="mb-2">
-                                            <i class="fas fa-medical-case me-2"></i>Required Medical Equipment
-                                            <small class="text-muted">(Select all that apply)</small>
-                                        </h6>
-                                        <div class="equipment-grid" id="equipmentGrid">
-                                            <!-- Equipment options will be populated based on severity -->
-                                        </div>
-                                    </div>
-
-                                    <!-- Niche Markets -->
-                                    <div class="mt-3">
-                                        <h6 class="mb-2">
-                                            <i class="fas fa-tags me-2"></i>Specialized Care Needs
-                                            <small class="text-muted">(Select if applicable)</small>
-                                        </h6>
-                                        <div class="row g-2">
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="pediatric" id="nichePediatric">
-                                                    <label class="form-check-label" for="nichePediatric">Pediatric</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="nicu" id="nicheNicu">
-                                                    <label class="form-check-label" for="nicheNicu">NICU</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="cardiac" id="nicheCardiac">
-                                                    <label class="form-check-label" for="nicheCardiac">Cardiac</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="neurological" id="nicheNeurological">
-                                                    <label class="form-check-label" for="nicheNeurological">Neurological</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="trauma" id="nicheTrauma">
-                                                    <label class="form-check-label" for="nicheTrauma">Trauma</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="transplant" id="nicheTransplant">
-                                                    <label class="form-check-label" for="nicheTransplant">Organ Transport</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="bariatric" id="nicheBariatric">
-                                                    <label class="form-check-label" for="nicheBariatric">Bariatric</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="infectious" id="nicheInfectious">
-                                                    <label class="form-check-label" for="nicheInfectious">Infectious Disease</label>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
