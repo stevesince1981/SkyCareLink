@@ -2242,6 +2242,16 @@
       "ip": "172.31.105.2",
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
       "details": {}
+    },
+    {
+      "timestamp": "2025-08-17T05:27:25.164833",
+      "user": "unknown",
+      "type": "password_reset_request",
+      "ip": "172.31.105.2",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "email": null
+      }
     }
   ]
 }
