@@ -371,42 +371,60 @@
     }
 }
 
-/* Equipment Pills Styling */
-.equipment-pills {
-    display: flex;
-    flex-wrap: wrap;
+/* Equipment Compact Grid Styling */
+.equipment-compact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 8px;
     margin: 0.5rem 0;
 }
 
-.equipment-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 12px;
+.equipment-compact-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 10px;
     background: #f8f9fa;
     border: 1px solid #dee2e6;
-    border-radius: 20px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 13px;
-    line-height: 1.2;
-    white-space: nowrap;
+    min-height: 50px;
 }
 
-.equipment-pill:hover {
+.equipment-compact-card:hover {
     background: #e9ecef;
     border-color: #adb5bd;
 }
 
-.equipment-pill.selected {
+.equipment-compact-card.selected {
     background: #d1ecf1;
     border-color: #17a2b8;
     color: #0c5460;
 }
 
-.equipment-pill .form-check-input {
-    margin-right: 6px;
-    margin-top: 0;
+.equipment-compact-card .form-check-input {
+    margin-right: 8px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.equipment-compact-card .equipment-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.equipment-compact-card .equipment-name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.equipment-compact-card .equipment-description {
+    font-size: 11px;
+    color: #6c757d;
+    line-height: 1.3;
 }
 </style>
 
@@ -501,11 +519,11 @@
                                         </div>
                                     </div>
 
-                                    <!-- Medical Equipment (pill-style) -->
+                                    <!-- Medical Equipment (compact grid) -->
                                     <div class="mb-2">
                                         <h6 class="small mb-2">Equipment <small class="text-muted">(auto-selected, click to customize)</small></h6>
-                                        <div class="equipment-pills" id="equipmentGrid">
-                                            <!-- Equipment options will be populated as pills -->
+                                        <div class="equipment-compact-grid" id="equipmentGrid">
+                                            <!-- Equipment options will be populated as compact cards -->
                                         </div>
                                     </div>
 
@@ -1008,17 +1026,20 @@ function populateEquipment(severity) {
     equipmentGrid.innerHTML = '';
     
     allEquipmentList.forEach(equipment => {
-        const equipmentPill = document.createElement('div');
-        equipmentPill.className = 'equipment-pill';
-        equipmentPill.setAttribute('data-equipment', equipment.id);
-        equipmentPill.onclick = () => toggleEquipment(equipment.id);
+        const equipmentCard = document.createElement('div');
+        equipmentCard.className = 'equipment-compact-card';
+        equipmentCard.setAttribute('data-equipment', equipment.id);
+        equipmentCard.onclick = () => toggleEquipment(equipment.id);
         
-        equipmentPill.innerHTML = `
+        equipmentCard.innerHTML = `
             <input class="form-check-input" type="checkbox" id="eq_${equipment.id}" name="equipment" value="${equipment.id}">
-            <span>${equipment.name}</span>
+            <div class="equipment-content">
+                <div class="equipment-name">${equipment.name}</div>
+                <div class="equipment-description">${equipment.description}</div>
+            </div>
         `;
         
-        equipmentGrid.appendChild(equipmentPill);
+        equipmentGrid.appendChild(equipmentCard);
     });
     
     // Auto-select recommended equipment based on severity level (but allow user to modify)
