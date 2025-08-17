@@ -11,11 +11,11 @@
 }
 
 .pancake-step {
-    border: 2px solid #e3f2fd;
-    border-radius: 12px;
-    margin-bottom: 1rem;
+    border: 1px solid #e3f2fd;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
     background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
 }
 
@@ -35,10 +35,11 @@
 }
 
 .pancake-header {
-    padding: 1rem 1.5rem;
+    padding: 0.5rem 0.75rem;
     cursor: pointer;
     border-bottom: 1px solid transparent;
     transition: all 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .pancake-step.active .pancake-header {
@@ -55,7 +56,7 @@
 }
 
 .pancake-content {
-    padding: 1.5rem;
+    padding: 0.75rem;
     display: none;
 }
 
@@ -68,14 +69,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: #1976d2;
     color: white;
     font-weight: bold;
-    margin-right: 0.75rem;
-    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
 }
 
 .pancake-step.completed .step-number {
@@ -95,13 +96,15 @@
 }
 
 .service-card, .severity-card {
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 1.25rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 0.5rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    height: 100%;
+    height: auto;
+    min-height: 90px;
+    font-size: 0.9rem;
 }
 
 .service-card:hover, .severity-card:hover {
@@ -125,8 +128,8 @@
 
 .severity-card {
     flex: 1;
-    min-height: 180px;
-    max-width: 200px;
+    min-height: 110px;
+    max-width: 180px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -137,8 +140,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
     border-top: 1px solid #e0e0e0;
 }
 
@@ -284,7 +287,7 @@
                                     
                                     <div class="pancake-navigation">
                                         <div></div>
-                                        <button type="button" class="btn btn-primary" id="nextStep1" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep1" onclick="nextStep()" disabled>
                                             Next: Patient Severity <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -327,10 +330,10 @@
                                     </div>
                                     
                                     <div class="pancake-navigation">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-primary" id="nextStep2" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep2" onclick="nextStep()" disabled>
                                             Next: Locations <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -448,10 +451,10 @@
                                     </div>
                                     
                                     <div class="pancake-navigation">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-primary" id="nextStep3" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep3" onclick="nextStep()" disabled>
                                             Next: Patient Info <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -606,10 +609,10 @@
                                     </div>
                                     
                                     <div class="pancake-navigation">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-primary" id="nextStep4" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep4" onclick="nextStep()" disabled>
                                             Next: Review & Submit <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -654,10 +657,10 @@
                                     </div>
                                     
                                     <div class="pancake-navigation">
-                                        <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="submit" class="btn btn-success btn-lg" id="submitRequest" disabled>
+                                        <button type="submit" class="btn btn-success btn-sm" id="submitRequest" disabled>
                                             <i class="fas fa-paper-plane me-2"></i>Submit Quote Request
                                         </button>
                                     </div>
