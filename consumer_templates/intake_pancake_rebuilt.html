@@ -527,16 +527,24 @@
                                         </div>
                                         
                                         <div class="col-md-6">
+                                            <label class="form-label small">&nbsp;</label> <!-- Spacer to align with flight date field -->
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="return_flight" id="returnFlight" onchange="toggleReturnDate()">
                                                 <label class="form-check-label" for="returnFlight">
                                                     Return flight needed?
                                                 </label>
                                             </div>
-                                            <div id="returnDateContainer" style="display: none;" class="mt-2">
-                                                <label class="form-label small">Return Flight Date</label>
-                                                <input type="date" class="form-control form-control-sm compact-input" name="return_date" id="returnDate">
-                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Return Date Row (appears when checkbox checked) -->
+                                    <div class="row g-2" id="returnDateContainer" style="display: none;">
+                                        <div class="col-md-6">
+                                            <!-- Empty column to align with flight date -->
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small">Return Flight Date</label>
+                                            <input type="date" class="form-control form-control-sm compact-input" name="return_date" id="returnDate">
                                         </div>
                                     </div>
 
