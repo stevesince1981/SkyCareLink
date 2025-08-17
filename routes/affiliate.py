@@ -65,7 +65,10 @@ def provide_quote(quote_ref):
         db.session.commit()
         
         # Send notifications to caller
-        send_quote_ready_notifications(quote)
+        try:
+            send_quote_ready_notifications(quote)
+        except Exception as e:
+            logger.error(f"Failed to send quote ready notifications: {e}")
         
         logger.info(f"Quote submitted for {quote_ref} by {provider_name}")
         flash('Quote submitted successfully! The customer will be notified.', 'success')
@@ -126,16 +129,16 @@ def send_affiliate_quote_request(quote):
         from_location = f"{quote.from_city}, {quote.from_state}" if quote.from_city and quote.from_state else "Location TBD"
         to_location = f"{quote.to_city}, {quote.to_state}" if quote.to_city and quote.to_state else "Destination TBD"
         
-        # Build quote URL
-        quote_url = f"{request.url_root}affiliate/quote/{quote.reference_number}"
+        # Build quote URL - fix field name
+        quote_url = f"{request.url_root}affiliate/quote/{quote.ref_id}"
         
         # Format flight date
         flight_date_str = quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else "TBD"
         
-        # Send email notification
+        # Send email notification - fix field names
         success = email_service.send_affiliate_new_quote(
             affiliate_email=affiliate_email,
-            quote_ref=quote.reference_number,
+            quote_ref=quote.ref_id,
             flight_date=flight_date_str,
             from_location=from_location,
             to_location=to_location,
@@ -145,9 +148,9 @@ def send_affiliate_quote_request(quote):
         if success:
             quote.affiliate_notified_at = datetime.utcnow()
             db.session.commit()
-            logger.info(f"Affiliate notification sent for quote {quote.reference_number}")
+            logger.info(f"Affiliate notification sent for quote {quote.ref_id}")
         else:
-            logger.error(f"Failed to send affiliate notification for quote {quote.reference_number}")
+            logger.error(f"Failed to send affiliate notification for quote {quote.ref_id}")
             
         return success
         
@@ -158,8 +161,8 @@ def send_affiliate_quote_request(quote):
 def send_quote_ready_notifications(quote):
     """Send quote ready notifications to caller via email and SMS"""
     try:
-        # Build results URL
-        results_url = f"{request.url_root}quotes/results/{quote.reference_number}"
+        # Build results URL - fix field name
+        results_url = f"{request.url_root}quotes/results/{quote.ref_id}"
         
         # Format price
         formatted_price = f"${quote.quoted_price:,.2f}" if quote.quoted_price else "Price TBD"
@@ -168,38 +171,173 @@ def send_quote_ready_notifications(quote):
         if quote.contact_email:
             email_success = email_service.send_caller_quote_ready(
                 caller_email=quote.contact_email,
-                quote_ref=quote.reference_number,
+                quote_ref=quote.ref_id,
                 provider_name=quote.provider_name or "Your Provider",
-                price=formatted_price,
+                quoted_price=formatted_price,
                 results_url=results_url
             )
-            
-            if email_success:
-                logger.info(f"Quote ready email sent to {quote.contact_email}")
-            else:
-                logger.error(f"Failed to send quote ready email to {quote.contact_email}")
+        else:
+            email_success = False
         
-        # Send SMS notification if phone number provided
+        # Send SMS notification
         if quote.contact_phone:
-            sms_success = sms_service.send_quote_ready_sms(
-                to_phone=quote.contact_phone,
-                quote_ref=quote.reference_number,
-                price=formatted_price,
-                provider_name=quote.provider_name,
-                results_url=results_url
-            )
-            
-            if sms_success:
-                logger.info(f"Quote ready SMS sent to {quote.contact_phone}")
+            sms_message = f"SkyCareLink: Your quote is ready! ${quote.quoted_price:,.0f} from {quote.provider_name or 'provider'}. View details: {results_url}"
+            sms_success = sms_service.send_sms(quote.contact_phone, sms_message)
+        else:
+            sms_success = False
         
-        # Update quote status
-        quote.caller_notified_at = datetime.utcnow()
-        db.session.commit()
+        logger.info(f"Quote ready notifications sent for {quote.ref_id} - Email: {email_success}, SMS: {sms_success}")
+        return email_success or sms_success
         
     except Exception as e:
         logger.error(f"Error sending quote ready notifications: {str(e)}")
+        return False
 
 def send_booking_confirmed_notifications(quote):
+    """Send booking confirmation notifications to caller"""
+    try:
+        # Build results URL
+        results_url = f"{request.url_root}quotes/results/{quote.ref_id}"
+        
+        # Format price
+        formatted_price = f"${quote.quoted_price:,.2f}" if quote.quoted_price else "Price TBD"
+        
+        # Send email notification
+        if quote.contact_email:
+            email_success = email_service.send_caller_booking_confirmed(
+                caller_email=quote.contact_email,
+                booking_reference=quote.booking_reference or quote.ref_id,
+                provider_name=quote.provider_name or "Your Provider",
+                quoted_price=formatted_price,
+                flight_date=quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else "TBD"
+            )
+        else:
+            email_success = False
+        
+        # Send SMS notification
+        if quote.contact_phone:
+            sms_message = f"SkyCareLink: Booking confirmed! Ref: {quote.booking_reference or quote.ref_id}. {quote.provider_name or 'Provider'} will contact you with flight details."
+            sms_success = sms_service.send_sms(quote.contact_phone, sms_message)
+        else:
+            sms_success = False
+        
+        logger.info(f"Booking confirmation sent for {quote.ref_id} - Email: {email_success}, SMS: {sms_success}")
+        return email_success or sms_success
+        
+    except Exception as e:
+        logger.error(f"Error sending booking confirmation: {str(e)}")
+        return False
+
+# Call Center Options Management for IVR Integration
+@affiliate_bp.route('/call-center-settings', methods=['GET', 'POST'])
+def call_center_settings():
+    """Affiliate call center configuration for IVR routing"""
+    # This would typically require affiliate authentication
+    # For demo purposes, we'll use session-based simple auth
+    
+    if request.method == 'GET':
+        # Load existing settings (in production, from database)
+        settings = session.get('affiliate_call_center_settings', {
+            'day_phone': '',
+            'after_hours_phone': '',
+            'business_hours_start': 8,
+            'business_hours_end': 18,
+            'timezone': 'EST',
+            'accepts_level_1': True,
+            'accepts_level_2': True,
+            'accepts_level_3': False,
+            'ivr_consent': False,
+            'max_concurrent_calls': 2
+        })
+        
+        return render_template('affiliate_call_center_settings.html', settings=settings)
+    
+    # Handle POST submission
+    try:
+        settings = {
+            'day_phone': request.form.get('day_phone', '').strip(),
+            'after_hours_phone': request.form.get('after_hours_phone', '').strip(),
+            'business_hours_start': int(request.form.get('business_hours_start', 8)),
+            'business_hours_end': int(request.form.get('business_hours_end', 18)),
+            'timezone': request.form.get('timezone', 'EST'),
+            'accepts_level_1': 'accepts_level_1' in request.form,
+            'accepts_level_2': 'accepts_level_2' in request.form,
+            'accepts_level_3': 'accepts_level_3' in request.form,
+            'ivr_consent': 'ivr_consent' in request.form,
+            'max_concurrent_calls': int(request.form.get('max_concurrent_calls', 2))
+        }
+        
+        # Basic validation
+        if not settings['day_phone']:
+            flash('Day-time phone number is required.', 'error')
+            return render_template('affiliate_call_center_settings.html', settings=settings)
+        
+        if not (settings['accepts_level_1'] or settings['accepts_level_2'] or settings['accepts_level_3']):
+            flash('You must accept at least one severity level.', 'error')
+            return render_template('affiliate_call_center_settings.html', settings=settings)
+        
+        # Store settings (in production, save to database)
+        session['affiliate_call_center_settings'] = settings
+        
+        flash('Call center settings updated successfully!', 'success')
+        logger.info(f"Call center settings updated: {settings}")
+        
+        return redirect(url_for('affiliate.call_center_settings'))
+        
+    except ValueError as e:
+        flash('Invalid input values. Please check your entries.', 'error')
+        return render_template('affiliate_call_center_settings.html', settings=request.form)
+    except Exception as e:
+        logger.error(f"Error updating call center settings: {str(e)}")
+        flash('An error occurred while updating settings.', 'error')
+        return render_template('affiliate_call_center_settings.html', settings=request.form)
+
+def get_available_affiliates_for_ivr(severity_level, origin_location=None):
+    """Get list of affiliates available for IVR routing based on criteria"""
+    try:
+        # In production, this would query the actual affiliate database
+        # with proper geographic matching and real-time availability
+        
+        # For demo, use session-stored settings
+        settings = session.get('affiliate_call_center_settings', {})
+        
+        if not settings.get('ivr_consent'):
+            return []
+        
+        # Check severity level acceptance
+        level_key = f'accepts_level_{severity_level}'
+        if not settings.get(level_key, False):
+            return []
+        
+        # Check business hours
+        from datetime import datetime
+        now = datetime.now()
+        current_hour = now.hour
+        
+        is_business_hours = (
+            settings.get('business_hours_start', 8) <= current_hour < settings.get('business_hours_end', 18)
+            and now.weekday() < 5  # Monday-Friday
+        )
+        
+        phone_number = settings.get('day_phone' if is_business_hours else 'after_hours_phone')
+        
+        if not phone_number:
+            return []
+        
+        return [{
+            'affiliate_id': 'demo_affiliate_1',
+            'name': 'Demo Medical Transport LLC',
+            'phone': phone_number,
+            'max_concurrent': settings.get('max_concurrent_calls', 2),
+            'severity_levels': [
+                level for level in [1, 2, 3] 
+                if settings.get(f'accepts_level_{level}', False)
+            ]
+        }]
+        
+    except Exception as e:
+        logger.error(f"Error getting available affiliates for IVR: {str(e)}")
+        return []
     """Send booking confirmation notifications to caller via email and SMS"""
     try:
         # Build booking URL (reuse results page)

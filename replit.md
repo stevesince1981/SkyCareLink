@@ -52,6 +52,11 @@ Preferred communication style: Simple, everyday language.
 - **Form Structure Reorganization**: Updated pancake Step 4 with "Contact Name" and "Relation to Patient" fields, moved medical equipment and specialized care sections from Step 4 to Step 2
 - **Medical Equipment Positioning**: Relocated "Required Medical Equipment" and "Specialized Care Needs" sections to Step 2, positioned below severity levels for logical workflow progression
 - **Form Validation**: Complete client/server validation, PHI warning banners, return flight toggle, and diagnostic endpoints for testing
+- **AI IVR System Complete**: Implemented full Twilio Voice webhook system with greeting → date → origin/dest → severity → ground transport → contact → 3-affiliate DTMF routing → fallback ticket creation
+- **Call Center Management**: Added affiliate call center settings page with phone numbers, business hours, severity level acceptance (L1/L2/L3), IVR consent, and concurrent call limits
+- **IVR Feature Flag**: Complete ENABLE_IVR feature flag system with graceful fallbacks when disabled or Twilio credentials unavailable
+- **Enhanced Notifications**: Fixed affiliate notification system with proper email/SMS integration and quote management workflow
+- **Static File Fixes**: Resolved all static file serving issues, compact CSS and UI.js working properly across both /static/ and /consumer_static/ paths
 
 ## System Architecture
 

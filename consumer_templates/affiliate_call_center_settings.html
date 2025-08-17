@@ -1,0 +1,211 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Call Center Settings - SkyCareLink Affiliate{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-phone me-2"></i>Call Center Settings</h4>
+                    <small>Configure your phone numbers and availability for IVR call routing</small>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        
+                        <!-- Phone Numbers Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">Phone Numbers</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="day_phone" class="form-label">Day-time Phone Number <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" id="day_phone" name="day_phone" 
+                                           value="{{ settings.day_phone }}" 
+                                           placeholder="(555) 123-4567" required>
+                                    <div class="form-text">Primary number for business hours</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="after_hours_phone" class="form-label">After-Hours Phone Number</label>
+                                    <input type="tel" class="form-control" id="after_hours_phone" name="after_hours_phone" 
+                                           value="{{ settings.after_hours_phone }}" 
+                                           placeholder="(555) 987-6543">
+                                    <div class="form-text">Optional number for after-hours calls</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Hours Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">Business Hours</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="business_hours_start" class="form-label">Start Time</label>
+                                    <select class="form-select" id="business_hours_start" name="business_hours_start">
+                                        {% for hour in range(6, 13) %}
+                                        <option value="{{ hour }}" {% if settings.business_hours_start == hour %}selected{% endif %}>
+                                            {{ hour }}:00 {{ 'AM' if hour < 12 else 'PM' }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="business_hours_end" class="form-label">End Time</label>
+                                    <select class="form-select" id="business_hours_end" name="business_hours_end">
+                                        {% for hour in range(14, 22) %}
+                                        <option value="{{ hour }}" {% if settings.business_hours_end == hour %}selected{% endif %}>
+                                            {{ hour - 12 if hour > 12 else hour }}:00 {{ 'PM' if hour >= 12 else 'AM' }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="timezone" class="form-label">Timezone</label>
+                                    <select class="form-select" id="timezone" name="timezone">
+                                        <option value="EST" {% if settings.timezone == 'EST' %}selected{% endif %}>Eastern Time</option>
+                                        <option value="CST" {% if settings.timezone == 'CST' %}selected{% endif %}>Central Time</option>
+                                        <option value="MST" {% if settings.timezone == 'MST' %}selected{% endif %}>Mountain Time</option>
+                                        <option value="PST" {% if settings.timezone == 'PST' %}selected{% endif %}>Pacific Time</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Severity Level Acceptance -->
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">Accepted Severity Levels</h5>
+                            <div class="form-text mb-3">Select which patient condition levels your team can handle</div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="accepts_level_1" name="accepts_level_1" 
+                                               {% if settings.accepts_level_1 %}checked{% endif %}>
+                                        <label class="form-check-label" for="accepts_level_1">
+                                            <strong>Level 1</strong><br>
+                                            <small class="text-muted">Stable conditions</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="accepts_level_2" name="accepts_level_2" 
+                                               {% if settings.accepts_level_2 %}checked{% endif %}>
+                                        <label class="form-check-label" for="accepts_level_2">
+                                            <strong>Level 2</strong><br>
+                                            <small class="text-muted">Moderate care needs</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="accepts_level_3" name="accepts_level_3" 
+                                               {% if settings.accepts_level_3 %}checked{% endif %}>
+                                        <label class="form-check-label" for="accepts_level_3">
+                                            <strong>Level 3</strong><br>
+                                            <small class="text-muted">Critical care</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IVR Settings -->
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3">IVR Call Routing</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ivr_consent" name="ivr_consent" 
+                                               {% if settings.ivr_consent %}checked{% endif %}>
+                                        <label class="form-check-label" for="ivr_consent">
+                                            <strong>Enable IVR Call Routing</strong><br>
+                                            <small class="text-muted">Allow SkyCareLink to route calls directly to your team</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="max_concurrent_calls" class="form-label">Max Concurrent Calls</label>
+                                    <select class="form-select" id="max_concurrent_calls" name="max_concurrent_calls">
+                                        {% for num in range(1, 6) %}
+                                        <option value="{{ num }}" {% if settings.max_concurrent_calls == num %}selected{% endif %}>
+                                            {{ num }} {{ 'call' if num == 1 else 'calls' }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">Maximum simultaneous IVR connections</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IVR Information Box -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>How IVR Call Routing Works</h6>
+                            <ul class="mb-0">
+                                <li>Customers call our main number and speak with our AI assistant</li>
+                                <li>After collecting transport details, the system routes calls to available providers</li>
+                                <li>You'll hear: "SkyCareLink connecting a medical transport request. Press 1 to accept, 2 to decline."</li>
+                                <li>Pressing 1 connects you directly with the customer for quote discussion</li>
+                                <li>If you decline or don't respond, the call routes to the next available provider</li>
+                            </ul>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Current Settings Display -->
+            {% if settings.ivr_consent %}
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-check-circle me-2"></i>IVR Status: Active</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <strong>Active Phone:</strong> {{ settings.day_phone }}<br>
+                            <strong>Business Hours:</strong> {{ settings.business_hours_start }}:00 - {{ settings.business_hours_end }}:00 {{ settings.timezone }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Accepts:</strong> 
+                            {% set levels = [] %}
+                            {% if settings.accepts_level_1 %}{% set _ = levels.append('Level 1') %}{% endif %}
+                            {% if settings.accepts_level_2 %}{% set _ = levels.append('Level 2') %}{% endif %}
+                            {% if settings.accepts_level_3 %}{% set _ = levels.append('Level 3') %}{% endif %}
+                            {{ levels | join(', ') }}<br>
+                            <strong>Max Calls:</strong> {{ settings.max_concurrent_calls }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-format phone numbers
+    const phoneInputs = document.querySelectorAll('input[type="tel"]');
+    phoneInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6,10)}`;
+            } else if (value.length >= 3) {
+                value = `(${value.slice(0,3)}) ${value.slice(3)}`;
+            }
+            e.target.value = value;
+        });
+    });
+});
+</script>
+{% endblock %}

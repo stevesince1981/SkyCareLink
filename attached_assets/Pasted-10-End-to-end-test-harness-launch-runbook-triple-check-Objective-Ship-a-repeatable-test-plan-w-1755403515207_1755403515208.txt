@@ -1,0 +1,74 @@
+10) End-to-end test harness & launch runbook (triple-check)
+
+Objective
+Ship a repeatable test plan with scripts that catch regressions automatically, plus a human runbook.
+
+Files
+
+tests/e2e_checklist.md (write the steps below)
+
+scripts/smoke.sh (create)
+
+scripts/check_routes.py (create, simple crawler)
+
+Implement
+
+scripts/smoke.sh (bash):
+
+curl -s -o /dev/null -w "%{http_code}" <BASE_URL>/health must be 200.
+
+POST a fake quote (use curl -L with form fields) and capture the resulting ref from redirect history.
+
+GET /quotes/results/<ref> → ensure body contains Quote Reference: <ref>.
+
+scripts/check_routes.py:
+
+Crawl ['/','/quotes/new','/affiliate/dashboard','/admin/cofounders','/resources/financial-assistance'] and assert status 200; print any non-200 with FAIL: prefix.
+
+tests/e2e_checklist.md (manual steps):
+
+Quote form: severity 1/2/3 → DB flags correct.
+
+Affiliate email arrives with button + raw link.
+
+Submit quote → caller gets “Quote Ready” (email/SMS).
+
+Confirm booking → caller gets “Booking Confirmed” (email/SMS).
+
+Call Center Options save & persist.
+
+Admin records partial & full; emails fire; timestamps recorded.
+
+Document upload: two files listed; no deletion possible.
+
+Password reset: verify email sends; post-reset notification sends; audit record exists.
+
+Add Definition of Done to the top of the checklist: “All automated scripts pass (smoke.sh, check_routes.py), and all manual checks green.”
+
+Replit Shell (run)
+
+bash scripts/smoke.sh
+python scripts/check_routes.py
+
+
+Definition of Done
+
+Both scripts exit cleanly; manual checklist green with screenshots stored (optional) in /docs/qa/.
+
+Final “one-click” acceptance (what you should ask them to report back)
+
+When each prompt is done, your team must paste back:
+
+Git diff summary (files changed/added).
+
+Screenshot of the page(s) they touched.
+
+Log excerpt showing email/SMS attempts and any fallbacks.
+
+Output of:
+
+curl -s -o /dev/null -w "%{http_code}" <BASE_URL>/health
+bash scripts/smoke.sh && python scripts/check_routes.py
+
+
+A short self-audit: which Acceptance Criteria were verified and by whom.

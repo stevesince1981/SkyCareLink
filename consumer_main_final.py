@@ -30,6 +30,11 @@ try:
         User, Niche, Affiliate, Hospital, Booking, Quote, Commission,
         AffiliateNiche, Announcement, SecurityEvent
     )
+    # Import IVR models
+    try:
+        from models.ivr import IVRCall, IVRProviderAttempt
+    except ImportError:
+        print("⚠ IVR models not available - IVR features will be limited")
     # Import new notification services
     from services.mailer import email_service
     from services.sms import sms_service
@@ -50,7 +55,16 @@ consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-ch
 if DB_AVAILABLE:
     consumer_app.register_blueprint(affiliate_bp)
     consumer_app.register_blueprint(quotes_bp)
-    print("✓ Notification services loaded successfully")
+    
+    # Register IVR blueprint
+    try:
+        from routes.ivr import ivr_bp
+        consumer_app.register_blueprint(ivr_bp)
+        print("✓ Notification services loaded successfully")
+        print("✓ IVR system registered successfully")
+    except ImportError as e:
+        print(f"⚠ IVR system not available: {e}")
+        print("✓ Notification services loaded successfully")
 
 # Performance: Enable gzip compression and cache headers
 @consumer_app.after_request
@@ -2161,8 +2175,9 @@ def consumer_intake_post():
 @consumer_app.route('/quotes/new', methods=['GET', 'POST'])
 def quotes_new():
     """New quote request flow with simplified form structure"""
+    from datetime import datetime
+    
     if request.method == 'GET':
-        from datetime import datetime
         return render_template('quotes_new.html', datetime=datetime)
     
     # Process POST submission
