@@ -2231,7 +2231,63 @@ def quotes_new():
             'quote_expiry': (datetime.now() + timedelta(days=7)).isoformat()
         }
         
-        # Store in session for demo (in production, save to database)
+        # Set equipment flags based on severity level
+        equipment_monitor = True  # All levels get monitor
+        equipment_stretcher = severity_level in [2, 3]  # Level 2 and 3 get stretcher
+        equipment_oxygen = severity_level == 3  # Only Level 3 gets oxygen
+        
+        # Parse flight date
+        try:
+            flight_date_parsed = datetime.strptime(flight_date, '%Y-%m-%d')
+            return_date_parsed = None
+            if quote_request['return_flight'] and quote_request['return_date']:
+                return_date_parsed = datetime.strptime(quote_request['return_date'], '%Y-%m-%d')
+        except ValueError:
+            flash('Invalid date format.', 'error')
+            return render_template('quotes_new.html')
+        
+        # Save to database if available
+        if DB_AVAILABLE:
+            try:
+                from models import Quote
+                
+                quote_db = Quote(
+                    ref_id=ref_id,
+                    contact_name=contact_name,
+                    contact_email=request.form.get('contact_email', '').strip(),
+                    contact_phone=request.form.get('contact_phone', '').strip(),
+                    service_type=service_type,
+                    severity_level=int(severity_level),
+                    flight_date=flight_date_parsed,
+                    return_flight=request.form.get('return_flight') == 'on',
+                    return_date=return_date_parsed,
+                    from_city=from_location['city'],
+                    from_state=from_location['state'],
+                    from_country=from_location['country'],
+                    to_city=to_location['city'],
+                    to_state=to_location['state'], 
+                    to_country=to_location['country'],
+                    covid_tested=request.form.get('covid_tested'),
+                    covid_result=request.form.get('covid_result') if request.form.get('covid_tested') == 'yes' else None,
+                    specialized_care=request.form.get('specialized_care', '').strip(),
+                    additional_medical_info=request.form.get('additional_medical_info', '').strip(),
+                    equipment_monitor=equipment_monitor,
+                    equipment_stretcher=equipment_stretcher,
+                    equipment_oxygen=equipment_oxygen,
+                    quote_expiry=datetime.now() + timedelta(days=7),
+                    status='submitted'
+                )
+                
+                db.session.add(quote_db)
+                db.session.commit()
+                
+                logging.info(f"Quote {ref_id} saved to database with equipment flags - Monitor: {equipment_monitor}, Stretcher: {equipment_stretcher}, Oxygen: {equipment_oxygen}")
+                
+            except Exception as e:
+                logging.error(f"Database save error for quote {ref_id}: {e}")
+                # Continue with session storage as fallback
+        
+        # Store in session for demo fallback
         if 'quote_requests' not in session:
             session['quote_requests'] = {}
         session['quote_requests'][ref_id] = quote_request
@@ -2253,8 +2309,48 @@ def quotes_new():
 @consumer_app.route('/quotes/results/<ref>')
 def quotes_results(ref):
     """Display quote results page"""
-    # Get quote request from session
-    quote_request = session.get('quote_requests', {}).get(ref)
+    # Try to get quote from database first
+    quote_request = None
+    
+    if DB_AVAILABLE:
+        try:
+            from models import Quote
+            quote_db = Quote.query.filter_by(ref_id=ref).first()
+            if quote_db:
+                quote_request = {
+                    'ref_id': quote_db.ref_id,
+                    'contact_name': quote_db.contact_name,
+                    'service_type': quote_db.service_type,
+                    'severity_level': quote_db.severity_level,
+                    'flight_date': quote_db.flight_date.strftime('%Y-%m-%d'),
+                    'return_flight': quote_db.return_flight,
+                    'return_date': quote_db.return_date.strftime('%Y-%m-%d') if quote_db.return_date else None,
+                    'from_location': {
+                        'city': quote_db.from_city,
+                        'state': quote_db.from_state,
+                        'country': quote_db.from_country
+                    },
+                    'to_location': {
+                        'city': quote_db.to_city,
+                        'state': quote_db.to_state,
+                        'country': quote_db.to_country
+                    },
+                    'specialized_care': quote_db.specialized_care,
+                    'quote_expiry': quote_db.quote_expiry.strftime('%Y-%m-%d'),
+                    'email': quote_db.contact_email,
+                    'phone': quote_db.contact_phone,
+                    'equipment': {
+                        'monitor': quote_db.equipment_monitor,
+                        'stretcher': quote_db.equipment_stretcher,
+                        'oxygen': quote_db.equipment_oxygen
+                    }
+                }
+        except Exception as e:
+            logging.error(f"Database query error for quote {ref}: {e}")
+    
+    # Fallback to session storage
+    if not quote_request:
+        quote_request = session.get('quote_requests', {}).get(ref)
     
     if not quote_request:
         flash('Quote request not found.', 'error')
@@ -2320,7 +2416,45 @@ def generate_sample_quotes(quote_request):
     
     return sorted(quotes, key=lambda x: x['total_price'])
 
-# Legacy route redirects (301 permanent redirects)
+# Diagnostic route for database verification (temporary)
+@consumer_app.route('/quotes/debug/<ref>')
+def quotes_debug(ref):
+    """Temporary diagnostic route to verify database equipment flags"""
+    if not DB_AVAILABLE:
+        return jsonify({'error': 'Database not available'})
+    
+    try:
+        from models import Quote
+        quote_db = Quote.query.filter_by(ref_id=ref).first()
+        
+        if not quote_db:
+            return jsonify({'error': f'Quote {ref} not found in database'})
+        
+        return jsonify({
+            'ref_id': quote_db.ref_id,
+            'contact_name': quote_db.contact_name,
+            'severity_level': quote_db.severity_level,
+            'equipment_flags': {
+                'monitor': quote_db.equipment_monitor,
+                'stretcher': quote_db.equipment_stretcher,
+                'oxygen': quote_db.equipment_oxygen
+            },
+            'expected_mapping': {
+                1: {'monitor': True, 'stretcher': False, 'oxygen': False},
+                2: {'monitor': True, 'stretcher': True, 'oxygen': False},
+                3: {'monitor': True, 'stretcher': True, 'oxygen': True}
+            },
+            'mapping_correct': {
+                'monitor': quote_db.equipment_monitor == True,
+                'stretcher': quote_db.equipment_stretcher == (quote_db.severity_level in [2, 3]),
+                'oxygen': quote_db.equipment_oxygen == (quote_db.severity_level == 3)
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Database error: {str(e)}'})
+
+# Legacy route redirects (301 permanent redirects)  
 @consumer_app.route('/request')
 @consumer_app.route('/home')
 @consumer_app.route('/request_transport')

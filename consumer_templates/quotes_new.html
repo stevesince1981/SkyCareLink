@@ -42,28 +42,42 @@
                             <label class="form-label fw-bold">Patient Severity Level <span class="text-danger">*</span></label>
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <div class="severity-card" data-value="1">
-                                        <div class="severity-number">1</div>
-                                        <h6 class="fw-bold">Level 1</h6>
-                                        <small class="text-muted">Stable<br>Basic monitoring</small>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="severity_level" id="severity1" value="1" required onchange="updateEquipmentDisplay('1')">
+                                        <label class="form-check-label severity-radio-label" for="severity1">
+                                            <div class="severity-card">
+                                                <div class="severity-number">1</div>
+                                                <h6 class="fw-bold">Level 1</h6>
+                                                <small class="text-muted">Stable<br>Basic monitoring</small>
+                                            </div>
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="severity-card" data-value="2">
-                                        <div class="severity-number">2</div>
-                                        <h6 class="fw-bold">Level 2</h6>
-                                        <small class="text-muted">Moderate<br>Enhanced care</small>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="severity_level" id="severity2" value="2" required onchange="updateEquipmentDisplay('2')">
+                                        <label class="form-check-label severity-radio-label" for="severity2">
+                                            <div class="severity-card">
+                                                <div class="severity-number">2</div>
+                                                <h6 class="fw-bold">Level 2</h6>
+                                                <small class="text-muted">Moderate<br>Enhanced care</small>
+                                            </div>
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="severity-card" data-value="3">
-                                        <div class="severity-number">3</div>
-                                        <h6 class="fw-bold">Level 3</h6>
-                                        <small class="text-muted">Critical<br>Intensive care</small>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="severity_level" id="severity3" value="3" required onchange="updateEquipmentDisplay('3')">
+                                        <label class="form-check-label severity-radio-label" for="severity3">
+                                            <div class="severity-card">
+                                                <div class="severity-number">3</div>
+                                                <h6 class="fw-bold">Level 3</h6>
+                                                <small class="text-muted">Critical<br>Intensive care</small>
+                                            </div>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="severity_level" id="severity_level" required>
                         </div>
 
                         <!-- Flight Dates -->
@@ -155,8 +169,8 @@
 
                         <div class="mb-4">
                             <label for="additional_medical_info" class="form-label fw-bold">Additional Medical Information (Optional)</label>
-                            <div class="alert alert-warning alert-sm py-1 px-2 mb-2">
-                                <small><i class="fas fa-exclamation-triangle me-1"></i>Do not include PHI—no patient names or MRNs.</small>
+                            <div class="alert alert-warning alert-sm py-2 px-3 mb-2">
+                                <strong><i class="fas fa-exclamation-triangle me-2"></i>Do not include PHI—no patient names or MRNs.</strong>
                             </div>
                             <textarea class="form-control compact-input" id="additional_medical_info" name="additional_medical_info" rows="3" placeholder="Additional medical considerations or requirements"></textarea>
                         </div>
@@ -169,18 +183,18 @@
                             </div>
                         </div>
 
-                        <!-- Contact Delivery -->
+                        <!-- Contact Information for Quote Delivery -->
                         <div class="mb-4">
                             <h6 class="fw-bold text-primary mb-3">Contact Information for Quote Delivery</h6>
                             <p class="text-muted small mb-3">Provide an email and/or a mobile number to receive your quote (SMS includes price, provider, and a secure link).</p>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="email" class="form-label">Email (Optional but encouraged)</label>
-                                    <input type="email" class="form-control compact-input" id="email" name="email" placeholder="your@email.com">
+                                    <label for="contact_email" class="form-label">Contact Email (Optional but encouraged)</label>
+                                    <input type="email" class="form-control compact-input" id="contact_email" name="contact_email" placeholder="your@email.com">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="phone" class="form-label">Phone (Optional but encouraged)</label>
-                                    <input type="tel" class="form-control compact-input" id="phone" name="phone" placeholder="(555) 123-4567">
+                                    <label for="contact_phone" class="form-label">Contact Phone (Optional but encouraged)</label>
+                                    <input type="tel" class="form-control compact-input" id="contact_phone" name="contact_phone" placeholder="(555) 123-4567">
                                 </div>
                             </div>
                         </div>
@@ -253,6 +267,23 @@
     font-size: 0.75rem;
     margin-bottom: 0.5rem;
 }
+
+.severity-radio-label {
+    cursor: pointer;
+    width: 100%;
+}
+
+.severity-radio-label .severity-card {
+    margin: 0;
+}
+
+.form-check {
+    margin: 0;
+}
+
+.form-check-input[type="radio"] {
+    display: none;
+}
 </style>
 
 <script>
@@ -273,18 +304,25 @@ document.querySelectorAll('.service-card').forEach(card => {
     });
 });
 
-// Severity level selection with equipment update
-document.querySelectorAll('.severity-card').forEach(card => {
-    card.addEventListener('click', function() {
+// Severity level radio button styling
+document.querySelectorAll('input[name="severity_level"]').forEach(radio => {
+    radio.addEventListener('change', function() {
         // Remove selected class from all cards
         document.querySelectorAll('.severity-card').forEach(c => c.classList.remove('selected'));
-        // Add selected class to clicked card
-        this.classList.add('selected');
-        // Set hidden input value
-        document.getElementById('severity_level').value = this.dataset.value;
-        
-        // Update equipment display
-        updateEquipmentDisplay(this.dataset.value);
+        // Add selected class to selected card
+        if (this.checked) {
+            this.closest('.form-check').querySelector('.severity-card').classList.add('selected');
+        }
+    });
+});
+
+// Make severity cards clickable
+document.querySelectorAll('.severity-radio-label').forEach(label => {
+    label.addEventListener('click', function() {
+        const radio = this.closest('.form-check').querySelector('input[type="radio"]');
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+        updateEquipmentDisplay(radio.value);
     });
 });
 
@@ -340,7 +378,7 @@ function showSameDayNotice() {
 // Form validation
 document.getElementById('quoteForm').addEventListener('submit', function(e) {
     const serviceType = document.getElementById('service_type').value;
-    const severityLevel = document.getElementById('severity_level').value;
+    const severityLevel = document.querySelector('input[name="severity_level"]:checked');
     
     if (!serviceType) {
         e.preventDefault();

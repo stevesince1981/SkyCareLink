@@ -149,34 +149,51 @@ class Quote(db.Model):
     __tablename__ = 'quotes'
     
     id = Column(Integer, primary_key=True)
-    booking_id = Column(Integer, ForeignKey('bookings.id'), nullable=False)
+    ref_id = Column(String(50), unique=True, nullable=False)  # QR240817XXXX format
     
-    # Provider details
-    provider_name = Column(String(200), nullable=False)
-    aircraft_type = Column(String(100))
-    eta_minutes = Column(Integer)
+    # Contact information
+    contact_name = Column(String(200), nullable=False)
+    contact_email = Column(String(120), nullable=True)
+    contact_phone = Column(String(20), nullable=True)
     
-    # Pricing
-    base_price_usd = Column(Float, nullable=False)
-    equipment_upcharge_usd = Column(Float, default=0.0)
-    urgency_upcharge_usd = Column(Float, default=0.0)
-    total_price_usd = Column(Float, nullable=False)
+    # Service details
+    service_type = Column(String(50), nullable=False)  # critical, scheduled
+    severity_level = Column(Integer, nullable=False)  # 1, 2, 3
     
-    # Capabilities and certifications
-    certifications = Column(JSON)  # Store as JSON array
-    capabilities = Column(JSON)  # Store as JSON array
+    # Flight information
+    flight_date = Column(DateTime, nullable=False)
+    return_flight = Column(Boolean, default=False)
+    return_date = Column(DateTime, nullable=True)
+    
+    # Location details
+    from_city = Column(String(100), nullable=False)
+    from_state = Column(String(100), nullable=False) 
+    from_country = Column(String(100), default='United States')
+    to_city = Column(String(100), nullable=False)
+    to_state = Column(String(100), nullable=False)
+    to_country = Column(String(100), default='United States')
+    
+    # COVID information
+    covid_tested = Column(String(10), nullable=True)  # yes, no
+    covid_result = Column(String(10), nullable=True)  # n/a, negative, positive
+    
+    # Medical information
+    specialized_care = Column(Text, nullable=True)
+    additional_medical_info = Column(Text, nullable=True)
+    
+    # Equipment flags based on severity level
+    equipment_monitor = Column(Boolean, default=False)
+    equipment_stretcher = Column(Boolean, default=False) 
+    equipment_oxygen = Column(Boolean, default=False)
     
     # Quote metadata
-    valid_until = Column(DateTime)
+    status = Column(String(30), default='submitted')  # submitted, quotes_received, selected, expired
+    quote_expiry = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    is_selected = Column(Boolean, default=False)
     is_demo_data = Column(Boolean, default=False)
     
-    # Relationships
-    booking = relationship("Booking", back_populates="quotes")
-    
     def __repr__(self):
-        return f'<Quote {self.id} - {self.provider_name}: ${self.total_price_usd}>'
+        return f'<Quote {self.ref_id} - {self.contact_name}>'
 
 class Commission(db.Model):
     """Commission tracking for completed bookings"""
