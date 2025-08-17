@@ -1,21 +1,18 @@
-/* Very faded background image with better composition */
+/* True background image - heavily dimmed with full aircraft visible */
 .hero-bg {
   background-position: center;
-  background-size: 80%;  /* Smaller size to show more of the aircraft */
+  background-size: contain;  /* Show entire image/aircraft */
   background-repeat: no-repeat;
   min-height: 420px;
   position: relative;
 }
 
 .hero-bg::before {
-  /* Much stronger overlay to heavily dim the image */
+  /* Very heavy overlay to make image a true background */
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, 
-    rgba(255,255,255,0.92) 0%, 
-    rgba(255,255,255,0.88) 50%,
-    rgba(240,248,255,0.90) 100%);
+  background: rgba(255,255,255,0.95);  /* 95% white overlay for strong dimming */
   z-index: 1;
 }
 
