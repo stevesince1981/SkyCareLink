@@ -56,6 +56,14 @@
             });
         }
     </script>
+    {% else %}
+    <!-- Fallback functions when GA is not configured -->
+    <script>
+        function trackQuoteStarted() { console.log('Quote started (GA not configured)'); }
+        function trackQuoteSubmitted() { console.log('Quote submitted (GA not configured)'); }
+        function trackAffiliateQuoteSubmitted() { console.log('Affiliate quote submitted (GA not configured)'); }
+        function trackBookingConfirmed() { console.log('Booking confirmed (GA not configured)'); }
+    </script>
     {% endif %}
     
     <!-- Mobile-first responsive enhancements -->

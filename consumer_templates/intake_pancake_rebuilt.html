@@ -458,7 +458,7 @@
                                                 <i class="fas fa-map-marker-alt me-2"></i>From Location
                                             </h6>
                                             <div class="mb-2">
-                                                <label class="form-label small">Hospital/Facility Name</label>
+                                                <label class="form-label small">Hospital/Facility Name <small class="text-muted">(Optional)</small></label>
                                                 <input type="text" class="form-control form-control-sm compact-input" name="from_hospital" id="fromHospital" 
                                                        placeholder="Enter hospital or facility name" autocomplete="off">
                                                 <div id="fromHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 150px; overflow-y: auto;"></div>
@@ -491,7 +491,7 @@
                                                 <i class="fas fa-map-marker-alt me-2"></i>To Location
                                             </h6>
                                             <div class="mb-2">
-                                                <label class="form-label small">Hospital/Facility Name</label>
+                                                <label class="form-label small">Hospital/Facility Name <small class="text-muted">(Optional)</small></label>
                                                 <input type="text" class="form-control form-control-sm compact-input" name="to_hospital" id="toHospital" 
                                                        placeholder="Enter destination hospital" autocomplete="off">
                                                 <div id="toHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 150px; overflow-y: auto;"></div>
@@ -523,18 +523,18 @@
                                     <div class="row g-2 mt-3">
                                         <div class="col-md-6">
                                             <label class="form-label small">Flight Date <span class="text-danger">*</span></label>
-                                            <input type="date" class="form-control form-control-sm compact-input" name="flight_date" id="flightDate" required>
+                                            <input type="date" class="form-control form-control-sm compact-input" name="flight_date" id="flightDate" required min="">
                                         </div>
                                         
                                         <div class="col-md-6">
-                                            <div class="form-check mt-4">
+                                            <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="return_flight" id="returnFlight" onchange="toggleReturnDate()">
                                                 <label class="form-check-label" for="returnFlight">
                                                     Return flight needed?
                                                 </label>
                                             </div>
                                             <div id="returnDateContainer" style="display: none;" class="mt-2">
-                                                <label class="form-label small">Return Date</label>
+                                                <label class="form-label small">Return Flight Date</label>
                                                 <input type="date" class="form-control form-control-sm compact-input" name="return_date" id="returnDate">
                                             </div>
                                         </div>
@@ -791,13 +791,13 @@ const MEDICAL_EQUIPMENT = {
         { id: 'oxygen', name: 'Oxygen Supply', description: 'Basic oxygen therapy for respiratory support', cost: 0 },
         { id: 'cardiac_monitor', name: 'Cardiac Monitor', description: 'Advanced heart rhythm and vital signs monitoring', cost: 0 },
         { id: 'stretcher', name: 'Medical Stretcher', description: 'Standard patient transport stretcher', cost: 0 },
-        // Line 2: IV Pump, Balloon Pump, ECMO, Suction
+        // Line 2: IV Pump, Defibrillator, Balloon Pump, ECMO, Suction
         { id: 'iv_pump', name: 'IV Pump', description: 'Intravenous medication delivery system', cost: 0 },
+        { id: 'defibrillator', name: 'Defibrillator', description: 'Emergency cardiac rhythm correction device', cost: 0 },
         { id: 'balloon_pump', name: 'Balloon Pump', description: 'Intra-aortic balloon pump for cardiac support', cost: 0 },
         { id: 'ecmo', name: 'ECMO', description: 'Extracorporeal membrane oxygenation for critical life support', cost: 0 },
         { id: 'suction', name: 'Suction Unit', description: 'Airway clearance and secretion management', cost: 0 },
         // Line 3: Remaining equipment
-        { id: 'defibrillator', name: 'Defibrillator', description: 'Emergency cardiac rhythm correction device', cost: 0 },
         { id: 'ventilator', name: 'Advanced Ventilator', description: 'Full mechanical ventilation with multiple modes', cost: 0 },
         { id: 'incubator', name: 'Transport Incubator', description: 'Neonatal intensive care transport unit', cost: 0 }
     ]
@@ -1241,6 +1241,13 @@ document.addEventListener('change', updateStepValidation);
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('seatMinus').disabled = true;
     setupHospitalAutofill();
+    
+    // Set minimum date to today for flight date
+    const today = new Date().toISOString().split('T')[0];
+    const flightDateField = document.getElementById('flightDate');
+    if (flightDateField) {
+        flightDateField.setAttribute('min', today);
+    }
 });
 
 // Hospital autofill functionality  

@@ -2151,7 +2151,8 @@ def consumer_intake_post():
 def quotes_new():
     """New quote request flow with simplified form structure"""
     if request.method == 'GET':
-        return render_template('quotes_new.html')
+        from datetime import datetime
+        return render_template('quotes_new.html', datetime=datetime)
     
     # Process POST submission
     try:
