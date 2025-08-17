@@ -1,0 +1,26 @@
+/* Keep image vivid but ensure text legibility */
+.hero-bg {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 420px;            /* adjusts "square-ness"; change to 360–480 as desired */
+  position: relative;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+  backdrop-filter: saturate(120%) blur(0px);
+  /* Semi-transparent white; tweak between 0.65–0.8 to taste */
+  background-color: rgba(255, 255, 255, 0.72);
+  border-radius: 0.5rem;
+}
+
+.hero-bg::before {
+  /* Soft gradient to keep edges readable without "dimming" the image */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.20), rgba(255,255,255,0.05));
+  z-index: 1;
+}

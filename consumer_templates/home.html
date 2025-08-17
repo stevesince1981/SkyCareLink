@@ -103,39 +103,32 @@
 
 {% block content %}
 
-<section class="container py-4">
-  <div class="row g-4 align-items-stretch">
-    <!-- Left: compact, nearly-square hero -->
-    <div class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 360px;">
-          <div class="text-center" style="max-width: 420px;">
-            <h1 class="h2 fw-semibold mb-2">
-              SkyCareLink medical transport, <span class="text-primary">made simple</span>
-            </h1>
-            <p class="text-muted mb-4">
-              Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
-            </p>
-            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
-              <a href="{{ url_for('consumer_intake') }}"
-                 class="btn btn-primary px-4"
-                 aria-label="Request a quote">
-                <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
-              </a>
-              <a href="{{ url_for('join_affiliate') }}"
-                 class="btn btn-outline-secondary px-4"
-                 aria-label="Affiliate onboarding">
-                <i class="bi bi-people me-1" aria-hidden="true"></i> Affiliate Program
-              </a>
-            </div>
-          </div>
+<section class="container-fluid px-0">
+  <div class="row g-0">
+    <!-- Left: hero with background image -->
+    <div class="col-12 col-md-6 d-flex align-items-center justify-content-center hero-bg"
+         style="background-image: url('{{ url_for('static', filename='consumer_static/img/skycarelink_Front.png') }}');">
+      <div class="hero-overlay p-4 p-md-5 shadow-sm text-center" style="max-width: 480px;">
+        <h1 class="h2 fw-semibold mb-2">
+          SkyCareLink medical transport, <span class="text-primary">made simple</span>
+        </h1>
+        <p class="text-muted mb-4">
+          Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
+        </p>
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+          <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary px-4" aria-label="Request a quote">
+            <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
+          </a>
+          <a href="{{ url_for('join_affiliate') }}" class="btn btn-outline-secondary px-4" aria-label="Affiliate program">
+            <i class="bi bi-people me-1" aria-hidden="true"></i> Affiliate Program
+          </a>
         </div>
       </div>
     </div>
 
     <!-- Right: advisory / transparency box -->
     <aside class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm">
+      <div class="card h-100 shadow-sm rounded-0 rounded-end">
         <div class="card-body d-flex flex-column">
           <div class="d-flex align-items-center mb-2">
             <i class="bi bi-shield-check text-success fs-4 me-2" aria-hidden="true"></i>
@@ -151,13 +144,10 @@
           </ul>
 
           <div class="mt-auto">
-            <a href="{{ url_for('resources_financial') }}"
-               class="link-primary fw-medium"
-               aria-label="Learn more about patient rights and transparency">
+            <a href="{{ url_for('resources_financial') }}" class="link-primary fw-medium" aria-label="Learn more">
               Learn more <i class="bi bi-arrow-right-short" aria-hidden="true"></i>
             </a>
             <p class="text-muted small mt-2 mb-0">
-              <i class="bi bi-hearts text-danger me-1" aria-hidden="true"></i>
               SkyCareLink is a software platform, not a broker. We do not arrange or provide transport, and we do not handle funds between providers and patients.
             </p>
           </div>

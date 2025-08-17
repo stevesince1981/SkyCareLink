@@ -1,0 +1,143 @@
+Goal: Use my image as a full-width background on the left hero; keep the advisory box on the right. No Tailwind—Bootstrap 5 only. Accessible, mobile-first, and easy to tweak.
+
+Image: I will upload skycarelink_Front.png with this prompt.
+Routes: Primary CTA → /intake; Affiliate CTA → /join_affiliate.
+
+1) File paths to modify/create
+
+templates/main/index.html (replace content block)
+
+static/css/hero.css (new; tiny helpers)
+
+Ensure base.html includes Bootstrap 5 CSS/JS and Bootstrap Icons.
+
+1a) Confirm Bootstrap in base.html
+
+If not present, add inside <head>:
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="/static/css/hero.css" rel="stylesheet">
+
+
+And before </body>:
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+2) Create static/css/hero.css
+/* Keep image vivid but ensure text legibility */
+.hero-bg {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 420px;            /* adjusts “square-ness”; change to 360–480 as desired */
+  position: relative;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+  backdrop-filter: saturate(120%) blur(0px);
+  /* Semi-transparent white; tweak between 0.65–0.8 to taste */
+  background-color: rgba(255, 255, 255, 0.72);
+  border-radius: 0.5rem;
+}
+
+.hero-bg::before {
+  /* Soft gradient to keep edges readable without “dimming” the image */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.20), rgba(255,255,255,0.05));
+  z-index: 1;
+}
+
+3) Replace homepage content in templates/main/index.html
+
+Replace everything inside {% block content %}…{% endblock %} with:
+
+{% extends "base.html" %}
+{% block content %}
+
+<section class="container-fluid px-0">
+  <div class="row g-0">
+    <!-- Left: hero with background image -->
+    <div class="col-12 col-md-6 d-flex align-items-center justify-content-center hero-bg"
+         style="background-image: url('/static/img/skycarelink_Front.png');">
+      <div class="hero-overlay p-4 p-md-5 shadow-sm text-center" style="max-width: 480px;">
+        <h1 class="h2 fw-semibold mb-2">
+          SkyCareLink medical transport, <span class="text-primary">made simple</span>
+        </h1>
+        <p class="text-muted mb-4">
+          Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
+        </p>
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+          <a href="/intake" class="btn btn-primary px-4" aria-label="Request a quote">
+            <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
+          </a>
+          <a href="/join_affiliate" class="btn btn-outline-secondary px-4" aria-label="Affiliate program">
+            <i class="bi bi-people me-1" aria-hidden="true"></i> Affiliate Program
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: advisory / transparency box -->
+    <aside class="col-12 col-md-6">
+      <div class="card h-100 shadow-sm rounded-0 rounded-end">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-shield-check text-success fs-4 me-2" aria-hidden="true"></i>
+            <h2 class="h5 fw-semibold mb-0">Know your rights before you choose an air ambulance</h2>
+          </div>
+
+          <ul class="mt-3 mb-3 text-body">
+            <li class="mb-2">Providers should give a <strong>written price quote</strong> before a flight (except true emergencies).</li>
+            <li class="mb-2">Quotes should clearly list <strong>services and all charges</strong> you will incur.</li>
+            <li class="mb-2"><strong>Avoid providers</strong> who refuse to provide a written quote.</li>
+            <li class="mb-2">Comparing quotes helps you review <strong>costs, certifications, and qualifications</strong>.</li>
+            <li class="mb-0"><strong>Ask questions.</strong> This is an important medical decision—make it an informed one.</li>
+          </ul>
+
+          <div class="mt-auto">
+            <a href="/resources/financial-assistance" class="link-primary fw-medium" aria-label="Learn more">
+              Learn more <i class="bi bi-arrow-right-short" aria-hidden="true"></i>
+            </a>
+            <p class="text-muted small mt-2 mb-0">
+              SkyCareLink is a software platform, not a broker. We do not arrange or provide transport, and we do not handle funds between providers and patients.
+            </p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% endblock %}
+
+4) Place the image
+
+Save your PNG to: static/img/skycarelink_Front.png
+
+If your path/name differs, update the inline background-image URL accordingly.
+
+5) Quick QA (do this on desktop + mobile)
+
+Left panel shows your image bright and crisp; text box is readable (thanks to the light overlay).
+
+Right advisory is solid white and equal-ish height to the left (it will stretch with content).
+
+Buttons route to /intake and /join_affiliate.
+
+Tab through with keyboard: both CTAs focus correctly; icons are decorative (aria-hidden).
+
+6) Fine-tuning knobs (optional)
+
+More/less “set back”: change overlay alpha in hero.css:
+
+.hero-overlay { background-color: rgba(255,255,255,0.72); } /* try 0.65–0.80 */
+
+
+More square: increase .hero-bg { min-height: 420px; } → 460–480px.
+
+Edge readability: in .hero-bg::before, increase first rgba from 0.20 to 0.30 if needed.
