@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- Hero Section with Professional Medical Transport Image -->
-<div class="hero-section position-relative text-white py-5" style="background: linear-gradient(135deg, rgba(0, 85, 128, 0.7), rgba(0, 119, 181, 0.7)), url('/consumer_static/images/skycarelink_hero.png') center/cover no-repeat; min-height: 600px;">
+<div class="hero-section position-relative text-white py-4" style="background: linear-gradient(135deg, rgba(0, 85, 128, 0.7), rgba(0, 119, 181, 0.7)), url('/consumer_static/images/skycarelink_hero.png') center/cover no-repeat; min-height: 500px;">
     <div class="container h-100">
         <div class="row align-items-center h-100">
             <div class="col-lg-7">
@@ -15,11 +15,11 @@
                     </h1>
                     <h2 class="h3 mb-4 text-light">Medical Transport Made Simple</h2>
                     <p class="lead mb-4 text-light">
-                        Connect with the largest network of certified air medical transport providers. 
+                        We're building the largest medical transport provider network in the U.S., with international expansion planned. 
                         Fast quotes, transparent pricing, and comprehensive care coordination with our professional medical teams.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="{{ url_for('consumer_intake') }}" class="btn btn-info btn-lg shadow">
+                        <a href="{{ url_for('consumer_intake') }}" class="btn btn-info btn-lg shadow" onclick="trackQuoteStarted()">
                             <i class="fas fa-plus me-2"></i>Request Transport
                         </a>
                         <a href="{{ url_for('dashboard_preview') }}" class="btn btn-success btn-lg shadow" data-test="btn-test">
@@ -65,12 +65,12 @@
     </div>
 </div>
 
-<!-- Why Choose SkyCareLink Section -->
-<section id="why-choose" class="py-5">
+<!-- Why Choose SkyCareLink Section - Pancake Accordions -->
+<section id="why-choose" class="py-4">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 mx-auto text-center mb-5">
-                <h2 class="display-5 fw-bold mb-4 text-primary">Why Choose SkyCareLink?</h2>
+            <div class="col-lg-8 mx-auto text-center mb-4">
+                <h2 class="display-6 fw-bold mb-3 text-primary">Why Choose SkyCareLink?</h2>
                 <p class="lead text-muted">
                     We've built the most comprehensive and trusted medical transport network, 
                     designed with patient care and operational excellence at its core.
@@ -78,94 +78,143 @@
             </div>
         </div>
         
-        <div class="row g-4">
-            <!-- Largest Network -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 border rounded-3 shadow-sm">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-network-wired fa-3x text-primary"></i>
+        <!-- Network & Coverage Accordion -->
+        <div class="pancake-accordion">
+            <div class="pancake-header" onclick="togglePancake('network-coverage')" tabindex="0" role="button" aria-expanded="false" aria-controls="network-coverage">
+                <div>
+                    <i class="fas fa-network-wired me-2 text-primary"></i>
+                    <strong>Network & Coverage</strong>
+                </div>
+                <i class="fas fa-chevron-down pancake-chevron" id="chevron-network-coverage"></i>
+            </div>
+            <div class="pancake-content" id="network-coverage">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-globe me-2 text-primary mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Expanding Network</h6>
+                                <p class="mb-0 text-muted">We're building the largest medical transport provider network in the U.S., with international expansion planned.</p>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="h5 fw-bold mb-3">Largest Network</h4>
-                    <p class="text-muted mb-3">
-                        Access to 150+ certified air medical transport providers across all regions. 
-                        More options mean better availability and competitive pricing.
-                    </p>
-                    <div class="badge bg-primary">Nationwide Coverage</div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-map-marked-alt me-2 text-primary mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Nationwide Coverage</h6>
+                                <p class="mb-0 text-muted">More partners mean better availability and competitive pricing across all regions.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Trust & Compliance -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 border rounded-3 shadow-sm">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-shield-alt fa-3x text-success"></i>
+        </div>
+        
+        <!-- Safety & Compliance Accordion -->
+        <div class="pancake-accordion">
+            <div class="pancake-header" onclick="togglePancake('safety-compliance')" tabindex="0" role="button" aria-expanded="false" aria-controls="safety-compliance">
+                <div>
+                    <i class="fas fa-shield-alt me-2 text-success"></i>
+                    <strong>Safety & Compliance</strong>
+                </div>
+                <i class="fas fa-chevron-down pancake-chevron" id="chevron-safety-compliance"></i>
+            </div>
+            <div class="pancake-content" id="safety-compliance">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-certificate me-2 text-success mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">FAA Part 135 Verified</h6>
+                                <p class="mb-0 text-muted">All air operators confirm Part 135 compliance with ongoing license verification.</p>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="h5 fw-bold mb-3">Trust & Compliance</h4>
-                    <p class="text-muted mb-3">
-                        All air operators in our network confirm Part 135 compliance. 
-                        Immediate delist and audit for dishonesty. Periodic license checks ensure ongoing safety.
-                    </p>
-                    <div class="badge bg-success">FAA Part 135 Verified</div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-gavel me-2 text-success mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Zero Tolerance</h6>
+                                <p class="mb-0 text-muted">Immediate delist and audit for dishonesty. Periodic safety checks ensure ongoing compliance.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Seamless Ground Transport -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 border rounded-3 shadow-sm">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-ambulance fa-3x text-info"></i>
+        </div>
+        
+        <!-- Service Features Accordion -->
+        <div class="pancake-accordion">
+            <div class="pancake-header" onclick="togglePancake('service-features')" tabindex="0" role="button" aria-expanded="false" aria-controls="service-features">
+                <div>
+                    <i class="fas fa-star me-2 text-info"></i>
+                    <strong>Service Features</strong>
+                </div>
+                <i class="fas fa-chevron-down pancake-chevron" id="chevron-service-features"></i>
+            </div>
+            <div class="pancake-content" id="service-features">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-ambulance me-2 text-info mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Ground Transport</h6>
+                                <p class="mb-0 text-muted">Complete door-to-door coordination with seamless handoffs.</p>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="h5 fw-bold mb-3">Seamless Ground Transport</h4>
-                    <p class="text-muted mb-3">
-                        Ground ambulance to/from both sides included where available to ensure seamless handoffs. 
-                        Complete door-to-door medical transport coordination.
-                    </p>
-                    <div class="badge bg-info">Complete Care Chain</div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-stopwatch me-2 text-warning mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Fast Quotes</h6>
+                                <p class="mb-0 text-muted">Most quotes delivered in 15-60 minutes with fair distribution.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-dollar-sign me-2 text-primary mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Transparent Pricing</h6>
+                                <p class="mb-0 text-muted">No hidden fees. All costs disclosed upfront.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Fast Quotes -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 border rounded-3 shadow-sm">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-stopwatch fa-3x text-warning"></i>
-                    </div>
-                    <h4 class="h5 fw-bold mb-3">Fast Quotes</h4>
-                    <p class="text-muted mb-3">
-                        Most quotes delivered in 15-60 minutes. Fair distribution system 
-                        ensures all responsive partners get equal opportunities.
-                    </p>
-                    <div class="badge bg-warning">15-60 Minutes</div>
+        </div>
+        
+        <!-- Privacy & Security Accordion -->
+        <div class="pancake-accordion">
+            <div class="pancake-header" onclick="togglePancake('privacy-security')" tabindex="0" role="button" aria-expanded="false" aria-controls="privacy-security">
+                <div>
+                    <i class="fas fa-lock me-2 text-secondary"></i>
+                    <strong>Privacy & Security</strong>
                 </div>
+                <i class="fas fa-chevron-down pancake-chevron" id="chevron-privacy-security"></i>
             </div>
-            
-            <!-- Data Privacy -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 border rounded-3 shadow-sm">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-lock fa-3x text-secondary"></i>
+            <div class="pancake-content" id="privacy-security">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-user-shield me-2 text-secondary mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">HIPAA Compliant</h6>
+                                <p class="mb-0 text-muted">Minimal PHI collection with secure, HIPAA-minded data handling.</p>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="h5 fw-bold mb-3">Data Privacy</h4>
-                    <p class="text-muted mb-3">
-                        Minimal PHI collection with HIPAA-minded handling. 
-                        No card storage or unnecessary patient data retention.
-                    </p>
-                    <div class="badge bg-secondary">HIPAA Compliant</div>
-                </div>
-            </div>
-            
-            <!-- Transparent Pricing -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 border rounded-3 shadow-sm">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-dollar-sign fa-3x text-primary"></i>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-database me-2 text-secondary mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Data Protection</h6>
+                                <p class="mb-0 text-muted">No card storage or unnecessary patient data retention.</p>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="h5 fw-bold mb-3">Transparent Pricing</h4>
-                    <p class="text-muted mb-3">
-                        No hidden fees or surprise charges. Clear pricing breakdown 
-                        with all costs disclosed upfront before booking.
-                    </p>
-                    <div class="badge bg-primary">No Hidden Fees</div>
                 </div>
             </div>
         </div>
@@ -173,11 +222,11 @@
 </section>
 
 <!-- Service Types Section -->
-<section class="py-5 bg-light">
+<section class="py-4 bg-light">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 mx-auto text-center mb-5">
-                <h2 class="display-6 fw-bold mb-4">Our Services</h2>
+            <div class="col-lg-8 mx-auto text-center mb-4">
+                <h2 class="display-6 fw-bold mb-3">Our Services</h2>
                 <p class="lead text-muted">
                     Whether you need emergency transport or scheduled medical transfer, 
                     we have the right solution for your needs.
@@ -185,57 +234,47 @@
             </div>
         </div>
         
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="service-card bg-white rounded-3 p-4 shadow-sm h-100">
-                    <div class="text-center mb-3">
-                        <i class="fas fa-ambulance fa-4x text-danger"></i>
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="service-card bg-white rounded-3 p-3 shadow-sm h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-ambulance fa-2x text-danger me-3"></i>
+                        <h4 class="h5 fw-bold mb-0">Critical Transport</h4>
                     </div>
-                    <h4 class="h5 fw-bold text-center mb-3">Critical Transport</h4>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success me-2"></i>Same-day availability</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Advanced life support</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Specialty equipment</li>
-                        <li><i class="fas fa-check text-success me-2"></i>24/7 coordination</li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="{{ url_for('consumer_intake') }}" class="btn btn-danger">Request Critical Transport</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="service-card bg-white rounded-3 p-4 shadow-sm h-100">
-                    <div class="text-center mb-3">
-                        <i class="fas fa-helicopter fa-4x text-primary"></i>
-                    </div>
-                    <h4 class="h5 fw-bold text-center mb-3">Scheduled Transport</h4>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success me-2"></i>Planned procedures</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Best pricing</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Flexible scheduling</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Insurance coordination</li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary">Schedule Transport</a>
+                    <div class="row">
+                        <div class="col-8">
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-check text-success me-2"></i>Same-day availability</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Advanced life support</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Specialty equipment</li>
+                                <li><i class="fas fa-check text-success me-2"></i>24/7 coordination</li>
+                            </ul>
+                        </div>
+                        <div class="col-4 text-end">
+                            <a href="{{ url_for('consumer_intake') }}" class="btn btn-danger" onclick="enhancedTrackQuoteStarted('critical')">Request</a>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4">
-                <div class="service-card bg-white rounded-3 p-4 shadow-sm h-100">
-                    <div class="text-center mb-3">
-                        <i class="fas fa-star fa-4x text-success"></i>
+            <div class="col-lg-6">
+                <div class="service-card bg-white rounded-3 p-3 shadow-sm h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-helicopter fa-2x text-primary me-3"></i>
+                        <h4 class="h5 fw-bold mb-0">Scheduled Transport</h4>
                     </div>
-                    <h4 class="h5 fw-bold text-center mb-3">Membership Program</h4>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success me-2"></i>Priority booking</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Preferred rates</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Concierge support</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Annual coverage</li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="{{ url_for('join_individual') }}" class="btn btn-success">Learn More</a>
+                    <div class="row">
+                        <div class="col-8">
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-check text-success me-2"></i>Planned procedures</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Best pricing</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Flexible scheduling</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Insurance coordination</li>
+                            </ul>
+                        </div>
+                        <div class="col-4 text-end">
+                            <a href="{{ url_for('consumer_intake') }}" class="btn btn-primary" onclick="enhancedTrackQuoteStarted('scheduled')">Schedule</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -244,12 +283,12 @@
 </section>
 
 <!-- Call to Action -->
-<section class="py-5 bg-primary text-white">
+<section class="py-4 bg-primary text-white">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <h3 class="h2 fw-bold mb-2">Ready to Get Started?</h3>
-                <p class="lead mb-0">
+                <h3 class="h3 fw-bold mb-2">Ready to Get Started?</h3>
+                <p class="mb-0">
                     Join thousands of healthcare facilities and individuals who trust SkyCareLink 
                     for their medical transport needs.
                 </p>

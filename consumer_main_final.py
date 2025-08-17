@@ -37,9 +37,31 @@ except ImportError as e:
     print(f"⚠ Database not available: {e}")
     DB_AVAILABLE = False
 
-# Create Flask app
+# Create Flask app with performance optimizations
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static', static_url_path='/consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
+
+# Performance: Enable gzip compression and cache headers
+@consumer_app.after_request
+def after_request(response):
+    """Add performance optimizations to all responses"""
+    # Security headers
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Cache static assets for 1 year
+    if request.path.startswith('/consumer_static/'):
+        response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+    elif request.path.endswith(('.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2')):
+        response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+    else:
+        # Dynamic content - short cache
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    
+    return response
 
 # Demo user accounts with hashed passwords (bcrypt-compatible format)
 DEMO_USERS = {
@@ -76,7 +98,8 @@ SKYCARELINK_CONFIG = {
     'google_places_api_key': os.environ.get("GOOGLE_PLACES_API_KEY", "demo-key"),
     'twilio_account_sid': os.environ.get("TWILIO_ACCOUNT_SID", "demo-sid"),
     'twilio_auth_token': os.environ.get("TWILIO_AUTH_TOKEN", "demo-token"),
-    'sendgrid_api_key': os.environ.get("SENDGRID_API_KEY", "demo-key")
+    'sendgrid_api_key': os.environ.get("SENDGRID_API_KEY", "demo-key"),
+    'ga_measurement_id': os.environ.get("GA_MEASUREMENT_ID", "")
 }
 
 # Phase 12.C: Enhanced Commission Configuration with canonical math
@@ -3984,7 +4007,8 @@ def inject_announcements():
         'training_config': TRAINING_CONFIG,
         'format_currency': format_currency,
         'clean_display_name': clean_display_name,
-        'format_time_with_preference': format_time_with_preference
+        'format_time_with_preference': format_time_with_preference,
+        'config': SKYCARELINK_CONFIG  # Make config available in templates
     }
 
 # Phase 7.C: User Preferences Route

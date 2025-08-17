@@ -1837,6 +1837,54 @@
       "ip": "172.31.97.34",
       "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.",
       "details": {}
+    },
+    {
+      "timestamp": "2025-08-16T20:21:31.599185",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.85.194",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": true,
+        "risk_factors": [
+          "new_ip",
+          "new_device"
+        ]
+      }
+    },
+    {
+      "timestamp": "2025-08-16T20:21:31.603166",
+      "user": "admin",
+      "type": "anomaly_alert_sent",
+      "ip": "172.31.85.194",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "is_risky": true,
+        "risk_factors": [
+          "new_ip",
+          "new_device"
+        ],
+        "require_step_up": true
+      }
+    },
+    {
+      "timestamp": "2025-08-16T20:21:31.612496",
+      "user": "admin",
+      "type": "mfa_challenge_sent",
+      "ip": "172.31.85.194",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "reason": "step_up_required",
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-16T20:21:53.957111",
+      "user": "admin",
+      "type": "mfa_success",
+      "ip": "172.31.85.194",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {}
     }
   ]
 }

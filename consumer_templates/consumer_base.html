@@ -18,6 +18,148 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='consumer_css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='consumer_static/css/main.css') }}">
     
+    <!-- Google Analytics 4 -->
+    {% if config.get('GA_MEASUREMENT_ID') or config.get('ga_measurement_id') %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.get('GA_MEASUREMENT_ID') or config.get('ga_measurement_id') }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ config.get('GA_MEASUREMENT_ID') or config.get('ga_measurement_id') }}');
+        
+        // Custom event tracking functions
+        function trackQuoteStarted() {
+            gtag('event', 'quote_started', {
+                event_category: 'quote',
+                event_label: 'user_initiated'
+            });
+        }
+        
+        function trackQuoteSubmitted() {
+            gtag('event', 'quote_submitted', {
+                event_category: 'quote',
+                event_label: 'form_completed'
+            });
+        }
+        
+        function trackAffiliateQuoteSubmitted() {
+            gtag('event', 'affiliate_quote_submitted', {
+                event_category: 'affiliate',
+                event_label: 'provider_response'
+            });
+        }
+        
+        function trackBookingConfirmed() {
+            gtag('event', 'booking_confirmed', {
+                event_category: 'booking',
+                event_label: 'payment_confirmed'
+            });
+        }
+    </script>
+    {% endif %}
+    
+    <!-- Mobile-first responsive enhancements -->
+    <style>
+        /* Tightened spacing - 30-40% reduction */
+        .py-5 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+        .py-4 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+        .mb-5 { margin-bottom: 2rem !important; }
+        .mb-4 { margin-bottom: 1.5rem !important; }
+        .mb-3 { margin-bottom: 1rem !important; }
+        
+        /* Pancake accordions with chevrons */
+        .pancake-accordion {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        
+        .pancake-header {
+            background: #f8f9fa;
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        
+        .pancake-header:hover {
+            background: #e9ecef;
+        }
+        
+        .pancake-content {
+            padding: 1rem;
+            display: none;
+        }
+        
+        .pancake-content.show {
+            display: block;
+        }
+        
+        .pancake-chevron {
+            transition: transform 0.2s ease;
+        }
+        
+        .pancake-chevron.rotated {
+            transform: rotate(180deg);
+        }
+        
+        /* Mobile-first design - 360-414px core actions */
+        @media (max-width: 414px) {
+            .btn-lg {
+                font-size: 1rem;
+                padding: 0.75rem 1rem;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            .hero-content {
+                padding: 1.5rem !important;
+            }
+            
+            .display-3 {
+                font-size: 2rem !important;
+            }
+            
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .row.g-4 {
+                --bs-gutter-x: 1rem;
+                --bs-gutter-y: 1rem;
+            }
+        }
+        
+        /* Accessibility improvements */
+        .btn:focus, .nav-link:focus, .pancake-header:focus {
+            outline: 2px solid #0d6efd;
+            outline-offset: 2px;
+        }
+        
+        /* Enhanced contrast ratios */
+        .text-muted {
+            color: #495057 !important; /* 4.5:1 contrast on white */
+        }
+        
+        .badge {
+            font-weight: 600;
+        }
+        
+        /* Performance - lazy loading hints */
+        img[data-src] {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        img[data-src].loaded {
+            opacity: 1;
+        }
+    </style>
+    
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -276,6 +418,85 @@
     <script src="https://unpkg.com/vue@2/dist/vue.min.js"></script>
     <script src="https://unpkg.com/botui/build/botui.min.js"></script>
     
+    <!-- Pancake Accordion Functionality -->
+    <script>
+        // Pancake accordion state management with session persistence
+        let pancakeStates = JSON.parse(sessionStorage.getItem('pancakeStates') || '{}');
+        
+        function togglePancake(id) {
+            const content = document.getElementById(id);
+            const chevron = document.getElementById('chevron-' + id);
+            const header = content.previousElementSibling;
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                chevron.classList.remove('rotated');
+                header.setAttribute('aria-expanded', 'false');
+                pancakeStates[id] = false;
+            } else {
+                content.classList.add('show');
+                chevron.classList.add('rotated');
+                header.setAttribute('aria-expanded', 'true');
+                pancakeStates[id] = true;
+            }
+            
+            // Persist state in session
+            sessionStorage.setItem('pancakeStates', JSON.stringify(pancakeStates));
+        }
+        
+        // Restore pancake states on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            Object.keys(pancakeStates).forEach(id => {
+                if (pancakeStates[id]) {
+                    const content = document.getElementById(id);
+                    const chevron = document.getElementById('chevron-' + id);
+                    const header = content?.previousElementSibling;
+                    
+                    if (content) {
+                        content.classList.add('show');
+                        chevron?.classList.add('rotated');
+                        header?.setAttribute('aria-expanded', 'true');
+                    }
+                }
+            });
+            
+            // Add keyboard support for accordion headers
+            document.querySelectorAll('.pancake-header').forEach(header => {
+                header.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+            
+            // Lazy load images for performance
+            const images = document.querySelectorAll('img[data-src]');
+            if (images.length > 0 && 'IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.add('loaded');
+                            imageObserver.unobserve(img);
+                        }
+                    });
+                });
+                
+                images.forEach(img => imageObserver.observe(img));
+            }
+        });
+        
+        // Enhanced form tracking for analytics
+        function enhancedTrackQuoteStarted(source = 'general') {
+            if (typeof trackQuoteStarted === 'function') {
+                trackQuoteStarted();
+            }
+            console.log('Quote started from:', source);
+        }
+    </script>
+
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
