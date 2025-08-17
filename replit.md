@@ -6,7 +6,7 @@ SkyCareLink is a Flask-based web application simulating a hospital interface for
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (Phase 14.B Ultra-Compact Pancake Design & Stats Cleanup - Aug 17, 2025)
+## Recent Changes (Phase 14.C Quote Form Implementation & Contact Name Update - Aug 17, 2025)
 - **MVP Membership Removal**: Completely eliminated all MVP membership references from intake forms, service selection, and throughout the application
 - **Intake Form Enhancements**: Fixed 415 error for form submissions, updated severity levels to "Level 1-3" format, equal-sized boxes (180px height, centered)
 - **Hospital Autofill System**: Implemented comprehensive hospital/clinic database with 30+ major medical centers, real-time search with debouncing for From/To locations
@@ -47,6 +47,10 @@ Preferred communication style: Simple, everyday language.
 - **Hero Section Reorganization**: Moved "Why Choose SkyCareLink?" to right side of hero with expandable accordion boxes containing key statistics
 - **Minimal Spacing**: Cut navigation spacing to 0.5rem margin-top, 0.4rem padding-top for maximum space efficiency
 - **Professional Statistics**: Updated network messaging to focus on growth ambition rather than specific partner counts - "Building the Largest Network" approach
+- **Complete Quote Request System**: Implemented `/quotes/new` with all specified fields including service type, severity levels 1-3, flight dates, location fields, contact information, COVID status, and medical needs
+- **Database Integration**: Added Quote model with equipment flags that auto-map from severity levels (L1→monitor, L2→monitor+stretcher, L3→monitor+stretcher+oxygen)  
+- **Contact Name Replacement**: Updated pancake Step 4 from "Patient First Name" to "Contact Name" for better workflow alignment
+- **Form Validation**: Complete client/server validation, PHI warning banners, return flight toggle, and diagnostic endpoints for testing
 
 ## System Architecture
 
