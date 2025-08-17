@@ -1,7 +1,7 @@
 /* True background image - heavily dimmed with full aircraft visible */
 .hero-bg {
   background-position: center;
-  background-size: contain;  /* Show entire image/aircraft */
+  background-size: 50%;  /* Much smaller to show complete aircraft and team */
   background-repeat: no-repeat;
   min-height: 420px;
   position: relative;
