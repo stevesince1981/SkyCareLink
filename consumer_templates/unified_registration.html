@@ -378,32 +378,6 @@ h6 {
                     </div>
                 </div>
 
-                <div class="field-group">
-                    <label for="affiliate_address">Company Address *</label>
-                    <input type="text" class="form-control mb-1" id="affiliate_street" name="street_address" placeholder="Street Address" required>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="affiliate_city" name="city" placeholder="City" required>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="affiliate_state" name="state" placeholder="State" required>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="affiliate_zip" name="zip_code" placeholder="ZIP Code" required>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="affiliate_country" name="country" required>
-                                <option value="United States">USA</option>
-                                <option value="Canada">Canada</option>
-                                <option value="Mexico">Mexico</option>
-                                <option value="United Kingdom">UK</option>
-                                <option value="Australia">Australia</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Coverage Areas Box -->
                 <div class="card border-secondary mb-2">
                     <div class="card-header bg-light py-1">
@@ -494,31 +468,7 @@ h6 {
                     </div>
                 </div>
 
-                <div class="field-group">
-                    <label for="affiliate_address">Company Address *</label>
-                    <input type="text" class="form-control mb-2" id="affiliate_street" name="street_address" placeholder="Street Address" required>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="affiliate_city" name="city" placeholder="City" required>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="affiliate_state" name="state" placeholder="State" required>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="affiliate_zip" name="zip_code" placeholder="ZIP Code" required>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="affiliate_country" name="country" required>
-                                <option value="United States">USA</option>
-                                <option value="Canada">Canada</option>
-                                <option value="Mexico">Mexico</option>
-                                <option value="United Kingdom">UK</option>
-                                <option value="Australia">Australia</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+
 
                 <div class="field-group">
                     <label>Communication Preferences</label>
@@ -618,27 +568,19 @@ h6 {
                     <strong>Year Two and Beyond:</strong> $99/year annual fee can be waived through referrals. Refer 5 providers for free next year, or get lifetime free membership when a referral books a flight.
                 </div>
 
-                <h5 class="mb-3">Facility Registration</h5>
+                <h6 class="mb-2">Provider Information</h6>
 
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="field-group">
-                            <label for="provider_facility_name">Facility Name *</label>
+                            <label for="provider_facility_name">Provider Name *</label>
                             <input type="text" class="form-control" id="provider_facility_name" name="facility_name" required>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="field-group">
-                            <label for="provider_facility_type">Facility Type *</label>
-                            <select class="form-select" id="provider_facility_type" name="facility_type" required>
-                                <option value="">Select Type</option>
-                                <option value="hospital">Hospital</option>
-                                <option value="clinic">Clinic</option>
-                                <option value="urgent_care">Urgent Care</option>
-                                <option value="rehabilitation">Rehabilitation Center</option>
-                                <option value="nursing_home">Nursing Home</option>
-                                <option value="other">Other</option>
-                            </select>
+                            <label for="provider_contact_name">Primary Contact Name *</label>
+                            <input type="text" class="form-control" id="provider_contact_name" name="contact_name" required>
                         </div>
                     </div>
                 </div>
@@ -646,14 +588,22 @@ h6 {
                 <div class="row">
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="provider_contact_name">Primary Contact Name *</label>
-                            <input type="text" class="form-control" id="provider_contact_name" name="contact_name" required>
+                            <label for="provider_email">Email *</label>
+                            <input type="email" class="form-control" id="provider_email" name="email" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="field-group">
-                            <label for="provider_email">Email *</label>
-                            <input type="email" class="form-control" id="provider_email" name="email" required>
+                            <label for="provider_facility_type">Provider Type *</label>
+                            <select class="form-select" id="provider_facility_type" name="facility_type" required>
+                                <option value="">Select Provider Type</option>
+                                <option value="hospital">Hospital</option>
+                                <option value="clinic">Clinic</option>
+                                <option value="urgent_care">Urgent Care Center</option>
+                                <option value="specialty_clinic">Specialty Clinic</option>
+                                <option value="rehabilitation">Rehabilitation Center</option>
+                                <option value="other">Other</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -685,8 +635,8 @@ h6 {
                 </div>
 
                 <div class="field-group">
-                    <label for="provider_address">Facility Address *</label>
-                    <input type="text" class="form-control mb-2" id="provider_street" name="street_address" placeholder="Street Address" required>
+                    <label for="provider_address">Provider Address *</label>
+                    <input type="text" class="form-control mb-1" id="provider_street" name="street_address" placeholder="Street Address" required>
                     <div class="row">
                         <div class="col-md-4">
                             <input type="text" class="form-control" id="provider_city" name="city" placeholder="City" required>
