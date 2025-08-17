@@ -442,94 +442,40 @@
                                     </div>
                                 </div>
                                 <div class="pancake-content">
-                                    <p class="text-muted mb-3">Select the patient's medical condition severity level</p>
-                                    <div class="severity-row">
+                                    <div class="severity-row mb-3">
                                         <div class="severity-card" data-severity="low" onclick="selectSeverity('low')">
-                                            <i class="fas fa-user text-success fa-2x mb-2"></i>
-                                            <h6>Level 1 - Low Severity</h6>
-                                            <p class="small text-muted">Stable condition, routine transport</p>
-                                            <span class="badge bg-success">Standard equipment</span>
+                                            <i class="fas fa-user text-success mb-1"></i>
+                                            <h6 class="small mb-1">Level 1 - Low</h6>
+                                            <span class="badge bg-success small">Standard</span>
                                         </div>
                                         <div class="severity-card" data-severity="medium" onclick="selectSeverity('medium')">
-                                            <i class="fas fa-heartbeat text-warning fa-2x mb-2"></i>
-                                            <h6>Level 2 - Medium Severity</h6>
-                                            <p class="small text-muted">Monitoring required, stable but complex</p>
-                                            <span class="badge bg-warning">Enhanced monitoring</span>
+                                            <i class="fas fa-heartbeat text-warning mb-1"></i>
+                                            <h6 class="small mb-1">Level 2 - Medium</h6>
+                                            <span class="badge bg-warning small">Monitoring</span>
                                         </div>
                                         <div class="severity-card" data-severity="high" onclick="selectSeverity('high')">
-                                            <i class="fas fa-ambulance text-danger fa-2x mb-2"></i>
-                                            <h6>Level 3 - High Severity</h6>
-                                            <p class="small text-muted">Critical condition, intensive care</p>
-                                            <span class="badge bg-danger">Full life support</span>
+                                            <i class="fas fa-ambulance text-danger mb-1"></i>
+                                            <h6 class="small mb-1">Level 3 - High</h6>
+                                            <span class="badge bg-danger small">Life support</span>
                                         </div>
                                     </div>
 
-                                    <!-- Medical Equipment -->
-                                    <div class="mt-3">
-                                        <h6 class="mb-2">
-                                            <i class="fas fa-medical-case me-2"></i>Required Medical Equipment
-                                            <small class="text-muted">(Select all that apply)</small>
-                                        </h6>
+                                    <!-- Medical Equipment (compact) -->
+                                    <div class="mb-2">
+                                        <h6 class="small mb-1">Equipment <small class="text-muted">(auto-selected)</small></h6>
                                         <div class="equipment-grid" id="equipmentGrid">
                                             <!-- Equipment options will be populated based on severity -->
                                         </div>
                                     </div>
 
-                                    <!-- Niche Markets -->
-                                    <div class="mt-3">
-                                        <h6 class="mb-2">
-                                            <i class="fas fa-tags me-2"></i>Specialized Care Needs
-                                            <small class="text-muted">(Select if applicable)</small>
-                                        </h6>
-                                        <div class="row g-2">
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="pediatric" id="nichePediatric">
-                                                    <label class="form-check-label" for="nichePediatric">Pediatric</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="nicu" id="nicheNicu">
-                                                    <label class="form-check-label" for="nicheNicu">NICU</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="cardiac" id="nicheCardiac">
-                                                    <label class="form-check-label" for="nicheCardiac">Cardiac</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="neurological" id="nicheNeurological">
-                                                    <label class="form-check-label" for="nicheNeurological">Neurological</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="trauma" id="nicheTrauma">
-                                                    <label class="form-check-label" for="nicheTrauma">Trauma</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="transplant" id="nicheTransplant">
-                                                    <label class="form-check-label" for="nicheTransplant">Organ Transport</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="bariatric" id="nicheBariatric">
-                                                    <label class="form-check-label" for="nicheBariatric">Bariatric</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="niche_markets" value="infectious" id="nicheInfectious">
-                                                    <label class="form-check-label" for="nicheInfectious">Infectious Disease</label>
-                                                </div>
-                                            </div>
+                                    <!-- Specialized Care (compact) -->
+                                    <div class="mb-2">
+                                        <h6 class="small mb-1">Specialized Care <small class="text-muted">(optional)</small></h6>
+                                        <div class="row g-1">
+                                            <div class="col-3"><div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="niche_markets" value="pediatric" id="nichePediatric"><label class="form-check-label small" for="nichePediatric">Pediatric</label></div></div>
+                                            <div class="col-3"><div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="niche_markets" value="nicu" id="nicheNicu"><label class="form-check-label small" for="nicheNicu">NICU</label></div></div>
+                                            <div class="col-3"><div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="niche_markets" value="cardiac" id="nicheCardiac"><label class="form-check-label small" for="nicheCardiac">Cardiac</label></div></div>
+                                            <div class="col-3"><div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="niche_markets" value="trauma" id="nicheTrauma"><label class="form-check-label small" for="nicheTrauma">Trauma</label></div></div>
                                         </div>
                                     </div>
                                     
@@ -557,95 +503,64 @@
                                     </div>
                                 </div>
                                 <div class="pancake-content">
-                                    <!-- Flight Date and Return -->
-                                    <div class="row g-2 mb-3">
-                                        <div class="col-md-6">
+                                    <!-- Flight Details (compact row) -->
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-md-4">
                                             <label class="form-label small">Flight Date <span class="text-danger">*</span></label>
                                             <input type="date" class="form-control form-control-sm compact-input" name="flight_date" id="flightDate" required min="">
                                         </div>
-                                        
-                                        <div class="col-md-6">
-                                            <label class="form-label small">&nbsp;</label> <!-- Spacer to align with flight date field -->
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="return_flight" id="returnFlight" onchange="toggleReturnDate()">
-                                                <label class="form-check-label" for="returnFlight">
-                                                    Return flight needed?
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Return Date Row (appears when checkbox checked) -->
-                                    <div class="row g-2 mb-3" id="returnDateContainer" style="display: none;">
-                                        <div class="col-md-6">
-                                            <!-- Empty column to align with flight date -->
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label small">Return Flight Date</label>
-                                            <input type="date" class="form-control form-control-sm compact-input" name="return_date" id="returnDate">
-                                        </div>
-                                    </div>
-
-                                    <!-- Preferred Time -->
-                                    <div class="row g-2 mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label small">Preferred Transport Time</label>
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Time Preference</label>
                                             <select class="form-select form-select-sm compact-input" name="preferred_time" id="preferredTime">
-                                                <option value="">Select preferred time</option>
-                                                <option value="flexible">Flexible</option>
-                                                <option value="morning">Morning (6 AM - 12 PM)</option>
-                                                <option value="afternoon">Afternoon (12 PM - 6 PM)</option>
-                                                <option value="evening">Evening (6 PM - 12 AM)</option>
-                                                <option value="overnight">Overnight (12 AM - 6 AM)</option>
+                                                <option value="">Any time</option>
+                                                <option value="morning">Morning</option>
+                                                <option value="afternoon">Afternoon</option>
                                                 <option value="asap">ASAP</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label small">Family Seating Requirements</label>
-                                            <div class="family-seat-selector">
-                                                <span class="me-2 small">Additional family seats:</span>
-                                                <div class="seat-counter">
-                                                    <button type="button" class="seat-btn" onclick="adjustFamilySeats(-1)" id="seatMinus">-</button>
-                                                    <span class="mx-2 fw-bold" id="familySeatsCount">0</span>
-                                                    <button type="button" class="seat-btn" onclick="adjustFamilySeats(1)" id="seatPlus">+</button>
-                                                </div>
-                                                <small class="text-muted ms-2">(Up to 3 seats)</small>
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Family Seats</label>
+                                            <div class="seat-counter d-flex align-items-center">
+                                                <button type="button" class="seat-btn btn btn-sm btn-outline-secondary" onclick="adjustFamilySeats(-1)" id="seatMinus">-</button>
+                                                <span class="mx-2 fw-bold" id="familySeatsCount">0</span>
+                                                <button type="button" class="seat-btn btn btn-sm btn-outline-secondary" onclick="adjustFamilySeats(1)" id="seatPlus">+</button>
                                             </div>
-                                            <div class="form-text small">Most aircraft can accommodate 1-3 additional passengers</div>
                                         </div>
                                     </div>
 
-                                    <div class="row g-3">
+                                    <!-- Return Flight (compact) -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="return_flight" id="returnFlight" onchange="toggleReturnDate()">
+                                                <label class="form-check-label small" for="returnFlight">Return flight needed</label>
+                                            </div>
+                                            <div id="returnDateContainer" style="display: none;" class="mt-1">
+                                                <input type="date" class="form-control form-control-sm compact-input" name="return_date" id="returnDate">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Locations (compact) -->
+                                    <div class="row g-2">
                                         <!-- From Location -->
                                         <div class="col-md-6">
-                                            <h6 class="text-primary mb-2">
-                                                <i class="fas fa-map-marker-alt me-2"></i>From Location
-                                            </h6>
-                                            <div class="mb-2">
-                                                <label class="form-label small">Hospital/Facility Name <small class="text-muted">(Optional)</small></label>
-                                                <input type="text" class="form-control form-control-sm compact-input" name="from_hospital" id="fromHospital" 
-                                                       placeholder="Enter hospital or facility name" autocomplete="off">
-                                                <div id="fromHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 150px; overflow-y: auto;"></div>
-                                                <div class="form-text small">Start typing for suggestions</div>
+                                            <h6 class="text-primary small mb-1">From Location</h6>
+                                            <div class="mb-1">
+                                                <input type="text" class="form-control form-control-sm compact-input" name="from_hospital" id="fromHospital" placeholder="Hospital/Facility (optional)" autocomplete="off">
                                             </div>
-                                            <div class="row g-2">
-                                                <div class="col-6">
-                                                    <label class="form-label small">City <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control form-control-sm compact-input" name="from_city" id="fromCity" 
-                                                           placeholder="City" required>
+                                            <div class="row g-1">
+                                                <div class="col-5">
+                                                    <input type="text" class="form-control form-control-sm compact-input" name="from_city" id="fromCity" placeholder="City*" required>
                                                 </div>
                                                 <div class="col-3">
-                                                    <label class="form-label small">State <span class="text-danger">*</span></label>
                                                     <select class="form-select form-select-sm compact-input" name="from_state" id="fromState" required>
                                                         <option value="">State</option>
-                                                        <!-- US States will be populated -->
                                                     </select>
                                                 </div>
-                                                <div class="col-3">
-                                                    <label class="form-label small">County</label>
+                                                <div class="col-4">
                                                     <select class="form-select form-select-sm compact-input" name="from_county" id="fromCounty">
                                                         <option value="">County</option>
-                                                        <!-- Counties will be populated based on state -->
                                                     </select>
                                                 </div>
                                             </div>
@@ -653,34 +568,22 @@
 
                                         <!-- To Location -->
                                         <div class="col-md-6">
-                                            <h6 class="text-success mb-2">
-                                                <i class="fas fa-map-marker-alt me-2"></i>To Location
-                                            </h6>
-                                            <div class="mb-2">
-                                                <label class="form-label small">Hospital/Facility Name <small class="text-muted">(Optional)</small></label>
-                                                <input type="text" class="form-control form-control-sm compact-input" name="to_hospital" id="toHospital" 
-                                                       placeholder="Enter destination hospital" autocomplete="off">
-                                                <div id="toHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 150px; overflow-y: auto;"></div>
-                                                <div class="form-text small">Start typing for suggestions</div>
+                                            <h6 class="text-success small mb-1">To Location</h6>
+                                            <div class="mb-1">
+                                                <input type="text" class="form-control form-control-sm compact-input" name="to_hospital" id="toHospital" placeholder="Hospital/Facility (optional)" autocomplete="off">
                                             </div>
-                                            <div class="row g-2">
-                                                <div class="col-6">
-                                                    <label class="form-label small">City <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control form-control-sm compact-input" name="to_city" id="toCity" 
-                                                           placeholder="City" required>
+                                            <div class="row g-1">
+                                                <div class="col-5">
+                                                    <input type="text" class="form-control form-control-sm compact-input" name="to_city" id="toCity" placeholder="City*" required>
                                                 </div>
                                                 <div class="col-3">
-                                                    <label class="form-label small">State <span class="text-danger">*</span></label>
                                                     <select class="form-select form-select-sm compact-input" name="to_state" id="toState" required>
                                                         <option value="">State</option>
-                                                        <!-- US States will be populated -->
                                                     </select>
                                                 </div>
-                                                <div class="col-3">
-                                                    <label class="form-label small">County</label>
+                                                <div class="col-4">
                                                     <select class="form-select form-select-sm compact-input" name="to_county" id="toCounty">
                                                         <option value="">County</option>
-                                                        <!-- Counties will be populated based on state -->
                                                     </select>
                                                 </div>
                                             </div>
@@ -922,6 +825,22 @@ const US_STATES = [
     'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
+// USA Counties (major counties for all states - default to USA counties)
+const USA_COUNTIES = [
+    'Adams', 'Allen', 'Anderson', 'Baker', 'Baldwin', 'Barton', 'Benton', 
+    'Boone', 'Brown', 'Butler', 'Carroll', 'Clark', 'Clay', 'Clinton', 
+    'Cook', 'Crawford', 'Davis', 'Douglas', 'Franklin', 'Grant', 
+    'Greene', 'Hamilton', 'Harrison', 'Henry', 'Jackson', 'Jefferson', 
+    'Johnson', 'Jones', 'King', 'Lake', 'Lee', 'Lewis', 'Lincoln', 
+    'Madison', 'Marion', 'Marshall', 'Martin', 'Miller', 'Montgomery', 
+    'Morgan', 'Newton', 'Orange', 'Polk', 'Reed', 'Scott', 'Smith', 
+    'Taylor', 'Union', 'Washington', 'Wayne', 'Wilson', 'Wood', 'Wright'
+];
+
+
+
+
+
 // Medical equipment data - ordered for specific layout
 const MEDICAL_EQUIPMENT = {
     advanced: [
@@ -980,6 +899,25 @@ function populateStates() {
     US_STATES.forEach(state => {
         fromState.innerHTML += `<option value="${state}">${state}</option>`;
         toState.innerHTML += `<option value="${state}">${state}</option>`;
+    });
+    
+    // Populate counties with USA defaults
+    populateCounties('fromCounty');
+    populateCounties('toCounty');
+}
+
+// Populate counties dropdown with USA default list
+function populateCounties(countyElementId) {
+    const countySelect = document.getElementById(countyElementId);
+    
+    if (!countySelect) return;
+    
+    // Add USA counties as default
+    USA_COUNTIES.forEach(county => {
+        const option = document.createElement('option');
+        option.value = county;
+        option.textContent = county + ' County';
+        countySelect.appendChild(option);
     });
 }
 
