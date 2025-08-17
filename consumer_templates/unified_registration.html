@@ -83,9 +83,9 @@
 .registration-form {
     background: white;
     border-radius: 15px;
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .form-section {
@@ -97,20 +97,22 @@
 }
 
 .field-group {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .field-group label {
     font-weight: 600;
     color: #333;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
     display: block;
+    font-size: 0.9rem;
 }
 
 .field-group .form-control, .field-group .form-select {
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
-    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1.5px solid #e0e0e0;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.9rem;
     transition: border-color 0.3s ease;
 }
 
@@ -120,7 +122,7 @@
 }
 
 .form-check {
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
 }
 
 .form-check-input:checked {
@@ -241,13 +243,13 @@
                 </div>
 
                 <!-- Benefits Section -->
-                <div class="card border-primary mb-3">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
+                <div class="card border-primary mb-2">
+                    <div class="card-header bg-primary text-white py-2">
+                        <h6 class="card-title mb-0">
                             <i class="fas fa-star me-2"></i>Affiliate Benefits
-                        </h5>
+                        </h6>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body py-2">
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="list-unstyled">
@@ -261,7 +263,7 @@
                                     </li>
                                     <li class="mb-2">
                                         <i class="fas fa-check text-success me-2"></i>
-                                        <strong>1% payback system</strong> - Affiliate fee reimbursed through flights
+                                        <strong>1% payback system</strong> - Affiliate fee reimbursed through flights (first year only)
                                     </li>
                                 </ul>
                             </div>
@@ -286,11 +288,11 @@
                 </div>
 
                 <!-- Affiliate Program Information -->
-                <div class="alert alert-warning mb-3">
+                <div class="alert alert-warning mb-2 py-2">
                     <i class="fas fa-star me-2"></i>
                     <strong>Year One (Founding Tier):</strong> $25,000 one-time affiliate fee with 1% payback on each flight until recovered. Priority placement and refundable if platform doesn't deliver minimum flight opportunities.
                 </div>
-                <div class="alert alert-info mb-3">
+                <div class="alert alert-info mb-2 py-2">
                     <i class="fas fa-info-circle me-2"></i>
                     <strong>Year Two (Proof of Concept):</strong> Reduced $10,000 affiliate fee. Founding affiliates retain early placement advantage. No payback needed as platform is proven.
                 </div>
@@ -392,21 +394,26 @@
 
                 <div class="field-group">
                     <label for="affiliate_address">Company Address *</label>
+                    <input type="text" class="form-control mb-2" id="affiliate_street" name="street_address" placeholder="Street Address" required>
                     <div class="row">
-                        <div class="col-md-8">
-                            <input type="text" class="form-control mb-2" id="affiliate_street" name="street_address" placeholder="Street Address" required>
-                        </div>
                         <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="affiliate_city" name="city" placeholder="City" required>
+                            <input type="text" class="form-control" id="affiliate_city" name="city" placeholder="City" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="affiliate_state" name="state" placeholder="State" required>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="affiliate_state" name="state" placeholder="State" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="affiliate_zip" name="zip_code" placeholder="ZIP Code" required>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="affiliate_zip" name="zip_code" placeholder="ZIP Code" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="affiliate_country" name="country" placeholder="Country" value="United States" required>
+                        <div class="col-md-2">
+                            <select class="form-select" id="affiliate_country" name="country" required>
+                                <option value="United States">USA</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Mexico">Mexico</option>
+                                <option value="United Kingdom">UK</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -490,13 +497,13 @@
                 </div>
 
                 <!-- Membership Benefits -->
-                <div class="card border-success mb-3">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="card-title mb-0">
+                <div class="card border-success mb-2">
+                    <div class="card-header bg-success text-white py-2">
+                        <h6 class="card-title mb-0">
                             <i class="fas fa-gift me-2"></i>Membership Benefits
-                        </h5>
+                        </h6>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body py-2">
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="list-unstyled">
@@ -535,11 +542,11 @@
                 </div>
 
                 <!-- Provider Program Information -->
-                <div class="alert alert-success mb-3">
+                <div class="alert alert-success mb-2 py-2">
                     <i class="fas fa-gift me-2"></i>
                     <strong>Year One (Launch Offer):</strong> Join free for the first 12 months from official go-live date. No annual membership fees during initial period.
                 </div>
-                <div class="alert alert-info mb-3">
+                <div class="alert alert-info mb-2 py-2">
                     <i class="fas fa-handshake me-2"></i>
                     <strong>Year Two and Beyond:</strong> $99/year annual fee can be waived through referrals. Refer 5 providers for free next year, or get lifetime free membership when a referral books a flight.
                 </div>
@@ -612,21 +619,26 @@
 
                 <div class="field-group">
                     <label for="provider_address">Facility Address *</label>
+                    <input type="text" class="form-control mb-2" id="provider_street" name="street_address" placeholder="Street Address" required>
                     <div class="row">
-                        <div class="col-md-8">
-                            <input type="text" class="form-control mb-2" id="provider_street" name="street_address" placeholder="Street Address" required>
-                        </div>
                         <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="provider_city" name="city" placeholder="City" required>
+                            <input type="text" class="form-control" id="provider_city" name="city" placeholder="City" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="provider_state" name="state" placeholder="State" required>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="provider_state" name="state" placeholder="State" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="provider_zip" name="zip_code" placeholder="ZIP Code" required>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="provider_zip" name="zip_code" placeholder="ZIP Code" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="provider_country" name="country" placeholder="Country" value="United States" required>
+                        <div class="col-md-2">
+                            <select class="form-select" id="provider_country" name="country" required>
+                                <option value="United States">USA</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Mexico">Mexico</option>
+                                <option value="United Kingdom">UK</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -673,13 +685,13 @@
                 </div>
 
                 <!-- Individual Benefits -->
-                <div class="card border-info mb-3">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="card-title mb-0">
+                <div class="card border-info mb-2">
+                    <div class="card-header bg-info text-white py-2">
+                        <h6 class="card-title mb-0">
                             <i class="fas fa-heart me-2"></i>Individual Benefits
-                        </h5>
+                        </h6>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body py-2">
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="list-unstyled">
@@ -718,7 +730,7 @@
                 </div>
 
                 <!-- Quick Registration Note -->
-                <div class="alert alert-success mb-3">
+                <div class="alert alert-success mb-2 py-2">
                     <i class="fas fa-info-circle me-2"></i>
                     <strong>Quick & Easy:</strong> Simple registration process. Start requesting transport quotes immediately after verification.
                 </div>
@@ -768,21 +780,26 @@
 
                 <div class="field-group">
                     <label for="individual_address">Your Address *</label>
+                    <input type="text" class="form-control mb-2" id="individual_street" name="street_address" placeholder="Street Address" required>
                     <div class="row">
-                        <div class="col-md-8">
-                            <input type="text" class="form-control mb-2" id="individual_street" name="street_address" placeholder="Street Address" required>
-                        </div>
                         <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="individual_city" name="city" placeholder="City" required>
+                            <input type="text" class="form-control" id="individual_city" name="city" placeholder="City" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="individual_state" name="state" placeholder="State" required>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="individual_state" name="state" placeholder="State" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="individual_zip" name="zip_code" placeholder="ZIP Code" required>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="individual_zip" name="zip_code" placeholder="ZIP Code" required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control mb-2" id="individual_country" name="country" placeholder="Country" value="United States" required>
+                        <div class="col-md-2">
+                            <select class="form-select" id="individual_country" name="country" required>
+                                <option value="United States">USA</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Mexico">Mexico</option>
+                                <option value="United Kingdom">UK</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -813,57 +830,7 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label for="individual_relationship">Relationship to Patient</label>
-                            <select class="form-select" id="individual_relationship" name="relationship_to_patient">
-                                <option value="">Select Relationship</option>
-                                <option value="self">Self (I am the patient)</option>
-                                <option value="spouse">Spouse</option>
-                                <option value="parent">Parent</option>
-                                <option value="child">Child</option>
-                                <option value="sibling">Sibling</option>
-                                <option value="family">Other Family Member</option>
-                                <option value="friend">Friend</option>
-                                <option value="caregiver">Caregiver</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="field-group">
-                            <label for="individual_emergency_contact">Emergency Contact</label>
-                            <input type="text" class="form-control" id="individual_emergency_contact" name="emergency_contact" placeholder="Name and phone number">
-                        </div>
-                    </div>
-                </div>
 
-                <div class="field-group">
-                    <label>Communication Preferences</label>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="comm_email" name="communication_preferences" value="email" checked>
-                                <label class="form-check-label" for="comm_email">Email Updates</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="comm_sms" name="communication_preferences" value="sms">
-                                <label class="form-check-label" for="comm_sms">SMS Notifications</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="comm_phone" name="communication_preferences" value="phone">
-                                <label class="form-check-label" for="comm_phone">Phone Calls</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="comm_newsletter" name="communication_preferences" value="newsletter">
-                                <label class="form-check-label" for="comm_newsletter">Newsletter</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
 
             </div>
