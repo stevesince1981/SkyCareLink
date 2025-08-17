@@ -99,51 +99,56 @@
                         <div class="step-summary" id="summary-3" style="display: none;"></div>
                     </div>
                     <div class="pancake-content" id="content-3">
-                        <h4 class="mb-3">Where do you need transport?</h4>
+                        <h4 class="mb-3">Transport scheduling and locations</h4>
+                        
+                        <!-- Flight Date moved to top per audit requirements -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="preferred_date" class="form-label">
+                                    <i class="fas fa-calendar me-2"></i>Flight Date *
+                                </label>
+                                <input type="date" class="form-control" id="preferred_date" name="preferred_date" 
+                                       min="{{ today }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="preferred_time" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Preferred Transport Time *
+                                </label>
+                                <select class="form-select" id="preferred_time" name="preferred_time" required>
+                                    <option value="">Select time...</option>
+                                    <option value="early_morning">Early Morning (6AM-9AM)</option>
+                                    <option value="morning">Morning (9AM-12PM)</option>
+                                    <option value="afternoon">Afternoon (12PM-5PM)</option>
+                                    <option value="evening">Evening (5PM-8PM)</option>
+                                    <option value="anytime">Anytime</option>
+                                </select>
+                            </div>
+                        </div>
                         
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <h6>From:</h6>
+                                <h6>From: *</h6>
                                 <div class="location-input-group">
                                     <input type="text" class="form-control mb-2" id="from_facility" name="from_facility" 
-                                           placeholder="Hospital/clinic name" autocomplete="off">
+                                           placeholder="Hospital/clinic name" autocomplete="off" required>
                                     <input type="text" class="form-control" id="from_address" name="from_address" 
-                                           placeholder="Address (city, state)" autocomplete="off">
+                                           placeholder="City, State" autocomplete="off" required>
                                     <small class="form-text">
                                         <a href="#" onclick="showManualAdd('from')">+ Can't find it?</a>
                                     </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <h6>To:</h6>
+                                <h6>To: *</h6>
                                 <div class="location-input-group">
                                     <input type="text" class="form-control mb-2" id="to_facility" name="to_facility" 
-                                           placeholder="Hospital/clinic name" autocomplete="off">
+                                           placeholder="Hospital/clinic name" autocomplete="off" required>
                                     <input type="text" class="form-control" id="to_address" name="to_address" 
-                                           placeholder="Address (city, state)" autocomplete="off">
+                                           placeholder="City, State" autocomplete="off" required>
                                     <small class="form-text">
                                         <a href="#" onclick="showManualAdd('to')">+ Can't find it?</a>
                                     </small>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Preferred Date</label>
-                                <input type="date" class="form-control" id="preferred_date" name="preferred_date" 
-                                       min="{{ today }}" value="{{ today }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Preferred Time</label>
-                                <select class="form-select" id="preferred_time" name="preferred_time">
-                                    <option value="">Select time</option>
-                                    <option value="asap">ASAP</option>
-                                    <option value="morning">Morning (6-12 PM)</option>
-                                    <option value="afternoon">Afternoon (12-6 PM)</option>
-                                    <option value="evening">Evening (6-11 PM)</option>
-                                    <option value="overnight">Overnight (11 PM-6 AM)</option>
-                                </select>
                             </div>
                         </div>
 
@@ -701,53 +706,101 @@ const equipmentOptions = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Enhanced SkyCareLink Pancake Stepper Loaded');
+    
+    // Initialize form with no defaults
+    formData = {};
+    currentStep = 1;
+    
+    // Initialize equipment grid
     initializeEquipmentGrid();
+    
+    // Setup auto-save functionality
     setupAutoSave();
-    restoreFormState(); // Phase 12.B: Use enhanced restore function
+    
+    // Add input event listeners for real-time validation
+    setupFormValidation();
+    
+    // Restore form state only if returning user
+    restoreFormState();
+    
+    // Initialize navigation - start with next button disabled
+    disableNextButton();
+    updateNavigation();
 });
 
 function selectService(type) {
+    // Remove auto-selection - user must explicitly choose
     document.querySelectorAll('.service-card').forEach(card => {
         card.classList.remove('selected');
     });
-    document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+    
+    const selectedCard = document.querySelector(`[data-type="${type}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
     
     formData.transport_type = type;
-    document.getElementById('transport_type').value = type;
+    const transportInput = document.getElementById('transport_type');
+    if (transportInput) {
+        transportInput.value = type;
+    }
+    
     updateSummary(1, type === 'critical' ? 'Critical Transport' : 'Scheduled Transport');
     
+    // Enable next button only after selection
+    enableNextButton(1);
     saveFormState();
 }
 
 function selectSeverity(level) {
+    // Remove auto-selection - user must explicitly choose
     document.querySelectorAll('.severity-btn').forEach(btn => {
         btn.classList.remove('selected');
     });
-    document.querySelector(`[data-level="${level}"]`).classList.add('selected');
+    
+    const selectedBtn = document.querySelector(`[data-level="${level}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('selected');
+    }
     
     formData.severity_level = level;
-    document.getElementById('severity_level').value = level;
+    const severityInput = document.getElementById('severity_level');
+    if (severityInput) {
+        severityInput.value = level;
+    }
     
-    // Auto-suggest equipment for levels 2-3
+    // Show equipment suggestions but don't auto-select
+    const suggestedEquipmentDiv = document.getElementById('suggested-equipment');
+    const equipmentSuggestionsSpan = document.getElementById('equipment-suggestions');
+    
     if (level >= 2) {
         const suggestions = Object.entries(equipmentOptions)
             .filter(([key, eq]) => eq.levels.includes(level))
             .map(([key, eq]) => eq.name);
         
-        document.getElementById('suggested-equipment').style.display = 'block';
-        document.getElementById('equipment-suggestions').textContent = suggestions.join(', ');
+        if (suggestedEquipmentDiv) {
+            suggestedEquipmentDiv.style.display = 'block';
+        }
+        if (equipmentSuggestionsSpan) {
+            equipmentSuggestionsSpan.textContent = suggestions.join(', ');
+        }
         
-        // Pre-select equipment
+        // Store suggestions but don't auto-select equipment
         formData.suggested_equipment = Object.keys(equipmentOptions)
             .filter(key => equipmentOptions[key].levels.includes(level));
     } else {
-        document.getElementById('suggested-equipment').style.display = 'none';
+        if (suggestedEquipmentDiv) {
+            suggestedEquipmentDiv.style.display = 'none';
+        }
         formData.suggested_equipment = [];
     }
     
     const severityNames = { 1: 'Stable Routine', 2: 'Moderate', 3: 'Critical' };
     updateSummary(2, `Level ${level} - ${severityNames[level]}`);
     
+    // Enable next button only after selection
+    enableNextButton(2);
     saveFormState();
 }
 
@@ -771,10 +824,12 @@ function initializeEquipmentGrid() {
 }
 
 function updateEquipment() {
-    const selected = Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
-        .map(cb => cb.value);
-    formData.equipment = selected;
-    saveFormState();
+    const equipmentCheckboxes = document.querySelectorAll('input[name="equipment"]:checked');
+    if (equipmentCheckboxes) {
+        const selected = Array.from(equipmentCheckboxes).map(cb => cb.value);
+        formData.equipment = selected;
+        saveFormState();
+    }
 }
 
 function jumpToStep(step) {
@@ -851,39 +906,61 @@ function validateCurrentStep() {
         case 2:
             return formData.severity_level !== undefined;
         case 3:
-            const fromFacility = document.getElementById('from_facility').value;
-            const toFacility = document.getElementById('to_facility').value;
-            const fromAddress = document.getElementById('from_address').value;
-            const toAddress = document.getElementById('to_address').value;
+            const fromFacility = document.getElementById('from_facility');
+            const toFacility = document.getElementById('to_facility');
+            const fromAddress = document.getElementById('from_address');
+            const toAddress = document.getElementById('to_address');
+            const preferredDate = document.getElementById('preferred_date');
+            const preferredTime = document.getElementById('preferred_time');
             
-            if (fromFacility && toFacility && fromAddress && toAddress) {
-                formData.from_facility = fromFacility;
-                formData.to_facility = toFacility;
-                formData.from_address = fromAddress;
-                formData.to_address = toAddress;
-                formData.preferred_date = document.getElementById('preferred_date').value;
-                formData.preferred_time = document.getElementById('preferred_time').value;
-                formData.same_day_urgent = document.getElementById('same_day_urgent').checked;
+            if (fromFacility && toFacility && fromAddress && toAddress && preferredDate && preferredTime) {
+                const fromFacilityVal = fromFacility.value.trim();
+                const toFacilityVal = toFacility.value.trim();
+                const fromAddressVal = fromAddress.value.trim();
+                const toAddressVal = toAddress.value.trim();
+                const preferredDateVal = preferredDate.value;
+                const preferredTimeVal = preferredTime.value;
                 
-                updateSummary(3, `${fromFacility} → ${toFacility}`);
-                return true;
+                if (fromFacilityVal && toFacilityVal && fromAddressVal && toAddressVal && preferredDateVal && preferredTimeVal) {
+                    formData.from_facility = fromFacilityVal;
+                    formData.to_facility = toFacilityVal;
+                    formData.from_address = fromAddressVal;
+                    formData.to_address = toAddressVal;
+                    formData.preferred_date = preferredDateVal;
+                    formData.preferred_time = preferredTimeVal;
+                    
+                    const sameDayCheckbox = document.getElementById('same_day_urgent');
+                    formData.same_day_urgent = sameDayCheckbox ? sameDayCheckbox.checked : false;
+                    
+                    updateSummary(3, `${fromFacilityVal} → ${toFacilityVal}`);
+                    return true;
+                }
             }
             return false;
         case 4:
-            const patientName = document.getElementById('patient_name').value;
-            const ageBand = document.getElementById('patient_age_band').value;
+            const patientName = document.getElementById('patient_name');
             
-            if (patientName && ageBand) {
-                formData.patient_name = patientName;
-                formData.patient_age_band = ageBand;
-                formData.medical_info = document.getElementById('medical_info').value;
+            if (patientName) {
+                const patientNameVal = patientName.value.trim();
                 
-                updateSummary(4, `${patientName} (${ageBand.replace('_', '-')})`);
-                return true;
+                if (patientNameVal) {
+                    formData.patient_name = patientNameVal;
+                    
+                    const ageBand = document.getElementById('patient_age_band');
+                    const medicalInfo = document.getElementById('medical_info');
+                    
+                    formData.patient_age_band = ageBand ? ageBand.value : '';
+                    formData.medical_info = medicalInfo ? medicalInfo.value : '';
+                    
+                    const ageBandDisplay = ageBand && ageBand.value ? ` (${ageBand.value.replace('_', '-')})` : '';
+                    updateSummary(4, `${patientNameVal}${ageBandDisplay}`);
+                    return true;
+                }
             }
             return false;
         case 5:
-            return document.getElementById('confirm_accuracy').checked;
+            const confirmCheckbox = document.getElementById('confirm_accuracy');
+            return confirmCheckbox ? confirmCheckbox.checked : false;
     }
     return true;
 }
@@ -900,26 +977,57 @@ function preselectEquipment() {
     }
 }
 
+function enableNextButton(step) {
+    // Enable next button only when current step requirements are met
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.classList.remove('btn-secondary');
+        nextBtn.classList.add('btn-primary');
+    }
+    
+    // Also update navigation
+    updateNavigation();
+}
+
+function disableNextButton() {
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) {
+        nextBtn.disabled = true;
+        nextBtn.classList.remove('btn-primary');
+        nextBtn.classList.add('btn-secondary');
+    }
+}
+
 function updateNavigation() {
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitBtn');
     
-    prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+    if (prevBtn) {
+        prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+    }
     
     if (currentStep === totalSteps) {
-        nextBtn.style.display = 'none';
-        submitBtn.style.display = 'block';
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (submitBtn) submitBtn.style.display = 'block';
     } else {
-        nextBtn.style.display = 'block';
-        submitBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'block';
+        if (submitBtn) submitBtn.style.display = 'none';
+        
+        // Check if next button should be enabled
+        if (!validateCurrentStep()) {
+            disableNextButton();
+        }
     }
 }
 
 function updateSummary(step, text) {
     const summary = document.getElementById(`summary-${step}`);
-    summary.textContent = text;
-    summary.style.display = 'block';
+    if (summary) {
+        summary.textContent = text;
+        summary.style.display = 'block';
+    }
 }
 
 function updateReviewSummary() {
@@ -1058,12 +1166,36 @@ function restoreFormState() {
 
 function autoSave() {
     // Legacy function - redirect to new saveFormState
+    console.log('Form data saved to localStorage');
     saveFormState();
 }
 
 function loadSavedData() {
     // Use new restore function
     restoreFormState();
+}
+
+function setupFormValidation() {
+    // Add real-time validation listeners
+    const inputs = document.querySelectorAll('input[required], select[required]');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            // Validate current step whenever required fields change
+            if (validateCurrentStep()) {
+                enableNextButton(currentStep);
+            } else {
+                disableNextButton();
+            }
+        });
+        
+        input.addEventListener('change', function() {
+            if (validateCurrentStep()) {
+                enableNextButton(currentStep);
+            } else {
+                disableNextButton();
+            }
+        });
+    });
 }
 
 function setupAutoSave() {

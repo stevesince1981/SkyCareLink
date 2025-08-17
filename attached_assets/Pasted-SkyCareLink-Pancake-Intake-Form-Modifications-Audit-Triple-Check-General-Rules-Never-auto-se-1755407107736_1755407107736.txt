@@ -1,0 +1,96 @@
+SkyCareLink – Pancake Intake Form Modifications (Audit & Triple-Check)
+General Rules:
+
+Never auto-select defaults (unless explicitly stated).
+
+Next buttons remain disabled until required inputs are completed.
+
+All steps must allow clean navigation forward/backward without losing data.
+
+If new request = no pre-filled data anywhere.
+
+Each step should visually confirm readiness (highlighting Next when criteria are met).
+
+Triple-check that form validation works in all cases (new, edit, resume).
+
+Step 1: Service Type Selection
+
+Remove auto-selection of “Critical Transport.”
+
+User must manually choose from available service types.
+
+Only after a choice is made: Next: Patient Severity button becomes enabled & highlighted.
+
+Audit: Verify new requests start with no default service type selected.
+
+Step 2: Patient Severity Level
+
+Remove auto-selection of Level 2.
+
+All severity options appear greyed-out until user selects one.
+
+Required Medical Equipment boxes:
+
+Resize smaller so the section fits into 3 rows maximum.
+
+Only after a severity level is selected: Next: Location button enables & highlights.
+
+Audit: Verify no severity or equipment is pre-selected in new requests.
+
+Step 3: Location Details
+
+If brand new request: all fields must be blank.
+
+Reorder fields so that Flight Date appears at the top, immediately above From/To location.
+
+Fields required for Next button to activate:
+
+City/State for both origin & destination
+
+Flight Date (mandatory)
+
+Flight Time (mandatory)
+
+Preferred Transport Time (mandatory)
+
+Once all are filled: Next: Patient Info button enables & highlights.
+
+Audit: Test fresh form = blank. Test returning form = prefilled only if user saved progress.
+
+Step 4: Patient Information
+
+Fields:
+
+Contact Name (text area placeholder: “Your contact information”)
+
+Relation to Patient (optional)
+
+Contact Phone → REMOVE entirely
+
+Gender / Age / Weight → all optional, displayed on a single row, with no defaults
+
+Additional Medical Information (optional, multiline input)
+
+Validation: Form should allow moving forward even if all optional fields are left blank (only Contact Name is required).
+
+Once Contact Name is entered: Next: Review & Submit button enables & highlights.
+
+Bug Fix: Ensure submission flow actually allows progressing to Review after all required info is complete.
+
+Audit: Triple-check by testing both minimal form (only required fields) and full form (all optional filled).
+
+✅ Final QA Checklist for Developers:
+
+ No auto-selected defaults anywhere.
+
+ Flight Date moved to top of Step 3.
+
+ Equipment boxes resized (≤ 3 rows).
+
+ All “Next” buttons properly tied to completion of required fields only.
+
+ New requests = clean slate.
+
+ Edit requests = correctly load saved values.
+
+ “Review & Submit” stage works without blocking when requirements are met.
