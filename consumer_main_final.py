@@ -56,15 +56,23 @@ if DB_AVAILABLE:
     consumer_app.register_blueprint(affiliate_bp)
     consumer_app.register_blueprint(quotes_bp)
     
+    # Register admin blueprint
+    try:
+        from routes.admin import admin_bp
+        consumer_app.register_blueprint(admin_bp)
+        print("✓ Admin dashboard system registered successfully")
+    except ImportError as e:
+        print(f"⚠ Admin system not available: {e}")
+    
     # Register IVR blueprint
     try:
         from routes.ivr import ivr_bp
         consumer_app.register_blueprint(ivr_bp)
-        print("✓ Notification services loaded successfully")
         print("✓ IVR system registered successfully")
     except ImportError as e:
         print(f"⚠ IVR system not available: {e}")
-        print("✓ Notification services loaded successfully")
+    
+    print("✓ Notification services loaded successfully")
 
 # Performance: Enable gzip compression and cache headers
 @consumer_app.after_request

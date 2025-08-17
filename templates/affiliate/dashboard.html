@@ -136,6 +136,63 @@
             {% endif %}
         {% endwith %}
         
+        <!-- Terms Acceptance Modal (shown if not yet accepted) -->
+        <div class="modal fade" id="termsModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">SkyCareLink Partnership Agreement</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Welcome to SkyCareLink!</strong> Please review and accept our partnership terms to access your affiliate dashboard.
+                        </div>
+                        
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #dee2e6; padding: 1rem; border-radius: 4px; background: #f8f9fa;">
+                            <h6><strong>SkyCareLink Partnership Terms & Conditions</strong></h6>
+                            
+                            <p><strong>1. Partnership Agreement:</strong><br>
+                            By accepting these terms, you agree to become an authorized affiliate partner of SkyCareLink, providing air medical transport services under our network.</p>
+                            
+                            <p><strong>2. Revenue Sharing:</strong><br>
+                            Affiliates receive compensation based on successful bookings facilitated through the SkyCareLink platform. Commission rates vary by service type and booking volume.</p>
+                            
+                            <p><strong>3. Service Standards:</strong><br>
+                            All affiliate partners must maintain proper medical certifications, aircraft safety standards, and provide timely responses to quote requests.</p>
+                            
+                            <p><strong>4. Quote Management:</strong><br>
+                            Affiliates are expected to provide accurate quotes within 2 hours of receiving requests and honor quoted prices for the specified validity period.</p>
+                            
+                            <p><strong>5. Patient Privacy & HIPAA:</strong><br>
+                            All partners must comply with HIPAA regulations and maintain strict confidentiality of patient health information (PHI).</p>
+                            
+                            <p><strong>6. Communication Requirements:</strong><br>
+                            Partners must maintain accessible communication channels during business hours and respond to booking confirmations promptly.</p>
+                            
+                            <p><strong>7. Termination:</strong><br>
+                            Either party may terminate this partnership with 30 days written notice. All pending bookings must be honored through completion.</p>
+                            
+                            <p class="small text-muted"><strong>Last Updated:</strong> August 2025<br>
+                            <strong>Version:</strong> 1.0</p>
+                        </div>
+                        
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="termsCheckbox" required>
+                            <label class="form-check-label" for="termsCheckbox">
+                                <strong>I understand and accept the SkyCareLink Partnership Agreement</strong>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="acceptTermsBtn" disabled>
+                            <i class="fas fa-check me-1"></i>Accept & Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Quote Queue -->
         <div class="row">
             <div class="col-12">
@@ -274,7 +331,66 @@
                     }
                 });
             });
+            
+            // Terms acceptance handling
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+            const termsModal = document.getElementById('termsModal');
+            
+            if (termsCheckbox && acceptTermsBtn) {
+                // Enable/disable accept button based on checkbox
+                termsCheckbox.addEventListener('change', function() {
+                    acceptTermsBtn.disabled = !this.checked;
+                });
+                
+                // Handle terms acceptance
+                acceptTermsBtn.addEventListener('click', function() {
+                    if (!termsCheckbox.checked) {
+                        alert('Please check the agreement checkbox to continue.');
+                        return;
+                    }
+                    
+                    // Submit terms acceptance
+                    fetch('/admin/affiliate/accept-terms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'affiliate_id=' + (window.affiliateId || '1')
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Hide modal and reload page
+                            const modal = bootstrap.Modal.getInstance(termsModal);
+                            modal.hide();
+                            location.reload();
+                        } else {
+                            alert('Error recording acceptance: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Terms acceptance error:', error);
+                        alert('Error processing terms acceptance. Please try again.');
+                    });
+                });
+                
+                // Show terms modal if needed (simulate for demo)
+                // In production, this would check affiliate.terms_understood_timestamp
+                const needsTermsAcceptance = !localStorage.getItem('demo_terms_accepted');
+                if (needsTermsAcceptance) {
+                    const modal = new bootstrap.Modal(termsModal);
+                    setTimeout(() => modal.show(), 500);
+                }
+            }
         });
+        
+        // Demo: Mark terms as accepted in localStorage (simulate database)
+        window.acceptDemoTerms = function() {
+            localStorage.setItem('demo_terms_accepted', 'true');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('termsModal'));
+            if (modal) modal.hide();
+        };
     </script>
 </body>
 </html>

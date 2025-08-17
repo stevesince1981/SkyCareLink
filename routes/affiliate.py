@@ -13,6 +13,9 @@ from services.sms import sms_service
 
 logger = logging.getLogger(__name__)
 
+# Database availability flag
+DB_AVAILABLE = True
+
 affiliate_bp = Blueprint('affiliate', __name__, url_prefix='/affiliate')
 
 @affiliate_bp.route('/quote/<quote_ref>', methods=['GET', 'POST'])
