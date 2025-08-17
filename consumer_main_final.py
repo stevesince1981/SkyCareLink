@@ -5024,7 +5024,7 @@ def intake_submit():
 def home():
     """Enhanced home page with value propositions"""
     stats = {
-        'total_providers': 150,
+        'total_providers': 125,
         'avg_response_time': 25,
         'completed_transports': 2847,
         'satisfaction_rate': 98.7
