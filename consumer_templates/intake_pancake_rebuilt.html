@@ -16,7 +16,7 @@
     margin-bottom: 0.35rem;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .pancake-step.active {
@@ -56,13 +56,19 @@
 }
 
 .pancake-content {
-    padding: 0.6rem;
+    padding: 0;
     display: none;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0;
+    max-height: 0;
 }
 
 .pancake-step.active .pancake-content {
     display: block;
-    animation: slideDown 0.3s ease;
+    padding: 0.6rem;
+    opacity: 1;
+    max-height: 2000px;
 }
 
 .step-number {
@@ -309,9 +315,8 @@
     cursor: default !important;
 }
 
-/* Enabled/Active state - bright green like screenshot */
-.pancake-navigation .btn:not(:disabled),
-.pancake-navigation .btn.btn-primary:not(:disabled) {
+/* Enabled/Active state - bright green for Next buttons only */
+.pancake-navigation .btn-primary:not(:disabled) {
     background-color: #4caf50 !important; /* Bright green like your screenshot */
     border-color: #45a049 !important;
     color: #fff !important;
@@ -320,11 +325,24 @@
     font-weight: 600 !important;
 }
 
-.pancake-navigation .btn:not(:disabled):hover {
+.pancake-navigation .btn-primary:not(:disabled):hover {
     background-color: #45a049 !important;
     border-color: #3e8e41 !important;
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 8px rgba(76,175,80,0.3) !important;
+}
+
+/* Keep Back buttons with original styling */
+.pancake-navigation .btn-outline-secondary {
+    background-color: transparent !important;
+    border-color: #6c757d !important;
+    color: #6c757d !important;
+}
+
+.pancake-navigation .btn-outline-secondary:hover {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
 }
 
 /* Disabled state - keep light teal but muted */

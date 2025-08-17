@@ -2310,6 +2310,51 @@
       "details": {
         "email": null
       }
+    },
+    {
+      "timestamp": "2025-08-17T14:31:19.243898",
+      "user": "unknown",
+      "type": "password_reset_request",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "email": null
+      }
+    },
+    {
+      "timestamp": "2025-08-17T14:31:36.245359",
+      "user": "admin",
+      "type": "login_success",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {
+        "anomaly_detected": false,
+        "risk_factors": []
+      }
+    },
+    {
+      "timestamp": "2025-08-17T14:31:38.146957",
+      "user": "admin",
+      "type": "logout",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-17T14:32:36.120623",
+      "user": "admin",
+      "type": "logout",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {}
+    },
+    {
+      "timestamp": "2025-08-17T14:32:42.698634",
+      "user": "admin",
+      "type": "logout",
+      "ip": "172.31.121.98",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa",
+      "details": {}
     }
   ]
 }
