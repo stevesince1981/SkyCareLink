@@ -315,22 +315,7 @@
     cursor: default !important;
 }
 
-/* Enabled/Active state - bright green for Next buttons only */
-.pancake-navigation .btn-primary:not(:disabled) {
-    background-color: #4caf50 !important; /* Bright green like your screenshot */
-    border-color: #45a049 !important;
-    color: #fff !important;
-    cursor: pointer !important;
-    opacity: 1 !important;
-    font-weight: 600 !important;
-}
-
-.pancake-navigation .btn-primary:not(:disabled):hover {
-    background-color: #45a049 !important;
-    border-color: #3e8e41 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 8px rgba(76,175,80,0.3) !important;
-}
+/* All Next buttons use btn-success class for consistent green styling */
 
 /* Keep Back buttons with original styling */
 .pancake-navigation .btn-outline-secondary {
@@ -424,7 +409,7 @@
                                     
                                     <div class="pancake-navigation">
                                         <div></div>
-                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep1" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-success btn-sm" id="nextStep1" onclick="nextStep()" disabled>
                                             Next: Patient Severity <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -539,7 +524,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep2" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-success btn-sm" id="nextStep2" onclick="nextStep()" disabled>
                                             Next: Locations <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -689,7 +674,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep3" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-success btn-sm" id="nextStep3" onclick="nextStep()" disabled>
                                             Next: Patient Info <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
@@ -799,7 +784,7 @@
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="prevStep()">
                                             <i class="fas fa-arrow-left me-2"></i>Back
                                         </button>
-                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep4" onclick="nextStep()" disabled>
+                                        <button type="button" class="btn btn-success btn-sm" id="nextStep4" onclick="nextStep()" disabled>
                                             Next: Review & Submit <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </div>
