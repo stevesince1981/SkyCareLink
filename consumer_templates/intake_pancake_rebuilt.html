@@ -249,20 +249,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <!-- MFA Requirement Notice -->
-                    {% if not session.get('logged_in') %}
-                    <div class="mfa-requirement">
-                        <h6><i class="fas fa-shield-alt me-2"></i>Security Requirements</h6>
-                        <p class="mb-2">To submit a quote request, you must:</p>
-                        <ul class="mb-2">
-                            <li>Create a verified account with email and phone confirmation</li>
-                            <li>Complete multi-factor authentication (MFA)</li>
-                            <li>Agree to $99 fee for excessive quote requests (4+ quotes)</li>
-                        </ul>
-                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Login/Register Now</a>
-                        <span class="text-muted ms-2">or continue to save your progress</span>
-                    </div>
-                    {% endif %}
+
 
                     <form id="intakeForm" method="POST">
                         <div class="pancake-stack">
@@ -689,6 +676,21 @@
 
                         </div>
                     </form>
+                    
+                    <!-- MFA Requirement Notice - Moved to bottom -->
+                    {% if not session.get('logged_in') %}
+                    <div class="mfa-requirement mt-4">
+                        <h6><i class="fas fa-shield-alt me-2"></i>Security Requirements</h6>
+                        <p class="mb-2">To submit a quote request, you must:</p>
+                        <ul class="mb-2">
+                            <li>Create a verified account with email and phone confirmation</li>
+                            <li>Complete multi-factor authentication (MFA)</li>
+                            <li>Agree to $99 fee for excessive quote requests (4+ quotes)</li>
+                        </ul>
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Login/Register Now</a>
+                        <span class="text-muted ms-2">or continue to save your progress</span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
