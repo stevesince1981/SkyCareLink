@@ -4,10 +4,15 @@
 
 {% block head %}
 <style>
+:root {
+    --primary-blue: #1976d2;
+    --secondary-blue: #1565c0;
+}
+
 .hero-section {
     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
     color: white;
-    padding: 3rem 0;
+    padding: 4rem 0;
     text-align: center;
     margin-top: -1rem;
 }
@@ -225,12 +230,69 @@
             
             <!-- Affiliate Registration Form -->
             <div class="form-section" id="affiliateForm">
-                <h4 class="mb-4"><i class="fas fa-helicopter me-2"></i>Affiliate Registration</h4>
-                
-                <div class="requirements-note">
-                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Requirements</h6>
-                    <p class="mb-0">Part 135 Air Carrier Certificate required. We verify all certifications before approval.</p>
+                <div class="text-center mb-4">
+                    <h3 class="display-6 fw-bold text-primary mb-3">
+                        <i class="fas fa-plane me-3"></i>
+                        Join as Transport Provider
+                    </h3>
+                    <p class="lead text-muted">
+                        Partner with SkyCareLink to expand your medical transport business
+                    </p>
                 </div>
+
+                <!-- Benefits Section -->
+                <div class="card border-primary mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-star me-2"></i>Partner Benefits
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Fair quote distribution</strong> - Equal opportunities for all partners
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Fast payments</strong> - Weekly ACH transfers
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>No upfront costs</strong> - Commission-based partnership
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Marketing support</strong> - Increased bookings through our network
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>24/7 coordination</strong> - Dedicated support team
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Technology platform</strong> - Modern booking and tracking tools
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commission Information -->
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Commission Structure:</strong> Adjustable rates from 3.0% to 7.0% (default 5.0%). 
+                    First $25,000 in bookings help recoup our onboarding costs, then your negotiated rate applies.
+                </div>
+
+                <h5 class="mb-3">Company Registration</h5>
 
                 <div class="row">
                     <div class="col-md-6">
@@ -319,26 +381,74 @@
                     </div>
                 </div>
 
-                <div class="benefits-list">
-                    <h6><i class="fas fa-star me-2"></i>Affiliate Benefits</h6>
-                    <ul>
-                        <li>Access to qualified leads from hospitals and individuals</li>
-                        <li>Transparent commission structure with weekly ACH payments</li>
-                        <li>Professional dashboard for quote and booking management</li>
-                        <li>Marketing support and co-branding opportunities</li>
-                        <li>Real-time notifications for new transport requests</li>
-                    </ul>
-                </div>
+
             </div>
 
             <!-- Provider Registration Form -->
             <div class="form-section" id="providerForm">
-                <h4 class="mb-4"><i class="fas fa-hospital me-2"></i>Provider Registration</h4>
-                
-                <div class="requirements-note">
-                    <h6><i class="fas fa-shield-alt me-2"></i>Verification Required</h6>
-                    <p class="mb-0">Healthcare facility verification required. NPI number and state license will be validated.</p>
+                <div class="text-center mb-4">
+                    <h3 class="display-6 fw-bold text-primary mb-3">
+                        <i class="fas fa-hospital me-3"></i>
+                        Join as Hospital/Clinic
+                    </h3>
+                    <p class="lead text-muted">
+                        Connect your facility to our medical transport network
+                    </p>
                 </div>
+
+                <!-- Membership Benefits -->
+                <div class="card border-success mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-gift me-2"></i>Membership Benefits
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Free for 1 year</strong> post-launch
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>+1 year</strong> after 5 successful referrals
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Free for life</strong> after referral completes flight
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Priority booking</strong> for urgent transports
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Bulk pricing</strong> for multiple bookings
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Dedicated support</strong> team
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Information -->
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Pricing:</strong> Free for 1 year, then $199.99/year with auto-renewal. 
+                    30-day cancellation notice required. Referral bonuses can extend or eliminate fees.
+                </div>
+
+                <h5 class="mb-3">Facility Registration</h5>
 
                 <div class="row">
                     <div class="col-md-8">
@@ -476,27 +586,73 @@
                     </div>
                 </div>
 
-                <div class="benefits-list">
-                    <h6><i class="fas fa-handshake me-2"></i>Provider Benefits</h6>
-                    <ul>
-                        <li>Streamlined patient transport coordination</li>
-                        <li>Access to verified affiliate network</li>
-                        <li>Bulk booking capabilities and volume discounts</li>
-                        <li>HIPAA-compliant secure communication</li>
-                        <li>Integration with existing hospital systems</li>
-                        <li>Free membership for first year with referral program</li>
-                    </ul>
-                </div>
+
             </div>
 
             <!-- Individual Registration Form -->
             <div class="form-section" id="individualForm">
-                <h4 class="mb-4"><i class="fas fa-user-friends me-2"></i>Individual Registration</h4>
-                
-                <div class="requirements-note">
-                    <h6><i class="fas fa-info-circle me-2"></i>Quick & Easy</h6>
-                    <p class="mb-0">Simple registration process. Start requesting transport quotes immediately after verification.</p>
+                <div class="text-center mb-4">
+                    <h3 class="display-6 fw-bold text-primary mb-3">
+                        <i class="fas fa-user-friends me-3"></i>
+                        Individual Registration
+                    </h3>
+                    <p class="lead text-muted">
+                        Join SkyCareLink to access medical transport services for yourself or loved ones
+                    </p>
                 </div>
+
+                <!-- Individual Benefits -->
+                <div class="card border-info mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-heart me-2"></i>Individual Benefits
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Compare quotes</strong> from multiple certified affiliates
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Transparent pricing</strong> with no hidden fees
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>24/7 customer support</strong> and assistance
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Real-time flight tracking</strong> and updates
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Insurance coordination</strong> and billing support
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        <strong>Family seating options</strong> and special accommodations
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Registration Note -->
+                <div class="alert alert-success mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Quick & Easy:</strong> Simple registration process. Start requesting transport quotes immediately after verification.
+                </div>
+
+                <h5 class="mb-3">Personal Information</h5>
 
                 <div class="row">
                     <div class="col-md-6">
@@ -585,17 +741,7 @@
                     </div>
                 </div>
 
-                <div class="benefits-list">
-                    <h6><i class="fas fa-heart me-2"></i>Individual Benefits</h6>
-                    <ul>
-                        <li>Compare quotes from multiple certified affiliates</li>
-                        <li>Transparent pricing with no hidden fees</li>
-                        <li>24/7 customer support and assistance</li>
-                        <li>Real-time flight tracking and updates</li>
-                        <li>Insurance coordination and billing support</li>
-                        <li>Family seating options and special accommodations</li>
-                    </ul>
-                </div>
+
             </div>
 
             <!-- Submit Section -->

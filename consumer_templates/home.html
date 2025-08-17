@@ -117,15 +117,20 @@
               Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
             </p>
             <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center mb-3">
+              <a href="{{ url_for('unified_registration') }}"
+                 class="btn btn-success px-4"
+                 aria-label="Join SkyCareLink">
+                <i class="bi bi-person-plus me-1" aria-hidden="true"></i> Join SkyCareLink
+              </a>
               <a href="{{ url_for('consumer_intake') }}"
                  class="btn btn-primary px-4"
                  aria-label="Request a quote">
                 <i class="bi bi-send me-1" aria-hidden="true"></i> Request a Quote
               </a>
-              <a href="{{ url_for('unified_registration') }}"
+              <a href="{{ url_for('our_programs') }}"
                  class="btn btn-outline-secondary px-4"
-                 aria-label="Affiliate onboarding">
-                <i class="bi bi-people me-1" aria-hidden="true"></i> Join SkyCareLink
+                 aria-label="Our programs information">
+                <i class="bi bi-people me-1" aria-hidden="true"></i> Our Programs
               </a>
             </div>
             
