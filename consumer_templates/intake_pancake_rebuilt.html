@@ -98,13 +98,13 @@
 .service-card, .severity-card {
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    padding: 0.4rem;
+    padding: 0.3rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
     height: auto;
-    min-height: 75px;
-    font-size: 0.85rem;
+    min-height: 60px;
+    font-size: 0.8rem;
 }
 
 .service-card:hover, .severity-card:hover {
@@ -143,6 +143,26 @@
     margin-top: 0.5rem;
     padding-top: 0.4rem;
     border-top: 1px solid #e0e0e0;
+}
+
+/* Compact Form Controls */
+.pancake-content .form-control,
+.pancake-content .form-select {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    height: calc(1.5em + 0.5rem + 2px);
+}
+
+.pancake-content .form-control-sm,
+.pancake-content .form-select-sm {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.8rem;
+    height: calc(1.5em + 0.4rem + 2px);
+}
+
+.pancake-content textarea.form-control-sm {
+    height: auto;
+    min-height: calc(1.5em + 0.4rem + 2px);
 }
 
 .family-seat-selector {
@@ -361,25 +381,25 @@
                                             </h6>
                                             <div class="mb-2">
                                                 <label class="form-label small">Hospital/Facility Name</label>
-                                                <input type="text" class="form-control form-control-sm" name="from_hospital" id="fromHospital" 
+                                                <input type="text" class="form-control form-control-sm compact-input" name="from_hospital" id="fromHospital" 
                                                        placeholder="Enter hospital or facility name" autocomplete="off">
                                                 <div id="fromHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 150px; overflow-y: auto;"></div>
                                                 <div class="form-text small">Start typing for suggestions</div>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">Address</label>
-                                                <input type="text" class="form-control form-control-sm" name="from_address" id="fromAddress" 
+                                                <input type="text" class="form-control form-control-sm compact-input" name="from_address" id="fromAddress" 
                                                        placeholder="Street address">
                                             </div>
                                             <div class="row g-2">
                                                 <div class="col-8">
                                                     <label class="form-label small">City</label>
-                                                    <input type="text" class="form-control form-control-sm" name="from_city" id="fromCity" 
+                                                    <input type="text" class="form-control form-control-sm compact-input" name="from_city" id="fromCity" 
                                                            placeholder="City">
                                                 </div>
                                                 <div class="col-4">
                                                     <label class="form-label small">State</label>
-                                                    <select class="form-select form-select-sm" name="from_state" id="fromState">
+                                                    <select class="form-select form-select-sm compact-input" name="from_state" id="fromState">
                                                         <option value="">State</option>
                                                         <!-- US States will be populated -->
                                                     </select>
@@ -394,25 +414,25 @@
                                             </h6>
                                             <div class="mb-2">
                                                 <label class="form-label small">Hospital/Facility Name</label>
-                                                <input type="text" class="form-control form-control-sm" name="to_hospital" id="toHospital" 
+                                                <input type="text" class="form-control form-control-sm compact-input" name="to_hospital" id="toHospital" 
                                                        placeholder="Enter destination hospital" autocomplete="off">
                                                 <div id="toHospitalSuggestions" class="dropdown-menu w-100" style="max-height: 150px; overflow-y: auto;"></div>
                                                 <div class="form-text small">Start typing for suggestions</div>
                                             </div>
                                             <div class="mb-2">
                                                 <label class="form-label small">Address</label>
-                                                <input type="text" class="form-control form-control-sm" name="to_address" id="toAddress" 
+                                                <input type="text" class="form-control form-control-sm compact-input" name="to_address" id="toAddress" 
                                                        placeholder="Street address">
                                             </div>
                                             <div class="row g-2">
                                                 <div class="col-8">
                                                     <label class="form-label small">City</label>
-                                                    <input type="text" class="form-control form-control-sm" name="to_city" id="toCity" 
+                                                    <input type="text" class="form-control form-control-sm compact-input" name="to_city" id="toCity" 
                                                            placeholder="City">
                                                 </div>
                                                 <div class="col-4">
                                                     <label class="form-label small">State</label>
-                                                    <select class="form-select form-select-sm" name="to_state" id="toState">
+                                                    <select class="form-select form-select-sm compact-input" name="to_state" id="toState">
                                                         <option value="">State</option>
                                                         <!-- US States will be populated -->
                                                     </select>
@@ -425,7 +445,7 @@
                                     <div class="row g-2 mt-2">
                                         <div class="col-md-6">
                                             <label class="form-label small">Preferred Transport Time</label>
-                                            <select class="form-select form-select-sm" name="preferred_time" id="preferredTime">
+                                            <select class="form-select form-select-sm compact-input" name="preferred_time" id="preferredTime">
                                                 <option value="">Select preferred time</option>
                                                 <option value="flexible">Flexible</option>
                                                 <option value="morning">Morning (6 AM - 12 PM)</option>
@@ -478,19 +498,19 @@
                                         <!-- Patient Name -->
                                         <div class="col-md-6">
                                             <label class="form-label small">Patient First Name</label>
-                                            <input type="text" class="form-control form-control-sm" name="patient_first_name" id="patientFirstName" 
+                                            <input type="text" class="form-control form-control-sm compact-input" name="patient_first_name" id="patientFirstName" 
                                                    placeholder="First name" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label small">Patient Last Name</label>
-                                            <input type="text" class="form-control form-control-sm" name="patient_last_name" id="patientLastName" 
+                                            <input type="text" class="form-control form-control-sm compact-input" name="patient_last_name" id="patientLastName" 
                                                    placeholder="Last name" required>
                                         </div>
 
                                         <!-- Gender -->
                                         <div class="col-md-4">
                                             <label class="form-label small">Gender</label>
-                                            <select class="form-select form-select-sm" name="patient_gender" id="patientGender" required>
+                                            <select class="form-select form-select-sm compact-input" name="patient_gender" id="patientGender" required>
                                                 <option value="">Select gender</option>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
@@ -501,7 +521,7 @@
                                         <!-- Age Range -->
                                         <div class="col-md-4">
                                             <label class="form-label small">Age Range</label>
-                                            <select class="form-select form-select-sm" name="patient_age_range" id="patientAgeRange">
+                                            <select class="form-select form-select-sm compact-input" name="patient_age_range" id="patientAgeRange">
                                                 <option value="">Select age range</option>
                                                 <option value="newborn">Newborn (0-1 month)</option>
                                                 <option value="infant">Infant (1-12 months)</option>
@@ -516,7 +536,7 @@
                                         <!-- Weight Range -->
                                         <div class="col-md-4">
                                             <label class="form-label small">Weight Range</label>
-                                            <select class="form-select form-select-sm" name="patient_weight" id="patientWeight">
+                                            <select class="form-select form-select-sm compact-input" name="patient_weight" id="patientWeight">
                                                 <option value="">Select weight range</option>
                                                 <option value="under-50">Under 50 lbs</option>
                                                 <option value="50-100">50-100 lbs</option>
@@ -604,7 +624,7 @@
                                             Additional Medical Information
                                             <small class="text-muted">(No PII/PHI - Personally Identifiable Information / Protected Health Information)</small>
                                         </label>
-                                        <textarea class="form-control form-control-sm" name="additional_info" id="additionalInfo" rows="2" 
+                                        <textarea class="form-control form-control-sm compact-input" name="additional_info" id="additionalInfo" rows="2" 
                                                   placeholder="Brief description of medical needs, special requirements, or concerns (avoid patient names, dates of birth, SSN, etc.)"></textarea>
                                     </div>
                                     
