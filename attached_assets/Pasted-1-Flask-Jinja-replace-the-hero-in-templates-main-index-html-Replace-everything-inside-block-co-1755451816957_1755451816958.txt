@@ -1,0 +1,146 @@
+1) Flask/Jinja: replace the hero in templates/main/index.html
+
+Replace everything inside {% block content %}...{% endblock %} with this:
+
+{% extends "base.html" %}
+{% block content %}
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+  <!-- Left: compact, nearly square hero -->
+  <div class="bg-white rounded-2xl shadow p-6 flex items-center justify-center min-h-[260px] md:min-h-[360px]">
+    <div class="max-w-sm text-center">
+      <h1 class="text-3xl md:text-4xl font-semibold leading-tight">
+        Medical Transport <span class="text-blue-700">Made Simple</span>
+      </h1>
+      <p class="mt-3 text-gray-700">
+        Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
+      </p>
+      <div class="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/quotes/new"
+           class="px-5 py-3 rounded-lg bg-blue-700 text-white font-medium hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+           aria-label="Request a quote">
+          Request a Quote
+        </a>
+        <a href="/affiliate/dashboard"
+           class="px-5 py-3 rounded-lg bg-gray-100 text-gray-900 font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+           aria-label="Affiliate dashboard">
+          Affiliate Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: advisory / transparency box -->
+  <aside class="bg-white rounded-2xl shadow p-6 flex flex-col">
+    <div class="flex items-center gap-2">
+      <svg class="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M9 16.2l-3.5-3.5a1 1 0 10-1.4 1.4l4.2 4.2a1 1 0 001.4 0l10-10a1 1 0 00-1.4-1.4L9 16.2z"/>
+      </svg>
+      <h2 class="text-xl font-semibold">Know Your Rights Before You Choose an Air Ambulance</h2>
+    </div>
+
+    <ul class="mt-4 space-y-3 text-gray-700">
+      <li>Providers should give a <strong>written price quote</strong> before a flight (except true emergencies).</li>
+      <li>Quotes should clearly list <strong>services and all charges</strong> you will incur.</li>
+      <li><strong>Avoid providers</strong> who refuse to provide a written quote.</li>
+      <li>Comparing quotes helps you review <strong>costs, certifications, and qualifications</strong>.</li>
+      <li><strong>Ask questions.</strong> This is an important medical decision—make it an informed one.</li>
+    </ul>
+
+    <div class="mt-4">
+      <a href="/resources/financial-assistance"
+         class="inline-flex items-center gap-2 text-blue-700 hover:text-blue-900 font-medium"
+         aria-label="Learn more about patient rights and transparency">
+        Learn more
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/>
+        </svg>
+      </a>
+    </div>
+
+    <p class="mt-3 text-xs text-gray-500">
+      SkyCareLink is a software platform, not a broker. We do not arrange or provide transport, and we do not handle funds between providers and patients.
+    </p>
+  </aside>
+</section>
+{% endblock %}
+
+Notes
+
+The left panel uses min-h-[260px] md:min-h-[360px] to keep a nearly square feel on desktop and a compact tile on mobile.
+
+The right panel is your advisory message, converted into scannable bullets with a clear header and a “Learn more” link.
+
+Fully accessible: buttons/links have aria-labels; icons are marked decorative via aria-hidden.
+
+2) Optional React component (if/when you move to React)
+
+Create HeroHome.tsx (or .jsx) and include it on your homepage:
+
+export default function HeroHome() {
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+      {/* Left: compact, nearly square hero */}
+      <div className="bg-white rounded-2xl shadow p-6 flex items-center justify-center min-h-[260px] md:min-h-[360px]">
+        <div className="max-w-sm text-center">
+          <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
+            Medical Transport <span className="text-blue-700">Made Simple</span>
+          </h1>
+          <p className="mt-3 text-gray-700">
+            Request a quote in minutes. We route your request to qualified air medical affiliates—fast.
+          </p>
+          <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="/quotes/new"
+              className="px-5 py-3 rounded-lg bg-blue-700 text-white font-medium hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              aria-label="Request a quote"
+            >
+              Request a Quote
+            </a>
+            <a
+              href="/affiliate/dashboard"
+              className="px-5 py-3 rounded-lg bg-gray-100 text-gray-900 font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              aria-label="Affiliate dashboard"
+            >
+              Affiliate Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Right: advisory / transparency box */}
+      <aside className="bg-white rounded-2xl shadow p-6 flex flex-col">
+        <div className="flex items-center gap-2">
+          <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M9 16.2l-3.5-3.5a1 1 0 10-1.4 1.4l4.2 4.2a1 1 0 001.4 0l10-10a1 1 0 00-1.4-1.4L9 16.2z"/>
+          </svg>
+          <h2 className="text-xl font-semibold">Know Your Rights Before You Choose an Air Ambulance</h2>
+        </div>
+
+        <ul className="mt-4 space-y-3 text-gray-700">
+          <li>Providers should give a <strong>written price quote</strong> before a flight (except true emergencies).</li>
+          <li>Quotes should clearly list <strong>services and all charges</strong> you will incur.</li>
+          <li><strong>Avoid providers</strong> who refuse to provide a written quote.</li>
+          <li>Comparing quotes helps you review <strong>costs, certifications, and qualifications</strong>.</li>
+          <li><strong>Ask questions.</strong> This is an important medical decision—make it an informed one.</li>
+        </ul>
+
+        <div className="mt-4">
+          <a
+            href="/resources/financial-assistance"
+            className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-900 font-medium"
+            aria-label="Learn more about patient rights and transparency"
+          >
+            Learn more
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/>
+            </svg>
+          </a>
+        </div>
+
+        <p className="mt-3 text-xs text-gray-500">
+          SkyCareLink is a software platform, not a broker. We do not arrange or provide transport, and we do not handle funds between providers and patients.
+        </p>
+      </aside>
+    </section>
+  );
+}
