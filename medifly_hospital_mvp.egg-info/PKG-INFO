@@ -16,6 +16,7 @@ Requires-Dist: pyjwt>=2.4.0
 Requires-Dist: bcrypt>=3.2.0
 Requires-Dist: flask-limiter>=2.1.0
 Requires-Dist: requests>=2.31.0
+Requires-Dist: twilio>=9.7.0
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0.0; extra == "dev"
 Requires-Dist: black>=23.0.0; extra == "dev"

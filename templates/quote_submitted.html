@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Request Submitted - SkyCareLink</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .success-header {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            padding: 3rem 0;
+        }
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .quote-details {
+            background-color: #f8f9fa;
+            border-left: 4px solid #17a2b8;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .card-custom {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="success-header text-center">
+        <div class="container">
+            <div class="success-icon">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+            <h1>Quote Request Submitted!</h1>
+            <h4>We're finding the best provider for your needs</h4>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card card-custom">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="fas fa-clipboard-list"></i> Request Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="quote-details">
+                            <h4>Reference: {{ quote.reference_number }}</h4>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <p><strong>Contact:</strong> {{ quote.contact_name }}</p>
+                                    <p><strong>Service Type:</strong> {{ quote.service_type or 'Not specified' }}</p>
+                                    <p><strong>Severity Level:</strong> {{ quote.severity_level or 'Not specified' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Flight Date:</strong> {{ quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else 'TBD' }}</p>
+                                    <p><strong>From:</strong> {{ quote.from_city }}, {{ quote.from_state }}</p>
+                                    <p><strong>To:</strong> {{ quote.to_city }}, {{ quote.to_state }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-check-circle"></i> What's happening now:</h6>
+                            <ul class="mb-0">
+                                <li>Your request has been sent to our network of qualified providers</li>
+                                <li>We'll notify you immediately when quotes are received</li>
+                                <li>Typical response time is 2-6 hours during business hours</li>
+                                <li>You'll receive notifications via email{{ ' and SMS' if quote.contact_phone else '' }}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-bookmark"></i> Save this information:</h6>
+                            <p class="mb-2"><strong>Reference Number:</strong> {{ quote.reference_number }}</p>
+                            <p class="mb-2"><strong>Results Link:</strong> <a href="{{ url_for('quotes.quote_results', ref=quote.reference_number) }}">{{ url_for('quotes.quote_results', ref=quote.reference_number, _external=True) }}</a></p>
+                            <p class="mb-0 small text-muted">You can check the status of your quote anytime using this link.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <a href="{{ url_for('quotes.quote_results', ref=quote.reference_number) }}" class="btn btn-primary me-3">
+                        <i class="fas fa-search"></i> Check Status
+                    </a>
+                    <a href="{{ url_for('consumer_home') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-home"></i> Return to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

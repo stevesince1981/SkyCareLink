@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - SkyCareLink</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            background-color: #17a2b8;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header h2 {
+            margin: 10px 0 0 0;
+            font-size: 18px;
+            font-weight: normal;
+        }
+        .content {
+            padding: 30px 20px;
+            background-color: #f9f9f9;
+        }
+        .success-icon {
+            text-align: center;
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        .confirmation-box {
+            background-color: #e8f4f8;
+            border: 2px solid #17a2b8;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .confirmation-box h3 {
+            margin-top: 0;
+            color: #17a2b8;
+            font-size: 24px;
+        }
+        .booking-ref {
+            font-size: 24px;
+            font-weight: bold;
+            color: #17a2b8;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        .booking-details {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+        }
+        .booking-details h4 {
+            margin-top: 0;
+            color: #17a2b8;
+        }
+        .detail-row {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: bold;
+            display: inline-block;
+            min-width: 130px;
+        }
+        .booking-button {
+            display: inline-block;
+            background-color: #17a2b8;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 30px 0;
+            transition: background-color 0.3s;
+        }
+        .booking-button:hover {
+            background-color: #138496;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .direct-link {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .next-steps {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .next-steps h4 {
+            margin-top: 0;
+            color: #155724;
+        }
+        .next-steps ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+        .next-steps li {
+            margin: 8px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+            background-color: #f0f0f0;
+            border-radius: 0 0 10px 10px;
+        }
+        .contact-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+            }
+            .booking-button {
+                display: block;
+                width: 80%;
+                text-align: center;
+            }
+            .booking-ref {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SkyCareLink</h1>
+            <h2>Booking Confirmed!</h2>
+        </div>
+        
+        <div class="content">
+            <div class="success-icon">🎉</div>
+            
+            <p style="text-align: center; font-size: 18px;">
+                <strong>Congratulations!</strong> Your medical transport booking has been successfully confirmed.
+            </p>
+            
+            <div class="confirmation-box">
+                <h3>✅ Booking Confirmed</h3>
+                <div class="booking-ref">{{ booking_ref }}</div>
+                <p>Your reservation is secured and active.</p>
+            </div>
+            
+            <div class="booking-details">
+                <h4>Booking Details</h4>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Booking Reference:</span>
+                    <span>{{ booking_ref }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Provider:</span>
+                    <span>{{ provider_name }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Flight Date:</span>
+                    <span>{{ flight_date }}</span>
+                </div>
+                
+                {% if booking_details %}
+                    {% if booking_details.flight_time %}
+                    <div class="detail-row">
+                        <span class="detail-label">Flight Time:</span>
+                        <span>{{ booking_details.flight_time }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking_details.from_location %}
+                    <div class="detail-row">
+                        <span class="detail-label">From:</span>
+                        <span>{{ booking_details.from_location }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking_details.to_location %}
+                    <div class="detail-row">
+                        <span class="detail-label">To:</span>
+                        <span>{{ booking_details.to_location }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking_details.aircraft_type %}
+                    <div class="detail-row">
+                        <span class="detail-label">Aircraft Type:</span>
+                        <span>{{ booking_details.aircraft_type }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking_details.total_cost %}
+                    <div class="detail-row">
+                        <span class="detail-label">Total Cost:</span>
+                        <span><strong>{{ booking_details.total_cost }}</strong></span>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <div class="next-steps">
+                <h4>Next Steps:</h4>
+                <ul>
+                    <li><strong>Provider Contact:</strong> {{ provider_name }} will contact you within 24 hours with specific flight details and coordination information.</li>
+                    <li><strong>Preparation:</strong> Please have all necessary medical documentation and patient information ready.</li>
+                    <li><strong>Confirmation Call:</strong> You will receive a confirmation call 24-48 hours before your flight.</li>
+                    <li><strong>Questions:</strong> Contact our support team anytime for assistance.</li>
+                </ul>
+            </div>
+            
+            <div class="button-container">
+                <a href="{{ booking_url }}" class="booking-button">VIEW BOOKING DETAILS</a>
+            </div>
+            
+            <div class="direct-link">
+                <strong>Direct Link:</strong><br>
+                <a href="{{ booking_url }}">{{ booking_url }}</a>
+            </div>
+            
+            <div class="contact-box">
+                <strong>Need Immediate Assistance?</strong><br>
+                Our 24/7 support team is here to help with any questions or concerns.
+            </div>
+            
+            <p style="text-align: center;">Thank you for choosing SkyCareLink for your critical care transport needs. We're honored to serve you during this important time.</p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>SkyCareLink</strong><br>
+            Professional Medical Transport Services<br>
+            Your trusted partner in critical care transport</p>
+            
+            <p>This is an automated confirmation. Please save this email for your records.</p>
+        </div>
+    </div>
+</body>
+</html>

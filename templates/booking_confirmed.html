@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - SkyCareLink</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .confirmation-header {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            padding: 3rem 0;
+        }
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .booking-ref {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #17a2b8;
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+        }
+        .booking-card {
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .next-steps {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-header text-center">
+        <div class="container">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>Booking Confirmed!</h1>
+            <h4>Your medical transport is secured</h4>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="booking-card">
+                    <div class="card-header bg-info text-white text-center">
+                        <h3><i class="fas fa-calendar-check"></i> Booking Confirmation</h3>
+                    </div>
+                    
+                    <div class="booking-ref">
+                        {{ quote.booking_reference or 'BOOKING-' + quote.reference_number }}
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-building"></i> Provider Information</h5>
+                                <p><strong>Company:</strong> {{ quote.provider_name }}</p>
+                                <p><strong>Aircraft:</strong> {{ quote.aircraft_type or 'TBD' }}</p>
+                                <p><strong>Total Cost:</strong> ${{ "%.2f"|format(quote.quoted_price) if quote.quoted_price else '0.00' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-route"></i> Flight Details</h5>
+                                <p><strong>Date:</strong> {{ quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else 'TBD' }}</p>
+                                <p><strong>From:</strong> {{ quote.from_city }}, {{ quote.from_state }}</p>
+                                <p><strong>To:</strong> {{ quote.to_city }}, {{ quote.to_state }}</p>
+                                {% if quote.return_flight_needed %}
+                                <p><strong>Return:</strong> {{ quote.return_date.strftime('%B %d, %Y') if quote.return_date else 'TBD' }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-user"></i> Contact Information</h6>
+                                <p><strong>Primary Contact:</strong> {{ quote.contact_name }}</p>
+                                {% if quote.contact_email %}
+                                <p><strong>Email:</strong> {{ quote.contact_email }}</p>
+                                {% endif %}
+                                {% if quote.contact_phone %}
+                                <p><strong>Phone:</strong> {{ quote.contact_phone }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-medkit"></i> Medical Requirements</h6>
+                                {% if quote.medical_equipment %}
+                                <p><strong>Equipment:</strong></p>
+                                {% for equipment in quote.medical_equipment %}
+                                    <span class="badge bg-secondary me-1 mb-1">{{ equipment.replace('_', ' ').title() }}</span>
+                                {% endfor %}
+                                {% endif %}
+                                
+                                {% if quote.family_seats and quote.family_seats > 0 %}
+                                <p class="mt-2"><strong>Family Seats:</strong> {{ quote.family_seats }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="next-steps">
+                    <h5><i class="fas fa-list-ol text-success"></i> What Happens Next:</h5>
+                    <ol>
+                        <li><strong>Provider Contact (Within 24 Hours):</strong> {{ quote.provider_name }} will contact you directly to coordinate specific flight details, timing, and logistics.</li>
+                        <li><strong>Medical Documentation:</strong> Please have all necessary medical records, insurance information, and patient documentation ready.</li>
+                        <li><strong>Pre-Flight Confirmation:</strong> You will receive a confirmation call 24-48 hours before your scheduled flight.</li>
+                        <li><strong>Day of Flight:</strong> Arrive at the designated location 30 minutes before scheduled departure time.</li>
+                        <li><strong>24/7 Support:</strong> Our coordination team is available anytime for questions or changes.</li>
+                    </ol>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h6><i class="fas fa-exclamation-triangle"></i> Important Reminders:</h6>
+                    <ul class="mb-0">
+                        <li>Save your booking reference: <strong>{{ quote.booking_reference or 'BOOKING-' + quote.reference_number }}</strong></li>
+                        <li>Weather conditions may require flight rescheduling</li>
+                        <li>Medical condition changes should be reported immediately</li>
+                        <li>Cancellation policies apply as per provider terms</li>
+                    </ul>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button onclick="window.print()" class="btn btn-outline-primary me-3">
+                        <i class="fas fa-print"></i> Print Confirmation
+                    </button>
+                    <a href="{{ url_for('consumer_home') }}" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Return to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6><i class="fas fa-headset"></i> Need Assistance?</h6>
+                        <p class="mb-2">Our 24/7 support team is here to help</p>
+                        <p class="text-muted small">Contact us anytime with questions about your booking or transport needs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Ready - SkyCareLink</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .quote-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .price-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .quote-card {
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .provider-info {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+        }
+        .btn-book {
+            background-color: #28a745;
+            border-color: #28a745;
+            font-size: 1.2rem;
+            padding: 0.75rem 2rem;
+        }
+        .btn-book:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="quote-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-check-circle"></i> Your Quote is Ready!</h1>
+                    <h4>Reference: {{ quote.reference_number }}</h4>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-success fs-6">
+                        <i class="fas fa-clock"></i> 
+                        Valid for {{ (quote.quote_expires_at - quote.quote_submitted_at).days if quote.quote_expires_at and quote.quote_submitted_at else 7 }} days
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="quote-card">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3><i class="fas fa-helicopter"></i> Medical Transport Quote</h3>
+                    </div>
+                    
+                    <div class="price-display bg-light">
+                        ${{ "%.2f"|format(quote.quoted_price) if quote.quoted_price else '0.00' }}
+                    </div>
+                    
+                    <div class="provider-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-building"></i> Provider Details</h5>
+                                <p><strong>Company:</strong> {{ quote.provider_name or 'Provider Name' }}</p>
+                                <p><strong>Aircraft Type:</strong> {{ quote.aircraft_type or 'Aircraft TBD' }}</p>
+                                <p><strong>Est. Flight Time:</strong> {{ quote.estimated_flight_time or 'TBD' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-route"></i> Flight Details</h5>
+                                <p><strong>Date:</strong> {{ quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else 'TBD' }}</p>
+                                <p><strong>From:</strong> {{ quote.from_city }}, {{ quote.from_state }}</p>
+                                <p><strong>To:</strong> {{ quote.to_city }}, {{ quote.to_state }}</p>
+                                {% if quote.return_flight_needed %}
+                                <p><strong>Return Flight:</strong> <i class="fas fa-check text-success"></i> Included</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if quote.medical_equipment %}
+                        <div class="mt-3">
+                            <h6><i class="fas fa-medkit"></i> Required Equipment:</h6>
+                            {% for equipment in quote.medical_equipment %}
+                                <span class="badge bg-secondary me-1">{{ equipment.replace('_', ' ').title() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if quote.family_seats and quote.family_seats > 0 %}
+                        <div class="mt-2">
+                            <p><strong>Family Seats:</strong> {{ quote.family_seats }} additional seat{{ 's' if quote.family_seats != 1 else '' }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if quote.provider_notes %}
+                        <div class="mt-3">
+                            <h6><i class="fas fa-comment"></i> Provider Notes:</h6>
+                            <p class="text-muted">{{ quote.provider_notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-footer text-center">
+                        <button id="bookQuoteBtn" class="btn btn-book btn-primary btn-lg me-3">
+                            <i class="fas fa-calendar-check"></i> Book This Flight
+                        </button>
+                        <a href="{{ url_for('consumer_home') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-home"></i> Return Home
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <h6><i class="fas fa-exclamation-triangle"></i> Important Information:</h6>
+                    <ul class="mb-0">
+                        <li>This quote is valid until {{ quote.quote_expires_at.strftime('%B %d, %Y at %I:%M %p') if quote.quote_expires_at else 'TBD' }}</li>
+                        <li>Booking confirms your commitment and may require deposit</li>
+                        <li>The provider will contact you directly after booking for coordination</li>
+                        <li>Weather and operational factors may affect final scheduling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you ready to book this medical transport flight?</p>
+                    <div class="alert alert-info">
+                        <strong>Final Details:</strong><br>
+                        Provider: {{ quote.provider_name }}<br>
+                        Total Cost: ${{ "%.2f"|format(quote.quoted_price) if quote.quoted_price else '0.00' }}<br>
+                        Flight Date: {{ quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else 'TBD' }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmBookingBtn" class="btn btn-success">
+                        <i class="fas fa-check"></i> Confirm Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('bookQuoteBtn').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
+        });
+
+        document.getElementById('confirmBookingBtn').addEventListener('click', function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+            btn.disabled = true;
+            
+            fetch(`/quotes/book/{{ quote.reference_number }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url || window.location.href;
+                } else {
+                    alert('Booking failed: ' + (data.message || 'Unknown error'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Booking error:', error);
+                alert('Booking failed due to a network error. Please try again.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

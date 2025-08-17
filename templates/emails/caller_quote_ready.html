@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Ready - SkyCareLink</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            background-color: #28a745;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header h2 {
+            margin: 10px 0 0 0;
+            font-size: 18px;
+            font-weight: normal;
+        }
+        .content {
+            padding: 30px 20px;
+            background-color: #f9f9f9;
+        }
+        .success-icon {
+            text-align: center;
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        .price-box {
+            background-color: #e8f5e8;
+            border: 2px solid #28a745;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .price-box h3 {
+            margin-top: 0;
+            color: #28a745;
+            font-size: 24px;
+        }
+        .price-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 15px 0;
+        }
+        .quote-details {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .detail-row {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: bold;
+            display: inline-block;
+            min-width: 120px;
+        }
+        .quote-button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 30px 0;
+            transition: background-color 0.3s;
+        }
+        .quote-button:hover {
+            background-color: #218838;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .direct-link {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .validity-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+            background-color: #f0f0f0;
+            border-radius: 0 0 10px 10px;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+            }
+            .quote-button {
+                display: block;
+                width: 80%;
+                text-align: center;
+            }
+            .price-amount {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SkyCareLink</h1>
+            <h2>Your Quote is Ready!</h2>
+        </div>
+        
+        <div class="content">
+            <div class="success-icon">✅</div>
+            
+            <p style="text-align: center; font-size: 18px;">
+                <strong>Great news!</strong> We've received a competitive quote for your medical transport request.
+            </p>
+            
+            <div class="price-box">
+                <h3>Quote Summary</h3>
+                <div class="price-amount">{{ price }}</div>
+                <p><strong>Provider:</strong> {{ provider_name }}</p>
+                <p><strong>Reference:</strong> {{ quote_ref }}</p>
+            </div>
+            
+            {% if flight_details %}
+            <div class="quote-details">
+                <h4>Flight Details</h4>
+                
+                {% if flight_details.flight_date %}
+                <div class="detail-row">
+                    <span class="detail-label">Flight Date:</span>
+                    <span>{{ flight_details.flight_date }}</span>
+                </div>
+                {% endif %}
+                
+                {% if flight_details.from_location %}
+                <div class="detail-row">
+                    <span class="detail-label">From:</span>
+                    <span>{{ flight_details.from_location }}</span>
+                </div>
+                {% endif %}
+                
+                {% if flight_details.to_location %}
+                <div class="detail-row">
+                    <span class="detail-label">To:</span>
+                    <span>{{ flight_details.to_location }}</span>
+                </div>
+                {% endif %}
+                
+                {% if flight_details.aircraft_type %}
+                <div class="detail-row">
+                    <span class="detail-label">Aircraft Type:</span>
+                    <span>{{ flight_details.aircraft_type }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="validity-notice">
+                <strong>⏰ Important:</strong> This quote is valid for 7 days.<br>
+                Please review and book promptly to secure your preferred transport.
+            </div>
+            
+            <div class="button-container">
+                <a href="{{ results_url }}" class="quote-button">VIEW FULL QUOTE</a>
+            </div>
+            
+            <div class="direct-link">
+                <strong>Direct Link:</strong><br>
+                <a href="{{ results_url }}">{{ results_url }}</a>
+            </div>
+            
+            <p>Our team is standing by to assist you with booking and any questions you may have.</p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>SkyCareLink</strong><br>
+            Professional Medical Transport Services<br>
+            Your trusted partner in critical care transport</p>
+        </div>
+    </div>
+</body>
+</html>

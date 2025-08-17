@@ -30,6 +30,11 @@ try:
         User, Niche, Affiliate, Hospital, Booking, Quote, Commission,
         AffiliateNiche, Announcement, SecurityEvent
     )
+    # Import new notification services
+    from services.mailer import email_service
+    from services.sms import sms_service
+    from routes.affiliate import affiliate_bp
+    from routes.quotes import quotes_bp
     from seed_data import seed_dummy_data, remove_dummy_data, get_dummy_data_status
     DB_AVAILABLE = True
     print("✓ Database components loaded successfully")
@@ -40,6 +45,12 @@ except ImportError as e:
 # Create Flask app with performance optimizations
 consumer_app = Flask(__name__, template_folder='consumer_templates', static_folder='consumer_static', static_url_path='/consumer_static')
 consumer_app.secret_key = os.environ.get("SESSION_SECRET", "consumer-demo-key-change-in-production")
+
+# Register notification blueprints
+if DB_AVAILABLE:
+    consumer_app.register_blueprint(affiliate_bp)
+    consumer_app.register_blueprint(quotes_bp)
+    print("✓ Notification services loaded successfully")
 
 # Performance: Enable gzip compression and cache headers
 @consumer_app.after_request
@@ -2160,22 +2171,22 @@ def quotes_new():
         contact_name = request.form.get('contact_name', '').strip()
         if not contact_name:
             flash('Contact Name is required.', 'error')
-            return render_template('quotes_new.html')
+            return render_template('quotes_new.html', datetime=datetime)
         
         service_type = request.form.get('service_type')
         if service_type not in ['critical', 'scheduled']:
             flash('Please select a valid service type.', 'error')
-            return render_template('quotes_new.html')
+            return render_template('quotes_new.html', datetime=datetime)
         
         severity_level = request.form.get('severity_level')
         if severity_level not in ['1', '2', '3']:
             flash('Please select a valid severity level.', 'error')
-            return render_template('quotes_new.html')
+            return render_template('quotes_new.html', datetime=datetime)
         
         flight_date = request.form.get('flight_date')
         if not flight_date:
             flash('Flight Date is required.', 'error')
-            return render_template('quotes_new.html')
+            return render_template('quotes_new.html', datetime=datetime)
         
         # Location validation
         from_location = {
@@ -2192,11 +2203,11 @@ def quotes_new():
         
         if not from_location['city'] or not from_location['state']:
             flash('From location (City and State) is required.', 'error')
-            return render_template('quotes_new.html')
+            return render_template('quotes_new.html', datetime=datetime)
         
         if not to_location['city'] or not to_location['state']:
             flash('To location (City and State) is required.', 'error')
-            return render_template('quotes_new.html')
+            return render_template('quotes_new.html', datetime=datetime)
         
         # Default equipment mapping based on severity level
         equipment_mapping = {
@@ -2245,7 +2256,7 @@ def quotes_new():
                 return_date_parsed = datetime.strptime(quote_request['return_date'], '%Y-%m-%d')
         except ValueError:
             flash('Invalid date format.', 'error')
-            return render_template('quotes_new.html')
+            return render_template('quotes_new.html', datetime=datetime)
         
         # Save to database if available
         if DB_AVAILABLE:
@@ -2305,7 +2316,7 @@ def quotes_new():
     except Exception as e:
         logging.error(f"Quote request submission error: {e}")
         flash('An error occurred processing your request. Please try again.', 'error')
-        return render_template('quotes_new.html')
+        return render_template('quotes_new.html', datetime=datetime)
 
 @consumer_app.route('/quotes/results/<ref>')
 def quotes_results(ref):

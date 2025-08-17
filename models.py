@@ -138,7 +138,7 @@ class Booking(db.Model):
     # Relationships
     hospital = relationship("Hospital", back_populates="bookings")
     niche = relationship("Niche", back_populates="bookings")
-    quotes = relationship("Quote", back_populates="booking")
+    # quotes = relationship("Quote", back_populates="booking")  # Disabled until proper FK setup
     commissions = relationship("Commission", back_populates="booking")
     
     def __repr__(self):
@@ -185,6 +185,53 @@ class Quote(db.Model):
     equipment_monitor = Column(Boolean, default=False)
     equipment_stretcher = Column(Boolean, default=False) 
     equipment_oxygen = Column(Boolean, default=False)
+    
+    # Provider quote fields (added for notification system)
+    provider_name = Column(String(200), nullable=True)
+    quoted_price = Column(Float, nullable=True)
+    aircraft_type = Column(String(100), nullable=True)
+    estimated_flight_time = Column(String(50), nullable=True)
+    provider_notes = Column(Text, nullable=True)
+    
+    # Notification timestamps
+    affiliate_notified_at = Column(DateTime, nullable=True)
+    caller_notified_at = Column(DateTime, nullable=True)
+    quote_submitted_at = Column(DateTime, nullable=True)
+    quote_expires_at = Column(DateTime, nullable=True)
+    booking_confirmed_at = Column(DateTime, nullable=True)
+    booking_reference = Column(String(50), nullable=True)
+    
+    # Additional contact fields for intake form
+    relation_to_patient = Column(String(100), nullable=True)
+    from_hospital = Column(String(200), nullable=True)
+    from_address = Column(String(500), nullable=True)
+    to_hospital = Column(String(200), nullable=True)
+    to_address = Column(String(500), nullable=True)
+    preferred_time = Column(String(50), nullable=True)
+    family_seats = Column(Integer, default=0)
+    patient_gender = Column(String(20), nullable=True)
+    patient_age_range = Column(String(50), nullable=True)
+    patient_weight = Column(String(50), nullable=True)
+    additional_info = Column(Text, nullable=True)
+    
+    # Medical equipment flags (for compatibility with intake form)
+    oxygen_required = Column(Boolean, default=False)
+    cardiac_monitor_required = Column(Boolean, default=False)
+    stretcher_required = Column(Boolean, default=False)
+    iv_pump_required = Column(Boolean, default=False)
+    defibrillator_required = Column(Boolean, default=False)
+    ventilator_required = Column(Boolean, default=False)
+    balloon_pump_required = Column(Boolean, default=False)
+    ecmo_required = Column(Boolean, default=False)
+    suction_required = Column(Boolean, default=False)
+    incubator_required = Column(Boolean, default=False)
+    
+    # Medical equipment list (JSON field for flexibility)
+    medical_equipment = Column(JSON, default=list)
+    
+    # Status field mapping for notification system
+    quote_status = Column(String(30), default='pending')  # pending, quoted, booked, expired
+    return_flight_needed = Column(Boolean, default=False)
     
     # Quote metadata
     status = Column(String(30), default='submitted')  # submitted, quotes_received, selected, expired

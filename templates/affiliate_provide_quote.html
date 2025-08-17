@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provide Quote - SkyCareLink Affiliate Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .affiliate-header {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .quote-details {
+            background-color: #f8f9fa;
+            border-left: 4px solid #1976d2;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .required-field {
+            color: #dc3545;
+        }
+        .btn-primary {
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .btn-primary:hover {
+            background-color: #1565c0;
+            border-color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="affiliate-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-helicopter"></i> SkyCareLink</h1>
+                    <h4>Affiliate Portal - Quote Request</h4>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-warning fs-6">Quote Required</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="quote-details">
+                    <h3><i class="fas fa-info-circle"></i> Flight Request Details</h3>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p><strong>Reference:</strong> {{ quote.reference_number }}</p>
+                            <p><strong>Service Type:</strong> {{ quote.service_type or 'Not specified' }}</p>
+                            <p><strong>Severity Level:</strong> {{ quote.severity_level or 'Not specified' }}</p>
+                            <p><strong>Flight Date:</strong> {{ quote.flight_date.strftime('%B %d, %Y') if quote.flight_date else 'TBD' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>From:</strong> {{ quote.from_city }}, {{ quote.from_state }} {{ '(' + quote.from_hospital + ')' if quote.from_hospital else '' }}</p>
+                            <p><strong>To:</strong> {{ quote.to_city }}, {{ quote.to_state }} {{ '(' + quote.to_hospital + ')' if quote.to_hospital else '' }}</p>
+                            <p><strong>Family Seats:</strong> {{ quote.family_seats or 0 }}</p>
+                            <p><strong>Return Flight:</strong> {{ 'Yes' if quote.return_flight_needed else 'No' }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if quote.medical_equipment %}
+                    <div class="mt-3">
+                        <strong>Required Equipment:</strong>
+                        <div class="mt-1">
+                            {% for equipment in quote.medical_equipment %}
+                                <span class="badge bg-secondary me-1">{{ equipment.replace('_', ' ').title() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if quote.additional_info %}
+                    <div class="mt-3">
+                        <strong>Additional Information:</strong>
+                        <p class="mt-1 mb-0">{{ quote.additional_info }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-calculator"></i> Provide Your Quote</h3>
+                    
+                    <form method="post" id="quoteForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="provider_name" class="form-label">
+                                        Provider/Company Name <span class="required-field">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="provider_name" name="provider_name" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="quoted_price" class="form-label">
+                                        Quoted Price <span class="required-field">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="text" class="form-control" id="quoted_price" name="quoted_price" 
+                                               placeholder="0.00" required>
+                                    </div>
+                                    <div class="form-text">Enter amount without $ symbol (e.g., 15000.00)</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="aircraft_type" class="form-label">Aircraft Type</label>
+                                    <select class="form-select" id="aircraft_type" name="aircraft_type">
+                                        <option value="">Select aircraft type</option>
+                                        <option value="Helicopter">Helicopter</option>
+                                        <option value="Fixed Wing - Twin Engine">Fixed Wing - Twin Engine</option>
+                                        <option value="Fixed Wing - Jet">Fixed Wing - Jet</option>
+                                        <option value="Ground Ambulance">Ground Ambulance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="flight_time" class="form-label">Estimated Flight Time</label>
+                                    <input type="text" class="form-control" id="flight_time" name="flight_time" 
+                                           placeholder="e.g., 2 hours 30 minutes">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="additional_notes" class="form-label">Additional Notes</label>
+                                    <textarea class="form-control" id="additional_notes" name="additional_notes" 
+                                              rows="4" placeholder="Special considerations, crew information, etc."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div>
+                                <span class="text-muted">
+                                    <i class="fas fa-clock"></i> Quote will be valid for 7 days
+                                </span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i> Submit Quote
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="fas fa-info-circle"></i> Quote Guidelines</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i> 
+                                Include all applicable fees and taxes
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i> 
+                                Consider fuel, crew, and equipment costs
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i> 
+                                Factor in weather and route complexity
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i> 
+                                Quote is binding for 7 days once submitted
+                            </li>
+                        </ul>
+                        
+                        <hr>
+                        
+                        <p class="small text-muted">
+                            <strong>Response Time:</strong> Please respond within 24 hours to ensure the best service for our client.
+                        </p>
+                        
+                        <p class="small text-muted">
+                            <strong>Contact:</strong> If you have questions about this request, please contact our coordination team.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Format price input
+        document.getElementById('quoted_price').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^\d.]/g, '');
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
