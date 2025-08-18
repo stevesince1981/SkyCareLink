@@ -15,6 +15,7 @@ twilio>=9.7.0
 flask-wtf>=1.2.2
 oauthlib>=3.3.1
 flask-dance>=7.1.0
+sendgrid>=6.12.4
 
 [dev]
 pytest>=7.0.0

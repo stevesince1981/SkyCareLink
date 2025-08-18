@@ -4932,6 +4932,14 @@ def register_individual():
                 session['contact_name'] = full_name
                 session.permanent = True
                 
+                # Send welcome email
+                try:
+                    from services.mailer import MailService
+                    mail_service = MailService()
+                    mail_service.send_welcome_email(new_user, 'family')
+                except Exception as e:
+                    logging.warning(f"Could not send welcome email: {e}")
+                
                 flash('Welcome to SkyCareLink! Your account has been created successfully.', 'success')
                 return redirect(url_for('home'))  # Take them to authenticated home page
         else:
@@ -4942,7 +4950,24 @@ def register_individual():
             session['contact_name'] = f"{individual_data['first_name']} {individual_data['last_name']}"
             session.permanent = True
             
-            flash('Welcome to SkyCareLink! Your demo account has been created successfully.', 'success')
+            # Send demo welcome email
+            try:
+                from services.mailer import MailService
+                # Create a dummy user object for email
+                class DemoUser:
+                    def __init__(self, email, name):
+                        self.email = email
+                        self.username = email
+                        self.contact_name = name
+                
+                demo_user = DemoUser(individual_data['email'], f"{individual_data['first_name']} {individual_data['last_name']}")
+                mail_service = MailService()
+                mail_service.send_welcome_email(demo_user, 'family')
+                logging.info(f"Welcome email sent to {individual_data['email']}")
+            except Exception as e:
+                logging.warning(f"Could not send welcome email: {e}")
+            
+            flash('Welcome to SkyCareLink! Your demo account has been created successfully. Check your email for welcome details.', 'success')
             return redirect(url_for('home'))
             
     except Exception as e:

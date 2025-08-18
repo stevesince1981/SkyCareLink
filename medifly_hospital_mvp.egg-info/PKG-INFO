@@ -20,6 +20,7 @@ Requires-Dist: twilio>=9.7.0
 Requires-Dist: flask-wtf>=1.2.2
 Requires-Dist: oauthlib>=3.3.1
 Requires-Dist: flask-dance>=7.1.0
+Requires-Dist: sendgrid>=6.12.4
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0.0; extra == "dev"
 Requires-Dist: black>=23.0.0; extra == "dev"

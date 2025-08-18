@@ -114,6 +114,68 @@ class MailService:
             html_body,
             "verification"
         )
+
+    def send_welcome_email(self, user, user_type="individual"):
+        """Send welcome email after successful registration"""
+        user_type_titles = {
+            'family': 'Individual/Family',
+            'affiliate': 'Transport Affiliate', 
+            'hospital': 'Healthcare Provider'
+        }
+        
+        user_type_title = user_type_titles.get(user_type, 'Individual/Family')
+        name = getattr(user, 'contact_name', user.username)
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #1976D2;">🚁 Welcome to SkyCareLink!</h2>
+                <p>Hi {name},</p>
+                <p>Your <strong>{user_type_title}</strong> account has been successfully created!</p>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #1976D2; margin-top: 0;">Your Account Details:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li><strong>Username:</strong> {user.email}</li>
+                        <li><strong>Email:</strong> {user.email}</li>
+                        <li><strong>Account Type:</strong> {user_type_title}</li>
+                    </ul>
+                </div>
+                
+                <h3 style="color: #1976D2;">What's Next?</h3>
+                <p>You're now ready to access all SkyCareLink features:</p>
+                <ul>
+                    <li>✈️ Request medical transport services</li>
+                    <li>📋 Compare qualified providers instantly</li>
+                    <li>💬 Get AI-assisted transport planning</li>
+                    <li>📱 Track your requests in real-time</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{self.portal_base}" 
+                       style="background: #1976D2; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                        Access Your Dashboard
+                    </a>
+                </div>
+                
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                <p style="font-size: 12px; color: #666;">
+                    SkyCareLink - Medical Transport Services<br>
+                    Need help? Contact us at support@skycarelink.com<br>
+                    This is an automated message, please do not reply.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return self.send_email(
+            user.email,
+            "Welcome to SkyCareLink - Account Created Successfully!",
+            html_body,
+            "welcome"
+        )
     
     def send_quote_request_confirmation(self, user, quote):
         """Send confirmation to individual that quote request was received"""
