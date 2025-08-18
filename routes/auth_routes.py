@@ -23,27 +23,27 @@ def register():
         # Basic validation
         if not all([username, email, password, confirm_password]):
             flash('All fields are required', 'error')
-            return render_template('consumer_templates/unified_registration.html')
+            return render_template('unified_registration.html')
         
         if password != confirm_password:
             flash('Passwords do not match', 'error')
-            return render_template('consumer_templates/unified_registration.html')
+            return render_template('unified_registration.html')
         
         if len(password) < 8:
             flash('Password must be at least 8 characters long', 'error')
-            return render_template('consumer_templates/unified_registration.html')
+            return render_template('unified_registration.html')
         
         # Create user with verification
         success, message = create_user_with_verification(username, email, password, role)
         
         if success:
             flash(message, 'success')
-            return render_template('consumer_templates/registration_success.html', email=email)
+            return render_template('registration_success.html', email=email)
         else:
             flash(message, 'error')
-            return render_template('consumer_templates/unified_registration.html')
+            return render_template('unified_registration.html')
     
-    return render_template('consumer_templates/unified_registration.html')
+    return render_template('unified_registration.html')
 
 @auth_bp.route('/verify')
 def verify_email():
@@ -83,7 +83,7 @@ def login():
         
         if not all([username_or_email, password]):
             flash('Username/email and password are required', 'error')
-            return render_template('consumer_templates/login.html')
+            return render_template('login.html')
         
         success, message, user = authenticate_user(username_or_email, password)
         
@@ -107,9 +107,9 @@ def login():
                 return redirect(url_for('home'))
         else:
             flash(message, 'error')
-            return render_template('consumer_templates/login.html')
+            return render_template('login.html')
     
-    return render_template('consumer_templates/login.html')
+    return render_template('login.html')
 
 @auth_bp.route('/logout')
 def logout():

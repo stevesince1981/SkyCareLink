@@ -131,18 +131,50 @@
             <p class="text-muted small">
               <a href="{{ url_for('auth.login') }}" class="text-decoration-none">Already have an account? Sign in</a>
             </p>
+            
+            <!-- 5-step process -->
+            <div class="mt-3 p-3 bg-light bg-opacity-50 rounded border-start border-primary border-3">
+              <h3 class="fs-6 fw-semibold text-uppercase text-muted mb-2" style="letter-spacing: 0.5px;">How It Works</h3>
+              <div class="mb-0 small text-muted lh-sm text-start">
+                <div class="mb-1">➡️ Login / Register – quick sign-up in seconds</div>
+                <div class="mb-1">➡️ Submit Request – enter basic flight info</div>
+                <div class="mb-1">➡️ Review Quotes – compare multiple affiliates</div>
+                <div class="mb-1">➡️ Confirm Choice – select the one you trust</div>
+                <div class="mb-0">➡️ Fly With Confidence – affiliate handles the rest</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Right: hero image -->
+    <!-- Right: advisory / transparency box -->
     <div class="col-12 col-md-6">
-      <div class="card h-100 shadow-sm" style="overflow: hidden; background: url('{{ url_for('static', filename='assets/skycarelink_Front_1755455522362.png') }}') center/cover; min-height: 360px;">
-        <div class="card-body d-flex align-items-end p-0">
-          <div class="bg-light bg-opacity-90 p-3 w-100">
-            <h5 class="mb-1">Professional Medical Transport</h5>
-            <p class="mb-0 text-muted small">Trusted by families and healthcare providers nationwide</p>
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-shield-check text-success fs-4 me-2" aria-hidden="true"></i>
+            <h2 class="h5 fw-semibold mb-0">Know your rights before you choose an air ambulance</h2>
+          </div>
+
+          <ul class="mt-3 mb-3 text-body">
+            <li class="mb-2">Providers should give a <strong>written price quote</strong> before a flight (except true emergencies).</li>
+            <li class="mb-2">Quotes should clearly list <strong>services and all charges</strong> you will incur.</li>
+            <li class="mb-2"><strong>Avoid providers</strong> who refuse to provide a written quote.</li>
+            <li class="mb-2">Comparing quotes helps you review <strong>costs, certifications, and qualifications</strong>.</li>
+            <li class="mb-0"><strong>Ask questions.</strong> This is an important medical decision—make it an informed one.</li>
+          </ul>
+
+          <div class="mt-auto">
+            <a href="{{ url_for('resources_financial') }}"
+               class="link-primary fw-medium"
+               aria-label="Learn more about patient rights and transparency">
+              Learn more <i class="bi bi-arrow-right-short" aria-hidden="true"></i>
+            </a>
+            <p class="text-muted small mt-2 mb-0">
+              <i class="bi bi-hearts text-danger me-1" aria-hidden="true"></i>
+              SkyCareLink is a software platform, not a broker. We do not arrange or provide transport, and we do not handle funds between providers and patients.
+            </p>
           </div>
         </div>
       </div>
@@ -159,19 +191,19 @@
       </div>
     </div>
 
-    <!-- Scenario Cards -->
-    <div class="row g-4 mb-5">
+    <!-- Scenario Cards - Compact Version -->
+    <div class="row g-3 mb-4">
       <!-- Emergency Toddler Transport -->
       <div class="col-12 col-md-6">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <div class="text-center mb-3">
-              <i class="fas fa-baby text-danger" style="font-size: 2.5rem;"></i>
+        <div class="card shadow-sm" style="max-height: 280px;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <i class="fas fa-baby text-danger me-2" style="font-size: 1.5rem;"></i>
+              <h5 class="card-title mb-0 fs-6">Emergency Toddler Transport</h5>
             </div>
-            <h4 class="card-title text-center mb-3">Emergency Toddler Transport</h4>
-            <p class="card-text">Your 3-year-old falls seriously ill while on vacation in Florida. Traditional services require 10+ hours of phone calls, paperwork, and uncertainty about pricing.</p>
-            <div class="alert alert-success">
-              <strong>With SkyCareLink:</strong> Get real-time quotes from multiple providers in minutes, not hours. Compare prices, aircraft types, and medical capabilities instantly.
+            <p class="card-text small mb-2">Your 3-year-old falls seriously ill on vacation. Traditional services require 10+ hours of calls and paperwork.</p>
+            <div class="alert alert-success py-2 px-2 mb-0 small">
+              <strong>With SkyCareLink:</strong> Get quotes from multiple providers in minutes. Compare prices and capabilities instantly.
             </div>
           </div>
         </div>
@@ -179,15 +211,15 @@
 
       <!-- Grandma's Safe Journey Home -->
       <div class="col-12 col-md-6">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <div class="text-center mb-3">
-              <i class="fas fa-user-nurse text-info" style="font-size: 2.5rem;"></i>
+        <div class="card shadow-sm" style="max-height: 280px;">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-2">
+              <i class="fas fa-user-nurse text-info me-2" style="font-size: 1.5rem;"></i>
+              <h5 class="card-title mb-0 fs-6">Grandma's Safe Journey Home</h5>
             </div>
-            <h4 class="card-title text-center mb-3">Grandma's Safe Journey Home</h4>
-            <p class="card-text">Grandma suffered a stroke while visiting family in New York. She needs specialized medical transport back home, but you're overwhelmed by complex medical transport processes.</p>
-            <div class="alert alert-info">
-              <strong>With SkyCareLink:</strong> Transparent pricing, family seat options, VIP comfort upgrades, and real-time tracking so you know she's in safe hands.
+            <p class="card-text small mb-2">Grandma needs specialized transport home after a stroke, but you're overwhelmed by complex processes.</p>
+            <div class="alert alert-info py-2 px-2 mb-0 small">
+              <strong>With SkyCareLink:</strong> Transparent pricing, family seating, and real-time tracking for peace of mind.
             </div>
           </div>
         </div>
