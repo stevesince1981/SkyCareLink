@@ -4880,6 +4880,11 @@ def join_provider():
     """Provider (hospital/clinic) registration page"""
     return redirect(url_for('join_hospital'))
 
+@consumer_app.route('/user-type-selection')
+def user_type_selection():
+    """User type selection page before registration"""
+    return render_template('user_type_selection.html')
+
 @consumer_app.route('/register')
 def unified_registration():
     """Unified registration page for all user types"""

@@ -19,6 +19,9 @@ def register():
         password = request.form.get('password', '').strip()
         confirm_password = request.form.get('confirm_password', '').strip()
         role = request.form.get('role', 'individual')  # individual, affiliate, admin
+        user_type = request.form.get('user_type', role)  # Handle user_type from selection page
+        if user_type:
+            role = user_type  # Use the selected user type as role
         
         # Basic validation
         if not all([username, email, password, confirm_password]):

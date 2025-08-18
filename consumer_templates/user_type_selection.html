@@ -1,0 +1,152 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Join SkyCareLink - Select Your Account Type{% endblock %}
+
+{% block head %}
+<style>
+.user-type-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 300px;
+}
+
+.user-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.user-type-card.selected {
+    border: 3px solid #007bff;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,123,255,0.2);
+}
+
+.user-type-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.selection-section {
+    padding: 3rem 0;
+    background: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="selection-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <div class="text-center mb-5">
+                    <h1 class="h2 mb-3">Join SkyCareLink</h1>
+                    <p class="lead text-muted">Choose your account type to get started</p>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <!-- Affiliate Card -->
+                    <div class="col-12 col-md-4">
+                        <div class="card user-type-card h-100" onclick="selectUserType('affiliate', this)">
+                            <div class="card-body text-center d-flex flex-column">
+                                <div class="user-type-icon text-primary">
+                                    <i class="fas fa-helicopter"></i>
+                                </div>
+                                <h4 class="card-title mb-3">Affiliate</h4>
+                                <p class="card-text flex-grow-1">Air medical transport providers looking to join our network and receive quote requests from patients and hospitals.</p>
+                                <ul class="list-unstyled text-start mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i>Receive qualified leads</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Competitive commission structure</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Professional dashboard</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Provider Card -->
+                    <div class="col-12 col-md-4">
+                        <div class="card user-type-card h-100" onclick="selectUserType('provider', this)">
+                            <div class="card-body text-center d-flex flex-column">
+                                <div class="user-type-icon text-success">
+                                    <i class="fas fa-hospital"></i>
+                                </div>
+                                <h4 class="card-title mb-3">Healthcare Provider</h4>
+                                <p class="card-text flex-grow-1">Hospitals, clinics, and healthcare facilities needing to arrange medical transport for patients.</p>
+                                <ul class="list-unstyled text-start mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i>Quick quote requests</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>HIPAA compliant platform</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Multiple provider options</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Individual Card -->
+                    <div class="col-12 col-md-4">
+                        <div class="card user-type-card h-100" onclick="selectUserType('individual', this)">
+                            <div class="card-body text-center d-flex flex-column">
+                                <div class="user-type-icon text-warning">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h4 class="card-title mb-3">Individual</h4>
+                                <p class="card-text flex-grow-1">Families and individuals who need medical transport services for themselves or loved ones.</p>
+                                <ul class="list-unstyled text-start mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i>Compare multiple quotes</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Transparent pricing</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>24/7 support</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.register') }}" id="userTypeForm">
+                    <input type="hidden" name="user_type" id="selectedUserType" value="">
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success btn-lg px-5" id="continueBtn" disabled>
+                            Continue to Registration
+                            <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-muted">
+                            Already have an account? 
+                            <a href="{{ url_for('auth.login') }}" class="text-decoration-none">Sign in here</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+let selectedType = '';
+
+function selectUserType(type, element) {
+    // Remove previous selection
+    document.querySelectorAll('.user-type-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Add selection to clicked card
+    element.classList.add('selected');
+    
+    // Store selected type
+    selectedType = type;
+    document.getElementById('selectedUserType').value = type;
+    
+    // Enable continue button
+    document.getElementById('continueBtn').disabled = false;
+}
+
+// Prevent form submission without selection
+document.getElementById('userTypeForm').addEventListener('submit', function(e) {
+    if (!selectedType) {
+        e.preventDefault();
+        alert('Please select an account type to continue.');
+    }
+});
+</script>
+{% endblock %}
