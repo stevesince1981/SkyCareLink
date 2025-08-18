@@ -4930,14 +4930,18 @@ def register_individual():
                 session['username'] = individual_data['email']
                 session['user_role'] = 'family'
                 session['contact_name'] = full_name
+                session['logged_in'] = True  # This is the key flag the system checks
                 session.permanent = True
                 
-                # Send welcome email
+                # Send welcome email (fallback to console log if email fails)
                 try:
                     from services.mailer import MailService
                     mail_service = MailService()
-                    mail_service.send_welcome_email(new_user, 'family')
+                    if not mail_service.send_welcome_email(new_user, 'family'):
+                        # Email service failed, log the welcome message details
+                        logging.info(f"WELCOME EMAIL (service unavailable) - To: {individual_data['email']}, Name: {full_name}, Account: Individual/Family, Username: {individual_data['email']}")
                 except Exception as e:
+                    logging.info(f"WELCOME EMAIL (service unavailable) - To: {individual_data['email']}, Name: {full_name}, Account: Individual/Family, Username: {individual_data['email']}")
                     logging.warning(f"Could not send welcome email: {e}")
                 
                 flash('Welcome to SkyCareLink! Your account has been created successfully.', 'success')
@@ -4948,9 +4952,11 @@ def register_individual():
             session['username'] = individual_data['email']
             session['user_role'] = 'family'
             session['contact_name'] = f"{individual_data['first_name']} {individual_data['last_name']}"
+            session['logged_in'] = True  # This is the key flag the system checks
             session.permanent = True
             
-            # Send demo welcome email
+            # Send demo welcome email (fallback to console log if email fails)  
+            full_name_demo = f"{individual_data['first_name']} {individual_data['last_name']}"
             try:
                 from services.mailer import MailService
                 # Create a dummy user object for email
@@ -4960,11 +4966,13 @@ def register_individual():
                         self.username = email
                         self.contact_name = name
                 
-                demo_user = DemoUser(individual_data['email'], f"{individual_data['first_name']} {individual_data['last_name']}")
+                demo_user = DemoUser(individual_data['email'], full_name_demo)
                 mail_service = MailService()
-                mail_service.send_welcome_email(demo_user, 'family')
-                logging.info(f"Welcome email sent to {individual_data['email']}")
+                if not mail_service.send_welcome_email(demo_user, 'family'):
+                    # Email service failed, log the welcome message details
+                    logging.info(f"WELCOME EMAIL (service unavailable) - To: {individual_data['email']}, Name: {full_name_demo}, Account: Individual/Family, Username: {individual_data['email']}")
             except Exception as e:
+                logging.info(f"WELCOME EMAIL (service unavailable) - To: {individual_data['email']}, Name: {full_name_demo}, Account: Individual/Family, Username: {individual_data['email']}")
                 logging.warning(f"Could not send welcome email: {e}")
             
             flash('Welcome to SkyCareLink! Your demo account has been created successfully. Check your email for welcome details.', 'success')

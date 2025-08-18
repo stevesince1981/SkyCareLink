@@ -59,16 +59,18 @@ class MailService:
     def _log_email(self, recipient, subject, email_type, status, response):
         """Log email attempt to database"""
         try:
-            email_log = EmailLog(
-                recipient=recipient,
-                subject=subject,
-                email_type=email_type,
-                status=status,
-                smtp_response=response,
-                created_at=datetime.now(timezone.utc)
-            )
-            db.session.add(email_log)
-            db.session.commit()
+            from flask import current_app
+            with current_app.app_context():
+                email_log = EmailLog(
+                    recipient=recipient,
+                    subject=subject,
+                    email_type=email_type,
+                    status=status,
+                    smtp_response=response,
+                    created_at=datetime.now(timezone.utc)
+                )
+                db.session.add(email_log)
+                db.session.commit()
         except Exception as e:
             logger.error(f"Failed to log email: {e}")
     
