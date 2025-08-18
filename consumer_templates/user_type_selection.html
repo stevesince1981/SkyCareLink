@@ -112,38 +112,47 @@
                                 <form method="POST" action="{{ url_for('join_affiliate') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="company_name" class="form-label">Company Name *</label>
-                                            <input type="text" class="form-control" id="company_name" name="company_name" required>
+                                            <label for="aff_company_name" class="form-label">Company Name *</label>
+                                            <input type="text" class="form-control" id="aff_company_name" name="company_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="contact_name" class="form-label">Primary Contact *</label>
-                                            <input type="text" class="form-control" id="contact_name" name="contact_name" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label">Business Email *</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="phone" class="form-label">Business Phone *</label>
-                                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                                            <label for="aff_contact_name" class="form-label">Primary Contact *</label>
+                                            <input type="text" class="form-control" id="aff_contact_name" name="contact_name" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="after_hours_phone" class="form-label">24/7 Contact Number</label>
-                                            <input type="tel" class="form-control" id="after_hours_phone" name="after_hours_phone">
+                                            <label for="aff_email" class="form-label">Business Email *</label>
+                                            <input type="email" class="form-control" id="aff_email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="aff_phone" class="form-label">Business Phone *</label>
+                                            <input type="tel" class="form-control" id="aff_phone" name="phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="aff_after_hours_phone" class="form-label">24/7 Contact Number</label>
+                                            <input type="tel" class="form-control" id="aff_after_hours_phone" name="after_hours_phone">
                                             <div class="form-check mt-2">
-                                                <input class="form-check-input" type="checkbox" id="same_as_business_phone" onchange="toggleSamePhone()">
-                                                <label class="form-check-label" for="same_as_business_phone">
+                                                <input class="form-check-input" type="checkbox" id="aff_same_as_business_phone" onchange="toggleSamePhoneAff()">
+                                                <label class="form-check-label" for="aff_same_as_business_phone">
                                                     Same as business phone
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="coverage_regions" class="form-label">Coverage Regions *</label>
-                                            <select class="form-control" id="coverage_regions" name="coverage_regions" required multiple>
+                                            <label for="aff_commission_percent" class="form-label">Commission Percentage (3.0% - 7.0%) *</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="aff_commission_percent" name="commission_percent" step="0.1" min="3.0" max="7.0" value="5.0" required>
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="aff_coverage_regions" class="form-label">Coverage Regions *</label>
+                                            <select class="form-control" id="aff_coverage_regions" name="coverage_regions" required multiple>
                                                 <option value="northeast">Northeast (ME, NH, VT, MA, RI, CT, NY, NJ, PA)</option>
                                                 <option value="southeast">Southeast (DE, MD, DC, VA, WV, KY, TN, NC, SC, GA, FL, AL, MS)</option>
                                                 <option value="midwest">Midwest (OH, IN, IL, MI, WI, MN, IA, MO, ND, SD, NE, KS)</option>
@@ -153,46 +162,44 @@
                                             </select>
                                             <small class="text-muted">Hold Ctrl to select multiple regions</small>
                                         </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="service_area" class="form-label">Service Capabilities</label>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="services[]" value="critical_care" id="critical_care">
-                                                    <label class="form-check-label" for="critical_care">Critical Care Transport</label>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Service Capabilities</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="services[]" value="critical_care" id="aff_critical_care">
+                                                        <label class="form-check-label" for="aff_critical_care">Critical Care</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="services[]" value="neonatal" id="aff_neonatal">
+                                                        <label class="form-check-label" for="aff_neonatal">Neonatal</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="services[]" value="bariatric" id="aff_bariatric">
+                                                        <label class="form-check-label" for="aff_bariatric">Bariatric</label>
+                                                    </div>
                                                 </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="services[]" value="neonatal" id="neonatal">
-                                                    <label class="form-check-label" for="neonatal">Neonatal Transport</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="services[]" value="bariatric" id="bariatric">
-                                                    <label class="form-check-label" for="bariatric">Bariatric Transport</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="services[]" value="international" id="international">
-                                                    <label class="form-check-label" for="international">International Repatriation</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="services[]" value="organ_transport" id="organ_transport">
-                                                    <label class="form-check-label" for="organ_transport">Organ Transport</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="services[]" value="ground_coordination" id="ground_coordination">
-                                                    <label class="form-check-label" for="ground_coordination">Ground Coordination</label>
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="services[]" value="international" id="aff_international">
+                                                        <label class="form-check-label" for="aff_international">International</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="services[]" value="organ_transport" id="aff_organ_transport">
+                                                        <label class="form-check-label" for="aff_organ_transport">Organ Transport</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="services[]" value="ground_coordination" id="aff_ground_coordination">
+                                                        <label class="form-check-label" for="aff_ground_coordination">Ground Coordination</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="operating_hours" class="form-label">Operating Hours</label>
-                                            <select class="form-control" id="operating_hours" name="operating_hours">
+                                            <label for="aff_operating_hours" class="form-label">Operating Hours</label>
+                                            <select class="form-control" id="aff_operating_hours" name="operating_hours">
                                                 <option value="24_7">24/7 Operations</option>
                                                 <option value="extended">Extended Hours (6 AM - 10 PM)</option>
                                                 <option value="business">Business Hours Only</option>
@@ -200,8 +207,16 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="fleet_size" class="form-label">Fleet Size</label>
-                                            <input type="number" class="form-control" id="fleet_size" name="fleet_size" min="1">
+                                            <label for="aff_fleet_size" class="form-label">Fleet Size</label>
+                                            <input type="number" class="form-control" id="aff_fleet_size" name="fleet_size" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="aff_offers_concierge" name="offers_concierge">
+                                            <label class="form-check-label" for="aff_offers_concierge">
+                                                <strong>Concierge Service Available</strong> - We offer white-glove concierge service for premium bookings
+                                            </label>
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-between">
@@ -227,60 +242,127 @@
                                 <form method="POST" action="{{ url_for('join_hospital') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="facility_name" class="form-label">Facility Name *</label>
-                                            <input type="text" class="form-control" id="facility_name" name="facility_name" required>
+                                            <label for="prov_facility_name" class="form-label">Facility Name *</label>
+                                            <input type="text" class="form-control" id="prov_facility_name" name="facility_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="facility_type" class="form-label">Facility Type</label>
-                                            <select class="form-control" id="facility_type" name="facility_type">
+                                            <label for="prov_facility_type" class="form-label">Facility Type</label>
+                                            <select class="form-control" id="prov_facility_type" name="facility_type">
                                                 <option value="hospital">Hospital</option>
                                                 <option value="clinic">Clinic</option>
                                                 <option value="urgent_care">Urgent Care</option>
                                                 <option value="rehab_facility">Rehabilitation Facility</option>
                                                 <option value="nursing_home">Nursing Home</option>
+                                                <option value="dialysis_center">Dialysis Center</option>
+                                                <option value="surgery_center">Surgery Center</option>
                                                 <option value="other">Other</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="first_name" class="form-label">Contact First Name *</label>
-                                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                            <label for="prov_first_name" class="form-label">Contact First Name *</label>
+                                            <input type="text" class="form-control" id="prov_first_name" name="first_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="last_name" class="form-label">Contact Last Name *</label>
-                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label">Professional Email *</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="phone" class="form-label">Direct Phone *</label>
-                                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                                            <label for="prov_last_name" class="form-label">Contact Last Name *</label>
+                                            <input type="text" class="form-control" id="prov_last_name" name="last_name" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="cell_phone" class="form-label">24/7 Cell Phone</label>
-                                            <input type="tel" class="form-control" id="cell_phone" name="cell_phone">
+                                            <label for="prov_email" class="form-label">Professional Email *</label>
+                                            <input type="email" class="form-control" id="prov_email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="prov_phone" class="form-label">Direct Phone *</label>
+                                            <input type="tel" class="form-control" id="prov_phone" name="phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="prov_cell_phone" class="form-label">24/7 Cell Phone</label>
+                                            <input type="tel" class="form-control" id="prov_cell_phone" name="cell_phone">
                                             <div class="form-check mt-2">
-                                                <input class="form-check-input" type="checkbox" id="same_as_direct_phone" onchange="toggleSamePhoneProvider()">
-                                                <label class="form-check-label" for="same_as_direct_phone">
+                                                <input class="form-check-input" type="checkbox" id="prov_same_as_direct_phone" onchange="toggleSamePhoneProvider()">
+                                                <label class="form-check-label" for="prov_same_as_direct_phone">
                                                     Same as direct phone
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="department" class="form-label">Department/Role</label>
-                                            <input type="text" class="form-control" id="department" name="department" placeholder="e.g., Emergency Department, Case Management">
+                                            <label for="prov_department" class="form-label">Department/Role</label>
+                                            <input type="text" class="form-control" id="prov_department" name="department" placeholder="e.g., Emergency Department, Case Management">
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="address" class="form-label">Facility Address *</label>
-                                        <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                                        <label for="prov_address" class="form-label">Facility Address *</label>
+                                        <textarea class="form-control" id="prov_address" name="address" rows="2" required placeholder="Full street address including city, state, and ZIP code"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="prov_coverage_regions" class="form-label">Primary Service Area</label>
+                                            <select class="form-control" id="prov_coverage_regions" name="coverage_regions" multiple>
+                                                <option value="northeast">Northeast (ME, NH, VT, MA, RI, CT, NY, NJ, PA)</option>
+                                                <option value="southeast">Southeast (DE, MD, DC, VA, WV, KY, TN, NC, SC, GA, FL, AL, MS)</option>
+                                                <option value="midwest">Midwest (OH, IN, IL, MI, WI, MN, IA, MO, ND, SD, NE, KS)</option>
+                                                <option value="southwest">Southwest (TX, OK, AR, LA, NM, AZ)</option>
+                                                <option value="west">West (CO, WY, MT, ID, UT, NV, CA, OR, WA, AK, HI)</option>
+                                                <option value="local">Local/Regional Only</option>
+                                            </select>
+                                            <small class="text-muted">Select regions you primarily serve</small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="prov_referral_code" class="form-label">Referral Code (Optional)</label>
+                                            <input type="text" class="form-control" id="prov_referral_code" name="referral_code" placeholder="If referred by another hospital">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Specialties & Services</label>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="emergency" id="prov_emergency">
+                                                    <label class="form-check-label" for="prov_emergency">Emergency Medicine</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="critical_care" id="prov_critical_care">
+                                                    <label class="form-check-label" for="prov_critical_care">Critical Care</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="cardiology" id="prov_cardiology">
+                                                    <label class="form-check-label" for="prov_cardiology">Cardiology</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="neurology" id="prov_neurology">
+                                                    <label class="form-check-label" for="prov_neurology">Neurology</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="trauma" id="prov_trauma">
+                                                    <label class="form-check-label" for="prov_trauma">Trauma Center</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="neonatal" id="prov_neonatal">
+                                                    <label class="form-check-label" for="prov_neonatal">Neonatal Care</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="oncology" id="prov_oncology">
+                                                    <label class="form-check-label" for="prov_oncology">Oncology</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="transplant" id="prov_transplant">
+                                                    <label class="form-check-label" for="prov_transplant">Organ Transplant</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="pediatrics" id="prov_pediatrics">
+                                                    <label class="form-check-label" for="prov_pediatrics">Pediatrics</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <button type="button" class="btn btn-secondary" onclick="goBack()">
@@ -302,51 +384,104 @@
                                 <h4 class="mb-0"><i class="fas fa-users me-2"></i>Individual Registration</h4>
                             </div>
                             <div class="card-body">
-                                <form method="POST" action="{{ url_for('join_individual') }}">
+                                <form method="POST" action="{{ url_for('register_individual') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="first_name" class="form-label">First Name *</label>
-                                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                            <label for="ind_first_name" class="form-label">First Name *</label>
+                                            <input type="text" class="form-control" id="ind_first_name" name="first_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="last_name" class="form-label">Last Name *</label>
-                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                            <label for="ind_last_name" class="form-label">Last Name *</label>
+                                            <input type="text" class="form-control" id="ind_last_name" name="last_name" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label">Email Address *</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
+                                            <label for="ind_email" class="form-label">Email Address *</label>
+                                            <input type="email" class="form-control" id="ind_email" name="email" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="mobile_phone" class="form-label">Mobile Phone *</label>
-                                            <input type="tel" class="form-control" id="mobile_phone" name="mobile_phone" required>
+                                            <label for="ind_phone" class="form-label">Phone *</label>
+                                            <input type="tel" class="form-control" id="ind_phone" name="phone" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="password" class="form-label">Password *</label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <label for="ind_password" class="form-label">Password *</label>
+                                            <input type="password" class="form-control" id="ind_password" name="password" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="relationship" class="form-label">Relationship to Patient</label>
-                                            <select class="form-control" id="relationship" name="relationship">
+                                            <label for="ind_home_phone" class="form-label">Home Phone</label>
+                                            <input type="tel" class="form-control" id="ind_home_phone" name="home_phone">
+                                            <div class="form-check mt-2">
+                                                <input class="form-check-input" type="checkbox" id="ind_same_as_mobile" onchange="toggleSamePhoneInd()">
+                                                <label class="form-check-label" for="ind_same_as_mobile">
+                                                    Same as primary phone
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="ind_relationship" class="form-label">Relationship to Patient</label>
+                                            <select class="form-control" id="ind_relationship" name="relationship_to_patient">
                                                 <option value="">Select...</option>
                                                 <option value="self">Self</option>
                                                 <option value="spouse">Spouse/Partner</option>
                                                 <option value="parent">Parent</option>
-                                                <option value="child">Child</option>
+                                                <option value="child">Adult Child</option>
                                                 <option value="sibling">Sibling</option>
-                                                <option value="other_family">Other Family</option>
+                                                <option value="other_family">Other Family Member</option>
                                                 <option value="friend">Friend</option>
                                                 <option value="caregiver">Caregiver</option>
+                                                <option value="legal_guardian">Legal Guardian</option>
+                                                <option value="healthcare_proxy">Healthcare Proxy</option>
                                             </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="ind_emergency_contact" class="form-label">Emergency Contact Name</label>
+                                            <input type="text" class="form-control" id="ind_emergency_contact" name="emergency_contact" placeholder="Name and phone number">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="ind_address" class="form-label">Home Address</label>
+                                        <textarea class="form-control" id="ind_address" name="address" rows="2" placeholder="Street address, city, state, ZIP code"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Communication Preferences</label>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="email" id="ind_comm_email">
+                                                    <label class="form-check-label" for="ind_comm_email">Email Updates</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="sms" id="ind_comm_sms">
+                                                    <label class="form-check-label" for="ind_comm_sms">SMS/Text</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="phone" id="ind_comm_phone">
+                                                    <label class="form-check-label" for="ind_comm_phone">Phone Calls</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="mail" id="ind_comm_mail">
+                                                    <label class="form-check-label" for="ind_comm_mail">Postal Mail</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="emergency_only" id="ind_comm_emergency">
+                                                    <label class="form-check-label" for="ind_comm_emergency">Emergency Only</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="marketing_opt_in" name="marketing_opt_in">
-                                            <label class="form-check-label" for="marketing_opt_in">
+                                            <input class="form-check-input" type="checkbox" id="ind_marketing_opt_in" name="marketing_opt_in">
+                                            <label class="form-check-label" for="ind_marketing_opt_in">
                                                 I would like to receive updates about transport services and health tips
                                             </label>
                                         </div>
@@ -417,10 +552,10 @@ function selectUserType(type, element) {
     }
 }
 
-function toggleSamePhone() {
-    const businessPhone = document.getElementById('phone');
-    const afterHoursPhone = document.getElementById('after_hours_phone');
-    const checkbox = document.getElementById('same_as_business_phone');
+function toggleSamePhoneAff() {
+    const businessPhone = document.getElementById('aff_phone');
+    const afterHoursPhone = document.getElementById('aff_after_hours_phone');
+    const checkbox = document.getElementById('aff_same_as_business_phone');
     
     if (checkbox.checked) {
         afterHoursPhone.value = businessPhone.value;
@@ -431,15 +566,28 @@ function toggleSamePhone() {
 }
 
 function toggleSamePhoneProvider() {
-    const directPhone = document.getElementById('phone');
-    const cellPhone = document.getElementById('cell_phone');
-    const checkbox = document.getElementById('same_as_direct_phone');
+    const directPhone = document.getElementById('prov_phone');
+    const cellPhone = document.getElementById('prov_cell_phone');
+    const checkbox = document.getElementById('prov_same_as_direct_phone');
     
     if (checkbox.checked) {
         cellPhone.value = directPhone.value;
         cellPhone.readOnly = true;
     } else {
         cellPhone.readOnly = false;
+    }
+}
+
+function toggleSamePhoneInd() {
+    const primaryPhone = document.getElementById('ind_phone');
+    const homePhone = document.getElementById('ind_home_phone');
+    const checkbox = document.getElementById('ind_same_as_mobile');
+    
+    if (checkbox.checked) {
+        homePhone.value = primaryPhone.value;
+        homePhone.readOnly = true;
+    } else {
+        homePhone.readOnly = false;
     }
 }
 
