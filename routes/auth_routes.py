@@ -100,7 +100,11 @@ def login():
             elif user.role == 'affiliate':
                 return redirect(url_for('affiliate.dashboard'))
             else:
-                return redirect(url_for('consumer.home'))
+                # Check for post-login action
+                post_login_action = session.pop('postLoginAction', None)
+                if post_login_action == 'requestQuote':
+                    return redirect(url_for('consumer_intake_authenticated'))
+                return redirect(url_for('home'))
         else:
             flash(message, 'error')
             return render_template('consumer_templates/login.html')

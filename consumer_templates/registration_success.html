@@ -1,0 +1,46 @@
+{% extends "consumer_base.html" %}
+
+{% block title %}Registration Successful - SkyCareLink{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body py-5 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h3 class="card-title mb-3">Registration Successful!</h3>
+                    <p class="lead text-muted mb-4">
+                        Welcome to SkyCareLink! Your account has been created successfully.
+                    </p>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-envelope me-2"></i>
+                        <strong>Account activated automatically</strong><br>
+                        Your account at <strong>{{ email }}</strong> is ready to use.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In Now
+                        </a>
+                        
+                        <a href="{{ url_for('consumer_home') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>Go to Homepage
+                        </a>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="text-muted small">
+                            Need help? <a href="#" class="text-decoration-none">Contact support</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

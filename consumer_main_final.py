@@ -5411,7 +5411,16 @@ def api_update_user_details(user_id):
 
 # 5) Phase 12.A: Brand-new Canonical Intake Route + Submission
 @consumer_app.route('/intake')
-def consumer_intake():
+def intake_redirect():
+    """Redirect users to register/login before requesting quotes"""
+    if not session.get('user_id'):
+        flash('Please create an account or sign in to request a quote.', 'info')
+        session['post_login_redirect'] = url_for('consumer_intake_authenticated')
+        return redirect(url_for('auth.register'))
+    return redirect(url_for('consumer_intake_authenticated'))
+
+@consumer_app.route('/intake/form')
+def consumer_intake_authenticated():
     """Phase 12.A: Brand-new 5-step pancake intake stepper"""
     from datetime import date
     today = date.today().isoformat()
