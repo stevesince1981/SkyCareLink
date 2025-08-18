@@ -4925,10 +4925,25 @@ def register_individual():
                 db.session.add(new_user)
                 db.session.commit()
                 
-                flash('Registration successful! You can now log in and request transport services.', 'success')
-                return redirect(url_for('login'))
+                # Auto-login user after successful registration
+                session['user_id'] = new_user.id
+                session['username'] = individual_data['email']
+                session['user_role'] = 'family'
+                session['contact_name'] = full_name
+                session.permanent = True
+                
+                flash('Welcome to SkyCareLink! Your account has been created successfully.', 'success')
+                return redirect(url_for('home'))  # Take them to authenticated home page
         else:
-            flash('Registration submitted! We will contact you within 24 hours to complete setup.', 'success')
+            # Demo mode - still instant registration
+            session['user_id'] = f"demo_{individual_data['email']}"
+            session['username'] = individual_data['email']
+            session['user_role'] = 'family'
+            session['contact_name'] = f"{individual_data['first_name']} {individual_data['last_name']}"
+            session.permanent = True
+            
+            flash('Welcome to SkyCareLink! Your demo account has been created successfully.', 'success')
+            return redirect(url_for('home'))
             
     except Exception as e:
         logging.error(f"Individual registration error: {e}")
