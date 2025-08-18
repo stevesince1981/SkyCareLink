@@ -570,9 +570,13 @@
                                 <form method="POST" action="{{ url_for('register_individual') }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="primary_contact_name" class="form-label">Primary Contact Name *</label>
-                                            <input type="text" class="form-control" id="primary_contact_name" name="primary_contact_name" required>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="first_name" class="form-label">First Name *</label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="last_name" class="form-label">Last Name *</label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="email" class="form-label">Email *</label>
@@ -581,8 +585,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="phone_cell" class="form-label">Phone (Cell) *</label>
-                                            <input type="tel" class="form-control" id="phone_cell" name="phone_cell" required>
+                                            <label for="phone" class="form-label">Phone (Cell) *</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="phone_24_7" class="form-label">Phone (24/7 number)</label>
@@ -597,8 +601,8 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="your_address" class="form-label">Your Address *</label>
-                                        <textarea class="form-control" id="your_address" name="your_address" rows="2" required 
+                                        <label for="address" class="form-label">Your Address *</label>
+                                        <textarea class="form-control" id="address" name="address" rows="2" required 
                                                   placeholder="Street Address"></textarea>
                                     </div>
 
