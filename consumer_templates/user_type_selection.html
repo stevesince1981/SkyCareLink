@@ -101,189 +101,16 @@
 
                 <!-- Registration Forms for Each Type -->
                 <div id="registrationForms" style="display: none;">
-                    
-                    <!-- Affiliate Registration Form -->
-                    <div id="affiliateForm" class="registration-form" style="display: none;">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-primary text-white">
-                                <h4 class="mb-0"><i class="fas fa-helicopter me-2"></i>Affiliate Registration</h4>
-                            </div>
-                            <div class="card-body">
-                                <form method="POST" action="{{ url_for('auth.register') }}">
-                                    <input type="hidden" name="user_type" value="affiliate">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="company_name" class="form-label">Company Name *</label>
-                                            <input type="text" class="form-control" id="company_name" name="company_name" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="username" class="form-label">Username *</label>
-                                            <input type="text" class="form-control" id="username" name="username" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label">Business Email *</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="phone" class="form-label">Business Phone *</label>
-                                            <input type="tel" class="form-control" id="phone" name="phone" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="password" class="form-label">Password *</label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="confirm_password" class="form-label">Confirm Password *</label>
-                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="service_area" class="form-label">Service Area</label>
-                                        <textarea class="form-control" id="service_area" name="service_area" rows="2" placeholder="Describe your coverage area"></textarea>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
-                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
-                                        </button>
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Register as Affiliate <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                    <!-- Show message and direct to proper registration pages -->
+                    <div class="text-center">
+                        <p class="lead mb-4">You'll now be redirected to the detailed registration form for your selected account type.</p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            This will include all the detailed fields like coverage regions, 24/7 contact numbers, and service-specific options that were previously developed.
                         </div>
-                    </div>
-
-                    <!-- Provider Registration Form -->
-                    <div id="providerForm" class="registration-form" style="display: none;">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-success text-white">
-                                <h4 class="mb-0"><i class="fas fa-hospital me-2"></i>Healthcare Provider Registration</h4>
-                            </div>
-                            <div class="card-body">
-                                <form method="POST" action="{{ url_for('auth.register') }}">
-                                    <input type="hidden" name="user_type" value="provider">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="facility_name" class="form-label">Facility Name *</label>
-                                            <input type="text" class="form-control" id="facility_name" name="facility_name" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="username" class="form-label">Username *</label>
-                                            <input type="text" class="form-control" id="username" name="username" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label">Professional Email *</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="phone" class="form-label">Direct Phone *</label>
-                                            <input type="tel" class="form-control" id="phone" name="phone" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="password" class="form-label">Password *</label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="confirm_password" class="form-label">Confirm Password *</label>
-                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="department" class="form-label">Department/Role</label>
-                                        <input type="text" class="form-control" id="department" name="department" placeholder="e.g., Emergency Department, Case Management">
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
-                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
-                                        </button>
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Register as Provider <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Individual Registration Form -->
-                    <div id="individualForm" class="registration-form" style="display: none;">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-warning text-dark">
-                                <h4 class="mb-0"><i class="fas fa-users me-2"></i>Individual Registration</h4>
-                            </div>
-                            <div class="card-body">
-                                <form method="POST" action="{{ url_for('auth.register') }}">
-                                    <input type="hidden" name="user_type" value="individual">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="first_name" class="form-label">First Name *</label>
-                                            <input type="text" class="form-control" id="first_name" name="first_name" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="last_name" class="form-label">Last Name *</label>
-                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="username" class="form-label">Username *</label>
-                                            <input type="text" class="form-control" id="username" name="username" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label">Email Address *</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="phone" class="form-label">Phone Number *</label>
-                                            <input type="tel" class="form-control" id="phone" name="phone" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="relationship" class="form-label">Relationship to Patient</label>
-                                            <select class="form-control" id="relationship" name="relationship">
-                                                <option value="">Select...</option>
-                                                <option value="self">Self</option>
-                                                <option value="spouse">Spouse/Partner</option>
-                                                <option value="parent">Parent</option>
-                                                <option value="child">Child</option>
-                                                <option value="sibling">Sibling</option>
-                                                <option value="other_family">Other Family</option>
-                                                <option value="friend">Friend</option>
-                                                <option value="caregiver">Caregiver</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="password" class="form-label">Password *</label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="confirm_password" class="form-label">Confirm Password *</label>
-                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
-                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
-                                        </button>
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Register as Individual <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="goBack()">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
+                        </button>
                     </div>
                 </div>
 
@@ -317,25 +144,13 @@ function selectUserType(type, element) {
     // Store selected type
     selectedType = type;
     
-    // Hide the user type selection cards and initial continue button
-    document.querySelector('.row.g-4.mb-5').style.display = 'none';
-    document.getElementById('initialContinue').style.display = 'none';
-    
-    // Show registration forms section
-    document.getElementById('registrationForms').style.display = 'block';
-    
-    // Hide all forms first
-    document.querySelectorAll('.registration-form').forEach(form => {
-        form.style.display = 'none';
-    });
-    
-    // Show the selected form
+    // Redirect to the existing detailed registration pages
     if (type === 'affiliate') {
-        document.getElementById('affiliateForm').style.display = 'block';
+        window.location.href = '/join_affiliate';
     } else if (type === 'provider') {
-        document.getElementById('providerForm').style.display = 'block';
+        window.location.href = '/join_hospital';
     } else if (type === 'individual') {
-        document.getElementById('individualForm').style.display = 'block';
+        window.location.href = '/join_individual';
     }
 }
 
