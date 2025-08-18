@@ -11,7 +11,7 @@ class Base(DeclarativeBase):
     pass
 
 # Create Flask app
-quote_app = Flask(__name__, template_folder='templates')
+quote_app = Flask(__name__, template_folder='consumer_templates')
 quote_app.secret_key = os.environ.get("SESSION_SECRET", "quote-demo-key")
 
 # Database configuration
@@ -174,7 +174,135 @@ with quote_app.app_context():
 @quote_app.route('/')
 def home():
     from flask import render_template
-    return render_template('home.html')
+    return render_template('consumer_index.html')
+
+# Consumer intake route (your original intake form)
+@quote_app.route('/consumer_intake')
+def consumer_intake():
+    from flask import render_template
+    return render_template('consumer_intake.html')
+
+# Login route that matches your templates
+@quote_app.route('/login')
+def login():
+    from flask import render_template
+    return render_template('login.html')
+
+# Add all the missing consumer routes that your original interface expects
+@quote_app.route('/consumer_requests')
+def consumer_requests():
+    from flask import render_template
+    return render_template('consumer_requests.html')
+
+@quote_app.route('/portal_views')
+def portal_views():
+    from flask import render_template
+    return render_template('portal_views.html')
+
+@quote_app.route('/admin_dashboard')
+def admin_dashboard():
+    from flask import render_template
+    return render_template('consumer_admin_dashboard.html', session_data=session)
+
+@quote_app.route('/admin_affiliates')
+def admin_affiliates():
+    from flask import render_template
+    return render_template('admin_affiliates.html')
+
+@quote_app.route('/admin_analytics_affiliates')
+def admin_analytics_affiliates():
+    from flask import render_template
+    return render_template('admin_analytics_affiliates.html')
+
+@quote_app.route('/admin_reset_demo')
+def admin_reset_demo():
+    from flask import render_template, redirect, url_for, flash
+    # Clear session data for demo reset
+    session.clear()
+    flash('Demo data has been reset', 'success')
+    return redirect(url_for('home'))
+
+# Add all missing routes from the base template navigation
+@quote_app.route('/join_affiliate')
+def join_affiliate():
+    from flask import render_template
+    return render_template('join_affiliate.html')
+
+@quote_app.route('/join_hospital')
+def join_hospital():
+    from flask import render_template
+    return render_template('join_hospital.html')
+
+@quote_app.route('/join_individual')
+def join_individual():
+    from flask import render_template
+    return render_template('join_individual.html')
+
+@quote_app.route('/mvp_incentive')
+def mvp_incentive():
+    from flask import render_template
+    return render_template('mvp_incentive.html')
+
+@quote_app.route('/provider_dashboard')
+def provider_dashboard():
+    from flask import render_template
+    return render_template('provider_dashboard.html')
+
+@quote_app.route('/family_dashboard')
+def family_dashboard():
+    from flask import render_template
+    return render_template('family_dashboard.html')
+
+@quote_app.route('/hospital_dashboard')
+def hospital_dashboard():
+    from flask import render_template
+    return render_template('hospital_dashboard.html')
+
+@quote_app.route('/consumer_quotes')
+def consumer_quotes():
+    from flask import render_template
+    return render_template('consumer_quotes.html')
+
+@quote_app.route('/consumer_results')
+def consumer_results():
+    from flask import render_template
+    return render_template('consumer_results.html')
+
+@quote_app.route('/consumer_tracking')  
+def consumer_tracking():
+    from flask import render_template
+    return render_template('consumer_tracking.html')
+
+@quote_app.route('/consumer_booking')
+def consumer_booking():
+    from flask import render_template
+    return render_template('consumer_booking.html')
+
+@quote_app.route('/admin_invoices')
+def admin_invoices():
+    from flask import render_template
+    return render_template('admin_invoices.html')
+
+@quote_app.route('/admin_announcements')
+def admin_announcements():
+    from flask import render_template
+    return render_template('admin_announcements.html')
+
+@quote_app.route('/logout')
+def logout():
+    from flask import redirect, url_for, flash
+    session.clear()
+    flash('You have been logged out successfully', 'success')
+    return redirect(url_for('home'))
+
+# Add subscribe route for pricing/subscription functionality
+@quote_app.route('/subscribe')
+@quote_app.route('/subscribe/<plan>')  
+def subscribe(plan=None):
+    from flask import render_template
+    if not plan:
+        plan = 'monthly'
+    return render_template('consumer_subscribe.html', plan=plan)
 
 if __name__ == "__main__":
     quote_app.run(host="0.0.0.0", port=5000, debug=True)

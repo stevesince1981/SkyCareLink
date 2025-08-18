@@ -24,15 +24,8 @@ def dashboard():
     # Email status check
     email_enabled = email_service.is_enabled()
     
-    return render_template('admin/dashboard.html',
-                         total_users=total_users,
-                         pending_users=pending_users,
-                         total_quotes=total_quotes,
-                         pending_quotes=pending_quotes,
-                         confirmed_bookings=confirmed_bookings,
-                         recent_quotes=recent_quotes,
-                         recent_users=recent_users,
-                         email_enabled=email_enabled)
+    return render_template('consumer_admin_dashboard.html',
+                         session_data=session)
 
 @admin_bp.route('/users')
 @login_required
