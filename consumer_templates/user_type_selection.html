@@ -163,7 +163,7 @@
                             </div>
 
                             <div class="card-body px-4">
-                                <h5 class="mb-3">Company Registration</h5>
+                                <h6 class="mb-3">Company Registration</h6>
                                 <form method="POST" action="{{ url_for('join_affiliate') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
@@ -199,7 +199,7 @@
                                     <div class="mb-4">
                                         <label class="form-label">Coverage Areas *</label>
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-3">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="east_coast" id="east_coast">
                                                     <label class="form-check-label" for="east_coast">East Coast</label>
@@ -208,6 +208,8 @@
                                                     <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="central_us" id="central_us">
                                                     <label class="form-check-label" for="central_us">Central US</label>
                                                 </div>
+                                            </div>
+                                            <div class="col-md-3">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="west_coast" id="west_coast">
                                                     <label class="form-check-label" for="west_coast">West Coast</label>
@@ -217,7 +219,7 @@
                                                     <label class="form-check-label" for="southwest">Southwest</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-3">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="southeast" id="southeast">
                                                     <label class="form-check-label" for="southeast">Southeast</label>
@@ -226,6 +228,8 @@
                                                     <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="midwest" id="midwest">
                                                     <label class="form-check-label" for="midwest">Midwest</label>
                                                 </div>
+                                            </div>
+                                            <div class="col-md-3">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="international" id="international">
                                                     <label class="form-check-label" for="international">International</label>
@@ -307,8 +311,8 @@
                                     <div class="text-center mt-3">
                                         <small class="text-muted">
                                             By registering, you agree to our 
-                                            <a href="#" class="text-decoration-none">Terms of Service</a> and 
-                                            <a href="#" class="text-decoration-none">Privacy Policy</a>
+                                            <a href="/terms" class="text-decoration-none">Terms of Service</a> and 
+                                            <a href="/privacy" class="text-decoration-none">Privacy Policy</a>
                                         </small>
                                     </div>
                                 </form>
