@@ -4,129 +4,393 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Affiliate Dashboard - SkyCareLink</title>
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Site Audit UX Tightening - Compact CSS -->
+    <link rel="stylesheet" href="/static/css/compact.css">
+    
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        .queue-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
         }
-        .card {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        
+        .queue-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+        }
+        
+        .queue-card.urgent {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .queue-card.priority {
+            border-left: 4px solid #ffc107;
+        }
+        
+        .queue-card.standard {
+            border-left: 4px solid #28a745;
+        }
+        
+        .severity-badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .age-badge {
+            font-size: 0.7rem;
+        }
+        
+        .btn-sm-custom {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            margin: 0.1rem;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+        
+        .trip-info {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .contact-info {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .stats-row {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .card-actions {
+                flex-direction: column;
+            }
+            
+            .btn-sm-custom {
+                width: 100%;
+                margin: 0.1rem 0;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">SkyCareLink - Affiliate Portal</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-helicopter me-2"></i>SkyCareLink Affiliate</a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ url_for('affiliate.my_quotes') }}">My Quotes</a>
-                <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                <a class="nav-link" href="/affiliate/call-center-settings"><i class="fas fa-cog me-1"></i>Settings</a>
             </div>
         </div>
     </nav>
-
-    <div class="container mt-4">
-        <h1 class="text-white mb-4">Affiliate Dashboard</h1>
+    
+    <div class="container-fluid py-3">
+        <!-- Statistics Row -->
+        <div class="stats-row">
+            <div class="row g-3 text-center">
+                <div class="col-6 col-md-3">
+                    <h4 class="text-primary mb-0">{{ stats.pending_quotes if stats else 1 }}</h4>
+                    <small class="text-muted">Pending Quotes</small>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h4 class="text-success mb-0">{{ stats.completed_today if stats else 3 }}</h4>
+                    <small class="text-muted">Completed Today</small>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h4 class="text-warning mb-0">{{ stats.urgent_requests if stats else 0 }}</h4>
+                    <small class="text-muted">Urgent Requests</small>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h4 class="text-info mb-0">${{ "{:,.0f}".format(stats.revenue_today) if stats else "15,750" }}</h4>
+                    <small class="text-muted">Revenue Today</small>
+                </div>
+            </div>
+        </div>
         
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
-        <div class="row">
-            <!-- Pending Quotes -->
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-warning text-dark">
-                        <h4 class="mb-0">Pending Quote Requests ({{ pending_quotes|length }})</h4>
+        
+        <!-- Terms Acceptance Modal (shown if not yet accepted) -->
+        <div class="modal fade" id="termsModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">SkyCareLink Partnership Agreement</h5>
                     </div>
-                    <div class="card-body">
-                        {% if pending_quotes %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Reference</th>
-                                        <th>Route</th>
-                                        <th>Date</th>
-                                        <th>Submitted</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for quote in pending_quotes %}
-                                    <tr>
-                                        <td><strong>{{ quote.reference_number }}</strong></td>
-                                        <td>
-                                            <small>{{ quote.pickup_location[:30] }}{% if quote.pickup_location|length > 30 %}...{% endif %}</small><br>
-                                            <small>→ {{ quote.destination[:30] }}{% if quote.destination|length > 30 %}...{% endif %}</small>
-                                        </td>
-                                        <td>{{ quote.transport_date.strftime('%m/%d/%Y') }}</td>
-                                        <td>{{ quote.created_at.strftime('%m/%d %H:%M') }}</td>
-                                        <td>
-                                            <a href="{{ url_for('affiliate.view_quote', quote_id=quote.id) }}" 
-                                               class="btn btn-primary btn-sm">Provide Quote</a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Welcome to SkyCareLink!</strong> Please review and accept our partnership terms to access your affiliate dashboard.
                         </div>
-                        {% else %}
-                        <div class="text-center py-4">
-                            <h5 class="text-muted">No pending quote requests</h5>
-                            <p class="text-muted">New requests will appear here automatically</p>
+                        
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #dee2e6; padding: 1rem; border-radius: 4px; background: #f8f9fa;">
+                            <h6><strong>SkyCareLink Partnership Terms & Conditions</strong></h6>
+                            
+                            <p><strong>1. Partnership Agreement:</strong><br>
+                            By accepting these terms, you agree to become an authorized affiliate partner of SkyCareLink, providing air medical transport services under our network.</p>
+                            
+                            <p><strong>2. Revenue Sharing:</strong><br>
+                            Affiliates receive compensation based on successful bookings facilitated through the SkyCareLink platform. Commission rates vary by service type and booking volume.</p>
+                            
+                            <p><strong>3. Service Standards:</strong><br>
+                            All affiliate partners must maintain proper medical certifications, aircraft safety standards, and provide timely responses to quote requests.</p>
+                            
+                            <p><strong>4. Quote Management:</strong><br>
+                            Affiliates are expected to provide accurate quotes within 2 hours of receiving requests and honor quoted prices for the specified validity period.</p>
+                            
+                            <p><strong>5. Patient Privacy & HIPAA:</strong><br>
+                            All partners must comply with HIPAA regulations and maintain strict confidentiality of patient health information (PHI).</p>
+                            
+                            <p><strong>6. Communication Requirements:</strong><br>
+                            Partners must maintain accessible communication channels during business hours and respond to booking confirmations promptly.</p>
+                            
+                            <p><strong>7. Termination:</strong><br>
+                            Either party may terminate this partnership with 30 days written notice. All pending bookings must be honored through completion.</p>
+                            
+                            <p class="small text-muted"><strong>Last Updated:</strong> August 2025<br>
+                            <strong>Version:</strong> 1.0</p>
                         </div>
-                        {% endif %}
+                        
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="termsCheckbox" required>
+                            <label class="form-check-label" for="termsCheckbox">
+                                <strong>I understand and accept the SkyCareLink Partnership Agreement</strong>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="acceptTermsBtn" disabled>
+                            <i class="fas fa-check me-1"></i>Accept & Continue
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- My Recent Quotes -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">My Recent Quotes</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if my_quotes %}
-                        {% for quote in my_quotes[:5] %}
-                        <div class="border-bottom pb-2 mb-2">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{ quote.reference_number }}</strong>
-                                <span class="badge bg-{{ 'success' if quote.status == 'confirmed' else 'secondary' }}">
-                                    {{ quote.status.title() }}
-                                </span>
-                            </div>
-                            <small class="text-muted">${{ "%.2f"|format(quote.quoted_price) }}</small>
-                        </div>
-                        {% endfor %}
-                        <div class="text-center mt-3">
-                            <a href="{{ url_for('affiliate.my_quotes') }}" class="btn btn-outline-primary btn-sm">View All</a>
-                        </div>
-                        {% else %}
-                        <p class="text-muted text-center">No quotes submitted yet</p>
-                        {% endif %}
-                    </div>
+        </div>
+        
+        <!-- Quote Queue -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5><i class="fas fa-list me-2"></i>Quote Queue</h5>
+                    <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                        <i class="fas fa-refresh me-1"></i>Refresh
+                    </button>
                 </div>
+                
+                {% if quotes %}
+                    {% for quote in quotes %}
+                    <div class="queue-card {{ 'urgent' if quote.severity_level == 3 else 'priority' if quote.severity_level == 2 else 'standard' }}">
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <!-- Header Row -->
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <strong class="text-primary">{{ quote.ref_id }}</strong>
+                                            <span class="badge bg-{{ 'danger' if quote.severity_level == 3 else 'warning' if quote.severity_level == 2 else 'success' }} severity-badge ms-2">
+                                                Level {{ quote.severity_level }}
+                                            </span>
+                                            <span class="badge bg-secondary age-badge ms-2">
+                                                {{ quote.age_hours }}h ago
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-{{ 'primary' if quote.status == 'pending' else 'success' if quote.status == 'quoted' else 'info' }}">
+                                            {{ quote.status|title }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Trip Information -->
+                                <div class="col-md-8">
+                                    <div class="trip-info">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="fas fa-plane-departure text-primary me-2"></i>
+                                            <strong>{{ quote.from_city }}, {{ quote.from_state }}</strong>
+                                            <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                                            <strong>{{ quote.to_city }}, {{ quote.to_state }}</strong>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-calendar text-info me-2"></i>
+                                            <span>{{ quote.flight_date.strftime('%b %d, %Y') if quote.flight_date else 'Date TBD' }}</span>
+                                            {% if quote.ground_transport_needed %}
+                                            <span class="badge bg-info ms-2">
+                                                <i class="fas fa-ambulance me-1"></i>Ground Transport
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Contact Information -->
+                                <div class="col-md-4">
+                                    <div class="contact-info">
+                                        <div><i class="fas fa-user me-1"></i>{{ quote.contact_name or 'Contact TBD' }}</div>
+                                        {% if quote.contact_phone %}
+                                        <div><i class="fas fa-phone me-1"></i>{{ quote.contact_phone }}</div>
+                                        {% endif %}
+                                        {% if quote.contact_email %}
+                                        <div><i class="fas fa-envelope me-1"></i>{{ quote.contact_email }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="col-12">
+                                    <div class="card-actions">
+                                        {% if quote.status == 'pending' %}
+                                        <a href="/affiliate/submit-quote/{{ quote.ref_id }}" class="btn btn-primary btn-sm-custom">
+                                            <i class="fas fa-edit me-1"></i>Accept & Quote
+                                        </a>
+                                        <form method="POST" action="/affiliate/pass/{{ quote.ref_id }}" style="display: inline;">
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm-custom">
+                                                <i class="fas fa-arrow-right me-1"></i>Pass
+                                            </button>
+                                        </form>
+                                        {% elif quote.status == 'quoted' %}
+                                        <div class="d-flex align-items-center">
+                                            <span class="text-success me-2">
+                                                <i class="fas fa-dollar-sign me-1"></i>
+                                                ${{ "{:,.2f}".format(quote.quoted_price) if quote.quoted_price else 'Price TBD' }}
+                                            </span>
+                                            <form method="POST" action="/affiliate/confirm/{{ quote.ref_id }}" style="display: inline;">
+                                                <button type="submit" class="btn btn-success btn-sm-custom" 
+                                                        {% if not quote.quoted_price %}disabled title="Price required"{% endif %}>
+                                                    <i class="fas fa-check me-1"></i>Confirm Booking
+                                                </button>
+                                            </form>
+                                        </div>
+                                        {% elif quote.status == 'confirmed' %}
+                                        <span class="text-success">
+                                            <i class="fas fa-check-circle me-1"></i>Booking Confirmed
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No quotes in queue</h5>
+                        <p class="text-muted">New quote requests will appear here automatically.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
     
-    <script>
-        // Auto-refresh dashboard every 60 seconds
-        setTimeout(function() {
-            location.reload();
-        }, 60000);
-    </script>
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Site Audit UX Tightening - UI.js -->
+    <script src="/static/js/ui.js"></script>
+    
+    <script>
+        // Auto-refresh every 30 seconds
+        setInterval(function() {
+            // Only refresh if no modals are open
+            if (!document.querySelector('.modal.show')) {
+                location.reload();
+            }
+        }, 30000);
+        
+        // Confirm pass action
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('form[action*="/pass/"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (!confirm('Are you sure you want to pass on this quote? It will be offered to the next affiliate.')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+            
+            // Terms acceptance handling
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+            const termsModal = document.getElementById('termsModal');
+            
+            if (termsCheckbox && acceptTermsBtn) {
+                // Enable/disable accept button based on checkbox
+                termsCheckbox.addEventListener('change', function() {
+                    acceptTermsBtn.disabled = !this.checked;
+                });
+                
+                // Handle terms acceptance
+                acceptTermsBtn.addEventListener('click', function() {
+                    if (!termsCheckbox.checked) {
+                        alert('Please check the agreement checkbox to continue.');
+                        return;
+                    }
+                    
+                    // Submit terms acceptance
+                    fetch('/admin/affiliate/accept-terms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'affiliate_id=' + (window.affiliateId || '1')
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Hide modal and reload page
+                            const modal = bootstrap.Modal.getInstance(termsModal);
+                            modal.hide();
+                            location.reload();
+                        } else {
+                            alert('Error recording acceptance: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Terms acceptance error:', error);
+                        alert('Error processing terms acceptance. Please try again.');
+                    });
+                });
+                
+                // Show terms modal if needed (simulate for demo)
+                // In production, this would check affiliate.terms_understood_timestamp
+                const needsTermsAcceptance = !localStorage.getItem('demo_terms_accepted');
+                if (needsTermsAcceptance) {
+                    const modal = new bootstrap.Modal(termsModal);
+                    setTimeout(() => modal.show(), 500);
+                }
+            }
+        });
+        
+        // Demo: Mark terms as accepted in localStorage (simulate database)
+        window.acceptDemoTerms = function() {
+            localStorage.setItem('demo_terms_accepted', 'true');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('termsModal'));
+            if (modal) modal.hide();
+        };
+    </script>
 </body>
 </html>
