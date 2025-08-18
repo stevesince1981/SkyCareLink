@@ -97,8 +97,24 @@ def analytics_context():
 if DB_AVAILABLE:
     consumer_app.register_blueprint(affiliate_bp)
     consumer_app.register_blueprint(quotes_bp)
-    consumer_app.register_blueprint(auth_bp)
-    consumer_app.register_blueprint(quote_bp)
+    
+    # Register email verification and quote workflow blueprints
+    try:
+        consumer_app.register_blueprint(auth_bp)
+        consumer_app.register_blueprint(quote_bp)
+        print("✓ Email verification and quote workflow registered")
+    except Exception as e:
+        print(f"⚠ Error registering email routes: {e}")
+else:
+    # Register email routes even without full DB
+    try:
+        from routes.auth_routes import auth_bp
+        from routes.quote_routes import quote_bp
+        consumer_app.register_blueprint(auth_bp)
+        consumer_app.register_blueprint(quote_bp)
+        print("✓ Email verification and quote workflow registered (limited mode)")
+    except Exception as e:
+        print(f"⚠ Error registering email routes: {e}")
     
     # Register admin blueprint
     try:

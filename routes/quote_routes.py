@@ -104,7 +104,7 @@ def affiliate_quote_form(booking_id):
         return redirect(url_for('auth.login'))
     
     user = User.query.get(user_id)
-    if not user or user.user_type != 'affiliate':
+    if not user or user.role != 'affiliate':
         flash('Access denied. Affiliate account required.', 'error')
         return redirect(url_for('consumer.home'))
     
@@ -128,7 +128,7 @@ def affiliate_submit_quote(booking_id):
             return jsonify({'success': False, 'message': 'Not logged in'})
         
         user = User.query.get(user_id)
-        if not user or user.user_type != 'affiliate':
+        if not user or user.role != 'affiliate':
             return jsonify({'success': False, 'message': 'Access denied'})
         
         quote_request = QuoteRequest.query.filter_by(booking_id=booking_id).first()
@@ -222,7 +222,7 @@ def admin_email_log():
         return redirect(url_for('auth.login'))
     
     user = User.query.get(user_id)
-    if not user or user.user_type != 'admin':
+    if not user or user.role != 'admin':
         flash('Admin access required', 'error')
         return redirect(url_for('consumer.home'))
     

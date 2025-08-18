@@ -18,7 +18,7 @@ def register():
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
         confirm_password = request.form.get('confirm_password', '').strip()
-        user_type = request.form.get('role', 'individual')  # individual, affiliate, admin
+        role = request.form.get('role', 'individual')  # individual, affiliate, admin
         
         # Basic validation
         if not all([username, email, password, confirm_password]):
@@ -34,7 +34,7 @@ def register():
             return render_template('consumer_templates/unified_registration.html')
         
         # Create user with verification
-        success, message = create_user_with_verification(username, email, password, user_type)
+        success, message = create_user_with_verification(username, email, password, role)
         
         if success:
             flash(message, 'success')
@@ -91,13 +91,13 @@ def login():
             # Set session
             session['user_id'] = user.id
             session['username'] = user.username
-            session['user_type'] = user.user_type
+            session['user_type'] = user.role
             session['email'] = user.email
             
             # Redirect based on user type
-            if user.user_type == 'admin':
+            if user.role == 'admin':
                 return redirect(url_for('admin.dashboard'))
-            elif user.user_type == 'affiliate':
+            elif user.role == 'affiliate':
                 return redirect(url_for('affiliate.dashboard'))
             else:
                 return redirect(url_for('consumer.home'))

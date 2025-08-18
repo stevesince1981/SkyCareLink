@@ -1,65 +1,59 @@
-{% extends "consumer_templates/base_consumer.html" %}
+{% extends "consumer_base.html" %}
 
 {% block title %}Login - SkyCareLink{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-5">
             <div class="card shadow-lg border-0">
                 <div class="card-body py-4">
                     <div class="text-center mb-4">
                         <i class="fas fa-helicopter text-primary" style="font-size: 2.5rem;"></i>
-                        <h3 class="card-title mt-2">Sign In to SkyCareLink</h3>
+                        <h3 class="card-title mt-2">Welcome Back</h3>
+                        <p class="text-muted">Sign in to your SkyCareLink account</p>
                     </div>
                     
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
-                                {% if 'verify' in message.lower() or 'verification' in message.lower() %}
-                                <div class="alert alert-warning">
-                                    {{ message }}
-                                    <hr class="my-2">
-                                    <form method="POST" action="{{ url_for('auth.resend_verification') }}" class="mt-2">
-                                        <div class="input-group">
-                                            <input type="email" class="form-control form-control-sm" name="email" 
-                                                   placeholder="Enter your email" required>
-                                            <button class="btn btn-outline-primary btn-sm" type="submit">
-                                                Resend Verification
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                                {% else %}
                                 <div class="alert alert-{{ 'danger' if category == 'error' else category }}">
                                     {{ message }}
                                 </div>
-                                {% endif %}
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
                     
                     <form method="POST">
                         <div class="mb-3">
-                            <label for="username_or_email" class="form-label">Username or Email</label>
-                            <input type="text" class="form-control" id="username_or_email" 
-                                   name="username_or_email" required>
+                            <label for="username" class="form-label">Username or Email</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ request.form.get('username', '') }}" required>
                         </div>
                         
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" 
-                                   name="password" required>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">Remember me</label>
                         </div>
                         
                         <div class="d-grid mb-3">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-sign-in-alt me-2"></i>Sign In
                             </button>
                         </div>
                     </form>
                     
+                    <hr>
+                    
                     <div class="text-center">
+                        <p class="text-muted mb-2">
+                            <a href="#" class="text-decoration-none">Forgot password?</a>
+                        </p>
                         <p class="text-muted">
                             Don't have an account? 
                             <a href="{{ url_for('auth.register') }}" class="text-decoration-none">

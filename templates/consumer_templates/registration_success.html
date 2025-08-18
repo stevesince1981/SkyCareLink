@@ -1,4 +1,4 @@
-{% extends "consumer_templates/base_consumer.html" %}
+{% extends "consumer_base.html" %}
 
 {% block title %}Registration Successful - SkyCareLink{% endblock %}
 
@@ -7,38 +7,37 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-lg border-0">
-                <div class="card-body text-center py-5">
+                <div class="card-body py-5 text-center">
                     <div class="mb-4">
                         <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
                     </div>
                     
-                    <h2 class="card-title text-success mb-3">Registration Successful!</h2>
-                    
-                    <p class="card-text mb-4">
-                        Thank you for registering with SkyCareLink. We've sent a verification email to:
+                    <h3 class="card-title mb-3">Registration Successful!</h3>
+                    <p class="lead text-muted mb-4">
+                        Welcome to SkyCareLink! Your account has been created successfully.
                     </p>
                     
                     <div class="alert alert-info">
-                        <strong>{{ email }}</strong>
+                        <i class="fas fa-envelope me-2"></i>
+                        <strong>Account activated automatically</strong><br>
+                        Your account at <strong>{{ email }}</strong> is ready to use.
                     </div>
-                    
-                    <p class="text-muted mb-4">
-                        Please check your email and click the verification link to activate your account. 
-                        You won't be able to log in until your email is verified.
-                    </p>
                     
                     <div class="d-grid gap-2">
                         <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-sign-in-alt me-2"></i>Go to Login
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In Now
+                        </a>
+                        
+                        <a href="{{ url_for('consumer_home') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>Go to Homepage
                         </a>
                     </div>
                     
-                    <hr class="my-4">
-                    
-                    <p class="text-muted small">
-                        Didn't receive the email? Check your spam folder or 
-                        <a href="{{ url_for('auth.login') }}">try logging in</a> to resend.
-                    </p>
+                    <div class="mt-4">
+                        <p class="text-muted small">
+                            Need help? <a href="#" class="text-decoration-none">Contact support</a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -434,7 +434,7 @@
                 <div class="card-body">
 
 
-                    <form id="intakeForm" method="POST" action="{{ url_for('quote.submit_quote') }}">
+                    <form id="intakeForm" method="POST" action="{{ url_for('intake_submit') }}" onsubmit="return handleIntakeSubmit(event)">
                         <div class="pancake-stack">
                             
                             <!-- Step 1: Service Type Selection -->
