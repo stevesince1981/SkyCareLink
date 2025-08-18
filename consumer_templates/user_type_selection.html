@@ -505,120 +505,163 @@
 
                     <!-- Individual Registration Form -->
                     <div id="individualForm" class="registration-form" style="display: none;">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-warning text-dark">
-                                <h4 class="mb-0"><i class="fas fa-users me-2"></i>Individual Registration</h4>
+                        <div class="card border-0 shadow-sm">
+                            <!-- Header with Blue Users Icon -->
+                            <div class="text-center py-4" style="background: linear-gradient(135deg, #4A90E2, #357ABD);">
+                                <i class="fas fa-users text-white" style="font-size: 2.5rem;"></i>
+                                <h3 class="text-white mt-2 mb-1">Individual Registration</h3>
+                                <p class="text-white mb-0 opacity-75">Join SkyCareLink to access medical transport services for yourself or loved ones</p>
                             </div>
-                            <div class="card-body">
+                            
+                            <!-- Individual Benefits Section - Thin Cyan Strip -->
+                            <div class="px-4 py-2" style="background-color: #17a2b8; color: white;">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-heart me-2"></i>
+                                    <strong>Individual Benefits</strong>
+                                </div>
+                            </div>
+
+                            <!-- Benefits Content -->
+                            <div class="px-4 py-3" style="background-color: #17a2b8; color: white;">
+                                <div class="row small">
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Compare quotes</strong> from multiple certified affiliates
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Transparent pricing</strong> with no hidden fees
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>24/7 customer support</strong> and assistance
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Real-time flight tracking</strong> and updates
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Insurance coordination</strong> and billing support
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Family seating options</strong> and special accommodations
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick & Easy Section - Thin Green Strip -->
+                            <div class="px-4 py-2" style="background-color: #28a745;">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-bolt text-white me-2"></i>
+                                    <small class="text-white"><strong>Quick & Easy:</strong> Simple registration process. Start requesting transport quotes immediately after verification.</small>
+                                </div>
+                            </div>
+
+                            <div class="card-body px-4">
+                                <h6 class="mb-3">Personal Information</h6>
                                 <form method="POST" action="{{ url_for('register_individual') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="ind_first_name" class="form-label">First Name *</label>
-                                            <input type="text" class="form-control" id="ind_first_name" name="first_name" required>
+                                            <label for="primary_contact_name" class="form-label">Primary Contact Name *</label>
+                                            <input type="text" class="form-control" id="primary_contact_name" name="primary_contact_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="ind_last_name" class="form-label">Last Name *</label>
-                                            <input type="text" class="form-control" id="ind_last_name" name="last_name" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="ind_email" class="form-label">Email Address *</label>
-                                            <input type="email" class="form-control" id="ind_email" name="email" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="ind_phone" class="form-label">Phone *</label>
-                                            <input type="tel" class="form-control" id="ind_phone" name="phone" required>
+                                            <label for="email" class="form-label">Email *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="ind_password" class="form-label">Password *</label>
-                                            <input type="password" class="form-control" id="ind_password" name="password" required>
+                                            <label for="phone_cell" class="form-label">Phone (Cell) *</label>
+                                            <input type="tel" class="form-control" id="phone_cell" name="phone_cell" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="ind_home_phone" class="form-label">Home Phone</label>
-                                            <input type="tel" class="form-control" id="ind_home_phone" name="home_phone">
+                                            <label for="phone_24_7" class="form-label">Phone (24/7 number)</label>
+                                            <input type="tel" class="form-control" id="phone_24_7" name="phone_24_7">
                                             <div class="form-check mt-2">
-                                                <input class="form-check-input" type="checkbox" id="ind_same_as_mobile" onchange="toggleSamePhoneInd()">
-                                                <label class="form-check-label" for="ind_same_as_mobile">
-                                                    Same as primary phone
+                                                <input class="form-check-input" type="checkbox" id="same_as_cell_individual" name="same_as_cell">
+                                                <label class="form-check-label" for="same_as_cell_individual">
+                                                    24/7 number same as cell phone
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="mb-3">
+                                        <label for="your_address" class="form-label">Your Address *</label>
+                                        <textarea class="form-control" id="your_address" name="your_address" rows="2" required 
+                                                  placeholder="Street Address"></textarea>
+                                    </div>
+
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="ind_relationship" class="form-label">Relationship to Patient</label>
-                                            <select class="form-control" id="ind_relationship" name="relationship_to_patient">
-                                                <option value="">Select...</option>
-                                                <option value="self">Self</option>
-                                                <option value="spouse">Spouse/Partner</option>
-                                                <option value="parent">Parent</option>
-                                                <option value="child">Adult Child</option>
-                                                <option value="sibling">Sibling</option>
-                                                <option value="other_family">Other Family Member</option>
-                                                <option value="friend">Friend</option>
-                                                <option value="caregiver">Caregiver</option>
-                                                <option value="legal_guardian">Legal Guardian</option>
-                                                <option value="healthcare_proxy">Healthcare Proxy</option>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="city" class="form-label">City</label>
+                                            <input type="text" class="form-control" id="city" name="city" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="state" class="form-label">State</label>
+                                            <input type="text" class="form-control" id="state" name="state" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="zip_code" class="form-label">ZIP Code</label>
+                                            <input type="text" class="form-control" id="zip_code" name="zip_code" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="country" class="form-label">USA</label>
+                                            <select class="form-select" id="country" name="country" required>
+                                                <option value="">USA</option>
+                                                <option value="US" selected>United States</option>
+                                                <option value="CA">Canada</option>
+                                                <option value="MX">Mexico</option>
+                                                <option value="other">Other</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="ind_emergency_contact" class="form-label">Emergency Contact Name</label>
-                                            <input type="text" class="form-control" id="ind_emergency_contact" name="emergency_contact" placeholder="Name and phone number">
-                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="ind_address" class="form-label">Home Address</label>
-                                        <textarea class="form-control" id="ind_address" name="address" rows="2" placeholder="Street address, city, state, ZIP code"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Communication Preferences</label>
+
+                                    <div class="mb-4">
+                                        <h6>Communication Preferences</h6>
                                         <div class="row">
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="email" id="ind_comm_email">
-                                                    <label class="form-check-label" for="ind_comm_email">Email Updates</label>
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="email_updates" id="individual_email_updates" checked>
+                                                    <label class="form-check-label" for="individual_email_updates">Email Updates</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="sms" id="ind_comm_sms">
-                                                    <label class="form-check-label" for="ind_comm_sms">SMS/Text</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="phone" id="ind_comm_phone">
-                                                    <label class="form-check-label" for="ind_comm_phone">Phone Calls</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="mail" id="ind_comm_mail">
-                                                    <label class="form-check-label" for="ind_comm_mail">Postal Mail</label>
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="sms_notifications" id="individual_sms">
+                                                    <label class="form-check-label" for="individual_sms">SMS Notifications</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="communication_preferences[]" value="emergency_only" id="ind_comm_emergency">
-                                                    <label class="form-check-label" for="ind_comm_emergency">Emergency Only</label>
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="phone_calls" id="individual_phone_calls">
+                                                    <label class="form-check-label" for="individual_phone_calls">Phone Calls</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="newsletter" id="individual_newsletter">
+                                                    <label class="form-check-label" for="individual_newsletter">Newsletter</label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="ind_marketing_opt_in" name="marketing_opt_in">
-                                            <label class="form-check-label" for="ind_marketing_opt_in">
-                                                I would like to receive updates about transport services and health tips
-                                            </label>
-                                        </div>
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fas fa-paper-plane me-2"></i>Complete Registration
+                                        </button>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
-                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
-                                        </button>
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Register as Individual <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
+
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">
+                                            By registering, you agree to our 
+                                            <a href="#" onclick="return false;" class="text-decoration-none">Terms of Service</a> and 
+                                            <a href="#" onclick="return false;" class="text-decoration-none">Privacy Policy</a>
+                                        </small>
                                     </div>
                                 </form>
                             </div>
@@ -720,12 +763,42 @@ function toggleSamePhoneInd() {
     }
 }
 
+// Individual form phone checkbox handling
+document.addEventListener('DOMContentLoaded', function() {
+    const sameAsCellCheckbox = document.getElementById('same_as_cell_individual');
+    const cellPhone = document.getElementById('phone_cell');
+    const phone247 = document.getElementById('phone_24_7');
+    
+    if (sameAsCellCheckbox) {
+        sameAsCellCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                phone247.value = cellPhone.value;
+                phone247.readOnly = true;
+            } else {
+                phone247.readOnly = false;
+            }
+        });
+    }
+    
+    if (cellPhone) {
+        cellPhone.addEventListener('input', function() {
+            if (sameAsCellCheckbox && sameAsCellCheckbox.checked) {
+                phone247.value = this.value;
+            }
+        });
+    }
+});
+
 function goBack() {
     // Hide registration forms
     document.getElementById('registrationForms').style.display = 'none';
     
-    // Show user type selection cards and initial continue button
-    document.querySelector('.row.g-4.mb-5').style.display = '';
+    // Reset card highlighting
+    document.querySelectorAll('#transportCard, #providerCard, #individualCard').forEach(card => {
+        card.style.backgroundColor = '';
+        card.style.borderColor = '#dee2e6';
+        card.classList.remove('border-primary');
+    });
     document.getElementById('initialContinue').style.display = 'block';
     
     // Remove selection
