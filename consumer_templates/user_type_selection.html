@@ -112,111 +112,37 @@
                                 <form method="POST" action="{{ url_for('join_affiliate') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="aff_company_name" class="form-label">Company Name *</label>
-                                            <input type="text" class="form-control" id="aff_company_name" name="company_name" required>
+                                            <label for="company_name" class="form-label">Company Name *</label>
+                                            <input type="text" class="form-control" id="company_name" name="company_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="aff_contact_name" class="form-label">Primary Contact *</label>
-                                            <input type="text" class="form-control" id="aff_contact_name" name="contact_name" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="aff_email" class="form-label">Business Email *</label>
-                                            <input type="email" class="form-control" id="aff_email" name="email" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="aff_phone" class="form-label">Business Phone *</label>
-                                            <input type="tel" class="form-control" id="aff_phone" name="phone" required>
+                                            <label for="contact_name" class="form-label">Primary Contact Name *</label>
+                                            <input type="text" class="form-control" id="contact_name" name="contact_name" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="aff_after_hours_phone" class="form-label">24/7 Contact Number</label>
-                                            <input type="tel" class="form-control" id="aff_after_hours_phone" name="after_hours_phone">
-                                            <div class="form-check mt-2">
-                                                <input class="form-check-input" type="checkbox" id="aff_same_as_business_phone" onchange="toggleSamePhoneAff()">
-                                                <label class="form-check-label" for="aff_same_as_business_phone">
-                                                    Same as business phone
-                                                </label>
-                                            </div>
+                                            <label for="email" class="form-label">Business Email *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="aff_commission_percent" class="form-label">Commission Percentage (3.0% - 7.0%) *</label>
-                                            <div class="input-group">
-                                                <input type="number" class="form-control" id="aff_commission_percent" name="commission_percent" step="0.1" min="3.0" max="7.0" value="5.0" required>
-                                                <span class="input-group-text">%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="aff_coverage_regions" class="form-label">Coverage Regions *</label>
-                                            <select class="form-control" id="aff_coverage_regions" name="coverage_regions" required multiple>
-                                                <option value="northeast">Northeast (ME, NH, VT, MA, RI, CT, NY, NJ, PA)</option>
-                                                <option value="southeast">Southeast (DE, MD, DC, VA, WV, KY, TN, NC, SC, GA, FL, AL, MS)</option>
-                                                <option value="midwest">Midwest (OH, IN, IL, MI, WI, MN, IA, MO, ND, SD, NE, KS)</option>
-                                                <option value="southwest">Southwest (TX, OK, AR, LA, NM, AZ)</option>
-                                                <option value="west">West (CO, WY, MT, ID, UT, NV, CA, OR, WA, AK, HI)</option>
-                                                <option value="nationwide">Nationwide Coverage</option>
-                                            </select>
-                                            <small class="text-muted">Hold Ctrl to select multiple regions</small>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Service Capabilities</label>
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="services[]" value="critical_care" id="aff_critical_care">
-                                                        <label class="form-check-label" for="aff_critical_care">Critical Care</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="services[]" value="neonatal" id="aff_neonatal">
-                                                        <label class="form-check-label" for="aff_neonatal">Neonatal</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="services[]" value="bariatric" id="aff_bariatric">
-                                                        <label class="form-check-label" for="aff_bariatric">Bariatric</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="services[]" value="international" id="aff_international">
-                                                        <label class="form-check-label" for="aff_international">International</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="services[]" value="organ_transport" id="aff_organ_transport">
-                                                        <label class="form-check-label" for="aff_organ_transport">Organ Transport</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="services[]" value="ground_coordination" id="aff_ground_coordination">
-                                                        <label class="form-check-label" for="aff_ground_coordination">Ground Coordination</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="aff_operating_hours" class="form-label">Operating Hours</label>
-                                            <select class="form-control" id="aff_operating_hours" name="operating_hours">
-                                                <option value="24_7">24/7 Operations</option>
-                                                <option value="extended">Extended Hours (6 AM - 10 PM)</option>
-                                                <option value="business">Business Hours Only</option>
-                                                <option value="on_call">On-Call Availability</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="aff_fleet_size" class="form-label">Fleet Size</label>
-                                            <input type="number" class="form-control" id="aff_fleet_size" name="fleet_size" min="1">
+                                            <label for="phone" class="form-label">Business Phone *</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" required>
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="aff_offers_concierge" name="offers_concierge">
-                                            <label class="form-check-label" for="aff_offers_concierge">
-                                                <strong>Concierge Service Available</strong> - We offer white-glove concierge service for premium bookings
+                                            <input class="form-check-input" type="checkbox" id="offers_concierge" name="offers_concierge">
+                                            <label class="form-check-label" for="offers_concierge">
+                                                We offer concierge service for premium bookings
                                             </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="commission_percent" class="form-label">Commission Percentage (3.0% - 7.0%) *</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="commission_percent" name="commission_percent" step="0.1" min="3.0" max="7.0" value="5.0" required>
+                                            <span class="input-group-text">%</span>
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-between">
