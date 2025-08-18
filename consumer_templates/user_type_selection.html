@@ -101,16 +101,267 @@
 
                 <!-- Registration Forms for Each Type -->
                 <div id="registrationForms" style="display: none;">
-                    <!-- Show message and direct to proper registration pages -->
-                    <div class="text-center">
-                        <p class="lead mb-4">You'll now be redirected to the detailed registration form for your selected account type.</p>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            This will include all the detailed fields like coverage regions, 24/7 contact numbers, and service-specific options that were previously developed.
+                    
+                    <!-- Affiliate Registration Form -->
+                    <div id="affiliateForm" class="registration-form" style="display: none;">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0"><i class="fas fa-helicopter me-2"></i>Transport Affiliate Registration</h4>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('join_affiliate') }}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="company_name" class="form-label">Company Name *</label>
+                                            <input type="text" class="form-control" id="company_name" name="company_name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contact_name" class="form-label">Primary Contact *</label>
+                                            <input type="text" class="form-control" id="contact_name" name="contact_name" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Business Email *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">Business Phone *</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="after_hours_phone" class="form-label">24/7 Contact Number</label>
+                                            <input type="tel" class="form-control" id="after_hours_phone" name="after_hours_phone">
+                                            <div class="form-check mt-2">
+                                                <input class="form-check-input" type="checkbox" id="same_as_business_phone" onchange="toggleSamePhone()">
+                                                <label class="form-check-label" for="same_as_business_phone">
+                                                    Same as business phone
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="coverage_regions" class="form-label">Coverage Regions *</label>
+                                            <select class="form-control" id="coverage_regions" name="coverage_regions" required multiple>
+                                                <option value="northeast">Northeast (ME, NH, VT, MA, RI, CT, NY, NJ, PA)</option>
+                                                <option value="southeast">Southeast (DE, MD, DC, VA, WV, KY, TN, NC, SC, GA, FL, AL, MS)</option>
+                                                <option value="midwest">Midwest (OH, IN, IL, MI, WI, MN, IA, MO, ND, SD, NE, KS)</option>
+                                                <option value="southwest">Southwest (TX, OK, AR, LA, NM, AZ)</option>
+                                                <option value="west">West (CO, WY, MT, ID, UT, NV, CA, OR, WA, AK, HI)</option>
+                                                <option value="nationwide">Nationwide Coverage</option>
+                                            </select>
+                                            <small class="text-muted">Hold Ctrl to select multiple regions</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="service_area" class="form-label">Service Capabilities</label>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="critical_care" id="critical_care">
+                                                    <label class="form-check-label" for="critical_care">Critical Care Transport</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="neonatal" id="neonatal">
+                                                    <label class="form-check-label" for="neonatal">Neonatal Transport</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="bariatric" id="bariatric">
+                                                    <label class="form-check-label" for="bariatric">Bariatric Transport</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="international" id="international">
+                                                    <label class="form-check-label" for="international">International Repatriation</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="organ_transport" id="organ_transport">
+                                                    <label class="form-check-label" for="organ_transport">Organ Transport</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="ground_coordination" id="ground_coordination">
+                                                    <label class="form-check-label" for="ground_coordination">Ground Coordination</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="operating_hours" class="form-label">Operating Hours</label>
+                                            <select class="form-control" id="operating_hours" name="operating_hours">
+                                                <option value="24_7">24/7 Operations</option>
+                                                <option value="extended">Extended Hours (6 AM - 10 PM)</option>
+                                                <option value="business">Business Hours Only</option>
+                                                <option value="on_call">On-Call Availability</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fleet_size" class="form-label">Fleet Size</label>
+                                            <input type="number" class="form-control" id="fleet_size" name="fleet_size" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            Register as Affiliate <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <button type="button" class="btn btn-secondary" onclick="goBack()">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
-                        </button>
+                    </div>
+
+                    <!-- Provider Registration Form -->
+                    <div id="providerForm" class="registration-form" style="display: none;">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="fas fa-hospital me-2"></i>Healthcare Provider Registration</h4>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('join_hospital') }}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="facility_name" class="form-label">Facility Name *</label>
+                                            <input type="text" class="form-control" id="facility_name" name="facility_name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="facility_type" class="form-label">Facility Type</label>
+                                            <select class="form-control" id="facility_type" name="facility_type">
+                                                <option value="hospital">Hospital</option>
+                                                <option value="clinic">Clinic</option>
+                                                <option value="urgent_care">Urgent Care</option>
+                                                <option value="rehab_facility">Rehabilitation Facility</option>
+                                                <option value="nursing_home">Nursing Home</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="first_name" class="form-label">Contact First Name *</label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="last_name" class="form-label">Contact Last Name *</label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Professional Email *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">Direct Phone *</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="cell_phone" class="form-label">24/7 Cell Phone</label>
+                                            <input type="tel" class="form-control" id="cell_phone" name="cell_phone">
+                                            <div class="form-check mt-2">
+                                                <input class="form-check-input" type="checkbox" id="same_as_direct_phone" onchange="toggleSamePhoneProvider()">
+                                                <label class="form-check-label" for="same_as_direct_phone">
+                                                    Same as direct phone
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="department" class="form-label">Department/Role</label>
+                                            <input type="text" class="form-control" id="department" name="department" placeholder="e.g., Emergency Department, Case Management">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Facility Address *</label>
+                                        <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            Register as Provider <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Individual Registration Form -->
+                    <div id="individualForm" class="registration-form" style="display: none;">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-warning text-dark">
+                                <h4 class="mb-0"><i class="fas fa-users me-2"></i>Individual Registration</h4>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{{ url_for('join_individual') }}">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="first_name" class="form-label">First Name *</label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="last_name" class="form-label">Last Name *</label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email Address *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="mobile_phone" class="form-label">Mobile Phone *</label>
+                                            <input type="tel" class="form-control" id="mobile_phone" name="mobile_phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="password" class="form-label">Password *</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="relationship" class="form-label">Relationship to Patient</label>
+                                            <select class="form-control" id="relationship" name="relationship">
+                                                <option value="">Select...</option>
+                                                <option value="self">Self</option>
+                                                <option value="spouse">Spouse/Partner</option>
+                                                <option value="parent">Parent</option>
+                                                <option value="child">Child</option>
+                                                <option value="sibling">Sibling</option>
+                                                <option value="other_family">Other Family</option>
+                                                <option value="friend">Friend</option>
+                                                <option value="caregiver">Caregiver</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="marketing_opt_in" name="marketing_opt_in">
+                                            <label class="form-check-label" for="marketing_opt_in">
+                                                I would like to receive updates about transport services and health tips
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            Register as Individual <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -144,13 +395,51 @@ function selectUserType(type, element) {
     // Store selected type
     selectedType = type;
     
-    // Redirect to the existing detailed registration pages
+    // Hide the user type selection cards and initial continue button
+    document.querySelector('.row.g-4.mb-5').style.display = 'none';
+    document.getElementById('initialContinue').style.display = 'none';
+    
+    // Show registration forms section
+    document.getElementById('registrationForms').style.display = 'block';
+    
+    // Hide all forms first
+    document.querySelectorAll('.registration-form').forEach(form => {
+        form.style.display = 'none';
+    });
+    
+    // Show the selected form
     if (type === 'affiliate') {
-        window.location.href = '/join_affiliate';
+        document.getElementById('affiliateForm').style.display = 'block';
     } else if (type === 'provider') {
-        window.location.href = '/join_hospital';
+        document.getElementById('providerForm').style.display = 'block';
     } else if (type === 'individual') {
-        window.location.href = '/join_individual';
+        document.getElementById('individualForm').style.display = 'block';
+    }
+}
+
+function toggleSamePhone() {
+    const businessPhone = document.getElementById('phone');
+    const afterHoursPhone = document.getElementById('after_hours_phone');
+    const checkbox = document.getElementById('same_as_business_phone');
+    
+    if (checkbox.checked) {
+        afterHoursPhone.value = businessPhone.value;
+        afterHoursPhone.readOnly = true;
+    } else {
+        afterHoursPhone.readOnly = false;
+    }
+}
+
+function toggleSamePhoneProvider() {
+    const directPhone = document.getElementById('phone');
+    const cellPhone = document.getElementById('cell_phone');
+    const checkbox = document.getElementById('same_as_direct_phone');
+    
+    if (checkbox.checked) {
+        cellPhone.value = directPhone.value;
+        cellPhone.readOnly = true;
+    } else {
+        cellPhone.readOnly = false;
     }
 }
 
