@@ -3,16 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SkyCareLink Quote System</title>
+    <title>Login - SkyCareLink Medical Transport</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-blue: #2c5aa0;
+            --light-blue: #e8f4fd;
+            --accent-blue: #4a90e2;
+        }
+        
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
         .card {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 15px;
+            margin-top: 100px;
+        }
+        
+        .card-header {
+            background: var(--primary-blue) !important;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 30px;
+        }
+        
+        .brand-logo {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
         }
     </style>
 </head>
@@ -21,8 +56,12 @@
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
                 <div class="card mt-5">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h3 class="mb-0">SkyCareLink Login</h3>
+                    <div class="card-header text-white text-center">
+                        <div class="brand-logo">
+                            <i class="fas fa-helicopter"></i>
+                        </div>
+                        <h3 class="mb-0">SkyCareLink</h3>
+                        <p class="mb-0 mt-2 opacity-75">Medical Air Transport Portal</p>
                     </div>
                     <div class="card-body">
                         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -63,8 +102,9 @@
                         </div>
                         {% endif %}
                         
-                        <div class="text-center mt-3">
-                            <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Create Account</a></p>
+                        <div class="text-center mt-4">
+                            <p class="text-muted">Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-decoration-none">Create Account</a></p>
+                            <p class="text-muted"><a href="/" class="text-decoration-none"><i class="fas fa-arrow-left me-1"></i>Back to Home</a></p>
                         </div>
                     </div>
                 </div>

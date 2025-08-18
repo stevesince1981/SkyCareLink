@@ -170,54 +170,11 @@ with quote_app.app_context():
         db.session.commit()
         print("✓ Created admin user: admin@skycarelink.com / admin123")
 
-# Home route
+# Home route  
 @quote_app.route('/')
 def home():
-    return '''
-    <html>
-    <head>
-        <title>SkyCareLink Quote System</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-            .card { box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card mt-5">
-                        <div class="card-header bg-primary text-white text-center">
-                            <h2>SkyCareLink Quote System</h2>
-                            <p class="mb-0">Medical Transport Quote Platform</p>
-                        </div>
-                        <div class="card-body text-center">
-                            <h4 class="mb-4">Welcome to the Pilot System</h4>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <a href="/register" class="btn btn-success btn-lg w-100">Create Account</a>
-                                    <small class="text-muted d-block mt-2">New users</small>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <a href="/login" class="btn btn-primary btn-lg w-100">Sign In</a>
-                                    <small class="text-muted d-block mt-2">Existing users</small>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="mt-3">
-                                <h6>Admin Access</h6>
-                                <p class="small text-muted">admin@skycarelink.com / admin123</p>
-                                <a href="/admin/dashboard" class="btn btn-outline-dark">Admin Dashboard</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    '''
+    from flask import render_template
+    return render_template('home.html')
 
 if __name__ == "__main__":
     quote_app.run(host="0.0.0.0", port=5000, debug=True)
