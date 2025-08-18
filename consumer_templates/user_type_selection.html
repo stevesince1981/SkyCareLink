@@ -311,8 +311,8 @@
                                     <div class="text-center mt-3">
                                         <small class="text-muted">
                                             By registering, you agree to our 
-                                            <a href="/terms" class="text-decoration-none">Terms of Service</a> and 
-                                            <a href="/privacy" class="text-decoration-none">Privacy Policy</a>
+                                            <a href="#" onclick="return false;" class="text-decoration-none">Terms of Service</a> and 
+                                            <a href="#" onclick="return false;" class="text-decoration-none">Privacy Policy</a>
                                         </small>
                                     </div>
                                 </form>
@@ -322,143 +322,173 @@
 
                     <!-- Provider Registration Form -->
                     <div id="providerForm" class="registration-form" style="display: none;">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-success text-white">
-                                <h4 class="mb-0"><i class="fas fa-hospital me-2"></i>Healthcare Provider Registration</h4>
+                        <div class="card border-0 shadow-sm">
+                            <!-- Header with Blue Hospital Icon -->
+                            <div class="text-center py-4" style="background: linear-gradient(135deg, #4A90E2, #357ABD);">
+                                <i class="fas fa-hospital text-white" style="font-size: 2.5rem;"></i>
+                                <h3 class="text-white mt-2 mb-1">Join as Hospital/Clinic</h3>
+                                <p class="text-white mb-0 opacity-75">Connect your facility to our medical transport network</p>
                             </div>
-                            <div class="card-body">
+                            
+                            <!-- Membership Benefits Section -->
+                            <div class="bg-success text-white px-4 py-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-star me-2"></i>
+                                    <strong>Membership Benefits</strong>
+                                </div>
+                                <div class="row small">
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Free for 1 year</strong> post-launch
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>+1 year free</strong> when you refer 5 additional providers
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Free for life</strong> after referrals complete flight
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Priority booking</strong> for urgent transports
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Bulk pricing</strong> for multiple bookings
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Dedicated support</strong> team
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fee Structure Alerts -->
+                            <div class="px-4 py-2">
+                                <div class="alert alert-info d-flex align-items-center mb-2 py-2">
+                                    <i class="fas fa-info-circle text-info me-2"></i>
+                                    <small><strong>Year One Launch Offer:</strong> Join free for the first 12 months from official go live date. No annual membership fees during initial period.</small>
+                                </div>
+                                <div class="alert alert-warning d-flex align-items-center mb-3 py-2">
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                    <small><strong>Year Two and Beyond:</strong> $50 per annual fee per be handled through referrals. Refer 5 providers for free each year, or get lifetime free membership when a referred books a flight.</small>
+                                </div>
+                            </div>
+
+                            <div class="card-body px-4">
+                                <h6 class="mb-3">Provider Information</h6>
                                 <form method="POST" action="{{ url_for('join_hospital') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="prov_facility_name" class="form-label">Facility Name *</label>
-                                            <input type="text" class="form-control" id="prov_facility_name" name="facility_name" required>
+                                            <label for="provider_name" class="form-label">Provider Name *</label>
+                                            <input type="text" class="form-control" id="provider_name" name="provider_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="prov_facility_type" class="form-label">Facility Type</label>
-                                            <select class="form-control" id="prov_facility_type" name="facility_type">
+                                            <label for="primary_contact_name" class="form-label">Primary Contact Name *</label>
+                                            <input type="text" class="form-control" id="primary_contact_name" name="primary_contact_name" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">Phone (Cell) *</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="provider_type" class="form-label">Provider Type *</label>
+                                            <select class="form-select" id="provider_type" name="provider_type" required>
+                                                <option value="">Select Provider Type</option>
                                                 <option value="hospital">Hospital</option>
                                                 <option value="clinic">Clinic</option>
                                                 <option value="urgent_care">Urgent Care</option>
-                                                <option value="rehab_facility">Rehabilitation Facility</option>
-                                                <option value="nursing_home">Nursing Home</option>
+                                                <option value="rehab_center">Rehabilitation Center</option>
+                                                <option value="skilled_nursing">Skilled Nursing Facility</option>
                                                 <option value="dialysis_center">Dialysis Center</option>
                                                 <option value="surgery_center">Surgery Center</option>
-                                                <option value="other">Other</option>
+                                                <option value="imaging_center">Imaging Center</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="prov_first_name" class="form-label">Contact First Name *</label>
-                                            <input type="text" class="form-control" id="prov_first_name" name="first_name" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prov_last_name" class="form-label">Contact Last Name *</label>
-                                            <input type="text" class="form-control" id="prov_last_name" name="last_name" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prov_email" class="form-label">Professional Email *</label>
-                                            <input type="email" class="form-control" id="prov_email" name="email" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prov_phone" class="form-label">Direct Phone *</label>
-                                            <input type="tel" class="form-control" id="prov_phone" name="phone" required>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prov_cell_phone" class="form-label">24/7 Cell Phone</label>
-                                            <input type="tel" class="form-control" id="prov_cell_phone" name="cell_phone">
+                                            <label for="phone_24_7" class="form-label">Phone (24/7 number)</label>
+                                            <input type="tel" class="form-control" id="phone_24_7" name="phone_24_7">
                                             <div class="form-check mt-2">
-                                                <input class="form-check-input" type="checkbox" id="prov_same_as_direct_phone" onchange="toggleSamePhoneProvider()">
-                                                <label class="form-check-label" for="prov_same_as_direct_phone">
-                                                    Same as direct phone
+                                                <input class="form-check-input" type="checkbox" id="same_as_cell_provider" name="same_as_cell">
+                                                <label class="form-check-label" for="same_as_cell_provider">
+                                                    24/7 number same as cell phone
                                                 </label>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prov_department" class="form-label">Department/Role</label>
-                                            <input type="text" class="form-control" id="prov_department" name="department" placeholder="e.g., Emergency Department, Case Management">
-                                        </div>
                                     </div>
+
                                     <div class="mb-3">
-                                        <label for="prov_address" class="form-label">Facility Address *</label>
-                                        <textarea class="form-control" id="prov_address" name="address" rows="2" required placeholder="Full street address including city, state, and ZIP code"></textarea>
+                                        <label for="provider_address" class="form-label">Provider Address *</label>
+                                        <textarea class="form-control" id="provider_address" name="provider_address" rows="2" required 
+                                                  placeholder="Street Address"></textarea>
                                     </div>
+
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prov_coverage_regions" class="form-label">Primary Service Area</label>
-                                            <select class="form-control" id="prov_coverage_regions" name="coverage_regions" multiple>
-                                                <option value="northeast">Northeast (ME, NH, VT, MA, RI, CT, NY, NJ, PA)</option>
-                                                <option value="southeast">Southeast (DE, MD, DC, VA, WV, KY, TN, NC, SC, GA, FL, AL, MS)</option>
-                                                <option value="midwest">Midwest (OH, IN, IL, MI, WI, MN, IA, MO, ND, SD, NE, KS)</option>
-                                                <option value="southwest">Southwest (TX, OK, AR, LA, NM, AZ)</option>
-                                                <option value="west">West (CO, WY, MT, ID, UT, NV, CA, OR, WA, AK, HI)</option>
-                                                <option value="local">Local/Regional Only</option>
-                                            </select>
-                                            <small class="text-muted">Select regions you primarily serve</small>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="city" class="form-label">City</label>
+                                            <input type="text" class="form-control" id="city" name="city">
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="prov_referral_code" class="form-label">Referral Code (Optional)</label>
-                                            <input type="text" class="form-control" id="prov_referral_code" name="referral_code" placeholder="If referred by another hospital">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="state" class="form-label">State</label>
+                                            <input type="text" class="form-control" id="state" name="state">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="zip_code" class="form-label">ZIP Code</label>
+                                            <input type="text" class="form-control" id="zip_code" name="zip_code">
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Specialties & Services</label>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="emergency" id="prov_emergency">
-                                                    <label class="form-check-label" for="prov_emergency">Emergency Medicine</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="critical_care" id="prov_critical_care">
-                                                    <label class="form-check-label" for="prov_critical_care">Critical Care</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="cardiology" id="prov_cardiology">
-                                                    <label class="form-check-label" for="prov_cardiology">Cardiology</label>
-                                                </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <h6>Communication Preferences</h6>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="communication[]" value="email_updates" id="provider_email_updates" checked>
+                                                <label class="form-check-label" for="provider_email_updates">Email Updates</label>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="neurology" id="prov_neurology">
-                                                    <label class="form-check-label" for="prov_neurology">Neurology</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="trauma" id="prov_trauma">
-                                                    <label class="form-check-label" for="prov_trauma">Trauma Center</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="neonatal" id="prov_neonatal">
-                                                    <label class="form-check-label" for="prov_neonatal">Neonatal Care</label>
-                                                </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="communication[]" value="sms_notifications" id="provider_sms">
+                                                <label class="form-check-label" for="provider_sms">SMS Notifications</label>
                                             </div>
-                                            <div class="col-md-4">
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="mt-4">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="oncology" id="prov_oncology">
-                                                    <label class="form-check-label" for="prov_oncology">Oncology</label>
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="phone_calls" id="provider_phone_calls">
+                                                    <label class="form-check-label" for="provider_phone_calls">Phone Calls</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="transplant" id="prov_transplant">
-                                                    <label class="form-check-label" for="prov_transplant">Organ Transplant</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="specialties[]" value="pediatrics" id="prov_pediatrics">
-                                                    <label class="form-check-label" for="prov_pediatrics">Pediatrics</label>
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="newsletter" id="provider_newsletter">
+                                                    <label class="form-check-label" for="provider_newsletter">Newsletter</label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
-                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fas fa-paper-plane me-2"></i>Complete Registration
                                         </button>
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Register as Provider <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">
+                                            By registering, you agree to our 
+                                            <a href="#" onclick="return false;" class="text-decoration-none">Terms of Service</a> and 
+                                            <a href="#" onclick="return false;" class="text-decoration-none">Privacy Policy</a>
+                                        </small>
                                     </div>
                                 </form>
                             </div>
