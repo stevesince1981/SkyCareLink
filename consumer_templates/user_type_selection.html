@@ -43,57 +43,45 @@
                     <p class="lead text-muted">Choose your account type to get started</p>
                 </div>
 
-                <div class="row g-4 mb-5">
-                    <!-- Affiliate Card -->
-                    <div class="col-12 col-md-4">
-                        <div class="card user-type-card h-100" onclick="selectUserType('affiliate', this)">
-                            <div class="card-body text-center d-flex flex-column">
-                                <div class="user-type-icon text-primary">
-                                    <i class="fas fa-helicopter"></i>
+                <div class="text-center mb-4">
+                    <h4>Select Your Role</h4>
+                </div>
+                <div class="row justify-content-center mb-4">
+                    <!-- Transport Affiliate Card -->
+                    <div class="col-md-3 mb-3">
+                        <div id="transportCard" class="card text-center h-100 border-2" onclick="selectUserType('affiliate', this)" style="cursor: pointer; transition: all 0.2s;">
+                            <div class="card-body py-4">
+                                <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-plane" style="font-size: 1.5rem;"></i>
                                 </div>
-                                <h4 class="card-title mb-3">Affiliate</h4>
-                                <p class="card-text flex-grow-1">Air medical transport providers looking to join our network and receive quote requests from patients and hospitals.</p>
-                                <ul class="list-unstyled text-start mt-3">
-                                    <li><i class="fas fa-check text-success me-2"></i>Receive qualified leads</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Competitive commission structure</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Professional dashboard</li>
-                                </ul>
+                                <h6 class="card-title text-primary mb-2">Transport Affiliate</h6>
+                                <small class="text-muted">Flight transport companies and air ambulance operators</small>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Provider Card -->
-                    <div class="col-12 col-md-4">
-                        <div class="card user-type-card h-100" onclick="selectUserType('provider', this)">
-                            <div class="card-body text-center d-flex flex-column">
-                                <div class="user-type-icon text-success">
-                                    <i class="fas fa-hospital"></i>
+                    <!-- Healthcare Provider Card -->
+                    <div class="col-md-3 mb-3">
+                        <div id="providerCard" class="card text-center h-100 border-2" onclick="selectUserType('provider', this)" style="cursor: pointer; transition: all 0.2s;">
+                            <div class="card-body py-4">
+                                <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-hospital" style="font-size: 1.5rem;"></i>
                                 </div>
-                                <h4 class="card-title mb-3">Healthcare Provider</h4>
-                                <p class="card-text flex-grow-1">Hospitals, clinics, and healthcare facilities needing to arrange medical transport for patients.</p>
-                                <ul class="list-unstyled text-start mt-3">
-                                    <li><i class="fas fa-check text-success me-2"></i>Quick quote requests</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>HIPAA compliant platform</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Multiple provider options</li>
-                                </ul>
+                                <h6 class="card-title text-primary mb-2">Healthcare Provider</h6>
+                                <small class="text-muted">Hospitals, clinics, and medical facilities</small>
                             </div>
                         </div>
                     </div>
 
                     <!-- Individual Card -->
-                    <div class="col-12 col-md-4">
-                        <div class="card user-type-card h-100" onclick="selectUserType('individual', this)">
-                            <div class="card-body text-center d-flex flex-column">
-                                <div class="user-type-icon text-warning">
-                                    <i class="fas fa-users"></i>
+                    <div class="col-md-3 mb-3">
+                        <div id="individualCard" class="card text-center h-100 border-2" onclick="selectUserType('individual', this)" style="cursor: pointer; transition: all 0.2s;">
+                            <div class="card-body py-4">
+                                <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-users" style="font-size: 1.5rem;"></i>
                                 </div>
-                                <h4 class="card-title mb-3">Individual</h4>
-                                <p class="card-text flex-grow-1">Families and individuals who need medical transport services for themselves or loved ones.</p>
-                                <ul class="list-unstyled text-start mt-3">
-                                    <li><i class="fas fa-check text-success me-2"></i>Compare multiple quotes</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Transparent pricing</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>24/7 support</li>
-                                </ul>
+                                <h6 class="card-title text-primary mb-2">Individual</h6>
+                                <small class="text-muted">Patients, families, and individual users</small>
                             </div>
                         </div>
                     </div>
@@ -437,17 +425,37 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-4 mb-3">
-                                            <label for="city" class="form-label">City</label>
-                                            <input type="text" class="form-control" id="city" name="city">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="city" class="form-label">City *</label>
+                                            <input type="text" class="form-control" id="city" name="city" required>
                                         </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="state" class="form-label">State</label>
-                                            <input type="text" class="form-control" id="state" name="state">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="state" class="form-label">State *</label>
+                                            <input type="text" class="form-control" id="state" name="state" required>
                                         </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="zip_code" class="form-label">ZIP Code</label>
-                                            <input type="text" class="form-control" id="zip_code" name="zip_code">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="zip_code" class="form-label">ZIP Code *</label>
+                                            <input type="text" class="form-control" id="zip_code" name="zip_code" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="country" class="form-label">Country *</label>
+                                            <select class="form-select" id="country" name="country" required>
+                                                <option value="">Select Country</option>
+                                                <option value="US" selected>United States</option>
+                                                <option value="CA">Canada</option>
+                                                <option value="MX">Mexico</option>
+                                                <option value="GB">United Kingdom</option>
+                                                <option value="AU">Australia</option>
+                                                <option value="DE">Germany</option>
+                                                <option value="FR">France</option>
+                                                <option value="IT">Italy</option>
+                                                <option value="ES">Spain</option>
+                                                <option value="JP">Japan</option>
+                                                <option value="BR">Brazil</option>
+                                                <option value="IN">India</option>
+                                                <option value="CN">China</option>
+                                                <option value="other">Other</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -637,20 +645,20 @@
 let selectedType = '';
 
 function selectUserType(type, element) {
-    // Remove previous selection
-    document.querySelectorAll('.user-type-card').forEach(card => {
-        card.classList.remove('selected');
+    // Remove previous selection from all cards
+    document.querySelectorAll('#transportCard, #providerCard, #individualCard').forEach(card => {
+        card.style.backgroundColor = '';
+        card.style.borderColor = '#dee2e6';
+        card.classList.remove('border-primary');
     });
     
-    // Add selection to clicked card
-    element.classList.add('selected');
+    // Add selection highlighting to clicked card
+    element.style.backgroundColor = '#e7f3ff';
+    element.style.borderColor = '#4A90E2';
+    element.classList.add('border-primary');
     
     // Store selected type
     selectedType = type;
-    
-    // Hide the user type selection cards and initial continue button
-    document.querySelector('.row.g-4.mb-5').style.display = 'none';
-    document.getElementById('initialContinue').style.display = 'none';
     
     // Show registration forms section
     document.getElementById('registrationForms').style.display = 'block';
@@ -668,6 +676,9 @@ function selectUserType(type, element) {
     } else if (type === 'individual') {
         document.getElementById('individualForm').style.display = 'block';
     }
+    
+    // Scroll to form
+    document.getElementById('registrationForms').scrollIntoView({ behavior: 'smooth' });
 }
 
 function toggleSamePhoneAff() {
