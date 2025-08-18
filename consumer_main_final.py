@@ -36,10 +36,15 @@ try:
     except ImportError:
         print("⚠ IVR models not available - IVR features will be limited")
     # Import new notification services
-    from services.mailer import email_service
-    from services.sms import sms_service
+    from services.mailer import mail_service
+    try:
+        from services.sms import sms_service
+    except ImportError:
+        print("⚠ SMS service not available")
     from routes.affiliate import affiliate_bp
     from routes.quotes import quotes_bp
+    from routes.auth_routes import auth_bp
+    from routes.quote_routes import quote_bp
     from seed_data import seed_dummy_data, remove_dummy_data, get_dummy_data_status
     DB_AVAILABLE = True
     print("✓ Database components loaded successfully")
@@ -92,6 +97,8 @@ def analytics_context():
 if DB_AVAILABLE:
     consumer_app.register_blueprint(affiliate_bp)
     consumer_app.register_blueprint(quotes_bp)
+    consumer_app.register_blueprint(auth_bp)
+    consumer_app.register_blueprint(quote_bp)
     
     # Register admin blueprint
     try:
@@ -117,13 +124,8 @@ if DB_AVAILABLE:
     except ImportError as e:
         print(f"⚠ Document system not available: {e}")
     
-    # Register auth blueprint
-    try:
-        from routes.auth import auth_bp
-        consumer_app.register_blueprint(auth_bp)
-        print("✓ Security and auth system registered successfully")
-    except ImportError as e:
-        print(f"⚠ Auth system not available: {e}")
+    # Register auth blueprint (already registered above)
+    print("✓ Email verification and quote workflow system registered successfully")
     
     print("✓ Notification services loaded successfully")
 

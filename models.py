@@ -13,12 +13,18 @@ class User(db.Model):
     
     id = Column(Integer, primary_key=True)
     username = Column(String(64), unique=True, nullable=False)
-    email = Column(String(120), unique=True, nullable=False)
+    email = Column(String(120), unique=True, nullable=False, index=True)
     password_hash = Column(String(256))
+    user_type = Column(String(20), nullable=False, default='individual')  # individual, affiliate, admin
     role = Column(String(20), nullable=False, default='family')  # family, hospital, provider, affiliate, admin, mvp
     sub_role = Column(String(20), default='TeamUser')  # PowerUser, TeamUser
     permissions = Column(JSON, default=lambda: {})  # Detailed permissions
+    is_verified = Column(Boolean, default=False)
+    verification_token = Column(String(64), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_login = Column(DateTime, nullable=True)
+    failed_login_attempts = Column(Integer, default=0)
+    locked_until = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True)
     
     def __repr__(self):
@@ -333,3 +339,63 @@ class SecurityEvent(db.Model):
     
     def __repr__(self):
         return f'<SecurityEvent {self.event_type} - {self.username}>'
+
+class QuoteRequest(db.Model):
+    """Quote requests and responses"""
+    __tablename__ = 'quote_requests'
+    
+    id = Column(Integer, primary_key=True)
+    booking_id = Column(String(20), unique=True, nullable=False, index=True)
+    individual_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    affiliate_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    pickup_location = Column(String(200), nullable=False)
+    destination = Column(String(200), nullable=False)
+    transport_date = Column(DateTime, nullable=False)
+    patient_condition = Column(String(100), nullable=True)
+    special_requirements = Column(Text, nullable=True)
+    quoted_price = Column(Float, nullable=True)
+    quote_details = Column(JSON, nullable=True)
+    status = Column(String(20), nullable=False, default='incoming', index=True)  # incoming, submitted, confirmed
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    quoted_at = Column(DateTime, nullable=True)
+    confirmed_at = Column(DateTime, nullable=True)
+    
+    # Relationships
+    individual = relationship("User", foreign_keys=[individual_id], backref="individual_quote_requests")
+    affiliate = relationship("User", foreign_keys=[affiliate_id], backref="affiliate_quote_requests")
+    
+    def __repr__(self):
+        return f'<QuoteRequest {self.booking_id}>'
+
+class AuditLog(db.Model):
+    """Audit trail for system actions"""
+    __tablename__ = 'audit_logs'
+    
+    id = Column(Integer, primary_key=True)
+    action = Column(String(50), nullable=False)
+    details = Column(Text, nullable=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    ip_address = Column(String(45), nullable=True)
+    user_agent = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    # Relationship
+    user = relationship("User", backref="audit_logs")
+    
+    def __repr__(self):
+        return f'<AuditLog {self.action}>'
+
+class EmailLog(db.Model):
+    """Email sending log for admin tracking"""
+    __tablename__ = 'email_logs'
+    
+    id = Column(Integer, primary_key=True)
+    recipient = Column(String(120), nullable=False)
+    subject = Column(String(200), nullable=False)
+    email_type = Column(String(50), nullable=False)
+    status = Column(String(10), nullable=False)  # SENT, FAILED
+    smtp_response = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    def __repr__(self):
+        return f'<EmailLog {self.recipient}>'

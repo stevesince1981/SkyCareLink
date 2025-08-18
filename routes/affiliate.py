@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import uuid
 
 from models import db, Quote, User
-from services.mailer import email_service
+from services.mailer import mail_service
 from services.sms import sms_service
 
 logger = logging.getLogger(__name__)

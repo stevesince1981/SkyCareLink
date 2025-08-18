@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 
 from models.audit import AuditLog
-from services.mailer import email_service
+from services.mailer import mail_service
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ def password_reset_request():
         reset_url = url_for('auth.password_reset_verify', token=reset_token, email=email, _external=True)
         
         # Send reset email
-        success = email_service.send_password_reset_email(email, reset_url, expiry)
+        success = mail_service.send_password_reset_email(email, reset_url, expiry)
         
         if success:
             # Log the reset request
@@ -179,7 +179,7 @@ def password_reset_confirm():
             del password_reset_tokens[token_hash]
         
         # Send confirmation email
-        email_service.send_password_reset_confirmation(email)
+        mail_service.send_password_reset_confirmation(email)
         
         # Log the password reset completion
         AuditLog.log_event(

@@ -22,7 +22,7 @@ except ImportError:
 # Email service imports
 try:
     from services.mailer import EmailService
-    email_service = EmailService()
+    from services.mailer import mail_service
     EMAIL_AVAILABLE = True
 except ImportError:
     EMAIL_AVAILABLE = False
@@ -298,7 +298,7 @@ This is an automated message from SkyCareLink Partnership Management.
 """
                 
                 # Send email (simplified - in production would use proper email template)
-                email_sent = email_service.send_email(
+                email_sent = mail_service.send_email(
                     to_email=affiliate.email,
                     subject=subject,
                     body=body
@@ -390,7 +390,7 @@ Activation: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
 """
                 
                 # Send welcome email
-                email_sent = email_service.send_email(
+                email_sent = mail_service.send_email(
                     to_email=affiliate.email,
                     subject=subject,
                     body=body

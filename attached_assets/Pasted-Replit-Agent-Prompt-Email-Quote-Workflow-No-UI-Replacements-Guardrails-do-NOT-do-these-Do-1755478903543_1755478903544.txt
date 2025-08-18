@@ -1,0 +1,178 @@
+Replit Agent Prompt — “Email + Quote Workflow (No UI Replacements)”
+Guardrails (do NOT do these)
+
+Do NOT replace templates/main/index.html (home/hero).
+
+Do NOT change global colors/branding.
+
+Do NOT rename existing routes unless they’re wrong.
+
+Do NOT remove existing forms or pages.
+
+Do NOT require SMS/2FA (defer).
+
+What to add/adjust (features only)
+
+Email service (Outlook SMTP)
+
+Create a reusable mailer service and use environment secrets already provided.
+
+Mail host must be smtp.office365.com, port 587, STARTTLS.
+
+If mail is misconfigured, do not crash—log [MAIL disabled] and continue, but set an admin banner on admin pages.
+
+Models & DB
+
+Keep existing models. If you must add, extend with new fields/tables; no destructive migrations.
+
+Ensure tables exist for:
+
+User: email (unique), password_hash, user_type ('individual'|'affiliate'|'admin'), is_verified, verification_token, created_at, last_login, failed_login_attempts, locked_until.
+
+Quote: booking_id (unique), individual_id, affiliate_id (nullable), pickup_location, destination, transport_date, patient_condition (nullable), special_requirements (nullable), quoted_price (nullable), quote_details (JSON, nullable), status ('incoming'|'submitted'|'confirmed'), timestamps.
+
+AuditLog: action, details, user_id (nullable), ip_address, user_agent, created_at.
+
+Do not rename/drop existing columns; add if necessary. Create indexes on Quote.booking_id, Quote.status, User.email.
+
+Registration → Email verification (keeps current screens)
+
+Use the existing register page; on submit:
+
+Create user with is_verified=False, generate token, send verify email (button and raw URL).
+
+Add /verify?token= route to flip is_verified=True, then redirect to login with a success flash.
+
+Add a “Resend verification” action on login for pending users.
+
+Audit: user_registered, email_verification_sent, email_verified, and admin override email_verified_admin_override (toggle only visible to admins).
+
+Login (no 2FA)
+
+Respect existing login page.
+
+If user not verified → block login with a clear message and Resend verification link.
+
+Rate-limit: after 5 bad passwords, lock for 5 minutes. Audit login_failed, login_rate_limited, login_success.
+
+Quote submission (individual)
+
+Use the existing intake form and its steps (no changes to layout).
+
+On submit:
+
+Create Quote with booking_id="BKYYYYMMDDHHMMSS"; set status='incoming'.
+
+Email to individual: “Quote request received – Ref #[booking_id]” with link to results.
+
+Email to test affiliate(s) only (we’ll use your test affiliate inbox): “New quote – Provide Quote” with a button and raw URL to the affiliate quote page.
+
+Audit: quote_created, email_sent_individual_confirmation, email_sent_affiliate_new_quote.
+
+Affiliate provides quote (affiliate portal already exists)
+
+On the affiliate “Provide Quote” screen (keep design), require Price (USD) and optional Ground included checkbox + notes.
+
+On submit:
+
+Save quoted_price, set status='submitted', set quoted_at.
+
+Email individual: “Your quote is ready – Ref #[booking_id]” with price + link to results.
+
+Audit: quote_submitted_by_affiliate, email_sent_individual_quote_ready.
+
+Individual confirms booking
+
+In results page (existing), “Confirm Booking”:
+
+Set status='confirmed', set confirmed_at.
+
+Email individual: “Booking confirmed – Ref #[booking_id]”.
+
+Email affiliate: “Quote accepted – Ref #[booking_id]”.
+
+Audit: quote_confirmed, email_sent_individual_booking_confirmed, email_sent_affiliate_quote_accepted.
+
+Email Log (admin only)
+
+Add a simple Email Log viewer (no design overhaul): table with timestamp, recipient, subject, type/template, status (SENT/FAILED), smtp_response_or_error.
+
+All send attempts must record SENT/FAILED. Failed sends must not break the user flow.
+
+Security & cookies
+
+Keep existing session management. Ensure SESSION_SECRET is used.
+
+Add CSRF on forms if missing (do not break current forms).
+
+No 2FA for pilot (leave hooks for later).
+
+Config (secrets) to use
+
+MAIL_SERVER = smtp.office365.com
+
+MAIL_PORT = 587
+
+MAIL_USE_TLS = true
+
+MAIL_USERNAME = your Outlook address
+
+MAIL_PASSWORD = your Outlook password or app password
+
+MAIL_DEFAULT_SENDER = SkyCareLink <your_outlook_address>
+
+PORTAL_BASE = your Replit URL (for absolute links)
+
+DATABASE_URL, SESSION_SECRET are already set; do not change them.
+
+Fixes vs. the pasted script (apply these quietly)
+
+Change mail host to smtp.office365.com (not smtp.outlook.com).
+
+Do not import or render templates inside the email service; keep it a plain sender helper.
+
+Avoid writing to session.get('contact_name'|'user_email') in the mail template—pull the individual’s name/email from the User tied to the Quote.
+
+Use PORTAL_BASE to build all absolute URLs in emails; never rely on _external=True if it’s not configured.
+
+Ensure /affiliate/quote/<booking_id> route exists and requires affiliate login.
+
+Add resend verification route.
+
+Do not rename home/hero routes or templates.
+
+Acceptance tests (must pass)
+
+Registration/verification
+
+Create individual test user → receive verify email → link works → can log in.
+
+Create affiliate test user → receive verify email → link works → can log in.
+
+Quote submission
+
+As individual, submit intake → individual gets “request received”; affiliate inbox gets “new quote – provide quote” (button + raw URL).
+
+Affiliate quote
+
+As affiliate, submit price → individual inbox gets “quote ready” with price and a working link.
+
+Confirm booking
+
+As individual, confirm → both sides get confirmations.
+
+Email Log & Audit
+
+Admin view shows all SENT records; any failures are logged as FAILED with error text.
+
+Audit shows: user_registered, email_verification_sent, email_verified, quote_created, quote_submitted_by_affiliate, quote_confirmed, and all email_sent_*.
+
+Definition of Done
+
+Home/hero unchanged visually.
+
+Full register→verify→quote→affiliate→confirm email loop works using Outlook SMTP.
+
+Every email contains a button and the raw URL beneath it.
+
+Failures never crash; they appear in Email Log; audit trail is complete.

@@ -1,0 +1,47 @@
+{% extends "consumer_templates/base_consumer.html" %}
+
+{% block title %}Registration Successful - SkyCareLink{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h2 class="card-title text-success mb-3">Registration Successful!</h2>
+                    
+                    <p class="card-text mb-4">
+                        Thank you for registering with SkyCareLink. We've sent a verification email to:
+                    </p>
+                    
+                    <div class="alert alert-info">
+                        <strong>{{ email }}</strong>
+                    </div>
+                    
+                    <p class="text-muted mb-4">
+                        Please check your email and click the verification link to activate your account. 
+                        You won't be able to log in until your email is verified.
+                    </p>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Go to Login
+                        </a>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <p class="text-muted small">
+                        Didn't receive the email? Check your spam folder or 
+                        <a href="{{ url_for('auth.login') }}">try logging in</a> to resend.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
