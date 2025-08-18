@@ -153,6 +153,7 @@
                             <div class="card-body px-4">
                                 <h6 class="mb-3">Company Registration</h6>
                                 <form method="POST" action="{{ url_for('join_affiliate') }}">
+                                    {{ csrf_token() }}
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="company_name" class="form-label">Company Name *</label>
@@ -371,6 +372,7 @@
                             <div class="card-body px-4">
                                 <h6 class="mb-3">Provider Information</h6>
                                 <form method="POST" action="{{ url_for('join_hospital') }}">
+                                    {{ csrf_token() }}
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="provider_name" class="form-label">Provider Name *</label>
@@ -566,6 +568,7 @@
                             <div class="card-body px-4">
                                 <h6 class="mb-3">Personal Information</h6>
                                 <form method="POST" action="{{ url_for('register_individual') }}">
+                                    {{ csrf_token() }}
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="primary_contact_name" class="form-label">Primary Contact Name *</label>
