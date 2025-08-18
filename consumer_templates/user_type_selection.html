@@ -104,188 +104,212 @@
                     
                     <!-- Affiliate Registration Form -->
                     <div id="affiliateForm" class="registration-form" style="display: none;">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-primary text-white">
-                                <h4 class="mb-0"><i class="fas fa-helicopter me-2"></i>Transport Affiliate Registration</h4>
+                        <div class="card border-0 shadow-sm">
+                            <!-- Header with Blue Airplane Icon -->
+                            <div class="text-center py-4" style="background: linear-gradient(135deg, #4A90E2, #357ABD);">
+                                <i class="fas fa-plane text-white" style="font-size: 2.5rem;"></i>
+                                <h3 class="text-white mt-2 mb-1">Join as Transport Affiliate</h3>
+                                <p class="text-white mb-0 opacity-75">Partner with SkyCareLink to expand your medical transport business</p>
                             </div>
-                            <div class="card-body">
+                            
+                            <!-- Affiliate Benefits Section -->
+                            <div class="bg-primary text-white px-4 py-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-star me-2"></i>
+                                    <strong>Affiliate Benefits</strong>
+                                </div>
+                                <div class="row small">
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Fair quote distribution</strong> - Equal opportunities for all partners
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Fast payments</strong> - Weekly ACH transfers
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>1% payback system</strong> - Affiliate fee reimbursed through flights (first year only)
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Marketing support</strong> - Increased bookings through our network
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>24/7 coordination</strong> - Dedicated support team
+                                        </div>
+                                        <div class="mb-1">
+                                            <i class="fas fa-check me-2"></i>
+                                            <strong>Technology platform</strong> - Modern booking and tracking tools
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fee Structure Alerts -->
+                            <div class="px-4 py-2">
+                                <div class="alert alert-warning d-flex align-items-center mb-2 py-2">
+                                    <i class="fas fa-star text-warning me-2"></i>
+                                    <small><strong>Year One:</strong> $25,000 fee with 1% payback. Refundable if minimum opportunities not delivered.</small>
+                                </div>
+                                <div class="alert alert-info d-flex align-items-center mb-3 py-2">
+                                    <i class="fas fa-info-circle text-info me-2"></i>
+                                    <small><strong>Year Two:</strong> $10,000 fee. No payback needed as platform is proven.</small>
+                                </div>
+                            </div>
+
+                            <div class="card-body px-4">
+                                <h5 class="mb-3">Company Registration</h5>
                                 <form method="POST" action="{{ url_for('join_affiliate') }}">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="companyName" class="form-label">Company Name *</label>
-                                            <input type="text" class="form-control" id="companyName" name="company_name" required>
+                                            <label for="company_name" class="form-label">Company Name *</label>
+                                            <input type="text" class="form-control" id="company_name" name="company_name" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="operatorType" class="form-label">Operator Type</label>
-                                            <select class="form-select" id="operatorType" name="operator_type">
-                                                <option value="air_ambulance">Air Ambulance</option>
-                                                <option value="helicopter">Helicopter EMS</option>
-                                                <option value="fixed_wing">Fixed Wing</option>
-                                                <option value="dual_service">Dual Service (Both)</option>
-                                            </select>
+                                            <label for="contact_name" class="form-label">Primary Contact Name *</label>
+                                            <input type="text" class="form-control" id="contact_name" name="contact_name" required>
                                         </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label for="contactName" class="form-label">Primary Contact Name *</label>
-                                            <input type="text" class="form-control" id="contactName" name="contact_name" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="contactTitle" class="form-label">Contact Title</label>
-                                            <input type="text" class="form-control" id="contactTitle" name="contact_title" 
-                                                   placeholder="e.g., Operations Manager, Business Development">
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="email" class="form-label">Business Email *</label>
+                                            <label for="email" class="form-label">Email *</label>
                                             <input type="email" class="form-control" id="email" name="email" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="phone" class="form-label">Business Phone *</label>
+                                            <label for="phone" class="form-label">Phone (Cell) *</label>
                                             <input type="tel" class="form-control" id="phone" name="phone" required>
                                         </div>
                                     </div>
-
                                     <div class="mb-3">
-                                        <label for="businessAddress" class="form-label">Business Address *</label>
-                                        <textarea class="form-control" id="businessAddress" name="business_address" rows="3" required 
-                                                  placeholder="Full business address including city, state, and ZIP code"></textarea>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="commissionPercent" class="form-label">Preferred Commission Rate (%)</label>
-                                            <select class="form-select" id="commissionPercent" name="commission_percent">
-                                                <option value="3.0">3.0% - Volume Partner</option>
-                                                <option value="4.0">4.0% - High Volume</option>
-                                                <option value="5.0" selected>5.0% - Standard Rate</option>
-                                                <option value="6.0">6.0% - Specialty Services</option>
-                                                <option value="7.0">7.0% - Premium/Concierge</option>
-                                            </select>
-                                            <div class="form-text">Final rate subject to approval based on services and volume</div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="serviceArea" class="form-label">Primary Service Area</label>
-                                            <select class="form-select" id="serviceArea" name="service_area">
-                                                <option value="southeast">Southeast</option>
-                                                <option value="northeast">Northeast</option>
-                                                <option value="midwest">Midwest</option>
-                                                <option value="west">West</option>
-                                                <option value="southwest">Southwest</option>
-                                                <option value="national">National</option>
-                                            </select>
+                                        <label for="phone_24_7" class="form-label">Phone (24/7 number)</label>
+                                        <input type="tel" class="form-control" id="phone_24_7" name="phone_24_7">
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" id="same_as_cell" name="same_as_cell">
+                                            <label class="form-check-label" for="same_as_cell">
+                                                Same as cell phone
+                                            </label>
                                         </div>
                                     </div>
 
-                                    <!-- Fleet Information -->
-                                    <div class="card bg-light mb-3">
-                                        <div class="card-header">
-                                            <h5 class="card-title mb-0">
-                                                <i class="fas fa-helicopter me-2"></i>Fleet Information
-                                            </h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="fleetSize" class="form-label">Total Aircraft</label>
-                                                    <input type="number" class="form-control" id="fleetSize" name="fleet_size" min="1">
+                                    <div class="mb-4">
+                                        <label class="form-label">Coverage Areas *</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="east_coast" id="east_coast">
+                                                    <label class="form-check-label" for="east_coast">East Coast</label>
                                                 </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="aircraftTypes" class="form-label">Aircraft Types</label>
-                                                    <input type="text" class="form-control" id="aircraftTypes" name="aircraft_types" 
-                                                           placeholder="e.g., EC135, King Air 350, Learjet 60">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="central_us" id="central_us">
+                                                    <label class="form-check-label" for="central_us">Central US</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="west_coast" id="west_coast">
+                                                    <label class="form-check-label" for="west_coast">West Coast</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="southwest" id="southwest">
+                                                    <label class="form-check-label" for="southwest">Southwest</label>
                                                 </div>
                                             </div>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label">Available Equipment</label>
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="equipment[]" value="ventilator" id="equipVentilator">
-                                                            <label class="form-check-label" for="equipVentilator">Ventilator</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="equipment[]" value="ecmo" id="equipECMO">
-                                                            <label class="form-check-label" for="equipECMO">ECMO</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="equipment[]" value="incubator" id="equipIncubator">
-                                                            <label class="form-check-label" for="equipIncubator">Neonatal Incubator</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="equipment[]" value="iabp" id="equipIABP">
-                                                            <label class="form-check-label" for="equipIABP">IABP</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="equipment[]" value="dialysis" id="equipDialysis">
-                                                            <label class="form-check-label" for="equipDialysis">Dialysis</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="equipment[]" value="specialty" id="equipSpecialty">
-                                                            <label class="form-check-label" for="equipSpecialty">Specialty Equipment</label>
-                                                        </div>
-                                                    </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="southeast" id="southeast">
+                                                    <label class="form-check-label" for="southeast">Southeast</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="midwest" id="midwest">
+                                                    <label class="form-check-label" for="midwest">Midwest</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="international" id="international">
+                                                    <label class="form-check-label" for="international">International</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="coverage_areas[]" value="alaska_hawaii" id="alaska_hawaii">
+                                                    <label class="form-check-label" for="alaska_hawaii">Alaska/Hawaii</label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Concierge Services -->
-                                    <div class="card bg-warning bg-opacity-10 border-warning mb-3">
-                                        <div class="card-header bg-warning text-dark">
-                                            <h5 class="card-title mb-0">
-                                                <i class="fas fa-crown me-2"></i>Premium Concierge Services
-                                            </h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input" type="checkbox" id="offersConcierge" name="offers_concierge">
-                                                <label class="form-check-label" for="offersConcierge">
-                                                    <strong>Offer Concierge Services</strong>
-                                                </label>
-                                                <div class="form-text">
-                                                    Concierge services include premium support, family coordination, 
-                                                    and enhanced care management for a $15,000 add-on fee (split $7,500 each).
+                                    <div class="mb-4">
+                                        <label class="form-label">Services Offered *</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="emergency_transport" id="emergency_transport">
+                                                    <label class="form-check-label" for="emergency_transport">Emergency Transport</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="scheduled_transport" id="scheduled_transport">
+                                                    <label class="form-check-label" for="scheduled_transport">Scheduled Transport</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="international_flights" id="international_flights">
+                                                    <label class="form-check-label" for="international_flights">International Flights</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="concierge_services" id="concierge_services">
+                                                    <label class="form-check-label" for="concierge_services">Concierge Services</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="24_7_availability" id="24_7_availability">
+                                                    <label class="form-check-label" for="24_7_availability">24/7 Availability</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="services[]" value="nicu_specialist" id="nicu_specialist">
+                                                    <label class="form-check-label" for="nicu_specialist">NICU Specialist</label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Certifications -->
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="part135" name="certifications[]" value="part135" required>
-                                                <label class="form-check-label" for="part135">
-                                                    <strong>FAA Part 135 Certified *</strong>
-                                                </label>
+                                    <div class="mb-4">
+                                        <h6>Communication Preferences</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="email_updates" id="email_updates" checked>
+                                                    <label class="form-check-label" for="email_updates">Email Updates</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="sms_notifications" id="sms_notifications">
+                                                    <label class="form-check-label" for="sms_notifications">SMS Notifications</label>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="camts" name="certifications[]" value="camts">
-                                                <label class="form-check-label" for="camts">
-                                                    CAMTS Accredited
-                                                </label>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="phone_calls" id="phone_calls">
+                                                    <label class="form-check-label" for="phone_calls">Phone Calls</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="communication[]" value="newsletter" id="newsletter">
+                                                    <label class="form-check-label" for="newsletter">Newsletter</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="d-flex justify-content-between">
-                                        <button type="button" class="btn btn-secondary" onclick="goBack()">
-                                            <i class="fas fa-arrow-left me-2"></i>Back to Selection
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fas fa-paper-plane me-2"></i>Complete Registration
                                         </button>
-                                        <button type="submit" class="btn btn-success btn-lg">
-                                            Register as Affiliate <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">
+                                            By registering, you agree to our 
+                                            <a href="#" class="text-decoration-none">Terms of Service</a> and 
+                                            <a href="#" class="text-decoration-none">Privacy Policy</a>
+                                        </small>
                                     </div>
                                 </form>
                             </div>
